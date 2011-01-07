@@ -105,9 +105,9 @@ public class Vex
 
             Integer nR = 0;
             Integer nL = 0;
-            List<Double> r = null;
-            List<Double> l = null;
-            List<Double> v = null;
+            ArrayList<Double> r = null;
+            ArrayList<Double> l = null;
+            ArrayList<Double> v = null;
 
             VeTable page = null;
             while ((lineBuffer = buf.readLine()) != null)
@@ -148,7 +148,7 @@ public class Vex
                     if (nR == null)
                         return errorStatus.missingBracketError;
                     r = new ArrayList<Double>(nR);
-                    errorStatus s = readTable(r, nR, 1);
+                    errorStatus s = readTable(buf, r, nR, 1);
                     if (s != errorStatus.noError)
                         return s;
                 }
@@ -165,7 +165,7 @@ public class Vex
                     if (nL == null)
                         return errorStatus.missingBracketError;
                     l = new ArrayList<Double>(nL);
-                    errorStatus s = readTable(l, nL, 1);
+                    errorStatus s = readTable(buf, l, nL, 1);
                     if (s != errorStatus.noError)
                         return s;
                 }
@@ -176,7 +176,7 @@ public class Vex
                     lineBuffer = buf.readLine();
 
                     v = new ArrayList<Double>(nR * nL);
-                    errorStatus s = readTable(v, nL, nR);
+                    errorStatus s = readTable(buf, v, nL, nR);
                     if (s != errorStatus.noError)
                         return s;
                 }
@@ -219,16 +219,56 @@ public class Vex
         return errorStatus.noError;
     }
 
-    private errorStatus readTable(List<Double> r, Integer num, int i)
+    private errorStatus readTable(BufferedReader buf,ArrayList<Double> results, Integer rows, int cols) throws IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        errorStatus state = errorStatus.noError;
+        
+        for (int r = 0; r < rows; r++) 
+        {
+            String line = buf.readLine();
+            if (line == null)
+                return errorStatus.readError;
+            
+            Integer rVal = bracketedNumber(line);
+            if (rVal == null || rVal != r) return errorStatus.rowIndexError; // Row index in file is not in order.
+
+            int eq = line.indexOf('=');
+            if(eq < 0) return errorStatus.missingEqError;
+            
+            String numberLine = line.substring(eq + 1);
+            String[] numbers = numberLine.split("\\s,");
+            int c = 0;
+            for(String number : numbers)
+            {
+                if(number == null || number.trim().equals(""))
+                    continue;
+                results.add(r*cols+c,Double.valueOf(number));
+                c++;
+            }
+         }
+        
+        
+        
+        return state;
+
     }
 
-    private Integer bracketedNumber(String substring)
+    private Integer bracketedNumber(String s)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Integer result = null;
+        int left = s.indexOf('[');
+        int right = s.indexOf(']');
+        if(left < 0 || right < 0) return null;
+        String num = s.substring(left+1, right-1);
+        try
+        {
+            result = Integer.parseInt(num);
+        } catch (NumberFormatException e)
+        {
+            result = null;
+        }
+       
+        return result;
     }
 
     private VeTable newPage(int pageNum)
