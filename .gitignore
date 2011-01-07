@@ -1,3 +1,5 @@
 /gen/
 /bin/uk/
 .DS_Store
+classes.dex
+/bin/msparser.apk
