@@ -9,6 +9,8 @@ class symErr
 }
 public class Symbol
 {
+    int         _sequence; // Order in which they were defined.
+
 	String _name;
 	String _units;
 	boolean _; // True means in ants, false in output
@@ -117,5 +119,25 @@ public class Symbol
 	{
 		return _line;
 	}
+
+    public void setCArray(String string, String string2, int i, int j,
+            String string3, String shape, double d, double e, double f,
+            double g, int k)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void varIndex(int varIndex)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean isExpr()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }
