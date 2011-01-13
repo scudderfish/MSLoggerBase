@@ -1,17 +1,24 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.nio.ByteBuffer;
+
 public class MsDatabase
 {
+    private static final int N_RETRIES = 0;
+    private static MsDatabase   instance = new MsDatabase();
     public ControllerDescriptor cDesc;
 
     Datalog                     log;
     MsComm                      io;
     int                         _pageNo;
-    boolean                     _loaded;              // Memory image is valid
-                                                       // from either file or
-                                                       // MS.
-    boolean                     _burned;              // MS RAM and flash are
-                                                       // different.
+    boolean                     _loaded;                    // Memory image is
+                                                             // valid
+                                                             // from either file
+                                                             // or
+                                                             // MS.
+    boolean                     _burned;                    // MS RAM and flash
+                                                             // are
+                                                             // different.
     String                      signature;
     String                      title;
     static String               settingsFile;
@@ -24,10 +31,10 @@ public class MsDatabase
     int                         burstCommPort;
     int                         burstCommRate;
 
-    boolean                     controllerReset;      // Reset detected.
+    boolean                     controllerReset;            // Reset detected.
     String                      m_logFileName;
 
-    double[]                    wwuX = new double[10];
+    double[]                    wwuX     = new double[10];
 
     enum thermType
     {
@@ -37,6 +44,11 @@ public class MsDatabase
     static thermType therm;
 
     static boolean   rawTPS;
+
+    public static MsDatabase getInstance()
+    {
+        return instance;
+    }
 
     double tempFromDb(double t)
     {
@@ -58,6 +70,11 @@ public class MsDatabase
 
     public MsDatabase()
     {
+
+    }
+
+    public boolean init()
+    {
         log = null;
         io = new MsComm();
         cDesc = new ControllerDescriptor(io);
@@ -74,20 +91,14 @@ public class MsDatabase
         burstCommPort = commPortNumber;
         burstCommRate = 115200;
 
-    }
-
-    public boolean init()
-    {
         Repository.Uundefined = cDesc.varIndex(StringConstants.S_UNDEFINED);
 
         // This is a friggin' hack for 2.20 to allow
         // user-defined channels, but will be replaced
         // by the full expression language someday...
         Repository.UegoVoltage = cDesc.varIndex(StringConstants.S_egoVoltage);
-        Repository.UveTuneLodIdx = cDesc
-                .varIndex(StringConstants.S_veTuneLodIdx);
-        Repository.UveTuneRpmIdx = cDesc
-                .varIndex(StringConstants.S_veTuneRpmIdx);
+        Repository.UveTuneLodIdx = cDesc.varIndex(StringConstants.S_veTuneLodIdx);
+        Repository.UveTuneRpmIdx = cDesc.varIndex(StringConstants.S_veTuneRpmIdx);
         Repository.UveTuneValue = cDesc.varIndex(StringConstants.S_veTuneValue);
 
         cDesc._userVar.add(Repository.UveTuneLodIdx, 0.0); // Defaults until the
@@ -113,62 +124,55 @@ public class MsDatabase
         return status;
     }
 
-    private void load()
+    private boolean load()
+    {
+        getVersion();
+        for (int iPage = 0; iPage < cDesc.nPages(); iPage++)
+        {
+            if (!getConst(iPage))
+                return false;
+        }
+        _loaded = true;
+        cDesc.changed(false);
+        return true;
+    }
+
+    private boolean getConst(int pageNo)
+    {
+        if (bursting) return true;
+
+        if (pageNo == -1) pageNo = _pageNo;
+        int  nBytes = cDesc.pageSize  (pageNo);
+        int  ofs    = cDesc.pageOffset(pageNo);
+
+        ByteBuffer pBytes = ByteBuffer.allocate(nBytes);
+
+        boolean getOk = false;
+        for (int i = 0; i < N_RETRIES && !getOk; i++) {
+           cDesc.flush(); // Flush the comm input.
+           cDesc.sendPageReadWhole(pageNo);
+           getOk = cDesc.read(pBytes, nBytes); // Don't read directly into database, in case we don't get data.
+        }
+
+       // if (getOk) memcpy(cDesc._const+ofs, pBytes, nBytes);
+
+        return getOk;
+ }
+
+    private void getVersion()
     {
         // TODO Auto-generated method stub
-        
+
     }
 
     boolean readConfig()
     {
-       boolean existed = false;
+        boolean existed = false;
 
-       FILE *msConfig = cfgOpen("megatune.cfg", "r");
-       commPortNumber =    1;
-       commPortRate   = 9600;
+        commPortNumber = 1;
+        commPortRate = 9600;
 
-       if (msConfig != NULL) {
-          existed = true;
-
-          char cbuf[100];
-          if (fgets(cbuf, sizeof(cbuf), msConfig) != NULL) {
-             commPortNumber = strtol(cbuf+3, NULL, 10);
-             if (commPortNumber < 1 || commPortNumber > 99) commPortNumber = 1;
-          }
-
-          if (fgets(cbuf, sizeof(cbuf), msConfig) != NULL) {
-             int igtemp;
-             sscanf(cbuf, "%d", &igtemp);
-             timerInterval = igtemp;
-             userTimerInt  = timerInterval;
-          }
-
-          if (fgets(cbuf, sizeof(cbuf), msConfig) != NULL) {
-             sscanf(cbuf, "%d", &commPortRate);
-             if (commPortRate !=   9600 
-              && commPortRate !=  19200
-              && commPortRate !=  38400
-              && commPortRate !=  56000
-              && commPortRate !=  57600
-              && commPortRate != 115200) commPortRate = 9600;
-          }
-
-          io.reset(commPortNumber, commPortRate);
-
-          if (fgets(cbuf, sizeof(cbuf), msConfig) != NULL) {
-
-          }
-
-          if (fgets(cbuf, sizeof(cbuf), msConfig) != NULL) {
-
-          }
-          cfgLog("   Comm port           = %6d", commPortNumber);
-          cfgLog("   Comm rate           = %6d", commPortRate);
-          cfgLog("   Timer interval      = %6d", timerInterval);
-          cfgClose(msConfig);
-       }
-
-       return existed;
+        return existed;
     }
 
 }

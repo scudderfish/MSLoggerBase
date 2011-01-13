@@ -1,5 +1,6 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public class ControllerDescriptor
@@ -120,5 +121,45 @@ public class ControllerDescriptor
         }
         _exprs.setOutputBuffer(_userVar);
 
+    }
+
+    public int nPages()
+    {
+       return _nPages;
+    }
+
+    public void changed(boolean b)
+    {
+       _changed = b;
+    }
+
+    public int pageSize(int n)
+    {
+       //TODO
+        return 0;
+    }
+
+    public int pageOffset(int pageNo)
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public void flush()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void sendPageReadWhole(int pageNo)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean read(ByteBuffer pBytes, int nBytes)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
