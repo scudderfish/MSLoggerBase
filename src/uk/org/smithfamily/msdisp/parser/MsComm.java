@@ -14,4 +14,16 @@ public class MsComm
         
     }
 
+    public int port()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public int rate()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

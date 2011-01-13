@@ -2,6 +2,12 @@ package uk.org.smithfamily.msdisp.parser;
 
 public class Repository
 {
+    public static int Uundefined;
+    public static int UegoVoltage;
+    public static int UveTuneLodIdx;   // Zero-based index of load bin tuning point.
+    public static int UveTuneRpmIdx;   // Index of rpm bin.
+    public static int UveTuneValue;     // Value contained in VE[veTuneLodIdx, veTuneRpmIdx].
+ 
 	  // Controller versioning.
 	   double lofEGO, hifEGO, rdfEGO;
 

@@ -1,9 +1,11 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.util.List;
+
 public class Expression
 {
 
-    void setOutputBuffer(Double och)
+    void setOutputBuffer(List<Double> _userVar)
     {
 
     }
