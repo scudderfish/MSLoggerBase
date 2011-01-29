@@ -38,6 +38,7 @@ public class ControllerDescriptor
     int                 _userVarSize;
     private short[]     _const;
     private Expression  _exprs;
+    private int lastPage;
 
     public ControllerDescriptor(MsComm io)
     {
@@ -157,9 +158,10 @@ public class ControllerDescriptor
         
     }
 
-    public boolean read(ByteBuffer pBytes, int nBytes)
+    public boolean read(ByteBuffer bytes, int nBytes)
     {
-        // TODO Auto-generated method stub
-        return false;
+        boolean success = _io.read(bytes, nBytes);
+        if (!success) lastPage = -99;
+        return success;
     }
 }
