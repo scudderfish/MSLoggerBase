@@ -164,4 +164,154 @@ public class ControllerDescriptor
         if (!success) lastPage = -99;
         return success;
     }
+
+    public void setOchBurstCommand(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setNPages(double v)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setEndianness(String string)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageSize(double v, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setVerify(boolean eq)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setBurnCommand(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageActivate(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageIdentifier(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageReadWhole(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageReadChunk(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageReadValue(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageWriteWhole(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageWriteChunk(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageWriteValue(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setDelay(int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setQueryCommand(String string)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setVersionInfo(String string)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setSignature(String string, String fileName)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setWriteBlocks(boolean eq)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setPageActivationDelay(int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setBlockReadTimeout(int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void addSymbol(Symbol s)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setOchBlockSize(double v, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setOchGetCommand(String string, int i)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public int ochBlockSize(int i)
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }
