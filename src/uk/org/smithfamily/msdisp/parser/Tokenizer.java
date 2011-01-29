@@ -7,7 +7,7 @@ import java.text.ParseException;
 
 public class Tokenizer
 {
-	enum type
+	public enum type
 	{
 		Tdir, Tid, Tnum, Tstr, Tblk, Texp, Tcol, Tgarbage
 	};
@@ -166,5 +166,11 @@ public class Tokenizer
 	{
 		return tokens.get(idx).str.startsWith(s);
 	}
+
+    public String get(int i)
+    {
+        
+        return tokens.get(i).str;
+    }
 
 }
