@@ -1,5 +1,7 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.nio.ByteBuffer;
+
 public class MsComm
 {
 
@@ -24,6 +26,12 @@ public class MsComm
     {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    public boolean read(ByteBuffer bytes, int nBytes)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

@@ -1,5 +1,8 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class symErr
 {
 	String msg;
@@ -48,7 +51,7 @@ public class Symbol
 	String _expr;
 	String _file;
 	int _line;
-
+	public List<String> userStrings = new ArrayList<String>();
 	
 	String name()
 	{
@@ -138,6 +141,68 @@ public class Symbol
     {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public void setCScalar(String string, String string2, int currentCP,
+            double v, String string3, double v2, double v3, double v4,
+            double v5, double v6)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setCArray(String string, String string2, int currentCP,
+            double v, String string3, String shape, double v2, double v3,
+            double v4, double v5, double v6)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setCBits(String string, String string2, int currentCP,
+            double v, String string3)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public int nValues()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public int offset()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public int size()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public void setOScalar(String string, String string2, int i, double v,
+            String string3, double v2, double v3)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setOBits(String string, String string2, int i, double v,
+            String string3)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setExpr(String string, String stripped, String string2,
+            String fileName, int lineNo)
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }
