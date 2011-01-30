@@ -4,7 +4,9 @@ import java.io.*;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
-import java.util.Stack;
+
+import android.content.Context;
+import android.content.res.AssetManager;
 
 class ifBlock
 {
@@ -34,6 +36,8 @@ class ifBlock
 
 public class Repository
 {
+    static private final Repository instance = new Repository();
+    public static final Repository getInstance() { return instance;}
     enum blockType
     {
         blockNone, blockAccelerationWizard, blockAutoTune, blockBurstMode, blockColorMap, blockConstants, blockCurveEditor, blockDatalog, blockDefaults, blockFrontPage, blockGaugeColors, blockGaugeConfigurations, blockMegaTune, blockMenu, blockOutputChannels, blockRunTime, blockTableEditor, blockTuning, blockUserDefined, blockUnits
@@ -202,7 +206,7 @@ public class Repository
         hirACC = t.v(2);
     }
 
-    public void readInit()
+    public void readInit(Context c)
     {
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
@@ -211,21 +215,14 @@ public class Repository
         ochInit(StringConstants.S_veTuneRpmIdx, UveTuneRpmIdx);
         ochInit(StringConstants.S_veTuneValue, UveTuneValue);
 
-        String defaultFilename = "megatune.ini";
+        String defaultFilename = "ecuDef/msns-extra.29y.ini";
         try
         {
 
-            File iniFile = new File(defaultFilename);
-            if (!iniFile.canRead())
-            {
-                globalMsg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat
-                        .format("The file '{0}' could not be opened.\n\n"
-                                + "MegaTune is terminating.", defaultFilename));
-            } else
-            {
-                BufferedReader in = new BufferedReader(new FileReader(iniFile));
+            AssetManager assetManager = c.getResources().getAssets();
+            
+                BufferedReader in = new BufferedReader(new InputStreamReader(assetManager.open(defaultFilename)));
                 doRead(in, defaultFilename, 0);
-            }
 
             if (!ifStack.isEmpty())
             {
@@ -245,6 +242,11 @@ public class Repository
             resolveVarReferences();
             resolveVarReferences();
         } catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
