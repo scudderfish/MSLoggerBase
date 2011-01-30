@@ -3,6 +3,7 @@ package uk.org.smithfamily.msdisp.parser;
 import java.io.*;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.*;
 import java.util.Stack;
 
 class ifBlock
@@ -38,59 +39,60 @@ public class Repository
         blockNone, blockAccelerationWizard, blockAutoTune, blockBurstMode, blockColorMap, blockConstants, blockCurveEditor, blockDatalog, blockDefaults, blockFrontPage, blockGaugeColors, blockGaugeConfigurations, blockMegaTune, blockMenu, blockOutputChannels, blockRunTime, blockTableEditor, blockTuning, blockUserDefined, blockUnits
     };
 
-    double                      MTVersion = 0.0;
-    double                      VERSION   = 0.0;
-    private static final String TAG       = "REPOSITORY";
-    Stack<ifBlock>              ifStack   = new Stack<ifBlock>();
-    public static int           Uundefined;
-    public static int           UegoVoltage;
-    public static int           UveTuneLodIdx;                   // Zero-based
-                                                                  // index of
-                                                                  // load bin
-                                                                  // tuning
-                                                                  // point.
-    public static int           UveTuneRpmIdx;                   // Index of
-                                                                  // rpm
-                                                                  // bin.
-    public static int           UveTuneValue;                    // Value
-                                                                  // contained
-                                                                  // in
-                                                                  // VE[veTuneLodIdx,
-                                                                  // veTuneRpmIdx].
+    MsgInfo            globalMsg = new MsgInfo("", 0);
+
+    double             MTVersion = 0.0;
+    double             VERSION   = 0.0;
+    Stack<ifBlock>     ifStack   = new Stack<ifBlock>();
+    public static int  Uundefined;
+    public static int  UegoVoltage;
+    public static int  UveTuneLodIdx;                   // Zero-based
+                                                         // index of
+                                                         // load bin
+                                                         // tuning
+                                                         // point.
+    public static int  UveTuneRpmIdx;                   // Index of
+                                                         // rpm
+                                                         // bin.
+    public static int  UveTuneValue;                    // Value
+                                                         // contained
+                                                         // in
+                                                         // VE[veTuneLodIdx,
+                                                         // veTuneRpmIdx].
 
     // Controller versioning.
-    double                      lofEGO, hifEGO, rdfEGO;
+    double             lofEGO, hifEGO, rdfEGO;
 
-    double                      loaTPD, hiaTPD;
-    double                      loaMAD, hiaMAD;
+    double             loaTPD, hiaTPD;
+    double             loaMAD, hiaMAD;
 
-    double                      lorEGO, hirEGO;
-    double                      lorCT, hirCT;
-    double                      lorBAT, hirBAT;
-    double                      lorTR, hirTR;
-    double                      lorGE, hirGE;
-    double                      lorMAP, hirMAP;
-    double                      lorMAT, hirMAT;
-    double                      lorRPM, hirRPM;
-    double                      lorPW, hirPW;
-    double                      lorDC, hirDC;
-    double                      lorEGC, hirEGC;
-    double                      lorBC, hirBC;
-    double                      lorWC, hirWC;
-    double                      lorADC, hirADC;
-    double                      lorVE, hirVE;
-    double                      lorACC, hirACC;
+    double             lorEGO, hirEGO;
+    double             lorCT, hirCT;
+    double             lorBAT, hirBAT;
+    double             lorTR, hirTR;
+    double             lorGE, hirGE;
+    double             lorMAP, hirMAP;
+    double             lorMAT, hirMAT;
+    double             lorRPM, hirRPM;
+    double             lorPW, hirPW;
+    double             lorDC, hirDC;
+    double             lorEGC, hirEGC;
+    double             lorBC, hirBC;
+    double             lorWC, hirWC;
+    double             lorADC, hirADC;
+    double             lorVE, hirVE;
+    double             lorACC, hirACC;
 
-    double                      lotEGO, hitEGO, rdtEGO;          // The LED
-                                                                  // bar.
+    double             lotEGO, hitEGO, rdtEGO;          // The LED
+                                                         // bar.
 
-    double                      lotVEB, hitVEB;
+    double             lotVEB, hitVEB;
 
-    int                         vatSD;                           // spotDepth
-    int                         vatCD;                           // cursorDepth
-    int                         gaugeColumns;
-    private MsDatabase          mdb;
-    boolean                     writeXML;
+    int                vatSD;                           // spotDepth
+    int                vatCD;                           // cursorDepth
+    int                gaugeColumns;
+    private MsDatabase mdb;
+    boolean            writeXML;
 
     void aeTpsDot(Tokenizer t)
     {
@@ -214,12 +216,11 @@ public class Repository
         {
 
             File iniFile = new File(defaultFilename);
-            if (iniFile == null)
+            if (!iniFile.canRead())
             {
-                // globalMsg.send(MsgInfo.mError | MsgInfo.mExit,
-                // "The file '%s' could not be opened.\n\n"
-                // "MegaTune is terminating.",
-                // defaultFilename);
+                globalMsg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat
+                        .format("The file '{0}' could not be opened.\n\n"
+                                + "MegaTune is terminating.", defaultFilename));
             } else
             {
                 BufferedReader in = new BufferedReader(new FileReader(iniFile));
@@ -228,12 +229,13 @@ public class Repository
 
             if (!ifStack.isEmpty())
             {
-                // globalMsg.fileName = ifStack.top().fileName;
-                // globalMsg.lineNo = ifStack.top().lineNo;
-                // globalMsg.send(MsgInfo.mWarning,
-                // "Unterminated '#if'.\n\nThings are going to be goofed up.");
-                // globalMsg.fileName = "";
-                // globalMsg.lineNo = 0;
+                globalMsg.fileName = ifStack.peek().fileName;
+                globalMsg.lineNo = ifStack.peek().lineNo;
+                globalMsg
+                        .send(MsgInfo.mWarning,
+                                "Unterminated '#if'.\n\nThings are going to be goofed up.");
+                globalMsg.fileName = "";
+                globalMsg.lineNo = 0;
             }
 
             mdb.cDesc.init(); // Generates indexes, so must be done before the
@@ -309,7 +311,13 @@ public class Repository
                     }
                     if ("if".equals(t.get(1)))
                     {
-                        checkFor2nd("'#if' has no setting value, ignored.\t");
+                        if (nT < 3)
+                        {
+                            msg.send(MsgInfo.mWarning,
+                                    "'#if' has no setting value, ignored.\t");
+                            continue;
+                        }
+                        ;
                         isVarDef(t.get(2), msg);
 
                         ifStack.push(new ifBlock(msg.fileName, msg.lineNo,
@@ -332,7 +340,13 @@ public class Repository
                         continue;
                     } else if ("ifnot".equals(t.get(1)))
                     { // ------------------------------
-                        checkFor2nd("'#ifnot' has no setting value, ignored.\t");
+                        if (nT < 3)
+                        {
+                            msg.send(MsgInfo.mWarning,
+                                    "'#ifnot' has no setting value, ignored.\t");
+                            continue;
+                        }
+                        ;
                         isVarDef(t.get(2), msg);
 
                         ifStack.push(new ifBlock(msg.fileName, msg.lineNo,
@@ -356,7 +370,13 @@ public class Repository
 
                     else if ("elif".equals(t.get(1)))
                     { // -------------------------------
-                        checkFor2nd("'#elif' has no setting value, ignored.\t");
+                        if (nT < 3)
+                        {
+                            msg.send(MsgInfo.mWarning,
+                                    "'#elif' has no setting value, ignored.\t");
+                            continue;
+                        }
+                        ;
                         isVarDef(t.get(2), msg);
 
                         if (msg.ssize == 0)
@@ -419,7 +439,14 @@ public class Repository
                     {
                         if ("include".equals(t.get(1)))
                         {
-                            checkFor2nd("'#include' has no file specified, ignored.");
+
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#include' has no file specified, ignored.");
+                                continue;
+                            }
+                            ;
                             File incFile = new File(t.get(2));
                             BufferedReader incRead = new BufferedReader(
                                     new FileReader(incFile));
@@ -436,17 +463,35 @@ public class Repository
                             }
                         } else if ("alert".equals(t.get(1)))
                         {
-                            checkFor2nd("'#alert' has no message specified, ignored.");
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#alert' has no message specified, ignored.");
+                                continue;
+                            }
+                            ;
                             msg.send(MsgInfo.mAlert,
                                     MessageFormat.format("{0}", t.get(2)));
                         } else if ("log".equals(t.get(1)))
                         {
-                            checkFor2nd("'#log' has no message specified, ignored.");
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#log' has no message specified, ignored.");
+                                continue;
+                            }
+                            ;
                             msg.send(MsgInfo.mInfo,
                                     MessageFormat.format("{0}", t.get(2)));
                         } else if ("set".equals(t.get(1)))
                         {
-                            checkFor2nd("'#set' has no setting value, ignored.");
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#set' has no setting value, ignored.");
+                                continue;
+                            }
+                            ;
                             varSet(t.get(2), true);
                             msg.send(
                                     MsgInfo.mInfo,
@@ -454,7 +499,13 @@ public class Repository
                                             t.get(2)));
                         } else if ("unset".equals(t.get(1)))
                         {
-                            checkFor2nd("'#unset' has no setting value, ignored.");
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#unset' has no setting value, ignored.");
+                                continue;
+                            }
+                            ;
                             varSet(t.get(2), false);
                             msg.send(
                                     MsgInfo.mInfo,
@@ -462,7 +513,13 @@ public class Repository
                                             t.get(2)));
                         } else if ("error".equals(t.get(1)))
                         {
-                            checkFor2nd("'#error' has no message specified, ignored.");
+                            if (nT < 3)
+                            {
+                                msg.send(MsgInfo.mWarning,
+                                        "'#error' has no message specified, ignored.");
+                                continue;
+                            }
+                            ;
                             msg.send(MsgInfo.mError,
                                     MessageFormat.format("{0}", t.get(2)));
                         } else if ("exit".equals(t.get(1)))
@@ -476,6 +533,7 @@ public class Repository
                         }
                         continue;
                     }
+
 
                     if (t.eq(StringConstants.S__AccelerationWizard_, 0))
                     {
@@ -885,8 +943,8 @@ public class Repository
                         }
                         break;
                     }
-                
-                // ---------------------------------------------------------------------
+
+                    // ---------------------------------------------------------------------
                 case blockOutputChannels: // -------------------------------------------
                     // ??? grab the expressions and store them in order.
                     if (nT < 2)
@@ -952,8 +1010,8 @@ public class Repository
                         }
                         break;
                     }
-                  
-                // ---------------------------------------------------------------------
+
+                    // ---------------------------------------------------------------------
                 case blockUnits: // ----------------------------------------------------
                     if (t.get(0).equals(StringConstants.S_temperature))
                     {
@@ -983,8 +1041,9 @@ public class Repository
 
                 // ---------------------------------------------------------------------
                 case blockGaugeConfigurations: // --------------------------------------
-                    setLimits(StringConstants.S_GaugeConfigurations, t.get(0),
-                            t);
+                    // setLimits(StringConstants.S_GaugeConfigurations,
+                    // t.get(0),
+                    // t);
                     break;
 
                 // ---------------------------------------------------------------------
@@ -992,7 +1051,7 @@ public class Repository
                     // New style from gauge1 through gauge8.
                     if (t.match(StringConstants.S_gauge, 0))
                     {
-                        setGaugeRef(StringConstants.S_FrontPage, t, 8);
+                        // setGaugeRef(StringConstants.S_FrontPage, t, 8);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_egoLEDs))
@@ -1148,7 +1207,7 @@ public class Repository
                     }
                     if (t.match(StringConstants.S_gauge, 0))
                     {
-                        setGaugeFam(StringConstants.S_Tuning, t, 6);
+                        // setGaugeFam(StringConstants.S_Tuning, t, 6);
                         break;
                     }
 
@@ -1330,6 +1389,8 @@ public class Repository
                     msg.send(MsgInfo.mWarning, MessageFormat.format(
                             "Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
+                
+
                 }
 
                 // End while
@@ -1351,29 +1412,41 @@ public class Repository
 
         }
     }
+    
 
-    private void varSet(String string, boolean b)
+    Map<String, Boolean> setList = new HashMap<String, Boolean>();
+
+    private void varSet(String key, boolean value)
     {
-        // TODO Auto-generated method stub
-
+        setList.put(key, value);
     }
 
-    private boolean isVarSet(String string)
+    private boolean isVarSet(String key)
     {
-        // TODO Auto-generated method stub
-        return false;
+        Boolean b = setList.get(key);
+        if (b == null)
+            return false;
+        else
+            return b;
     }
 
-    private void isVarDef(String string, MsgInfo msg)
+    private boolean isVarDef(String setName, MsgInfo msg)
     {
-        // TODO Auto-generated method stub
 
-    }
+        Boolean b = setList.get(setName);
 
-    private void checkFor2nd(String string)
-    {
-        // TODO Auto-generated method stub
+        if (b == null)
+        {
+            msg.send(MsgInfo.mWarning,
+                    MessageFormat.format(
+                            "Conditional check references undefined value '{0}'.     \n\n"
+                                    + "Only first reference will be reported.",
+                            setName));
+            varSet(setName, false);
+            return false;
 
+        }
+        return true;
     }
 
     private void ochInit(String sVetunevalue, int uveTuneValue2)
@@ -1382,59 +1455,48 @@ public class Repository
 
     }
 
-    private void tuneCD(Tokenizer t)
+    void checkPageCount(String item, int n, MsgInfo msg)
     {
-        // TODO Auto-generated method stub
-
+        if (n != mdb.cDesc.nPages())
+        {
+            msg.send(
+                    MsgInfo.mError | MsgInfo.mExit,
+                    MessageFormat
+                            .format("The number of {0} values ({1}) isn't consistent with     \n"
+                                    + "\t\"nPages = {2}\" in the [Constants] definitions.\n\n"
+                                    + "MegaTune is terminating.", item, n,
+                                    mdb.cDesc.nPages()));
+        }
     }
 
-    private void tuneSD(Tokenizer t)
+    void frontEGO(Tokenizer t)
     {
-        // TODO Auto-generated method stub
+        lofEGO = t.v(1);
+        hifEGO = t.v(2);
+        rdfEGO = t.v(3);
+    } // LED meter
 
+    void tuneVEB(Tokenizer t)
+    {
+        lotVEB = t.v(1);
+        hitVEB = t.v(2);
     }
 
-    private void tuneVEB(Tokenizer t)
+    void tuneCD(Tokenizer t)
     {
-        // TODO Auto-generated method stub
-
+        vatCD = (int) t.v(1);
     }
 
-    private void tuneEGO(Tokenizer t)
+    void tuneSD(Tokenizer t)
     {
-        // TODO Auto-generated method stub
-
+        vatSD = (int) t.v(1);
     }
 
-    private void setGaugeFam(String sTuning, Tokenizer t, int i)
+    void tuneEGO(Tokenizer t)
     {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void frontEGO(Tokenizer t)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void setGaugeRef(String sFrontpage, Tokenizer t, int i)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void setLimits(String sGaugeconfigurations, String string,
-            Tokenizer t)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void checkPageCount(String sPagesize, int i, MsgInfo msg)
-    {
-        // TODO Auto-generated method stub
-
-    }
+        lotEGO = t.v(1);
+        hitEGO = t.v(2);
+        rdtEGO = t.v(3);
+    } // LED meter
 
 }
