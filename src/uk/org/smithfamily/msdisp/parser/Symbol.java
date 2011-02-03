@@ -195,8 +195,7 @@ public class Symbol
         return _line;
     }
 
-    void setBasic(String name, String type, int page, int offset, String units,
-            boolean isConst) throws SymbolException
+    void setBasic(String name, String type, int page, int offset, String units, boolean isConst) throws SymbolException
     {
         _sequence = -1;
         _name = name;
@@ -219,14 +218,12 @@ public class Symbol
         if (ss.charAt(i) == 'S' || ss.charAt(i) == 'U')
             _signed = (ss.charAt(i) == 'S');
         else
-            throw new SymbolException(
-                    "Missing 'S' or 'U' at start of type specification", ss);
+            throw new SymbolException("Missing 'S' or 'U' at start of type specification", ss);
         i++;
         char c = ss.charAt(i);
         if (!Character.isDigit(c))
-            throw new SymbolException("Missing number in type specification",
-                    ss);
-        int value = Integer.parseInt(ss.substring(i));
+            throw new SymbolException("Missing number in type specification", ss);
+        int value = Integer.parseInt(ss.substring(i).trim());
         switch (value)
         {
         case 8:
@@ -239,24 +236,21 @@ public class Symbol
             _sizeOf = 4;
             break;
         default:
-            throw new SymbolException(
-                    "Data size incorrect in type specification, must be 8, 16 or 32",
-                    ss);
+            throw new SymbolException("Data size incorrect in type specification, must be 8, 16 or 32", ss);
         }
     }
-    
-    void setScalar(String name, String type, int page, int offset,
-            String units, double scale, double trans, double lo, double hi,
-            int digits, boolean isConst) throws SymbolException
+
+    void setScalar(String name, String type, int page, double d, String units, double scale, double trans, double lo, double hi,
+            double e, boolean isConst) throws SymbolException
     {
-        setBasic(name, type, page, offset, units, isConst);
+        setBasic(name, type, page, (int) d, units, isConst);
         _scale = scale;
         _trans = trans;
         _lo = lo;
         _hi = hi;
-        if (digits > 32)
-            digits = 32; // Try to make sure we don't make too-long strings.
-        _digits = digits;
+        if (e > 32)
+            e = 32; // Try to make sure we don't make too-long strings.
+        _digits = (int) e;
         _round = Math.abs(_scale / 2.0);
         setRawLimits();
     }
@@ -268,25 +262,20 @@ public class Symbol
             switch (_sizeOf)
             {
             case 1:
-                _loRaw = _lo == noRange ? S08min : toIntr(_lo,
-                        Math.abs(_scale), _trans);
-                _hiRaw = _hi == noRange ? S08max : toIntr(_hi,
-                        Math.abs(_scale), _trans);
+                _loRaw = _lo == noRange ? S08min : toIntr(_lo, Math.abs(_scale), _trans);
+                _hiRaw = _hi == noRange ? S08max : toIntr(_hi, Math.abs(_scale), _trans);
                 break;
             case 2:
-                _loRaw = _lo == noRange ? S16min : toIntr(_lo,
-                        Math.abs(_scale), _trans);
-                _hiRaw = _hi == noRange ? S16max : toIntr(_hi,
-                        Math.abs(_scale), _trans);
+                _loRaw = _lo == noRange ? S16min : toIntr(_lo, Math.abs(_scale), _trans);
+                _hiRaw = _hi == noRange ? S16max : toIntr(_hi, Math.abs(_scale), _trans);
                 break;
             case 4:
-                _loRaw = _lo == noRange ? S32min : toIntr(_lo,
-                        Math.abs(_scale), _trans);
-                _hiRaw = _hi == noRange ? S32max : toIntr(_hi,
-                        Math.abs(_scale), _trans);
+                _loRaw = _lo == noRange ? S32min : toIntr(_lo, Math.abs(_scale), _trans);
+                _hiRaw = _hi == noRange ? S32max : toIntr(_hi, Math.abs(_scale), _trans);
                 break;
             }
-        } else
+        }
+        else
         {
             switch (_sizeOf)
             {
@@ -308,20 +297,18 @@ public class Symbol
 
     private char toIntr(double v, double s, double t)
     {
-        
-        return (char) ((Math.round(v)/s)-t);
+
+        return (char) ((Math.round(v) / s) - t);
     }
 
-    void setCScalar(String name, String type, int page, int offset,
-            String units, double scale, double trans, double lo, double hi,
-            int digits) throws SymbolException
+    void setCScalar(String name, String type, int page, double d, String units, double scale, double trans, double lo, double hi,
+            double e) throws SymbolException
     {
-        setScalar(name, type, page, offset, units, scale, trans, lo, hi,
-                digits, true);
+        setScalar(name, type, page, d, units, scale, trans, lo, hi, e, true);
     }
 
-    void setOScalar(String name, String type, int page, int offset,
-            String units, double scale, double trans) throws SymbolException
+    void setOScalar(String name, String type, int page, double e, String units, double scale, double trans)
+            throws SymbolException
     {
         int d = 0;
         double s = scale;
@@ -330,23 +317,20 @@ public class Symbol
             d++;
             s *= 10.0;
         }
-        setScalar(name, type, page, offset, units, scale, trans, noRange,
-                noRange, d, false);
+        setScalar(name, type, page, e, units, scale, trans, noRange, noRange, d, false);
     }
 
-    public void setArray(String name, String type, int page, int offset,
-            String units, String shape, double scale, double trans, double lo,
-            double hi, int digits, boolean isConst) throws SymbolException
+    public void setArray(String name, String type, int page, double d, String units, String shape, double scale, double trans,
+            double lo, double hi, double e, boolean isConst) throws SymbolException
     {
-        setScalar(name, type, page, offset, units, scale, trans, lo, hi,
-                digits, isConst);
+        setScalar(name, type, page, d, units, scale, trans, lo, hi, e, isConst);
         parseArraySpec(shape);
     }
 
     private void parseArraySpec(String shape)
     {
-        _xOrder   = true;
-        _order    = 0;
+        _xOrder = true;
+        _order = 0;
         _shape[0] = 1;
         _shape[1] = 1;
 
@@ -355,143 +339,132 @@ public class Symbol
         int xpos = shape.lastIndexOf('x');
         int openpos = shape.indexOf('[');
         int closepos = shape.indexOf(']');
-        int x,y;
-        if(colonpos > 0)
+        int x = 0, y = 0;
+        if (colonpos > 0)
         {
-            order = shape.charAt(colonpos-1);
+            order = shape.charAt(colonpos - 1);
         }
         if (closepos < 0 || openpos < 0)
         {
             System.out.println("Cannot parse " + shape);
-        } else
+        }
+        else
         {
-            x = Integer.parseInt(shape.substring(Math.max(1, colonpos+1), xpos));
+            x = Integer.parseInt(shape.substring(Math.max(1, colonpos + 1), xpos < 0 ? closepos : xpos).trim());
 
-            y = Integer.parseInt(shape.substring(xpos + 1, closepos));
+            if (xpos > 0)
+            {
+                y = Integer.parseInt(shape.substring(xpos + 1, closepos).trim());
+            }
 
-            System.out.println("x=" + x + ", y=" + y+", order="+order);
+            System.out.println("x=" + x + ", y=" + y + ", order=" + order);
         }
         _xOrder = order == 'X';
         _shape[0] = x;
         _order = 1;
-        _shape[1] = y;
-        int i = 0;
-        while (shape.charAt(i) == ' ')
-            i++;
-
-        if (shape.charAt(i) !='[') throw new SymbolException("Missing opening '['",shape);
-        i++;
-        
-        if ( shape.charAt(i) == 'Y' || shape.charAt(i) == 'X') 
+        if (xpos > 0)
         {
-           _xOrder = shape.charAt(i) == 'X';
-           i++; // Skip the X or Y.
-           if (shape.charAt(i) != ':') throw new SymbolException("Missing ':' after order specifier",shape);
-           i++; // Skip the colon.
+            _order = 2;
+            _shape[1] = y;
         }
 
-        if (notDigit(*s)) throw symErr("Missing number in first dimension", o, s-o);
-        _shape[0] = strtol(s, const_cast<char **>(&s), 10);
-        _order    = 1;
-        skipSp; // Past any trailing blanks.
-
-        if (isChar(*s, ']')) {
-           next; // Past the closing ].
-        }
-        else {
-           if (notChar(*s, 'X')) throw symErr("Missing 'x' or ']' after first dimension", o, s-o);
-           next; // Skip the x.
-           if (notDigit(*s)) throw symErr("Missing number in second dimension", o, s-o);
-           _shape[1] = strtol(s, const_cast<char **>(&s), 10);
-           _order    = 2;
-           if (notChar(*s, ']')) throw symErr("Missing closing bracket ']' after second dimension", o, s-o);
-           next; // Past the closing ].
-        }
-        if (*s) throw symErr("Useless junk in array specification", o, s-o);
-        
     }
 
-    public void setCArray(String name, String type, int page, int offset,
-            String units, String shape, double scale, double trans, double lo,
-            double hi, int digits) throws SymbolException
+    public void setCArray(String name, String type, int page, double d, String units, String shape, double scale, double trans,
+            double lo, double hi, double e) throws SymbolException
     {
-        setArray(name, type, page, offset, units, shape, scale, trans, lo, hi,
-                digits, true);
+        setArray(name, type, page, d, units, shape, scale, trans, lo, hi, e, true);
 
     }
 
     public void varIndex(int varIndex)
     {
-        // TODO Auto-generated method stub
+        _index = varIndex;
 
     }
 
     public boolean isExpr()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return !(_expr == null || "".equals(_expr.trim()));
     }
 
-    public void setCScalar(String string, String string2, int currentCP,
-            double v, String string3, double v2, double v3, double v4,
-            double v5, double v6)
+    public void setCBits(String name, String type, int page, double offset, String bitSpec) throws SymbolException
     {
-        // TODO Auto-generated method stub
+        setBits(name, type, page, offset, bitSpec, true);
 
     }
 
-    public void setCArray(String string, String string2, int currentCP,
-            double v, String string3, String shape, double v2, double v3,
-            double v4, double v5, double v6)
+    private void setBits(String name, String type, int page, double offset, String bitSpec, boolean isConst) throws SymbolException
     {
-        // TODO Auto-generated method stub
+        setBasic(name, type, page, (int) offset, "", isConst);
+        parseBitSpec(bitSpec);
+        _lo = 0;
+        _hi = nValues() - 1;
 
     }
 
-    public void setCBits(String string, String string2, int currentCP,
-            double v, String string3)
-    {
-        // TODO Auto-generated method stub
+    // The "bitSpec" parameter takes the form '[N:N+O]' where 'N' are integer
+    // bit offset values and O is a bit offset for computation of user values.
 
+    private void parseBitSpec(String bitSpec) throws SymbolException
+    {
+
+        int openPos = bitSpec.indexOf('[');
+        int closePos = bitSpec.indexOf(']');
+        int colonPos = bitSpec.indexOf(':');
+        int plusPos = bitSpec.indexOf('+');
+
+        _bitLo = -1;
+        _bitHi = -1;
+        _bitOfs = 0;
+
+        if (openPos < 0 || closePos < 0 || colonPos < 0 || plusPos < 0)
+            throw new SymbolException("Cannot parse bitspec", bitSpec);
+
+        _bitLo = Integer.parseInt(bitSpec.substring(openPos + 1, colonPos).trim());
+        _bitHi = Integer.parseInt(bitSpec.substring(colonPos + 1, plusPos).trim());
+        _bitOfs = Integer.parseInt(bitSpec.substring(plusPos + 1, closePos).trim());
     }
 
     public int nValues()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return isBits() ? (1 << (_bitHi - _bitLo + 1)) : (_shape[0] * _shape[1]);
     }
 
-    public int offset()
+    private boolean isBits()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return _bitLo != -1 && _bitHi != -1;
+    }
+
+    public int offset(int index)
+    {
+        if (index < 0)
+            index = 0;
+        return _offset + index * _sizeOf;
     }
 
     public int size()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return _sizeOf * _shape[0] * _shape[1];
     }
 
-    public void setOScalar(String string, String string2, int i, double v,
-            String string3, double v2, double v3)
+    public void setOBits(String name, String type, int page, double d, String bitSpec) throws SymbolException
     {
-        // TODO Auto-generated method stub
-
+        setBits(name, type, page, d, bitSpec, false);
     }
 
-    public void setOBits(String string, String string2, int i, double v,
-            String string3)
+    static int exprIndex = 0;
+
+    public void setExpr(String name, String expr, String units, String file, int line)
     {
-        // TODO Auto-generated method stub
 
-    }
-
-    public void setExpr(String string, String stripped, String string2,
-            String fileName, int lineNo)
-    {
-        // TODO Auto-generated method stub
-
+        _sequence = exprIndex++;
+        _name = name;
+        _expr = expr;
+        _const = false;
+        _units = units;
+        _file = file;
+        _line = line;
     }
 
 }

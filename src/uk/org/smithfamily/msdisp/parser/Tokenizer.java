@@ -1,9 +1,11 @@
 package uk.org.smithfamily.msdisp.parser;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import java.text.ParseException;
+
 
 public class Tokenizer
 {
@@ -58,7 +60,7 @@ public class Tokenizer
 				continue;
 			}
 
-			if (Character.isLetterOrDigit(c))
+			if (Character.isLetter(c))
 			{ // Parse alpha-numeric id.
 				StringBuffer tok = new StringBuffer();
 				int j = 0;
@@ -77,12 +79,16 @@ public class Tokenizer
 				StringBuffer tok = new StringBuffer();
 				tok.append(c);
 				int j = 0;
-				for (j = i + 1; j<line.length() && (Character.isDigit(line.charAt(j)) || c == '.'); j++)
+				for (j = i + 1; j<line.length() && (Character.isDigit(line.charAt(j)) || line.charAt(j) == '.'); j++)
 				{
 					tok.append(line.charAt(j));
 				}
-				tokens.add(new Token(tok.toString(), type.Tnum, Double
-						.valueOf(tok.toString())));
+				String s = tok.toString();
+                if("-".equals(s))
+                {
+                    s="0";
+                }
+                tokens.add(new Token(tok.toString(), type.Tnum, Double.valueOf(s)));
 				i = j;
 				continue;
 			}
