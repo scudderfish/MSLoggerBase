@@ -20,8 +20,8 @@ public class CommandFormat
     int _vSiz; // Size of one value in bytes.
     int _vCnt; // Number of values (not bytes).
 
-    ByteString _raw;
-    ByteString _blt;
+    ByteString _raw = new ByteString("");
+    ByteString _blt = new ByteString("");
 
  public
 

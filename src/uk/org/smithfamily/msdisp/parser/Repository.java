@@ -55,19 +55,19 @@ public class Repository
     Stack<ifBlock>     ifStack   = new Stack<ifBlock>();
     public static int  Uundefined;
     public static int  UegoVoltage;
-    public static int  UveTuneLodIdx;                       // Zero-based
-                                                             // index of
-                                                             // load bin
-                                                             // tuning
-                                                             // point.
-    public static int  UveTuneRpmIdx;                       // Index of
-                                                             // rpm
-                                                             // bin.
-    public static int  UveTuneValue;                        // Value
-                                                             // contained
-                                                             // in
-                                                             // VE[veTuneLodIdx,
-                                                             // veTuneRpmIdx].
+    public static int  UveTuneLodIdx;                   // Zero-based
+                                                         // index of
+                                                         // load bin
+                                                         // tuning
+                                                         // point.
+    public static int  UveTuneRpmIdx;                   // Index of
+                                                         // rpm
+                                                         // bin.
+    public static int  UveTuneValue;                    // Value
+                                                         // contained
+                                                         // in
+                                                         // VE[veTuneLodIdx,
+                                                         // veTuneRpmIdx].
 
     // Controller versioning.
     double             lofEGO, hifEGO, rdfEGO;
@@ -92,13 +92,13 @@ public class Repository
     double             lorVE, hirVE;
     double             lorACC, hirACC;
 
-    double             lotEGO, hitEGO, rdtEGO;              // The LED
-                                                             // bar.
+    double             lotEGO, hitEGO, rdtEGO;          // The LED
+                                                         // bar.
 
     double             lotVEB, hitVEB;
 
-    int                vatSD;                               // spotDepth
-    int                vatCD;                               // cursorDepth
+    int                vatSD;                           // spotDepth
+    int                vatCD;                           // cursorDepth
     int                gaugeColumns;
     private MsDatabase mdb       = null;
     boolean            writeXML;
@@ -222,25 +222,22 @@ public class Repository
         ochInit(StringConstants.S_veTuneValue, UveTuneValue);
 
         mdb.init();
-        
+
         String defaultFilename = "ecuDef/msns-extra.29y.ini";
-        
+
         try
         {
 
             AssetManager assetManager = c.getResources().getAssets();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    assetManager.open(defaultFilename)));
+            BufferedReader in = new BufferedReader(new InputStreamReader(assetManager.open(defaultFilename)));
             doRead(in, defaultFilename, 0);
 
             if (!ifStack.isEmpty())
             {
                 globalMsg.fileName = ifStack.peek().fileName;
                 globalMsg.lineNo = ifStack.peek().lineNo;
-                globalMsg
-                        .send(MsgInfo.mWarning,
-                                "Unterminated '#if'.\n\nThings are going to be goofed up.");
+                globalMsg.send(MsgInfo.mWarning, "Unterminated '#if'.\n\nThings are going to be goofed up.");
                 globalMsg.fileName = "";
                 globalMsg.lineNo = 0;
             }
@@ -251,11 +248,13 @@ public class Repository
             resolveVarReferences();
             resolveVarReferences();
             resolveVarReferences();
-        } catch (FileNotFoundException e)
+        }
+        catch (FileNotFoundException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -302,16 +301,14 @@ public class Repository
                 {
                     if (nT < 2)
                     {
-                        msg.send(MsgInfo.mWarning,
-                                "'#' has no directive, ignored.\t");
+                        msg.send(MsgInfo.mWarning, "'#' has no directive, ignored.\t");
                         continue;
                     }
 
                     msg.ssize = ifStack.size();
                     if ("group".equals(t.get(1)))
                     {
-                        msg.send(MsgInfo.mInfo,
-                                MessageFormat.format("#group {0}", t.get(2)));
+                        msg.send(MsgInfo.mInfo, MessageFormat.format("#group {0}", t.get(2)));
                         msg.level++;
                         continue;
                     }
@@ -324,15 +321,13 @@ public class Repository
                     {
                         if (nT < 3)
                         {
-                            msg.send(MsgInfo.mWarning,
-                                    "'#if' has no setting value, ignored.\t");
+                            msg.send(MsgInfo.mWarning, "'#if' has no setting value, ignored.\t");
                             continue;
                         }
                         ;
                         isVarDef(t.get(2), msg);
 
-                        ifStack.push(new ifBlock(msg.fileName, msg.lineNo,
-                                reading));
+                        ifStack.push(new ifBlock(msg.fileName, msg.lineNo, reading));
 
                         if (reading == ifBlock.readState.nowReading)
                         {
@@ -340,42 +335,40 @@ public class Repository
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
                         ifStack.peek().reading = reading;
-                        msg.send(MsgInfo.mInfo, MessageFormat.format(
-                                "#if {0}, including={1}", t.get(2),
-                                ifBlock.sReading(reading)));
+                        msg.send(MsgInfo.mInfo, MessageFormat.format("#if {0}, including={1}", t.get(2), ifBlock.sReading(reading)));
                         continue;
-                    } else if ("ifnot".equals(t.get(1)))
+                    }
+                    else if ("ifnot".equals(t.get(1)))
                     { // ------------------------------
                         if (nT < 3)
                         {
-                            msg.send(MsgInfo.mWarning,
-                                    "'#ifnot' has no setting value, ignored.\t");
+                            msg.send(MsgInfo.mWarning, "'#ifnot' has no setting value, ignored.\t");
                             continue;
                         }
                         ;
                         isVarDef(t.get(2), msg);
 
-                        ifStack.push(new ifBlock(msg.fileName, msg.lineNo,
-                                reading));
+                        ifStack.push(new ifBlock(msg.fileName, msg.lineNo, reading));
                         if (reading == ifBlock.readState.nowReading)
                         {
                             if (!isVarSet(t.get(2)))
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
                         ifStack.peek().reading = reading;
-                        msg.send(MsgInfo.mInfo, MessageFormat.format(
-                                "#ifnot {0}, including={1}", t.get(2),
-                                ifBlock.sReading(reading)));
+                        msg.send(MsgInfo.mInfo,
+                                MessageFormat.format("#ifnot {0}, including={1}", t.get(2), ifBlock.sReading(reading)));
                         continue;
                     }
 
@@ -383,8 +376,7 @@ public class Repository
                     { // -------------------------------
                         if (nT < 3)
                         {
-                            msg.send(MsgInfo.mWarning,
-                                    "'#elif' has no setting value, ignored.\t");
+                            msg.send(MsgInfo.mWarning, "'#elif' has no setting value, ignored.\t");
                             continue;
                         }
                         ;
@@ -392,8 +384,7 @@ public class Repository
 
                         if (msg.ssize == 0)
                         {
-                            msg.send(
-                                    MsgInfo.mError | MsgInfo.mExit,
+                            msg.send(MsgInfo.mError | MsgInfo.mExit,
                                     "'#elif' without '#if'.  Look for an extra '#endif' somewhere.\n\n MegaTune is terminating.");
                         }
 
@@ -403,14 +394,14 @@ public class Repository
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
                         ifStack.peek().reading = reading;
-                        msg.send(MsgInfo.mInfo, MessageFormat.format(
-                                "#elif {0}, including={1}", t.get(2),
-                                ifBlock.sReading(reading)));
+                        msg.send(MsgInfo.mInfo,
+                                MessageFormat.format("#elif {0}, including={1}", t.get(2), ifBlock.sReading(reading)));
                         continue;
                     }
 
@@ -421,9 +412,7 @@ public class Repository
                         else
                             reading = ifBlock.readState.doneReading;
                         ifStack.peek().reading = reading;
-                        msg.send(MsgInfo.mInfo, MessageFormat.format(
-                                "#else, including={0}",
-                                ifBlock.sReading(reading)));
+                        msg.send(MsgInfo.mInfo, MessageFormat.format("#else, including={0}", ifBlock.sReading(reading)));
                         continue;
                     }
 
@@ -431,9 +420,9 @@ public class Repository
                     { // ------------------------------
                         if (msg.ssize == 0)
                         {
-                            msg.send(MsgInfo.mWarning,
-                                    "Extra '#endif'.\n\nThings are going to be goofed up.\t");
-                        } else
+                            msg.send(MsgInfo.mWarning, "Extra '#endif'.\n\nThings are going to be goofed up.\t");
+                        }
+                        else
                         {
                             reading = ifStack.peek().restoreState;
                             ifStack.pop();
@@ -453,94 +442,81 @@ public class Repository
 
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#include' has no file specified, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#include' has no file specified, ignored.");
                                 continue;
                             }
                             ;
                             File incFile = new File(t.get(2));
-                            BufferedReader incRead = new BufferedReader(
-                                    new FileReader(incFile));
+                            BufferedReader incRead = new BufferedReader(new FileReader(incFile));
                             if (incRead != null)
                             {
                                 doRead(incRead, t.get(2), msg.level + 1);
-                            } else
-                            {
-                                msg.send(
-                                        MsgInfo.mError | MsgInfo.mExit,
-                                        MessageFormat
-                                                .format("The included file '{0} could not be opened.\n\nMegaTune is terminating.",
-                                                        t.get(2)));
                             }
-                        } else if ("alert".equals(t.get(1)))
+                            else
+                            {
+                                msg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat.format(
+                                        "The included file '{0} could not be opened.\n\nMegaTune is terminating.", t.get(2)));
+                            }
+                        }
+                        else if ("alert".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#alert' has no message specified, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#alert' has no message specified, ignored.");
                                 continue;
                             }
                             ;
-                            msg.send(MsgInfo.mAlert,
-                                    MessageFormat.format("{0}", t.get(2)));
-                        } else if ("log".equals(t.get(1)))
+                            msg.send(MsgInfo.mAlert, MessageFormat.format("{0}", t.get(2)));
+                        }
+                        else if ("log".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#log' has no message specified, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#log' has no message specified, ignored.");
                                 continue;
                             }
                             ;
-                            msg.send(MsgInfo.mInfo,
-                                    MessageFormat.format("{0}", t.get(2)));
-                        } else if ("set".equals(t.get(1)))
+                            msg.send(MsgInfo.mInfo, MessageFormat.format("{0}", t.get(2)));
+                        }
+                        else if ("set".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#set' has no setting value, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#set' has no setting value, ignored.");
                                 continue;
                             }
                             ;
                             varSet(t.get(2), true);
-                            msg.send(
-                                    MsgInfo.mInfo,
-                                    MessageFormat.format("  set {0} (true)",
-                                            t.get(2)));
-                        } else if ("unset".equals(t.get(1)))
+                            msg.send(MsgInfo.mInfo, MessageFormat.format("  set {0} (true)", t.get(2)));
+                        }
+                        else if ("unset".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#unset' has no setting value, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#unset' has no setting value, ignored.");
                                 continue;
                             }
                             ;
                             varSet(t.get(2), false);
-                            msg.send(
-                                    MsgInfo.mInfo,
-                                    MessageFormat.format("unset {0} (false)",
-                                            t.get(2)));
-                        } else if ("error".equals(t.get(1)))
+                            msg.send(MsgInfo.mInfo, MessageFormat.format("unset {0} (false)", t.get(2)));
+                        }
+                        else if ("error".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
-                                msg.send(MsgInfo.mWarning,
-                                        "'#error' has no message specified, ignored.");
+                                msg.send(MsgInfo.mWarning, "'#error' has no message specified, ignored.");
                                 continue;
                             }
                             ;
-                            msg.send(MsgInfo.mError,
-                                    MessageFormat.format("{0}", t.get(2)));
-                        } else if ("exit".equals(t.get(1)))
+                            msg.send(MsgInfo.mError, MessageFormat.format("{0}", t.get(2)));
+                        }
+                        else if ("exit".equals(t.get(1)))
                         {
                             msg.send(MsgInfo.mExit, "#exit");
-                        } else
+                        }
+                        else
                         {
-                            msg.send(MsgInfo.mWarning, MessageFormat.format(
-                                    "Unrecognized directive '{0}', ignored.",
-                                    t.get(1)));
+                            msg.send(MsgInfo.mWarning, MessageFormat.format("Unrecognized directive '{0}', ignored.", t.get(1)));
                         }
                         continue;
                     }
@@ -652,8 +628,7 @@ public class Repository
                 // ---------------------------------------------------------------------
                 case blockNone: // -----------------------------------------------------
                     // Nothing yet...
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -697,8 +672,7 @@ public class Repository
                         }
                         break;
                     }
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -720,8 +694,7 @@ public class Repository
                     }
                     // if (t.get(0).equals(StringConstants.S_initialDeltaT)) {
                     // burstLog::suggestedDeltaT(t.v(1)); break; }
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -771,16 +744,14 @@ public class Repository
                     }
                     if (t.get(0).equals(StringConstants.S_pageActivate))
                     {
-                        checkPageCount(StringConstants.S_pageActivate, nT - 1,
-                                msg);
+                        checkPageCount(StringConstants.S_pageActivate, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageActivate(t.get(i + 1), i);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageIdentifier))
                     {
-                        checkPageCount(StringConstants.S_pageIdentifier,
-                                nT - 1, msg);
+                        checkPageCount(StringConstants.S_pageIdentifier, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageIdentifier(t.get(i + 1), i);
                         break;
@@ -788,24 +759,21 @@ public class Repository
 
                     if (t.get(0).equals(StringConstants.S_pageReadCommand))
                     { // == Read commands ==
-                        checkPageCount(StringConstants.S_pageReadCommand,
-                                nT - 1, msg);
+                        checkPageCount(StringConstants.S_pageReadCommand, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageReadWhole(t.get(i + 1), i);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageChunkRead))
                     {
-                        checkPageCount(StringConstants.S_pageChunkRead, nT - 1,
-                                msg);
+                        checkPageCount(StringConstants.S_pageChunkRead, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageReadChunk(t.get(i + 1), i);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageValueRead))
                     {
-                        checkPageCount(StringConstants.S_pageValueRead, nT - 1,
-                                msg);
+                        checkPageCount(StringConstants.S_pageValueRead, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageReadValue(t.get(i + 1), i);
                         break;
@@ -813,24 +781,21 @@ public class Repository
 
                     if (t.get(0).equals(StringConstants.S_pageWriteCommand))
                     { // == Write commands ==
-                        checkPageCount(StringConstants.S_pageWriteCommand,
-                                nT - 1, msg);
+                        checkPageCount(StringConstants.S_pageWriteCommand, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageWriteWhole(t.get(i + 1), i);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageChunkWrite))
                     {
-                        checkPageCount(StringConstants.S_pageChunkWrite,
-                                nT - 1, msg);
+                        checkPageCount(StringConstants.S_pageChunkWrite, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageWriteChunk(t.get(i + 1), i);
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageValueWrite))
                     {
-                        checkPageCount(StringConstants.S_pageValueWrite,
-                                nT - 1, msg);
+                        checkPageCount(StringConstants.S_pageValueWrite, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
                             mdb.cDesc.setPageWriteValue(t.get(i + 1), i);
                         break;
@@ -868,8 +833,7 @@ public class Repository
                                     MsgInfo.mError | MsgInfo.mExit,
                                     MessageFormat
                                             .format("The \"page = {0,number}\" setting is outside the range of \"nPages = {1,number}\"     \n\tin the [Constants] definitions.\n\nMegaTune is terminating.",
-                                                    currentCP + 1,
-                                                    mdb.cDesc.nPages()));
+                                                    currentCP + 1, mdb.cDesc.nPages()));
                         }
                         break;
                     }
@@ -880,78 +844,78 @@ public class Repository
                     {
                         if (currentCP < 0 || currentCP > mdb.cDesc.nPages())
                         {
-                            throw new RepositoryException(
-                                    "current page out of range");
+                            throw new RepositoryException("current page out of range");
                         }
 
                         // ??? check number of values...
                         Symbol s = new Symbol();
-                        if (t.eq(StringConstants.S_scalar, 1))
+                        try
                         {
-                            if (nT > 10)
+                            if (t.eq(StringConstants.S_scalar, 1))
+                            {
+                                if (nT > 10)
+                                {
+                                    msg.send(MsgInfo.mWarning, MessageFormat.format(
+                                            "Constant definition for \"{0}\" has too many parameters {1}, 10 expected.\t\n\n",
+                                            t.get(0), nT));
+
+                                }
+
+                                s.setCScalar(t.get(0), t.get(2), currentCP, t.v(3), t.get(4), t.v(5), t.v(6), t.v(7), t.v(8),
+                                        t.v(9));
+                            }
+                            else if (t.eq(StringConstants.S_array, 1))
+                            {
+                                if (nT > 11)
+                                    msg.send(MsgInfo.mWarning, MessageFormat.format(
+                                            "Constant definition for \"{0}\" has too many parameters %{1}, 11 expected.\t\n\n",
+                                            t.get(0), nT));
+                                s.setCArray(t.get(0), t.get(2), currentCP, t.v(3), t.get(5), t.get(4), t.v(6), t.v(7), t.v(8),
+                                        t.v(9), t.v(10));
+                            }
+                            else if (t.eq(StringConstants.S_bits, 1))
+                            {
+                                s.setCBits(t.get(0), t.get(2), currentCP, t.v(3), t.get(4));
+                                for (int i = 5; i < nT; i++)
+                                {
+                                    s.userStrings.add(t.get(i));
+                                }
+                                int ofs = s.bitOfs();
+                                for (int i = nT - 5; i < s.nValues(); i++)
+                                {
+                                    String autoLbl = "" + (i + ofs);
+                                    s.userStrings.add(autoLbl);
+                                }
+                            }
+                            else
                             {
                                 msg.send(
                                         MsgInfo.mWarning,
                                         MessageFormat
-                                                .format("Constant definition for \"{0}\" has too many parameters {1}, 10 expected.\t\n\n",
-                                                        t.get(0), nT));
-
+                                                .format("Constant definition for \"{0}\" is corrupted, starts with \"{0}\"     \n\nThis entry is ignored.",
+                                                        t.get(0), t.get(1)));
+                                break;
                             }
+                            mdb.cDesc.addSymbol(s);
 
-                            s.setCScalar(t.get(0), t.get(2), currentCP, t.v(3),
-                                    t.get(4), t.v(5), t.v(6), t.v(7), t.v(8),
-                                    t.v(9));
-                        } else if (t.eq(StringConstants.S_array, 1))
-                        {
-                            if (nT > 11)
+                            // Validate page boundaries.
+                            if (s.offset(0) + s.size() > mdb.cDesc.pageSize(currentCP))
+                            {
                                 msg.send(
-                                        MsgInfo.mWarning,
+                                        MsgInfo.mError | MsgInfo.mExit,
                                         MessageFormat
-                                                .format("Constant definition for \"{0}\" has too many parameters %{1}, 11 expected.\t\n\n",
-                                                        t.get(0), nT));
-                            s.setCArray(t.get(0), t.get(2), currentCP, t.v(3),
-                                    t.get(5), t.get(4), t.v(6), t.v(7), t.v(8),
-                                    t.v(9), t.v(10));
-                        } else if (t.eq(StringConstants.S_bits, 1))
-                        {
-                            s.setCBits(t.get(0), t.get(2), currentCP, t.v(3),
-                                    t.get(4));
-                            for (int i = 5; i < nT; i++)
-                            {
-                                s.userStrings.add(t.get(i));
+                                                .format("The byte range of {0} values ({1}-{2}) overwrite the     \n\tpage boundaries of 0-{3} in the [Constants] definitions.\n\nMegaTune is terminating.",
+                                                        t.get(0), s.offset(0), s.offset(0) + s.size() - 1,
+                                                        mdb.cDesc.pageSize(currentCP) - 1));
                             }
-                            int ofs = s.bitOfs();
-                            for (int i = nT - 5; i < s.nValues(); i++)
-                            {
-                                String autoLbl = "" + (i + ofs);
-                                s.userStrings.add(autoLbl);
-                            }
-                        } else
-                        {
-                            msg.send(
-                                    MsgInfo.mWarning,
-                                    MessageFormat
-                                            .format("Constant definition for \"{0}\" is corrupted, starts with \"{0}\"     \n\nThis entry is ignored.",
-                                                    t.get(0), t.get(1)));
                             break;
                         }
-                        mdb.cDesc.addSymbol(s);
-
-                        // Validate page boundaries.
-                        if (s.offset() + s.size() > mdb.cDesc
-                                .pageSize(currentCP))
+                        catch (SymbolException e)
                         {
-                            msg.send(
-                                    MsgInfo.mError | MsgInfo.mExit,
-                                    MessageFormat
-                                            .format("The byte range of {0} values ({1}-{2}) overwrite the     \n\tpage boundaries of 0-{3} in the [Constants] definitions.\n\nMegaTune is terminating.",
-                                                    t.get(0),
-                                                    s.offset(),
-                                                    s.offset() + s.size() - 1,
-                                                    mdb.cDesc
-                                                            .pageSize(currentCP) - 1));
+                            msg.send(MsgInfo.mError,
+                                    MessageFormat.format("Failed to parse symbol {0} - {1}", e.getMessage(), e.getSymbol()));
+                            break;
                         }
-                        break;
                     }
 
                     // ---------------------------------------------------------------------
@@ -959,8 +923,7 @@ public class Repository
                     // ??? grab the expressions and store them in order.
                     if (nT < 2)
                     {
-                        msg.send(MsgInfo.mWarning, MessageFormat.format(
-                                "Missing argument to '%s'", t.get(0)));
+                        msg.send(MsgInfo.mWarning, MessageFormat.format("Missing argument to '%s'", t.get(0)));
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_ochBlockSize))
@@ -974,50 +937,50 @@ public class Repository
                         break;
                     }
 
+                    try
                     {
                         Symbol s = new Symbol();
                         if (t.eq(StringConstants.S_scalar, 1))
                         {
                             // name hunk type ofs units scale trans
                             // rpm = scalar, S16, 7, "RPM", 1.000, 0.000
-                            s.setOScalar(t.get(0), t.get(2), 0, t.v(3),
-                                    t.get(4), t.v(5), t.v(6));
-                        } else if (t.eq(StringConstants.S_bits, 1))
+                            s.setOScalar(t.get(0), t.get(2), 0, t.v(3), t.get(4), t.v(5), t.v(6));
+                        }
+                        else if (t.eq(StringConstants.S_bits, 1))
                         {
                             // name hunk type ofs bitSpec
                             // sch = bits, U08, 11, [2:2]
                             s.setOBits(t.get(0), t.get(2), 0, t.v(3), t.get(4));
-                        } else if (t.t(1) == Tokenizer.type.Texp)
+                        }
+                        else if (t.t(1) == Tokenizer.type.Texp)
                         {
                             // var = { expr } [, "units"]
-                            s.setExpr(t.get(0), t.stripped(1), t.get(2),
-                                    msg.fileName, msg.lineNo);
-                        } else
+                            s.setExpr(t.get(0), t.stripped(1), t.get(2), msg.fileName, msg.lineNo);
+                        }
+                        else
                         {
-                            msg.send(
-                                    MsgInfo.mWarning,
-                                    MessageFormat
-                                            .format("OutputChannel definition for \"{0}\" is corrupted, starts with \"{1}\"     \n\n"
-                                                    + "This entry is ignored.",
-                                                    t.get(0), t.get(1)));
+                            msg.send(MsgInfo.mWarning, MessageFormat.format(
+                                    "OutputChannel definition for \"{0}\" is corrupted, starts with \"{1}\"     \n\n"
+                                            + "This entry is ignored.", t.get(0), t.get(1)));
                             break;
                         }
                         mdb.cDesc.addSymbol(s);
 
                         // Validate page boundaries.
-                        if (s.offset() + s.size() > mdb.cDesc.ochBlockSize(0))
+                        if (s.offset(0) + s.size() > mdb.cDesc.ochBlockSize(0))
                         {
-                            msg.send(
-                                    MsgInfo.mError | MsgInfo.mExit,
-                                    MessageFormat
-                                            .format("The byte range of %s values (%d-%d) overwrite the     \n"
-                                                    + "\tmemory boundaries of 0-%d in the [OutputChannels] definitions.\n\n"
-                                                    + "MegaTune is terminating.",
-                                                    t.get(0),
-                                                    s.offset(),
-                                                    s.offset() + s.size() - 1,
-                                                    mdb.cDesc.ochBlockSize(0) - 1));
+                            msg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat.format(
+                                    "The byte range of %s values (%d-%d) overwrite the     \n"
+                                            + "\tmemory boundaries of 0-%d in the [OutputChannels] definitions.\n\n"
+                                            + "MegaTune is terminating.", t.get(0), s.offset(0), s.offset(0) + s.size() - 1,
+                                    mdb.cDesc.ochBlockSize(0) - 1));
                         }
+                        break;
+                    }
+                    catch (SymbolException e)
+                    {
+                        msg.send(MsgInfo.mError,
+                                MessageFormat.format("Failed to parse symbol {0} - {1}", e.getMessage(), e.getSymbol()));
                         break;
                     }
 
@@ -1045,8 +1008,7 @@ public class Repository
                         }
                         break;
                     }
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -1092,8 +1054,7 @@ public class Repository
                         break;
                     }
 
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -1108,8 +1069,7 @@ public class Repository
                         aeTpsDot(t);
                         break;
                     } // =0,1.0
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -1199,8 +1159,7 @@ public class Repository
                         runACC(t);
                         break;
                     } // =0,200
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -1301,8 +1260,7 @@ public class Repository
                     // g_bgWarningColor = getColor(t); break; }
                     // if (t.get(0).equals(StringConstants.S_bgDangerColor )) {
                     // g_bgDangerColor = getColor(t); break; }
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 // ---------------------------------------------------------------------
@@ -1396,27 +1354,30 @@ public class Repository
                     { /* Dreqfuel::injectorFlow = t.v(1); */
                         break;
                     }
-                    msg.send(MsgInfo.mWarning, MessageFormat.format(
-                            "Unexpected or unsupported token '{0}'", t.get(0)));
+                    msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
 
                 }
 
                 // End while
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (ParseException e)
+        }
+        catch (ParseException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (RepositoryException e)
+        }
+        catch (RepositoryException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally
+        }
+        finally
         {
 
         }
@@ -1445,11 +1406,8 @@ public class Repository
 
         if (b == null)
         {
-            msg.send(MsgInfo.mWarning,
-                    MessageFormat.format(
-                            "Conditional check references undefined value '{0}'.     \n\n"
-                                    + "Only first reference will be reported.",
-                            setName));
+            msg.send(MsgInfo.mWarning, MessageFormat.format("Conditional check references undefined value '{0}'.     \n\n"
+                    + "Only first reference will be reported.", setName));
             varSet(setName, false);
             return false;
 
@@ -1459,7 +1417,7 @@ public class Repository
 
     private void ochInit(String n, int v)
     {
-        Symbol s = new Symbol(); 
+        Symbol s = new Symbol();
         s.setExpr(n, "---", "", "auto-generated", 0);
         mdb.cDesc.addSymbol(s);
     }
@@ -1468,13 +1426,10 @@ public class Repository
     {
         if (n != mdb.cDesc.nPages())
         {
-            msg.send(
-                    MsgInfo.mError | MsgInfo.mExit,
-                    MessageFormat
-                            .format("The number of {0} values ({1}) isn't consistent with     \n"
-                                    + "\t\"nPages = {2}\" in the [Constants] definitions.\n\n"
-                                    + "MegaTune is terminating.", item, n,
-                                    mdb.cDesc.nPages()));
+            msg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat.format(
+                    "The number of {0} values ({1}) isn't consistent with     \n"
+                            + "\t\"nPages = {2}\" in the [Constants] definitions.\n\n" + "MegaTune is terminating.", item, n,
+                    mdb.cDesc.nPages()));
         }
     }
 
