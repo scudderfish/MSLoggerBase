@@ -58,7 +58,7 @@ public class Tokenizer
 				continue;
 			}
 
-			if (Character.isLetterOrDigit(c))
+			if (Character.isLetter(c))
 			{ // Parse alpha-numeric id.
 				StringBuffer tok = new StringBuffer();
 				int j = 0;
@@ -77,7 +77,7 @@ public class Tokenizer
 				StringBuffer tok = new StringBuffer();
 				tok.append(c);
 				int j = 0;
-				for (j = i + 1; j<line.length() && (Character.isDigit(line.charAt(j)) || c == '.'); j++)
+				for (j = i + 1; j<line.length() && (Character.isDigit(line.charAt(j)) || line.charAt(j) == '.'); j++)
 				{
 					tok.append(line.charAt(j));
 				}

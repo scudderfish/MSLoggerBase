@@ -3,9 +3,21 @@ package uk.org.smithfamily.msdisp.parser;
 public class SymbolException extends Exception
 {
 
-    public SymbolException(String string, String ss)
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7564030539522283690L;
+    private String symbol;
+
+    public SymbolException(String msg, String ss)
     {
-        // TODO Auto-generated constructor stub
+        super(msg);
+        this.symbol = ss;
+    }
+
+    public Object getSymbol()
+    {
+        return symbol;
     }
 
 }
