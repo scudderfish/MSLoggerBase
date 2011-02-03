@@ -1,9 +1,11 @@
 package uk.org.smithfamily.msdisp.parser;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import java.text.ParseException;
+
 
 public class Tokenizer
 {
@@ -81,8 +83,12 @@ public class Tokenizer
 				{
 					tok.append(line.charAt(j));
 				}
-				tokens.add(new Token(tok.toString(), type.Tnum, Double
-						.valueOf(tok.toString())));
+				String s = tok.toString();
+                if("-".equals(s))
+                {
+                    s="0";
+                }
+                tokens.add(new Token(tok.toString(), type.Tnum, Double.valueOf(s)));
 				i = j;
 				continue;
 			}
