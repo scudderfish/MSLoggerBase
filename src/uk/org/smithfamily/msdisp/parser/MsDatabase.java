@@ -6,7 +6,7 @@ public class MsDatabase
 {
     private static final int N_RETRIES = 0;
     private static MsDatabase   instance = new MsDatabase();
-    public ControllerDescriptor cDesc;
+    public ControllerDescriptor cDesc ;
 
     Datalog                     log;
     MsComm                      io;
@@ -68,12 +68,7 @@ public class MsDatabase
             return "F";
     }
 
-    public MsDatabase()
-    {
-
-    }
-
-    public boolean init()
+    private MsDatabase()
     {
         log = null;
         io = new MsComm();
@@ -90,7 +85,10 @@ public class MsDatabase
         commPortRate = io.rate();
         burstCommPort = commPortNumber;
         burstCommRate = 115200;
+   }
 
+    public boolean init()
+    {
         Repository.Uundefined = cDesc.varIndex(StringConstants.S_UNDEFINED);
 
         // This is a friggin' hack for 2.20 to allow

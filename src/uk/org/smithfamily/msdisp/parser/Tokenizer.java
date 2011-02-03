@@ -62,8 +62,8 @@ public class Tokenizer
 			{ // Parse alpha-numeric id.
 				StringBuffer tok = new StringBuffer();
 				int j = 0;
-				for (j = i; Character.isLetterOrDigit(line.charAt(j))
-						|| line.charAt(j) == '_'; j++)
+				for (j = i; j<line.length() && (Character.isLetterOrDigit(line.charAt(j))
+						|| line.charAt(j) == '_'); j++)
 				{
 					tok.append(line.charAt(j));
 				}
@@ -77,7 +77,7 @@ public class Tokenizer
 				StringBuffer tok = new StringBuffer();
 				tok.append(c);
 				int j = 0;
-				for (j = i + 1; Character.isDigit(line.charAt(j)) || c == '.'; j++)
+				for (j = i + 1; j<line.length() && (Character.isDigit(line.charAt(j)) || c == '.'); j++)
 				{
 					tok.append(line.charAt(j));
 				}
@@ -97,20 +97,21 @@ public class Tokenizer
 				}
 				if (line.charAt(j) != '"')
 					throw new ParseException("Closing quote not found.", j);
-				i++;
+				i = j+1;
 				tokens.add(new Token(tok.toString(), type.Tstr, 0));
 				continue;
 			}
 			if (c == '[')
 			{ // Block identifier
 				StringBuffer tok = new StringBuffer();
-				tok.append(c);
+				
 				int j;
 				for (j = i; j < line.length() - 1 && line.charAt(j) != ']'; j++)
 				{
 					tok.append(line.charAt(j));
 				}
 				tok.append(line.charAt(j));
+				i=j;
 				tokens.add(new Token(tok.toString(), type.Tblk, 0));
 				continue;
 			}

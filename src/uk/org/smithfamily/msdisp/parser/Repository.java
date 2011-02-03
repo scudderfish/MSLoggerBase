@@ -37,7 +37,12 @@ class ifBlock
 public class Repository
 {
     static private final Repository instance = new Repository();
-    public static final Repository getInstance() { return instance;}
+
+    public static final Repository getInstance()
+    {
+        return instance;
+    }
+
     enum blockType
     {
         blockNone, blockAccelerationWizard, blockAutoTune, blockBurstMode, blockColorMap, blockConstants, blockCurveEditor, blockDatalog, blockDefaults, blockFrontPage, blockGaugeColors, blockGaugeConfigurations, blockMegaTune, blockMenu, blockOutputChannels, blockRunTime, blockTableEditor, blockTuning, blockUserDefined, blockUnits
@@ -50,19 +55,19 @@ public class Repository
     Stack<ifBlock>     ifStack   = new Stack<ifBlock>();
     public static int  Uundefined;
     public static int  UegoVoltage;
-    public static int  UveTuneLodIdx;                   // Zero-based
-                                                         // index of
-                                                         // load bin
-                                                         // tuning
-                                                         // point.
-    public static int  UveTuneRpmIdx;                   // Index of
-                                                         // rpm
-                                                         // bin.
-    public static int  UveTuneValue;                    // Value
-                                                         // contained
-                                                         // in
-                                                         // VE[veTuneLodIdx,
-                                                         // veTuneRpmIdx].
+    public static int  UveTuneLodIdx;                       // Zero-based
+                                                             // index of
+                                                             // load bin
+                                                             // tuning
+                                                             // point.
+    public static int  UveTuneRpmIdx;                       // Index of
+                                                             // rpm
+                                                             // bin.
+    public static int  UveTuneValue;                        // Value
+                                                             // contained
+                                                             // in
+                                                             // VE[veTuneLodIdx,
+                                                             // veTuneRpmIdx].
 
     // Controller versioning.
     double             lofEGO, hifEGO, rdfEGO;
@@ -87,15 +92,15 @@ public class Repository
     double             lorVE, hirVE;
     double             lorACC, hirACC;
 
-    double             lotEGO, hitEGO, rdtEGO;          // The LED
-                                                         // bar.
+    double             lotEGO, hitEGO, rdtEGO;              // The LED
+                                                             // bar.
 
     double             lotVEB, hitVEB;
 
-    int                vatSD;                           // spotDepth
-    int                vatCD;                           // cursorDepth
+    int                vatSD;                               // spotDepth
+    int                vatCD;                               // cursorDepth
     int                gaugeColumns;
-    private MsDatabase mdb;
+    private MsDatabase mdb       = null;
     boolean            writeXML;
 
     void aeTpsDot(Tokenizer t)
@@ -208,6 +213,7 @@ public class Repository
 
     public void readInit(Context c)
     {
+        mdb = MsDatabase.getInstance();
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
                                                           // this isn't changed.
@@ -215,14 +221,18 @@ public class Repository
         ochInit(StringConstants.S_veTuneRpmIdx, UveTuneRpmIdx);
         ochInit(StringConstants.S_veTuneValue, UveTuneValue);
 
+        mdb.init();
+        
         String defaultFilename = "ecuDef/msns-extra.29y.ini";
+        
         try
         {
 
             AssetManager assetManager = c.getResources().getAssets();
-            
-                BufferedReader in = new BufferedReader(new InputStreamReader(assetManager.open(defaultFilename)));
-                doRead(in, defaultFilename, 0);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    assetManager.open(defaultFilename)));
+            doRead(in, defaultFilename, 0);
 
             if (!ifStack.isEmpty())
             {
@@ -245,8 +255,7 @@ public class Repository
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -535,108 +544,107 @@ public class Repository
                         }
                         continue;
                     }
+                }
 
-
-                    if (t.eq(StringConstants.S__AccelerationWizard_, 0))
-                    {
-                        block = blockType.blockAccelerationWizard;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__AutoTune_, 0))
-                    {
-                        block = blockType.blockAutoTune;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__BurstMode_, 0))
-                    {
-                        block = blockType.blockBurstMode;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__ColorMap_, 0))
-                    {
-                        block = blockType.blockColorMap;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Constants_, 0))
-                    {
-                        block = blockType.blockConstants;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__CurveEditor_, 0))
-                    {
-                        block = blockType.blockCurveEditor;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Datalog_, 0))
-                    {
-                        block = blockType.blockDatalog;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Defaults_, 0))
-                    {
-                        block = blockType.blockDefaults;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__FrontPage_, 0))
-                    {
-                        block = blockType.blockFrontPage;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__GaugeColors_, 0))
-                    {
-                        block = blockType.blockGaugeColors;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__GaugeConfigurations_, 0))
-                    {
-                        block = blockType.blockGaugeConfigurations;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__MegaTune_, 0))
-                    {
-                        block = blockType.blockMegaTune;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Menu_, 0))
-                    {
-                        block = blockType.blockMenu;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__RunTime_, 0))
-                    {
-                        block = blockType.blockRunTime;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__OutputChannels_, 0))
-                    {
-                        block = blockType.blockOutputChannels;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__TableEditor_, 0))
-                    {
-                        block = blockType.blockTableEditor;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Tuning_, 0))
-                    {
-                        block = blockType.blockTuning;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__Units_, 0))
-                    {
-                        block = blockType.blockUnits;
-                        continue;
-                    }
-                    if (t.eq(StringConstants.S__UserDefined_, 0))
-                    {
-                        block = blockType.blockUserDefined;
-                        continue;
-                    }
-                    if (t.get(0).charAt(0) == ']')
-                    {
-                        block = blockType.blockNone;
-                        continue;
-                    }
+                if (t.eq(StringConstants.S__AccelerationWizard_, 0))
+                {
+                    block = blockType.blockAccelerationWizard;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__AutoTune_, 0))
+                {
+                    block = blockType.blockAutoTune;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__BurstMode_, 0))
+                {
+                    block = blockType.blockBurstMode;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__ColorMap_, 0))
+                {
+                    block = blockType.blockColorMap;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Constants_, 0))
+                {
+                    block = blockType.blockConstants;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__CurveEditor_, 0))
+                {
+                    block = blockType.blockCurveEditor;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Datalog_, 0))
+                {
+                    block = blockType.blockDatalog;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Defaults_, 0))
+                {
+                    block = blockType.blockDefaults;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__FrontPage_, 0))
+                {
+                    block = blockType.blockFrontPage;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__GaugeColors_, 0))
+                {
+                    block = blockType.blockGaugeColors;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__GaugeConfigurations_, 0))
+                {
+                    block = blockType.blockGaugeConfigurations;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__MegaTune_, 0))
+                {
+                    block = blockType.blockMegaTune;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Menu_, 0))
+                {
+                    block = blockType.blockMenu;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__RunTime_, 0))
+                {
+                    block = blockType.blockRunTime;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__OutputChannels_, 0))
+                {
+                    block = blockType.blockOutputChannels;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__TableEditor_, 0))
+                {
+                    block = blockType.blockTableEditor;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Tuning_, 0))
+                {
+                    block = blockType.blockTuning;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__Units_, 0))
+                {
+                    block = blockType.blockUnits;
+                    continue;
+                }
+                if (t.eq(StringConstants.S__UserDefined_, 0))
+                {
+                    block = blockType.blockUserDefined;
+                    continue;
+                }
+                if (t.get(0).charAt(0) == ']')
+                {
+                    block = blockType.blockNone;
+                    continue;
                 }
 
                 switch (block)
@@ -1391,7 +1399,6 @@ public class Repository
                     msg.send(MsgInfo.mWarning, MessageFormat.format(
                             "Unexpected or unsupported token '{0}'", t.get(0)));
                     break;
-                
 
                 }
 
@@ -1414,7 +1421,6 @@ public class Repository
 
         }
     }
-    
 
     Map<String, Boolean> setList = new HashMap<String, Boolean>();
 
@@ -1451,10 +1457,11 @@ public class Repository
         return true;
     }
 
-    private void ochInit(String sVetunevalue, int uveTuneValue2)
+    private void ochInit(String n, int v)
     {
-        // TODO Auto-generated method stub
-
+        Symbol s = new Symbol(); 
+        s.setExpr(n, "---", "", "auto-generated", 0);
+        mdb.cDesc.addSymbol(s);
     }
 
     void checkPageCount(String item, int n, MsgInfo msg)
