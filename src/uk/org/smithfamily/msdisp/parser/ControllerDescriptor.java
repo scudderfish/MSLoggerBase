@@ -5,7 +5,8 @@ import java.util.*;
 
 public class ControllerDescriptor
 {
-    Map<String, Symbol> symMap = new HashMap<String, Symbol>();
+    private static final int maxPages = 50;
+    Map<String, Symbol> symMap     = new HashMap<String, Symbol>();
     MsComm              _io;
     // MT and MS memory are different.
     boolean             _changed;
@@ -18,9 +19,9 @@ public class ControllerDescriptor
     String              _sigFile;
 
     int                 _nPages;
-    ArrayList<PageInfo> _page;
+    ArrayList<PageInfo> _page      = new ArrayList<PageInfo>(maxPages);
     // Internal symbols pointing to whole page.
-    ArrayList<Symbol>   _wholePage;
+    ArrayList<Symbol>   _wholePage = new ArrayList<Symbol>(maxPages);
     // Milliseconds between writes.
     int                 _interWriteDelay;
     // Use a single write or multi?
@@ -44,6 +45,33 @@ public class ControllerDescriptor
     public ControllerDescriptor(MsComm io)
     {
         _userVar = new ArrayList<Double>();
+        for(int x = 0; x < maxPages ;x++)
+        {
+            _page.add(new PageInfo());
+            _wholePage.add(new Symbol());
+        }
+        _const = null;
+        _changed = false;
+        _interWriteDelay = 0;
+        _writeBlocks = true;
+        _pageActivationDelay = 0;
+        _blockReadTimeout = 25;
+        _userVarSize = 0;
+        _sigFile = null;
+        _verifying = false;
+        // B&G MS-I V 2.xx and 3.00
+        setEndianness("big");
+        setVersionInfo("");
+        setQueryCommand("Q");
+        setSignature("", null);
+
+        setOchBlockSize(22, 0);
+        setOchGetCommand("A", 0);
+        setOchBurstCommand("A", 0);
+
+        setNPages(1);
+        init();
+
     }
 
     public void addSymbol(Symbol s)
@@ -58,13 +86,13 @@ public class ControllerDescriptor
 
     public void flush()
     {
-        _io.flush();
+        // _io.flush();
     }
 
     void init()
     {
-        _io.setChunking(_writeBlocks, _interWriteDelay);
-        _io.setReadTimeouts(_blockReadTimeout);
+        // _io.setChunking(_writeBlocks, _interWriteDelay);
+        // _io.setReadTimeouts(_blockReadTimeout);
 
         final int n = totalSpace() < 257 ? 257 : totalSpace();
         _const = new short[n];
@@ -73,9 +101,11 @@ public class ControllerDescriptor
         int i;
         for (i = 0; i < _nPages; i++)
         {
-            _page.get(i)._pp._pageNo = i;
-            _page.get(i)._pp._bigEnd = _bigEnd;
-            _page.get(i)._pp._modified = false;
+            PageInfo p = new PageInfo();
+            p._pp._pageNo = i;
+            p._pp._bigEnd = _bigEnd;
+            p._pp._modified = false;
+            _page.add(i,p);
         }
 
         for (i = 1; i < _nPages; i++)
@@ -88,8 +118,15 @@ public class ControllerDescriptor
             _wholePage.add(i, new Symbol());
             String shape;
             shape = "[" + _page.get(i).siz() + "]";
-            _wholePage.get(i).setCArray("__page__", "U08", i, 0, "", shape,
-                    1.0, 0.0, 0.0, 1.0, 0);
+            try
+            {
+                _wholePage.get(i).setCArray("__page__", "U08", i, 0, "", shape, 1.0, 0.0, 0.0, 1.0, 0);
+            }
+            catch (SymbolException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         // Parse the expressions now that we know where they all go.
@@ -110,14 +147,19 @@ public class ControllerDescriptor
                     {
                         if (!"---".equals(s.exprText()))
                         {
-                            _exprs.addExpr(s.varIndex(), s.exprText(),
-                                    s.exprFile(), s.exprLine());
+                            _exprs.addExpr(s.varIndex(), s.exprText(), s.exprFile(), s.exprLine());
                         }
                     }
                 }
             }
         }
         _exprs.setOutputBuffer(_userVar);
+        setBurnCommand("B", 0);
+        setPageSize(125, 0);
+        setPageActivate("", 0);
+        setPageIdentifier("", 0);
+        setPageReadWhole("V", 0);
+        setPageWriteValue("W%1o%1v", 0);
 
     }
 
@@ -144,8 +186,7 @@ public class ControllerDescriptor
     private ByteString pageActivate(int pageNo)
     {
         pageNo = mxi(pageNo);
-        return _page.get(pageNo)._activate.buildCmd(_page.get(pageNo)._pp, 0,
-                null, _page.get(pageNo).siz());
+        return _page.get(pageNo)._activate.buildCmd(_page.get(pageNo)._pp, 0, null, _page.get(pageNo).siz());
     }
 
     private void pageModified(int pageNo, boolean state)
@@ -161,8 +202,7 @@ public class ControllerDescriptor
     private ByteString pageReadWhole(int pageNo)
     {
         pageNo = mxi(pageNo);
-        return _page.get(pageNo)._readWhole.buildCmd(_page.get(pageNo)._pp, 0,
-                null, _page.get(pageNo).siz());
+        return _page.get(pageNo)._readWhole.buildCmd(_page.get(pageNo)._pp, 0, null, _page.get(pageNo).siz());
     }
 
     public int pageSize(int n)
@@ -291,8 +331,7 @@ public class ControllerDescriptor
     public void setPageSize(double size, int i)
     {
         _page.get(i).siz((int) size);
-        _page.get(i).ofs(
-                i <= 0 ? 0 : _page.get(i - 1).ofs(0) + _page.get(i - 1).siz());
+        _page.get(i).ofs(i <= 0 ? 0 : _page.get(i - 1).ofs(0) + _page.get(i - 1).siz());
 
     }
 
@@ -349,7 +388,8 @@ public class ControllerDescriptor
         try
         {
             Thread.sleep(period);
-        } catch (final InterruptedException e)
+        }
+        catch (final InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -358,9 +398,9 @@ public class ControllerDescriptor
     int totalSpace()
     {
         int space = 0;
-        for (int i = 0; i < _nPages; i++)
+        for (PageInfo p : _page)
         {
-            space += _page.get(i).siz();
+            space += p.siz();
         }
         return space;
     }

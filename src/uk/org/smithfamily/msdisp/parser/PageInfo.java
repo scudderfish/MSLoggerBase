@@ -2,15 +2,15 @@ package uk.org.smithfamily.msdisp.parser;
 
 public class PageInfo
 {
-    PageParameters _pp;
-    CommandFormat  _activate;
-    CommandFormat  _burnCommand;
-    CommandFormat  _readWhole;
-    CommandFormat  _readChunk;
-    CommandFormat  _readValue;
-    CommandFormat  _writeWhole;
-    CommandFormat  _writeChunk;
-    CommandFormat  _writeValue;
+    PageParameters _pp          = new PageParameters();
+    CommandFormat  _activate    = new CommandFormat();
+    CommandFormat  _burnCommand = new CommandFormat();
+    CommandFormat  _readWhole   = new CommandFormat();
+    CommandFormat  _readChunk   = new CommandFormat();
+    CommandFormat  _readValue   = new CommandFormat();
+    CommandFormat  _writeWhole  = new CommandFormat();
+    CommandFormat  _writeChunk  = new CommandFormat();
+    CommandFormat  _writeValue  = new CommandFormat();
 
     int siz(int s)
     {
