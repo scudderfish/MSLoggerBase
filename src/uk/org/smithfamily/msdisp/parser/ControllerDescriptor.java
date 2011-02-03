@@ -38,30 +38,27 @@ public class ControllerDescriptor
     int                 _userVarSize;
     private short[]     _const;
     private Expression  _exprs;
-    private int lastPage;
+    private int         lastPage;
+    private boolean     force;
 
     public ControllerDescriptor(MsComm io)
     {
         _userVar = new ArrayList<Double>();
     }
 
-    public int varIndex(String currentStr)
+    public void addSymbol(Symbol s)
     {
-        // TODO Auto-generated method stub
-        return 0;
+        this.symMap.put(s.name(), s);
     }
 
-    public Symbol lookup(String currentStr)
+    public void changed(boolean b)
     {
-        return symMap.get(currentStr);
+        _changed = b;
     }
 
-    int totalSpace()
+    public void flush()
     {
-        int space = 0;
-        for (int i = 0; i < _nPages; i++)
-            space += _page.get(i).siz();
-        return space;
+        _io.flush();
     }
 
     void init()
@@ -69,7 +66,7 @@ public class ControllerDescriptor
         _io.setChunking(_writeBlocks, _interWriteDelay);
         _io.setReadTimeouts(_blockReadTimeout);
 
-        int n = totalSpace() < 257 ? 257 : totalSpace();
+        final int n = totalSpace() < 257 ? 257 : totalSpace();
         _const = new short[n];
 
         _ochBuffer = new short[_ochBlockSize];
@@ -104,9 +101,9 @@ public class ControllerDescriptor
 
         for (int index = 0; index < symMap.size(); index++)
         {
-            for (String key : symMap.keySet())
+            for (final String key : symMap.keySet())
             {
-                Symbol s = symMap.get(key);
+                final Symbol s = symMap.get(key);
                 if (s._sequence == index)
                 {
                     if (s.isExpr())
@@ -124,194 +121,266 @@ public class ControllerDescriptor
 
     }
 
+    public Symbol lookup(String currentStr)
+    {
+        return symMap.get(currentStr);
+    }
+
+    int mxi(int pageNo)
+    {
+        return pageNo < _nPages ? pageNo : _nPages - 1;
+    }
+
     public int nPages()
     {
-       return _nPages;
-    }
-
-    public void changed(boolean b)
-    {
-       _changed = b;
-    }
-
-    public int pageSize(int n)
-    {
-       //TODO
-        return 0;
-    }
-
-    public int pageOffset(int pageNo)
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public void flush()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void sendPageReadWhole(int pageNo)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public boolean read(ByteBuffer bytes, int nBytes)
-    {
-        boolean success = _io.read(bytes, nBytes);
-        if (!success) lastPage = -99;
-        return success;
-    }
-
-    public void setOchBurstCommand(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setNPages(double v)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setEndianness(String string)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageSize(double v, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setVerify(boolean eq)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setBurnCommand(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageActivate(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageIdentifier(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageReadWhole(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageReadChunk(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageReadValue(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageWriteWhole(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageWriteChunk(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageWriteValue(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setDelay(int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setQueryCommand(String string)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setVersionInfo(String string)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setSignature(String string, String fileName)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setWriteBlocks(boolean eq)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setPageActivationDelay(int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setBlockReadTimeout(int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void addSymbol(Symbol s)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setOchBlockSize(double v, int i)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setOchGetCommand(String string, int i)
-    {
-        // TODO Auto-generated method stub
-        
+        return _nPages;
     }
 
     public int ochBlockSize(int i)
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return _ochBlockSize;
+    }
+
+    private ByteString pageActivate(int pageNo)
+    {
+        pageNo = mxi(pageNo);
+        return _page.get(pageNo)._activate.buildCmd(_page.get(pageNo)._pp, 0,
+                null, _page.get(pageNo).siz());
+    }
+
+    private void pageModified(int pageNo, boolean state)
+    {
+        _page.get(mxi(pageNo)).modified(state);
+    }
+
+    public int pageOffset(int pageNo)
+    {
+        return _page.get(mxi(pageNo)).ofs(0);
+    }
+
+    private ByteString pageReadWhole(int pageNo)
+    {
+        pageNo = mxi(pageNo);
+        return _page.get(pageNo)._readWhole.buildCmd(_page.get(pageNo)._pp, 0,
+                null, _page.get(pageNo).siz());
+    }
+
+    public int pageSize(int n)
+    {
+        return _page.get(mxi(n)).siz();
+    }
+
+    public boolean read(ByteBuffer bytes, int nBytes)
+    {
+        final boolean success = _io.read(bytes, nBytes);
+        if (!success)
+        {
+            lastPage = -99;
+        }
+        return success;
+    }
+
+    private boolean sendPageActivate(int thisPage, boolean b)
+    {
+        if (pageActivate(thisPage).empty())
+        {
+            return true;
+        }
+
+        if ((thisPage != lastPage) || force)
+        {
+            lastPage = thisPage;
+            final boolean success = _io.write(pageActivate(thisPage));
+            if (success && (_pageActivationDelay != 0))
+            {
+                Sleep(_pageActivationDelay);
+            }
+            return success;
+        }
+        return true;
+
+    }
+
+    public boolean sendPageReadWhole(int page)
+    {
+        pageModified(page, false);
+        sendPageActivate(page, true);
+        return _io.write(pageReadWhole(page));
+
+    }
+
+    public void setBlockReadTimeout(int i)
+    {
+        _blockReadTimeout = i;
+    }
+
+    public void setBurnCommand(String cmd, int i)
+    {
+        _page.get(i)._burnCommand.parse(cmd);
+    }
+
+    public void setDelay(int delay)
+    {
+        _interWriteDelay = delay;
+    }
+
+    public void setEndianness(String string)
+    {
+        this._bigEnd = string.toLowerCase().startsWith("big");
+
+    }
+
+    public void setNPages(double v)
+    {
+        _nPages = (int) v;
+
+    }
+
+    public void setOchBlockSize(double nBytes, int i)
+    {
+        _ochBlockSize = (int) nBytes;
+    }
+
+    public void setOchBurstCommand(String cmd, int i)
+    {
+        _ochBurstCommand = xlate(cmd);
+
+    }
+
+    public void setOchGetCommand(String cmd, int i)
+    {
+        _ochGetCommand = xlate(cmd);
+
+    }
+
+    public void setPageActivate(String cmd, int i)
+    {
+        _page.get(i)._activate.parse(cmd);
+
+    }
+
+    public void setPageActivationDelay(int i)
+    {
+        _pageActivationDelay = i;
+
+    }
+
+    public void setPageIdentifier(String cmd, int i)
+    {
+        _page.get(i)._pp._pageIdentifier = xlate(cmd);
+
+    }
+
+    public void setPageReadChunk(String cmd, int i)
+    {
+        _page.get(i)._readChunk.parse(cmd);
+
+    }
+
+    public void setPageReadValue(String cmd, int i)
+    {
+        _page.get(i)._readValue.parse(cmd);
+
+    }
+
+    public void setPageReadWhole(String cmd, int i)
+    {
+        _page.get(i)._readWhole.parse(cmd);
+    }
+
+    public void setPageSize(double size, int i)
+    {
+        _page.get(i).siz((int) size);
+        _page.get(i).ofs(
+                i <= 0 ? 0 : _page.get(i - 1).ofs(0) + _page.get(i - 1).siz());
+
+    }
+
+    public void setPageWriteChunk(String cmd, int i)
+    {
+        _page.get(i)._writeChunk.parse(cmd);
+
+    }
+
+    public void setPageWriteValue(String cmd, int i)
+    {
+        _page.get(i)._writeValue.parse(cmd);
+
+    }
+
+    public void setPageWriteWhole(String cmd, int i)
+    {
+        _page.get(i)._writeWhole.parse(cmd);
+
+    }
+
+    public void setQueryCommand(String cmd)
+    {
+        _queryCommand = xlate(cmd);
+
+    }
+
+    public void setSignature(String sig, String fileName)
+    {
+        _signature = new ByteString(sig);
+        _signature.xlate();
+
+        _sigFile = fileName;
+
+    }
+
+    public void setVerify(boolean eq)
+    {
+        _verifying = eq;
+    }
+
+    public void setVersionInfo(String cmd)
+    {
+        _versionInfo = xlate(cmd);
+    }
+
+    public void setWriteBlocks(boolean blocks)
+    {
+        _writeBlocks = blocks;
+    }
+
+    private void Sleep(int period)
+    {
+        try
+        {
+            Thread.sleep(period);
+        } catch (final InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    int totalSpace()
+    {
+        int space = 0;
+        for (int i = 0; i < _nPages; i++)
+        {
+            space += _page.get(i).siz();
+        }
+        return space;
+    }
+
+    public int varIndex(String name)
+    {
+        if (symMap.get(name) == null)
+        {
+            // msgOk("Symbol Lookup", CString("Couldn't find "+name));
+            return -1;
+        }
+        // assert(!symbolTable[name]->isConst()); // This is often false, since
+        // this function is called from expression parsing to find out if indeed
+        // the symbol is a variable or not.
+        return symMap.get(name).varIndex();
+    }
+
+    private ByteString xlate(String s)
+    {
+        return new ByteString(s).xlate(); // Translate \nnn into chars and all
+                                          // that.
     }
 }

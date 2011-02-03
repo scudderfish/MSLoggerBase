@@ -34,4 +34,16 @@ public class MsComm
         return false;
     }
 
+    public void flush()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean write(ByteString pageReadWhole)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }
