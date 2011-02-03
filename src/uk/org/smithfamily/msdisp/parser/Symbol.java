@@ -327,7 +327,7 @@ public class Symbol
         parseArraySpec(shape);
     }
 
-    private void parseArraySpec(String shape)
+    private void parseArraySpec(String shape) throws SymbolException
     {
         _xOrder = true;
         _order = 0;
@@ -346,7 +346,7 @@ public class Symbol
         }
         if (closepos < 0 || openpos < 0)
         {
-            System.out.println("Cannot parse " + shape);
+            throw new SymbolException("Cannot parse array spec",shape);
         }
         else
         {
@@ -357,7 +357,6 @@ public class Symbol
                 y = Integer.parseInt(shape.substring(xpos + 1, closepos).trim());
             }
 
-            System.out.println("x=" + x + ", y=" + y + ", order=" + order);
         }
         _xOrder = order == 'X';
         _shape[0] = x;
