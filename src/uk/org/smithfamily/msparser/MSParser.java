@@ -1,10 +1,14 @@
 package uk.org.smithfamily.msparser;
 
-import uk.org.smithfamily.msdisp.parser.Repository;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MSParser extends Activity
 {
@@ -13,9 +17,17 @@ public class MSParser extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Repository.getInstance().readInit(this);
         setContentView(R.layout.main);
-        setFont("fonts/ziska.ttf", R.id.text);
+
+        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview.setAdapter(new MSDisplayAdapter(this));
+
+        
+
+        //super.onCreate(savedInstanceState);
+        // Repository.getInstance().readInit(this);
+        //setContentView(R.layout.main);
+        // setFont("fonts/ziska.ttf", R.id.text);
     }
 
     void setFont(String path, int res)
