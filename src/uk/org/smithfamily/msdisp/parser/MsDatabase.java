@@ -2,6 +2,8 @@ package uk.org.smithfamily.msdisp.parser;
 
 import java.nio.ByteBuffer;
 
+import uk.org.smithfamily.msdisp.parser.log.Datalog;
+
 public class MsDatabase
 {
     private static final int N_RETRIES = 0;
