@@ -231,8 +231,10 @@ public class Repository
             AssetManager assetManager = c.getResources().getAssets();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(assetManager.open(defaultFilename)));
+            Date start = new Date();
             doRead(in, defaultFilename, 0);
-
+            Date end = new Date();
+            System.out.println("Time = "+(end.getTime()-start.getTime()));
             if (!ifStack.isEmpty())
             {
                 globalMsg.fileName = ifStack.peek().fileName;
@@ -245,8 +247,6 @@ public class Repository
             mdb.cDesc.init(); // Generates indexes, so must be done before the
                               // resolution passes.
 
-            resolveVarReferences();
-            resolveVarReferences();
             resolveVarReferences();
         }
         catch (FileNotFoundException e)

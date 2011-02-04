@@ -35,7 +35,7 @@ public class ControllerDescriptor
     int                 _ochBlockSize;
     short[]             _ochBuffer;
 
-    List<Double>        _userVar;
+    public List<Double>        _userVar;
     int                 _userVarSize;
     private short[]     _const;
     private Expression  _exprs;
