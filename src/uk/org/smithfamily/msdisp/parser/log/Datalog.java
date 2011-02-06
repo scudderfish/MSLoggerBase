@@ -9,7 +9,8 @@ import uk.org.smithfamily.msdisp.parser.MsDatabase;
 class DatalogList
 {
     private List<DatalogEntry> ll = new ArrayList<DatalogEntry>();
-
+    final MsDatabase mdb = MsDatabase.getInstance();
+    
     void add(DatalogEntry de)
     {
         ll.add(de);
@@ -49,12 +50,12 @@ class DatalogList
             {
             case eInt:
                 of.write(""
-                        + MsDatabase.getInstance().cDesc._userVar.get(ll.get(i)
+                        + mdb.cDesc._userVar.get(ll.get(i)
                                 .ochIdx()));
                 break;
             case eFloat:
                 of.write(""
-                        + MsDatabase.getInstance().cDesc._userVar.get(ll.get(i)
+                        + mdb.cDesc._userVar.get(ll.get(i)
                                 .ochIdx()));
                 break;
             }

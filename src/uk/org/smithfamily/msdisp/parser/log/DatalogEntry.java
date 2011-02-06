@@ -63,7 +63,8 @@ class DatalogEntry
 
     void resolve()
     {
-        _och = MsDatabase.getInstance().cDesc.varIndex(name());
+        final MsDatabase mdb = MsDatabase.getInstance();
+        _och = mdb.cDesc.varIndex(name());
         if (_och == -1)
         {
             // msgOk("Custom Datalog",
