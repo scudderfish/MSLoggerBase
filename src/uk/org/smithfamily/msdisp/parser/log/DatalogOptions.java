@@ -31,9 +31,10 @@ public class DatalogOptions
 
     void resolve()
     {
+        final MsDatabase mdb = MsDatabase.getInstance();
         if (!TextUtils.isEmpty(_markerVar))
         {
-            _markOnTrue = MsDatabase.getInstance().cDesc.varIndex(_markerVar);
+            _markOnTrue = mdb.cDesc.varIndex(_markerVar);
             if (_markOnTrue == -1)
             {
                 // msgOk("Custom Datalog",
@@ -43,7 +44,7 @@ public class DatalogOptions
         }
         if (!TextUtils.isEmpty(_enableVar))
         {
-            _enableWrite = MsDatabase.getInstance().cDesc.varIndex(_enableVar);
+            _enableWrite = mdb.cDesc.varIndex(_enableVar);
             if (_enableWrite == -1)
             {
                 // msgOk("Custom Datalog",

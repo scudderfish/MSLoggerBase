@@ -3,10 +3,7 @@ package uk.org.smithfamily.msparser;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,15 +16,25 @@ public class MSParser extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new MSDisplayAdapter(this));
-
-        
-
-        //super.onCreate(savedInstanceState);
+        // super.onCreate(savedInstanceState);
         // Repository.getInstance().readInit(this);
-        //setContentView(R.layout.main);
+        // setContentView(R.layout.main);
         // setFont("fonts/ziska.ttf", R.id.text);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Toast.makeText(this, "Just a test", Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     void setFont(String path, int res)

@@ -211,12 +211,13 @@ public class Lexer
             {
                 // Search the variables table in controller symbol table; if not
                 // there, error.
-                CurrentVar = MsDatabase.getInstance().cDesc.varIndex(CurrentStr);
+                final MsDatabase mdb = MsDatabase.getInstance();
+                CurrentVar = mdb.cDesc.varIndex(CurrentStr);
                 if (CurrentVar != -1)
                     CurrentTok = Token.VariableTok;
                 else
                 {
-                    CurrentSym = MsDatabase.getInstance().cDesc.lookup(CurrentStr);
+                    CurrentSym = mdb.cDesc.lookup(CurrentStr);
                     if (CurrentSym == null)
                         e.Error("Unknown identifier");
                     CurrentTok = Token.ConstantTok;
