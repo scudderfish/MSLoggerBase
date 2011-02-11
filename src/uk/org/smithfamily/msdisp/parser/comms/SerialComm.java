@@ -2,10 +2,10 @@ package uk.org.smithfamily.msdisp.parser.comms;
 
 import android.bluetooth.BluetoothAdapter;
 
-public class SerialPort
+public class SerialComm
 {
 
-    public SerialPort()
+    public SerialComm()
     {
 
     }
