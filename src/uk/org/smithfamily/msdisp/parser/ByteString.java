@@ -2,22 +2,25 @@ package uk.org.smithfamily.msdisp.parser;
 
 public class ByteString
 {
-
+    private String contents;
     public ByteString(String s)
     {
-        // TODO Auto-generated constructor stub
+        contents = s;
     }
 
     public boolean empty()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return contents.length()==0;
     }
 
     public ByteString xlate()
     {
-        // TODO Auto-generated method stub
-        return null;
+        
+        return new ByteString(contents);
+    }
+    public byte[] bytes()
+    {
+        return contents.getBytes();
     }
 
 }
