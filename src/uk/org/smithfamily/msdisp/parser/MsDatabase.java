@@ -6,7 +6,7 @@ import uk.org.smithfamily.msdisp.parser.log.Datalog;
 
 public class MsDatabase
 {
-    private static final int N_RETRIES = 0;
+    private static final int N_RETRIES = 3;
     private static MsDatabase   instance = new MsDatabase();
     public ControllerDescriptor cDesc ;
 
@@ -73,7 +73,7 @@ public class MsDatabase
     private MsDatabase()
     {
         log = null;
-        io = new MsComm();
+        io = CommsFactory.getInstance().getComInstance();
         cDesc = new ControllerDescriptor(io);
         _pageNo = 0;
         _loaded = false;

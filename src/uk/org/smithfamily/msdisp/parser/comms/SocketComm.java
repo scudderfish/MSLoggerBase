@@ -19,11 +19,13 @@ public class SocketComm extends MsComm
         {
             s = new Socket("10.0.2.2", 7893);
             is = new InputStreamReader(s.getInputStream());
-        } catch (UnknownHostException e)
+        }
+        catch (UnknownHostException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -40,8 +42,23 @@ public class SocketComm extends MsComm
     @Override
     public boolean read(ByteBuffer bytes, int nBytes)
     {
-        is.read(buffer, offset, length)
-        return super.read(bytes, nBytes);
+        try
+        {
+            int i = 0;
+            while (i < nBytes)
+            {
+                int c = is.read();
+                if (c == -1)
+                    break;
+                bytes.put(i++, (byte) c);
+            }
+            return true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -51,13 +68,14 @@ public class SocketComm extends MsComm
     }
 
     @Override
-    public boolean write(ByteString buf)
+    public boolean write(byte[] buf)
     {
         boolean ok = true;
         try
         {
-            s.getOutputStream().write(buf.bytes());
-        } catch (IOException e)
+            s.getOutputStream().write(buf);
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
             ok = false;

@@ -1,5 +1,6 @@
 package uk.org.smithfamily.msparser;
 
+import uk.org.smithfamily.msdisp.parser.Repository;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -7,7 +8,7 @@ import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MSParser extends Activity
+public class MSParserActivity extends Activity
 {
     /** Called when the activity is first created. */
     @Override
@@ -17,7 +18,7 @@ public class MSParser extends Activity
         setContentView(R.layout.main);
 
         // super.onCreate(savedInstanceState);
-        // Repository.getInstance().readInit(this);
+        Repository.getInstance().readInit(this);
         // setContentView(R.layout.main);
         // setFont("fonts/ziska.ttf", R.id.text);
     }

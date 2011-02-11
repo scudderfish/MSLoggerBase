@@ -5,47 +5,47 @@ import java.util.*;
 
 public class ControllerDescriptor
 {
-    private static final int maxPages = 50;
-    Map<String, Symbol> symMap     = new HashMap<String, Symbol>();
-    MsComm              _io;
+    private static final int maxPages   = 50;
+    Map<String, Symbol>      symMap     = new HashMap<String, Symbol>();
+    MsComm                   _io;
     // MT and MS memory are different.
-    boolean             _changed;
+    boolean                  _changed;
     // We should read and compare, if possible.
-    boolean             _verifying;
-    boolean             _bigEnd;
-    ByteString          _versionInfo;
-    ByteString          _queryCommand;
-    ByteString          _signature;
-    String              _sigFile;
+    boolean                  _verifying;
+    boolean                  _bigEnd;
+    byte[]               _versionInfo;
+    byte[]               _queryCommand;
+    ByteString               _signature;
+    String                   _sigFile;
 
-    int                 _nPages;
-    ArrayList<PageInfo> _page      = new ArrayList<PageInfo>(maxPages);
+    int                      _nPages;
+    ArrayList<PageInfo>      _page      = new ArrayList<PageInfo>(maxPages);
     // Internal symbols pointing to whole page.
-    ArrayList<Symbol>   _wholePage = new ArrayList<Symbol>(maxPages);
+    ArrayList<Symbol>        _wholePage = new ArrayList<Symbol>(maxPages);
     // Milliseconds between writes.
-    int                 _interWriteDelay;
+    int                      _interWriteDelay;
     // Use a single write or multi?
-    boolean             _writeBlocks;
+    boolean                  _writeBlocks;
     // Milliseconds after page activate command or burn command is sent.
-    int                 _pageActivationDelay;
+    int                      _pageActivationDelay;
     // Total comm block timeout for a single read.
-    int                 _blockReadTimeout;
-    ByteString          _ochGetCommand;
-    ByteString          _ochBurstCommand;
-    int                 _ochBlockSize;
-    short[]             _ochBuffer;
+    int                      _blockReadTimeout;
+    byte[]               _ochGetCommand;
+    byte[]               _ochBurstCommand;
+    int                      _ochBlockSize;
+    short[]                  _ochBuffer;
 
-    public List<Double>        _userVar;
-    int                 _userVarSize;
-    private short[]     _const;
-    private Expression  _exprs;
-    private int         lastPage;
-    private boolean     force;
+    public List<Double>      _userVar;
+    int                      _userVarSize;
+    private short[]          _const;
+    private Expression       _exprs;
+    private int              lastPage;
+    private boolean          force;
 
     public ControllerDescriptor(MsComm io)
     {
         _userVar = new ArrayList<Double>();
-        for(int x = 0; x < maxPages ;x++)
+        for (int x = 0; x < maxPages; x++)
         {
             _page.add(new PageInfo());
             _wholePage.add(new Symbol());
@@ -105,7 +105,7 @@ public class ControllerDescriptor
             p._pp._pageNo = i;
             p._pp._bigEnd = _bigEnd;
             p._pp._modified = false;
-            _page.add(i,p);
+            _page.add(i, p);
         }
 
         for (i = 1; i < _nPages; i++)
@@ -153,14 +153,20 @@ public class ControllerDescriptor
                 }
             }
         }
-        _exprs.setOutputBuffer(_userVar);
-        setBurnCommand("B", 0);
-        setPageSize(125, 0);
-        setPageActivate("", 0);
-        setPageIdentifier("", 0);
-        setPageReadWhole("V", 0);
-        setPageWriteValue("W%1o%1v", 0);
-
+        try
+        {
+            _exprs.setOutputBuffer(_userVar);
+            setBurnCommand("B", 0);
+            setPageSize(125, 0);
+            setPageActivate("", 0);
+            setPageIdentifier("", 0);
+            setPageReadWhole("V", 0);
+            setPageWriteValue("W%1o%1v", 0);
+        }
+        catch (CommandException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public Symbol lookup(String currentStr)
@@ -183,10 +189,15 @@ public class ControllerDescriptor
         return _ochBlockSize;
     }
 
-    private ByteString pageActivate(int pageNo)
+    private byte[] pageActivate(int pageNo)
     {
         pageNo = mxi(pageNo);
-        return _page.get(pageNo)._activate.buildCmd(_page.get(pageNo)._pp, 0, null, _page.get(pageNo).siz());
+        PageInfo pageInfo = _page.get(pageNo);
+        CommandFormat activate = pageInfo._activate;
+        int siz = pageInfo.siz();
+        PageParameters pp = pageInfo._pp;
+        byte[] buildCmd = activate.buildCmd(pp, 0, null, siz);
+        return buildCmd;
     }
 
     private void pageModified(int pageNo, boolean state)
@@ -199,7 +210,7 @@ public class ControllerDescriptor
         return _page.get(mxi(pageNo)).ofs(0);
     }
 
-    private ByteString pageReadWhole(int pageNo)
+    private byte[] pageReadWhole(int pageNo)
     {
         pageNo = mxi(pageNo);
         return _page.get(pageNo)._readWhole.buildCmd(_page.get(pageNo)._pp, 0, null, _page.get(pageNo).siz());
@@ -222,7 +233,7 @@ public class ControllerDescriptor
 
     private boolean sendPageActivate(int thisPage, boolean b)
     {
-        if (pageActivate(thisPage).empty())
+        if (pageActivate(thisPage).length==0)
         {
             return true;
         }
@@ -254,7 +265,7 @@ public class ControllerDescriptor
         _blockReadTimeout = i;
     }
 
-    public void setBurnCommand(String cmd, int i)
+    public void setBurnCommand(String cmd, int i) throws CommandException
     {
         _page.get(i)._burnCommand.parse(cmd);
     }
@@ -293,7 +304,7 @@ public class ControllerDescriptor
 
     }
 
-    public void setPageActivate(String cmd, int i)
+    public void setPageActivate(String cmd, int i) throws CommandException
     {
         _page.get(i)._activate.parse(cmd);
 
@@ -311,19 +322,19 @@ public class ControllerDescriptor
 
     }
 
-    public void setPageReadChunk(String cmd, int i)
+    public void setPageReadChunk(String cmd, int i) throws CommandException
     {
         _page.get(i)._readChunk.parse(cmd);
 
     }
 
-    public void setPageReadValue(String cmd, int i)
+    public void setPageReadValue(String cmd, int i) throws CommandException
     {
         _page.get(i)._readValue.parse(cmd);
 
     }
 
-    public void setPageReadWhole(String cmd, int i)
+    public void setPageReadWhole(String cmd, int i) throws CommandException
     {
         _page.get(i)._readWhole.parse(cmd);
     }
@@ -335,19 +346,19 @@ public class ControllerDescriptor
 
     }
 
-    public void setPageWriteChunk(String cmd, int i)
+    public void setPageWriteChunk(String cmd, int i) throws CommandException
     {
         _page.get(i)._writeChunk.parse(cmd);
 
     }
 
-    public void setPageWriteValue(String cmd, int i)
+    public void setPageWriteValue(String cmd, int i) throws CommandException
     {
         _page.get(i)._writeValue.parse(cmd);
 
     }
 
-    public void setPageWriteWhole(String cmd, int i)
+    public void setPageWriteWhole(String cmd, int i) throws CommandException
     {
         _page.get(i)._writeWhole.parse(cmd);
 
@@ -418,9 +429,10 @@ public class ControllerDescriptor
         return symMap.get(name).varIndex();
     }
 
-    private ByteString xlate(String s)
+    public static byte[] xlate(String s)
     {
-        return new ByteString(s).xlate(); // Translate \nnn into chars and all
+        ByteString bs= new ByteString(s).xlate(); // Translate \nnn into chars and all
                                           // that.
+        return bs.bytes();
     }
 }
