@@ -2,7 +2,7 @@ package uk.org.smithfamily.msdisp.parser;
 
 import java.nio.ByteBuffer;
 
-public class MsComm
+public abstract class MsComm
 {
 
     void setChunking(boolean _writeBlocks, int _interWriteDelay)
@@ -40,10 +40,7 @@ public class MsComm
         
     }
 
-    public boolean write(ByteString pageReadWhole)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public abstract boolean write(byte[] bs)
+    ;
 
 }

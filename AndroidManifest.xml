@@ -3,8 +3,9 @@
       package="uk.org.smithfamily.msparser"
       android:versionCode="1"
       android:versionName="1.0">
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".MSParser"
+        <activity android:name="MSParserActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

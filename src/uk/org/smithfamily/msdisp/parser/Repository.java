@@ -1377,6 +1377,11 @@ public class Repository
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        catch (CommandException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         finally
         {
 
