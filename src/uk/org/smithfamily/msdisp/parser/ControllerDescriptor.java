@@ -44,6 +44,7 @@ public class ControllerDescriptor
 
     public ControllerDescriptor(MsComm io)
     {
+        this._io = io;
         _userVar = new ArrayList<Double>();
         for (int x = 0; x < maxPages; x++)
         {
@@ -213,7 +214,11 @@ public class ControllerDescriptor
     private byte[] pageReadWhole(int pageNo)
     {
         pageNo = mxi(pageNo);
-        return _page.get(pageNo)._readWhole.buildCmd(_page.get(pageNo)._pp, 0, null, _page.get(pageNo).siz());
+        final PageInfo pageInfo = _page.get(pageNo);
+        final CommandFormat _readWhole = pageInfo._readWhole;
+        final int siz = pageInfo.siz();
+        final byte[] buildCmd = _readWhole.buildCmd(pageInfo._pp, 0, null, siz);
+        return buildCmd;
     }
 
     public int pageSize(int n)
@@ -256,7 +261,8 @@ public class ControllerDescriptor
     {
         pageModified(page, false);
         sendPageActivate(page, true);
-        return _io.write(pageReadWhole(page));
+        final byte[] data = pageReadWhole(page);
+        return _io.write(data);
 
     }
 

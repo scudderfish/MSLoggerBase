@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-import uk.org.smithfamily.msdisp.parser.ByteString;
 import uk.org.smithfamily.msdisp.parser.MsComm;
 
 public class SocketComm extends MsComm

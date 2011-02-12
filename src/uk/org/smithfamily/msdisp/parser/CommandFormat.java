@@ -6,23 +6,24 @@ public class CommandFormat
 {
     boolean _empty;
 
-    int     _dSiz;                // Number of bytes in raw data part.
+    int     _dSiz; // Number of bytes in raw data part.
 
-    int     _pOfs;                // Location of bytes in command.
-    int     _pSiz;                // Size of data for this part of command.
-    int     _iOfs;                // Page ID, might be different than page
-                                   // number.
+    int     _pOfs; // Location of bytes in command.
+    int     _pSiz; // Size of data for this part of command.
+    int     _iOfs; // Page ID, might be different than page
+                    // number.
     int     _iSiz;
-    int     _cOfs;                // Byte count, used in "chunk" write
-                                   // commands.
+    int     _cOfs; // Byte count, used in "chunk" write
+                    // commands.
     int     _cSiz;
-    int     _oOfs;                // Offset part
+    int     _oOfs; // Offset part
     int     _oSiz;
-    int     _vOfs;                // Address part
-    int     _vSiz;                // Size of one value in bytes.
-    int     _vCnt;                // Number of values (not bytes).
+    int     _vOfs; // Address part
+    int     _vSiz; // Size of one value in bytes.
+    int     _vCnt; // Number of values (not bytes).
+    byte[]  _blt;
+    byte[]  _raw;
 
-   
     public CommandFormat()
     {
         _empty = true;
@@ -66,7 +67,8 @@ public class CommandFormat
 
     void parse(String rawCmd) throws CommandException
     {
-        byte[] _raw = ControllerDescriptor.xlate(rawCmd);
+        _raw = ControllerDescriptor.xlate(rawCmd);
+        _blt = new byte[_raw.length];
         _dSiz = 0; // Keep track of data characters.
         _oOfs = _cOfs = _pOfs = _vOfs = _iOfs = -1; // In case we are
                                                     // re-parsing.
@@ -76,10 +78,8 @@ public class CommandFormat
             if (_raw[i] != '%')
             {
                 _blt[iBlt++] = _raw[i];
-                _blt = _blt + _raw.charAt(i);
                 _dSiz++;
-            }
-            else
+            } else
             {
                 // Parse out optional "n" value.
                 i++;
@@ -120,62 +120,69 @@ public class CommandFormat
                     break;
 
                 default:
-                    throw new CommandException("Invalid format '%c' in '%s'" + rawCmd);
+                    throw new CommandException("Invalid format '%c' in '%s'"
+                            + rawCmd);
                 }
             }
         }
-        _empty = _dSiz + _oSiz + _pSiz + _vSiz + _cSiz == 0;
+        _empty = ((_dSiz + _oSiz + _pSiz + _vSiz + _cSiz) == 0);
     }
 
     public static final byte[] intToByteArray(int value)
     {
-        return new byte[] { (byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value };
-    }
-
-    private String xlate(String rawCmd)
-    {
-        // TODO Auto-generated method stub
-        return null;
+        return new byte[] { (byte) (value >>> 24), (byte) (value >>> 16),
+                (byte) (value >>> 8), (byte) value };
     }
 
     byte[] buildCmd(PageParameters pp, Integer ofs, List<Short> val, int cnt)
     {
         int n = _vSiz * cnt;
-        byte[] blt = new byte[_dSiz + _oSiz + _pSiz + _cSiz + n];
+        int siz = _dSiz + _oSiz + _pSiz + _cSiz + n;
+        if (siz > _blt.length)
+            _blt = resize(_blt,siz);
+        
         if (_pOfs >= 0)
         {
             // if (pp._bigEnd) bigEndIt(reinterpret_cast<BYTE *>(&pp._pageNo),
             // _pSiz);
             byte[] tmp = intToByteArray(pp._pageNo);
-            cpDWord(tmp, _pSiz, blt, _pOfs);
+            cpDWord(tmp, _pSiz, _blt, _pOfs);
         }
         if (_iOfs >= 0)
         { // Copy verbatim, assume user knows endian issues.
             for (int i = 0; i < _iSiz; i++)
             {
-                blt[_iOfs + i] = pp._pageIdentifier[i];
+                _blt[_iOfs + i] = pp._pageIdentifier[i];
             }
         }
         if (_oOfs >= 0)
         {
             // if (pp._bigEnd) bigEndIt(reinterpret_cast<BYTE *>(&ofs), _oSiz);
             byte[] tmp = intToByteArray(ofs);
-            cpDWord(tmp, _oSiz, blt, _oOfs);
+            cpDWord(tmp, _oSiz, _blt, _oOfs);
         }
         if (_cOfs >= 0)
         {
             // if (pp._bigEnd) bigEndIt(reinterpret_cast<BYTE *>(&cnt), _cSiz);
             byte[] tmp = intToByteArray(cnt);
-            cpDWord(tmp, _cSiz, blt, _cOfs);
+            cpDWord(tmp, _cSiz, _blt, _cOfs);
         }
         if (_vOfs >= 0)
         {
             for (int i = 0; i < n; i++)
             {
-                blt[_vOfs + i] = val.get(i).byteValue();
+                _blt[_vOfs + i] = val.get(i).byteValue();
             }
         }
-        return blt;
+        return _blt;
+    }
+
+    private byte[] resize(byte[] src, int siz)
+    {
+        byte[] dest = new byte[siz];
+        System.arraycopy(src, 0, dest, 0, src.length);
+
+        return dest;
     }
 
     private void cpDWord(byte[] src, int size, byte[] dst, int offset)
@@ -188,7 +195,7 @@ public class CommandFormat
 
     boolean empty(boolean chkDash/* =true */)
     {
-        return _empty || (chkDash && _raw.equals("-"));
+        return _empty || (chkDash && _raw[0] == '-');
     }
 
     int valueSize()
