@@ -13,8 +13,8 @@ public class ControllerDescriptor
     // We should read and compare, if possible.
     boolean                  _verifying;
     boolean                  _bigEnd;
-    byte[]               _versionInfo;
-    byte[]               _queryCommand;
+    byte[]                   _versionInfo;
+    byte[]                   _queryCommand;
     ByteString               _signature;
     String                   _sigFile;
 
@@ -30,8 +30,8 @@ public class ControllerDescriptor
     int                      _pageActivationDelay;
     // Total comm block timeout for a single read.
     int                      _blockReadTimeout;
-    byte[]               _ochGetCommand;
-    byte[]               _ochBurstCommand;
+    byte[]                   _ochGetCommand;
+    byte[]                   _ochBurstCommand;
     int                      _ochBlockSize;
     short[]                  _ochBuffer;
 
@@ -159,7 +159,7 @@ public class ControllerDescriptor
             _exprs.setOutputBuffer(_userVar);
             setBurnCommand("B", 0);
             setPageSize(125, 0);
-            setPageActivate("", 0);
+            setPageActivate("P%1p", 0);
             setPageIdentifier("", 0);
             setPageReadWhole("V", 0);
             setPageWriteValue("W%1o%1v", 0);
@@ -238,12 +238,12 @@ public class ControllerDescriptor
 
     private boolean sendPageActivate(int thisPage, boolean b)
     {
-        if (pageActivate(thisPage).length==0)
+        if (pageActivate(thisPage).length == 0)
         {
             return true;
         }
 
-        if ((thisPage != lastPage) || force)
+        if ((thisPage != lastPage) || force || b)
         {
             lastPage = thisPage;
             final boolean success = _io.write(pageActivate(thisPage));
@@ -437,8 +437,9 @@ public class ControllerDescriptor
 
     public static byte[] xlate(String s)
     {
-        ByteString bs= new ByteString(s).xlate(); // Translate \nnn into chars and all
-                                          // that.
+        ByteString bs = new ByteString(s).xlate(); // Translate \nnn into chars
+                                                   // and all
+        // that.
         return bs.bytes();
     }
 }
