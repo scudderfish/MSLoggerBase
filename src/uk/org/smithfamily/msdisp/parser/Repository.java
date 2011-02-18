@@ -452,11 +452,6 @@ public class Repository
                             {
                                 doRead(incRead, t.get(2), msg.level + 1);
                             }
-                            else
-                            {
-                                msg.send(MsgInfo.mError | MsgInfo.mExit, MessageFormat.format(
-                                        "The included file '{0} could not be opened.\n\nMegaTune is terminating.", t.get(2)));
-                            }
                         }
                         else if ("alert".equals(t.get(1)))
                         {

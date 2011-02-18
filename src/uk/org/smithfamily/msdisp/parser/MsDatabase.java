@@ -119,7 +119,7 @@ public class MsDatabase
         wwuX[9] = 160.0;
 
         boolean status = readConfig();
-        load(); // Attempt to grab data from controller.
+        //load(); // Attempt to grab data from controller.
 
         return status;
     }
