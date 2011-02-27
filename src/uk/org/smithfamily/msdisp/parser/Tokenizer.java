@@ -139,7 +139,7 @@ public class Tokenizer
 		return tokens.size();
 	}
 
-	double v(int idx)
+	public double v(int idx)
 	{
 		return idx < size() ? tokens.get(idx).num : 0.0;
 	}
@@ -159,7 +159,7 @@ public class Tokenizer
 		return "";
 	}
 
-	int size()
+	public int size()
 	{
 		return tokens.size();
 	}

@@ -31,11 +31,9 @@ public class MSParserActivity extends Activity
         Button prefBtn = (Button) findViewById(R.id.Button01);
         prefBtn.setOnClickListener(new OnClickListener()
         {
-
             public void onClick(View v)
             {
-                Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
-                startActivity(settingsActivity);
+                showPreferences();
             }
         });
         
@@ -44,13 +42,23 @@ public class MSParserActivity extends Activity
         {
             public void onClick(View v)
             {
-                Intent connectActivity = new Intent(getBaseContext(),ConnectActivity.class);
-                startActivity(connectActivity);
+                showConnection();
             }
         }
         );
     }
+    private void showPreferences()
+    {
+        Intent settingsActivity = new Intent(this, PreferencesActivity.class);
+        startActivity(settingsActivity);
+   
+    }
+    private void showConnection()
+    {
+        Intent connectActivity = new Intent(this,ConnectActivity.class);
+        startActivity(connectActivity);
 
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {

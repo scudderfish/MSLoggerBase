@@ -3,7 +3,7 @@ package uk.org.smithfamily.msdisp.parser.log;
 import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import uk.org.smithfamily.msdisp.parser.Repository;
 
-class DatalogEntry
+public class DatalogEntry
 {
     public enum entryType
     {
