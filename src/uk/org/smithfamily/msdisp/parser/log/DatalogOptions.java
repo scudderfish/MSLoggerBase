@@ -16,20 +16,20 @@ public class DatalogOptions
     boolean _dumpBefore          = false;
     boolean _dumpAfter           = false;
 
-    int     _enableWrite         = -1;
-    int     _markOnTrue          = -1;
-    String  _markerVar           = "";
-    String  _enableVar           = "";
+    public int     _enableWrite         = -1;
+    public int     _markOnTrue          = -1;
+    public String  _markerVar           = "";
+    public String  _enableVar           = "";
 
-    String  _delimiter           = ",";
-    String  _defaultLogExtension = ".csv";
+    public String  _delimiter           = ",";
+    public String  _defaultLogExtension = ".csv";
 
     private DatalogOptions()
     {
 
     }
 
-    void resolve()
+    public void resolve()
     {
         final MsDatabase mdb = MsDatabase.getInstance();
         if (!TextUtils.isEmpty(_markerVar))

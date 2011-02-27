@@ -8,7 +8,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
-public class Preferences extends PreferenceActivity
+public class PreferencesActivity extends PreferenceActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)

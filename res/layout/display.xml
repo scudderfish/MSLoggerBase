@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
+	android:orientation="horizontal" android:layout_gravity="center"
+	android:layout_margin="1px" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+  	<uk.org.smithfamily.msparser.widgets.Gauge
+		android:id="@+id/meter2" 
+		android:layout_gravity="center"
+		android:layout_width="wrap_content" 
+		android:layout_height="240px"
+		android:layout_margin="2px" 
+		dgs:rangeSegmentDegrees="270"
+		dgs:rangeSegmentOffset="90"
+		dgs:totalNotches="270"
+		dgs:incrementPerLargeNotch="1000" 
+		dgs:incrementPerSmallNotch="200"
+		dgs:scaleCenterValue="4000" 
+		dgs:scaleColor="0x9f004d0f"
+		dgs:scaleMinValue="0" 
+		dgs:scaleMaxValue="6000" 
+		dgs:rangeOkColor="0x9f00ff00"
+		dgs:rangeOkMinValue="0" 
+		dgs:rangeOkMaxValue="4500"
+		dgs:rangeWarningColor="0x9fff8800" 
+		dgs:rangeWarningMinValue="4500"
+		dgs:rangeWarningMaxValue="5000" 
+		dgs:rangeErrorColor="0x9fff0000"
+		dgs:rangeErrorMinValue="5000" 
+		dgs:rangeErrorMaxValue="6000"
+		dgs:unitTitle="RPM" 
+		dgs:lowerTitle="" 
+		dgs:upperTitle="" 
+		dgs:showGauge="false"
+		dgs:showHand="true" 
+		dgs:showRange="true" />
+		
+		
+</LinearLayout>
