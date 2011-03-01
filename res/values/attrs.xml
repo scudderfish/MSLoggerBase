@@ -4,13 +4,11 @@
 
 		<attr name="rangeSegmentDegrees" format="integer" />
 		<attr name="rangeSegmentOffset" format="integer"/>
-		<attr name="totalNotches" format="integer"/>
-
+	
 		<attr name="incrementPerLargeNotch" format="integer"/>
 		<attr name="incrementPerSmallNotch" format="integer"/>
 
 		<attr name="scaleColor" format="integer"/>
-		<attr name="scaleCenterValue" format="integer"/>
 		<attr name="scaleMinValue" format="integer"/>
 		<attr name="scaleMaxValue" format="integer"/>
 

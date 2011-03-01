@@ -10,12 +10,10 @@
 		android:layout_width="wrap_content" 
 		android:layout_height="240px"
 		android:layout_margin="2px" 
-		dgs:rangeSegmentDegrees="270"
+		dgs:rangeSegmentDegrees="135"
 		dgs:rangeSegmentOffset="90"
-		dgs:totalNotches="270"
 		dgs:incrementPerLargeNotch="1000" 
 		dgs:incrementPerSmallNotch="200"
-		dgs:scaleCenterValue="4000" 
 		dgs:scaleColor="0x9f004d0f"
 		dgs:scaleMinValue="0" 
 		dgs:scaleMaxValue="6000" 
@@ -31,7 +29,7 @@
 		dgs:unitTitle="RPM" 
 		dgs:lowerTitle="" 
 		dgs:upperTitle="" 
-		dgs:showGauge="false"
+		dgs:showGauge="true"
 		dgs:showHand="true" 
 		dgs:showRange="true" />
 		
