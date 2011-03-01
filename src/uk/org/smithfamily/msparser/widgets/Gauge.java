@@ -1,28 +1,28 @@
-// Copyright (c) 2010, Freddy Martens (http://atstechlab.wordpress.com), 
-// MindTheRobot (http://mindtherobot.com/blog/)  and contributors
+// Copyright (c) 2010, Freddy Martens (http://atstechlab.wordpress.com),
+// MindTheRobot (http://mindtherobot.com/blog/) and contributors
 // All rights reserved.
 //
-// Redistribution and use in source and binary forms, with or without modification, 
+// Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
 //
-//	* Redistributions of source code must retain the above copyright notice, 
-//	  this list of conditions and the following disclaimer.
-//	* Redistributions in binary form must reproduce the above copyright notice, 
-//	  this list of conditions and the following disclaimer in the documentation 
-//	  and/or other materials provided with the distribution.
-//	* Neither the name of Ondrej Zara nor the names of its contributors may be used 
-//	  to endorse or promote products derived from this software without specific 
-//	  prior written permission.
+// * Redistributions of source code must retain the above copyright notice,
+// this list of conditions and the following disclaimer.
+// * Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation
+// and/or other materials provided with the distribution.
+// * Neither the name of Ondrej Zara nor the names of its contributors may be used
+// to endorse or promote products derived from this software without specific
+// prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-// IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
-// OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+// OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package uk.org.smithfamily.msparser.widgets;
@@ -86,11 +86,7 @@ public final class Gauge extends View
     private Paint               backgroundPaint;
     // end drawing tools
 
-    private Bitmap              background;                                                                 // holds
-                                                                                                             // the
-                                                                                                             // cached
-                                                                                                             // static
-                                                                                                             // part
+    private Bitmap              background;                                                                 // holds the cached static part
 
     // scale configuration
     // Values passed as property. Defaults are set here.
@@ -99,30 +95,11 @@ public final class Gauge extends View
     private boolean             showRange              = false;
 
     private int                 rangeSegmentDegrees    = 270;
-    private int                 totalNotches           = 120;                                               // Total
-                                                                                                             // number
-                                                                                                             // of
-                                                                                                             // notches
-                                                                                                             // on
-                                                                                                             // the
-                                                                                                             // scale.
+    private int                 totalNotches           = 120;
     private int                 incrementPerLargeNotch = 10;
     private int                 incrementPerSmallNotch = 2;
 
     private int                 scaleColor             = 0x9f004d0f;
-    private int                 scaleCenterValue       = 0;                                                 // the
-                                                                                                             // one
-                                                                                                             // in
-                                                                                                             // the
-                                                                                                             // top
-                                                                                                             // center
-                                                                                                             // (12
-                                                                                                             // o'clock),
-                                                                                                             // this
-                                                                                                             // corresponds
-                                                                                                             // with
-                                                                                                             // -90
-                                                                                                             // degrees
     private int                 scaleMinValue          = -90;
     private int                 scaleMaxValue          = 120;
     private float               degreeMinValue         = 0;
@@ -146,77 +123,29 @@ public final class Gauge extends View
     private float               degreeErrorMinValue    = 0;
     private float               degreeErrorMaxValue    = 0;
 
-    private String              lowerTitle             = "www.ats-global.com";
-    private String              upperTitle             = "Visit http://atstechlab.wordpress.com";
-    private String              unitTitle              = "\u2103";
+    private String              upperTitle             = "";
+    private String              unitTitle              = "";
 
     // Fixed values.
-    private static final float  scalePosition          = 0.10f;                                             // The
-                                                                                                             // distance
-                                                                                                             // from
-                                                                                                             // the
-                                                                                                             // rim
-                                                                                                             // to
-                                                                                                             // the
-                                                                                                             // scale
-    private static final float  valuePosition          = 0.285f;                                            // The
-                                                                                                             // distance
-                                                                                                             // from
-                                                                                                             // the
-                                                                                                             // rim
-                                                                                                             // to
-                                                                                                             // the
-                                                                                                             // ranges
-    private static final float  rangePosition          = 0.122f;                                            // The
-                                                                                                             // distance
-                                                                                                             // from
-                                                                                                             // the
-                                                                                                             // rim
-                                                                                                             // to
-                                                                                                             // the
-                                                                                                             // ranges
-    private static final float  titlePosition          = 0.145f;                                            // The
-                                                                                                             // Distance
-                                                                                                             // from
-                                                                                                             // the
-                                                                                                             // rim
-                                                                                                             // to
-                                                                                                             // the
-                                                                                                             // titles
-    private static final float  unitPosition           = 0.300f;                                            // The
-                                                                                                             // distance
-                                                                                                             // from
-                                                                                                             // the
-                                                                                                             // rim
-                                                                                                             // to
-                                                                                                             // the
-                                                                                                             // unit
+    private static final float  scalePosition          = 0.10f;                                             // The distance from the rim to the scale
+    private static final float  valuePosition          = 0.285f;                                            // The distance from the rim to the ranges
+    private static final float  rangePosition          = 0.122f;                                            // The distance from the rim to the ranges
+    private static final float  titlePosition          = 0.145f;                                            // The distance from the rim to the titles
+    private static final float  unitPosition           = 0.300f;                                            // The distance from the rim to the unit
     private static final float  rimSize                = 0.02f;
 
     private float               degreesPerNotch        = (float) rangeSegmentDegrees / (float) totalNotches;
-    private static final int    centerDegrees          = -90;                                               // the
-                                                                                                             // one
-                                                                                                             // in
-                                                                                                             // the
-                                                                                                             // top
-                                                                                                             // center
-                                                                                                             // (12
-                                                                                                             // o'clock),
-                                                                                                             // this
-                                                                                                             // corresponds
-                                                                                                             // with
-                                                                                                             // -90
-                                                                                                             // degrees
+    private static final int    centerDegrees          = -90;                                               // the one in the top centre (12 o'clock), this corresponds with -90 degrees
 
     // hand dynamics
     private boolean             dialInitialized        = false;
-    private float               currentValue           = scaleCenterValue;
-    private float               targetValue            = scaleCenterValue;
+    private float               currentValue           = scaleMinValue;
+    private float               targetValue            = scaleMinValue;
     private float               dialVelocity           = 0.0f;
     private float               dialAcceleration       = 0.0f;
     private long                lastDialMoveTime       = -1L;
 
-    private int rangeSegmentOffset = 0;
+    private int                 rangeSegmentOffset     = 0;
 
     public Gauge(Context context)
     {
@@ -290,11 +219,9 @@ public final class Gauge extends View
             showHand = a.getBoolean(R.styleable.Dial_showHand, showHand);
 
             rangeSegmentDegrees = a.getInt(R.styleable.Dial_rangeSegmentDegrees, rangeSegmentDegrees);
-            rangeSegmentOffset = a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset );
-            totalNotches = a.getInt(R.styleable.Dial_totalNotches, totalNotches);
+            rangeSegmentOffset = a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset);
             incrementPerLargeNotch = a.getInt(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
             incrementPerSmallNotch = a.getInt(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
-            scaleCenterValue = a.getInt(R.styleable.Dial_scaleCenterValue, scaleCenterValue);
             scaleColor = a.getInt(R.styleable.Dial_scaleColor, scaleColor);
             scaleMinValue = a.getInt(R.styleable.Dial_scaleMinValue, scaleMinValue);
             scaleMaxValue = a.getInt(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
@@ -308,28 +235,26 @@ public final class Gauge extends View
             rangeErrorMinValue = a.getInt(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
             rangeErrorMaxValue = a.getInt(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
             String unitTitle = a.getString(R.styleable.Dial_unitTitle);
-            String lowerTitle = a.getString(R.styleable.Dial_lowerTitle);
             String upperTitle = a.getString(R.styleable.Dial_upperTitle);
             if (unitTitle != null)
                 this.unitTitle = unitTitle;
-            if (lowerTitle != null)
-                this.lowerTitle = lowerTitle;
+
             if (upperTitle != null)
                 this.upperTitle = upperTitle;
         }
-        degreeMinValue = valueToAngle(scaleMinValue) + centerDegrees;
-        degreeMaxValue = valueToAngle(scaleMaxValue) + centerDegrees;
-        degreeOkMinValue = valueToAngle(rangeOkMinValue) + centerDegrees;
-        degreeOkMaxValue = valueToAngle(rangeOkMaxValue) + centerDegrees;
-        degreeWarningMinValue = valueToAngle(rangeWarningMinValue) + centerDegrees;
-        degreeWarningMaxValue = valueToAngle(rangeWarningMaxValue) + centerDegrees;
-        degreeErrorMinValue = valueToAngle(rangeErrorMinValue) + centerDegrees;
-        degreeErrorMaxValue = valueToAngle(rangeErrorMaxValue) + centerDegrees;
+        degreeMinValue = valueToAngle(scaleMinValue)-90;
+        degreeMaxValue = valueToAngle(scaleMaxValue)-90;
+        degreeOkMinValue = valueToAngle(rangeOkMinValue)-90;
+        degreeOkMaxValue = valueToAngle(rangeOkMaxValue)-90;
+        degreeWarningMinValue = valueToAngle(rangeWarningMinValue)-90;
+        degreeWarningMaxValue = valueToAngle(rangeWarningMaxValue)-90;
+        degreeErrorMinValue = valueToAngle(rangeErrorMinValue)-90;
+        degreeErrorMaxValue = valueToAngle(rangeErrorMaxValue)-90;
 
         totalNotches = (scaleMaxValue - scaleMinValue) / incrementPerSmallNotch;
 
         degreesPerNotch = (float) rangeSegmentDegrees / (float) totalNotches;
-        
+
         setValue(scaleMinValue);
         initDrawingTools();
     }
@@ -537,7 +462,8 @@ public final class Gauge extends View
         if (mode == MeasureSpec.AT_MOST || mode == MeasureSpec.EXACTLY)
         {
             return size;
-        } else
+        }
+        else
         { // (mode == MeasureSpec.UNSPECIFIED)
             return getPreferredSize();
         }
@@ -571,7 +497,8 @@ public final class Gauge extends View
         if (background == null)
         {
             Log.w(TAG, "Background not created");
-        } else
+        }
+        else
         {
             canvas.drawBitmap(background, 0, 0, backgroundPaint);
         }
@@ -583,7 +510,8 @@ public final class Gauge extends View
         canvas.drawOval(scaleRect, scalePaint);
 
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        for (int i = 0; i <= totalNotches; ++i)
+        canvas.rotate(-rangeSegmentOffset, 0.5f, 0.5f);
+        for (int i = 0; i <= 360; ++i)
         {
             float y1 = scaleRect.top;
             float y2 = y1 - 0.015f;
@@ -601,17 +529,20 @@ public final class Gauge extends View
                     String valueString = Integer.toString(value);
                     // Draw the text 0.15 away from y3 which is the long nick.
                     canvas.drawText(valueString, 0.5f, y3 - 0.015f, scalePaint);
-                } else
+                }
+                else
                 {
                     Log.d("Gauge", "value=" + value + " scaleMin=" + scaleMinValue + " scaleMax=" + scaleMaxValue);
                 }
-            } else
+            }
+            else
             {
                 if (value >= scaleMinValue && value <= scaleMaxValue)
                 {
                     // draw a nick
                     canvas.drawLine(0.5f, y1, 0.5f, y2, scalePaint);
-                } else
+                }
+                else
                 {
                     Log.d("Gauge", "value=" + value + " scaleMin=" + scaleMinValue + " scaleMax=" + scaleMaxValue);
                 }
@@ -620,7 +551,6 @@ public final class Gauge extends View
 
             canvas.rotate(degreesPerNotch, 0.5f, 0.5f);
         }
-        canvas.rotate(rangeSegmentOffset,0.5f,0.5f);
         canvas.restore();
     }
 
@@ -636,15 +566,12 @@ public final class Gauge extends View
 
     private void drawTitle(Canvas canvas)
     {
-        // Use a vertical offset when printing the upper title. The upper and
-        // lower title
-        // use the same rectangular but the spacing between the title and the
-        // ranges
-        // is not equal for the upper and lower title and therefore, the upper
-        // title is
+        // Use a vertical offset when printing the upper title. The upper and lower title
+        // use the same rectangular but the spacing between the title and the ranges
+        // is not equal for the upper and lower title and therefore, the upper title is
         // moved downwards.
         canvas.drawTextOnPath(upperTitle, upperTitlePath, 0.0f, 0.02f, upperTitlePaint);
-        canvas.drawTextOnPath(lowerTitle, lowerTitlePath, 0.0f, 0.0f, lowerTitlePaint);
+        canvas.drawTextOnPath(Integer.toString((int) targetValue), lowerTitlePath, 0.0f, 0.0f, lowerTitlePaint);
         canvas.drawTextOnPath(unitTitle, unitPath, 0.0f, 0.0f, unitPaint);
     }
 
@@ -653,7 +580,7 @@ public final class Gauge extends View
         if (dialInitialized)
         {
             float angle = valueToAngle(currentValue);
-            angle -= rangeSegmentOffset;
+
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
             canvas.rotate(angle, 0.5f, 0.5f);
             canvas.drawPath(handPath, handPaint);
@@ -667,8 +594,7 @@ public final class Gauge extends View
     {
         if (dialInitialized)
         {
-            // When currentValue is not rotated, the tip of the hand points
-            // to n -90 degrees.
+            // When currentValue is not rotated, the tip of the hand points to n -90 degrees.
             float angle = valueToAngle(currentValue) - 90;
 
             if (targetValue <= rangeOkMaxValue)
@@ -699,10 +625,8 @@ public final class Gauge extends View
     }
 
     /*
-     * Translate a notch to a value for the scale. The notches are evenly spread
-     * across the scale, half of the notches on the left hand side and the other
-     * half on the right hand side. The raw value calculation uses a constant so
-     * that each notch represents a value n + 2.
+     * Translate a notch to a value for the scale. The notches are evenly spread across the scale, half of the notches on the left hand side and the other half on the right hand side. The raw value
+     * calculation uses a constant so that each notch represents a value n + 2.
      */
     private int notchToValue(int notch)
     {
@@ -713,14 +637,14 @@ public final class Gauge extends View
 
     private float valueToAngle(float value)
     {
-        // scaleCenterValue represents an angle of -90 degrees.
-        return (value - scaleCenterValue) / 2.0f * degreesPerNotch;
+        return (value / scaleMaxValue) * rangeSegmentDegrees - rangeSegmentOffset;
     }
 
     @Override
     protected void onDraw(Canvas canvas)
     {
         drawBackground(canvas);
+        drawTitle(canvas);
 
         float scale = (float) getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
@@ -774,7 +698,6 @@ public final class Gauge extends View
         {
             drawBezel(backgroundCanvas);
         }
-        drawTitle(backgroundCanvas);
     }
 
     // Move the hand slowly to the new position.
@@ -794,7 +717,8 @@ public final class Gauge extends View
             if (Math.abs(dialVelocity) < 90.0f)
             {
                 dialAcceleration = 5.0f * (targetValue - currentValue);
-            } else
+            }
+            else
             {
                 dialAcceleration = 0.0f;
             }
@@ -806,12 +730,14 @@ public final class Gauge extends View
                 dialVelocity = 0.0f;
                 dialAcceleration = 0.0f;
                 lastDialMoveTime = -1L;
-            } else
+            }
+            else
             {
                 lastDialMoveTime = System.currentTimeMillis();
             }
             invalidate();
-        } else
+        }
+        else
         {
             lastDialMoveTime = System.currentTimeMillis();
             calculateCurrentValue();

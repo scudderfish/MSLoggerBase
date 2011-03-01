@@ -24,7 +24,7 @@ public class MSParserActivity extends Activity
         setContentView(R.layout.main);
 
         // super.onCreate(savedInstanceState);
-        //Repository.getInstance().readInit(this);
+        // Repository.getInstance().readInit(this);
         // setContentView(R.layout.main);
         // setFont("fonts/ziska.ttf", R.id.text);
 
@@ -36,7 +36,7 @@ public class MSParserActivity extends Activity
                 showPreferences();
             }
         });
-        
+
         Button connectButton = (Button) findViewById(R.id.connectButton);
         connectButton.setOnClickListener(new OnClickListener()
         {
@@ -44,21 +44,23 @@ public class MSParserActivity extends Activity
             {
                 showConnection();
             }
-        }
-        );
+        });
     }
+
     private void showPreferences()
     {
         Intent settingsActivity = new Intent(this, PreferencesActivity.class);
         startActivity(settingsActivity);
-   
+
     }
+
     private void showConnection()
     {
-        Intent connectActivity = new Intent(this,ConnectActivity.class);
+        Intent connectActivity = new Intent(this, ConnectActivity.class);
         startActivity(connectActivity);
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
