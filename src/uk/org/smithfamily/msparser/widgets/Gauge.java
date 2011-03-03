@@ -27,11 +27,27 @@
 
 package uk.org.smithfamily.msparser.widgets;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import uk.org.smithfamily.msparser.R;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RadialGradient;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -39,7 +55,7 @@ import android.view.View;
 
 public final class Gauge extends View
 {
-
+    Handler                     h                      = new Handler();
     private static final String TAG                    = Gauge.class.getSimpleName();
 
     // drawing tools
@@ -96,30 +112,30 @@ public final class Gauge extends View
 
     private int                 rangeSegmentDegrees    = 270;
     private int                 totalNotches           = 120;
-    private int                 incrementPerLargeNotch = 10;
-    private int                 incrementPerSmallNotch = 2;
+    private float               incrementPerLargeNotch = 10;
+    private float               incrementPerSmallNotch = 2;
 
     private int                 scaleColor             = 0x9f004d0f;
-    private int                 scaleMinValue          = -90;
-    private int                 scaleMaxValue          = 120;
+    private float               scaleMinValue          = -90;
+    private float               scaleMaxValue          = 120;
     private float               degreeMinValue         = 0;
     private float               degreeMaxValue         = 0;
 
     private int                 rangeOkColor           = 0x9f00ff00;
-    private int                 rangeOkMinValue        = scaleMinValue;
-    private int                 rangeOkMaxValue        = 45;
+    private float               rangeOkMinValue        = scaleMinValue;
+    private float               rangeOkMaxValue        = 45;
     private float               degreeOkMinValue       = 0;
     private float               degreeOkMaxValue       = 0;
 
     private int                 rangeWarningColor      = 0x9fff8800;
-    private int                 rangeWarningMinValue   = rangeOkMaxValue;
-    private int                 rangeWarningMaxValue   = 80;
+    private float               rangeWarningMinValue   = rangeOkMaxValue;
+    private float               rangeWarningMaxValue   = 80;
     private float               degreeWarningMinValue  = 0;
     private float               degreeWarningMaxValue  = 0;
 
     private int                 rangeErrorColor        = 0x9fff0000;
-    private int                 rangeErrorMinValue     = rangeWarningMaxValue;
-    private int                 rangeErrorMaxValue     = 120;
+    private float               rangeErrorMinValue     = rangeWarningMaxValue;
+    private float               rangeErrorMaxValue     = 120;
     private float               degreeErrorMinValue    = 0;
     private float               degreeErrorMaxValue    = 0;
 
@@ -135,7 +151,6 @@ public final class Gauge extends View
     private static final float  rimSize                = 0.02f;
 
     private float               degreesPerNotch        = (float) rangeSegmentDegrees / (float) totalNotches;
-    private static final int    centerDegrees          = -90;                                               // the one in the top centre (12 o'clock), this corresponds with -90 degrees
 
     // hand dynamics
     private boolean             dialInitialized        = false;
@@ -146,6 +161,8 @@ public final class Gauge extends View
     private long                lastDialMoveTime       = -1L;
 
     private int                 rangeSegmentOffset     = 0;
+
+    private boolean             animating              = false;
 
     public Gauge(Context context)
     {
@@ -220,20 +237,20 @@ public final class Gauge extends View
 
             rangeSegmentDegrees = a.getInt(R.styleable.Dial_rangeSegmentDegrees, rangeSegmentDegrees);
             rangeSegmentOffset = a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset);
-            incrementPerLargeNotch = a.getInt(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
-            incrementPerSmallNotch = a.getInt(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
+            incrementPerLargeNotch = a.getFloat(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
+            incrementPerSmallNotch = a.getFloat(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
             scaleColor = a.getInt(R.styleable.Dial_scaleColor, scaleColor);
-            scaleMinValue = a.getInt(R.styleable.Dial_scaleMinValue, scaleMinValue);
-            scaleMaxValue = a.getInt(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
+            scaleMinValue = a.getFloat(R.styleable.Dial_scaleMinValue, scaleMinValue);
+            scaleMaxValue = a.getFloat(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
             rangeOkColor = a.getInt(R.styleable.Dial_rangeOkColor, rangeOkColor);
-            rangeOkMinValue = a.getInt(R.styleable.Dial_rangeOkMinValue, rangeOkMinValue);
-            rangeOkMaxValue = a.getInt(R.styleable.Dial_rangeOkMaxValue, rangeOkMaxValue);
+            rangeOkMinValue = a.getFloat(R.styleable.Dial_rangeOkMinValue, rangeOkMinValue);
+            rangeOkMaxValue = a.getFloat(R.styleable.Dial_rangeOkMaxValue, rangeOkMaxValue);
             rangeWarningColor = a.getInt(R.styleable.Dial_rangeWarningColor, rangeWarningColor);
-            rangeWarningMinValue = a.getInt(R.styleable.Dial_rangeWarningMinValue, rangeWarningMinValue);
-            rangeWarningMaxValue = a.getInt(R.styleable.Dial_rangeWarningMaxValue, rangeWarningMaxValue);
+            rangeWarningMinValue = a.getFloat(R.styleable.Dial_rangeWarningMinValue, rangeWarningMinValue);
+            rangeWarningMaxValue = a.getFloat(R.styleable.Dial_rangeWarningMaxValue, rangeWarningMaxValue);
             rangeErrorColor = a.getInt(R.styleable.Dial_rangeErrorColor, rangeErrorColor);
-            rangeErrorMinValue = a.getInt(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
-            rangeErrorMaxValue = a.getInt(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
+            rangeErrorMinValue = a.getFloat(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
+            rangeErrorMaxValue = a.getFloat(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
             String unitTitle = a.getString(R.styleable.Dial_unitTitle);
             String upperTitle = a.getString(R.styleable.Dial_upperTitle);
             if (unitTitle != null)
@@ -242,24 +259,27 @@ public final class Gauge extends View
             if (upperTitle != null)
                 this.upperTitle = upperTitle;
         }
-        degreeMinValue = valueToAngle(scaleMinValue)-90;
-        degreeMaxValue = valueToAngle(scaleMaxValue)-90;
-        degreeOkMinValue = valueToAngle(rangeOkMinValue)-90;
-        degreeOkMaxValue = valueToAngle(rangeOkMaxValue)-90;
-        degreeWarningMinValue = valueToAngle(rangeWarningMinValue)-90;
-        degreeWarningMaxValue = valueToAngle(rangeWarningMaxValue)-90;
-        degreeErrorMinValue = valueToAngle(rangeErrorMinValue)-90;
-        degreeErrorMaxValue = valueToAngle(rangeErrorMaxValue)-90;
-
-        totalNotches = (scaleMaxValue - scaleMinValue) / incrementPerSmallNotch;
+        totalNotches = (int) ((scaleMaxValue - scaleMinValue) / incrementPerSmallNotch);
 
         degreesPerNotch = (float) rangeSegmentDegrees / (float) totalNotches;
 
-        setValue(scaleMinValue);
-        initDrawingTools();
+        degreeMinValue = valueToAngle(scaleMinValue) - 90;
+        degreeMaxValue = valueToAngle(scaleMaxValue) - 90;
+        degreeOkMinValue = valueToAngle(rangeOkMinValue) - 90;
+        degreeOkMaxValue = valueToAngle(rangeOkMaxValue) - 90;
+        degreeWarningMinValue = valueToAngle(rangeWarningMinValue) - 90;
+        degreeWarningMaxValue = valueToAngle(rangeWarningMaxValue) - 90;
+        degreeErrorMinValue = valueToAngle(rangeErrorMinValue) - 90;
+        degreeErrorMaxValue = valueToAngle(rangeErrorMaxValue) - 90;
+
+        currentValue = scaleMinValue;
+        setValue((scaleMinValue));
+
+        initDrawingTools(context);
+
     }
 
-    private void initDrawingTools()
+    private void initDrawingTools(Context context)
     {
         rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -392,11 +412,12 @@ public final class Gauge extends View
         upperTitlePaint.setTextScaleX(0.8f);
 
         lowerTitlePaint = new Paint();
-        lowerTitlePaint.setColor(0xaf0c0c0c);
+        lowerTitlePaint.setColor(0xaf000000);
         lowerTitlePaint.setAntiAlias(true);
-        lowerTitlePaint.setTypeface(Typeface.DEFAULT_BOLD);
+        Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/ziska.ttf");
+        lowerTitlePaint.setTypeface(font);
         lowerTitlePaint.setTextAlign(Paint.Align.CENTER);
-        lowerTitlePaint.setTextSize(0.04f);
+        lowerTitlePaint.setTextSize(0.1f);
         lowerTitlePaint.setTextScaleX(0.8f);
 
         handPaint = new Paint();
@@ -413,28 +434,33 @@ public final class Gauge extends View
 
         backgroundPaint = new Paint();
         backgroundPaint.setFilterBitmap(true);
+        if (!this.isInEditMode())
+        {
+            unitPath = new Path();
+            unitPath.addArc(unitRect, 180.0f, 180.0f);
 
-        unitPath = new Path();
-        unitPath.addArc(unitRect, 180.0f, 180.0f);
+            upperTitlePath = new Path();
+            upperTitlePath.addArc(titleRect, 180.0f, 180.0f);
 
-        upperTitlePath = new Path();
-        upperTitlePath.addArc(titleRect, 180.0f, 180.0f);
-
-        lowerTitlePath = new Path();
-        lowerTitlePath.addArc(titleRect, -180.0f, -180.0f);
-
+            lowerTitlePath = new Path();
+            lowerTitlePath.addArc(titleRect, -180.0f, -180.0f);
+        }
         // The hand is drawn with the tip facing up. That means when the image
         // is not rotated, the tip
         // faces north. When the the image is rotated -90 degrees, the tip is
         // facing west and so on.
-        handPath = new Path(); // X Y
-        handPath.moveTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
-        handPath.lineTo(0.5f - 0.010f, 0.5f + 0.2f - 0.007f); // 0.490, 0.630
-        handPath.lineTo(0.5f - 0.002f, 0.5f - 0.40f); // 0.498, 0.100
-        handPath.lineTo(0.5f + 0.002f, 0.5f - 0.40f); // 0.502, 0.100
-        handPath.lineTo(0.5f + 0.010f, 0.5f + 0.2f - 0.007f); // 0.510, 0.630
-        handPath.lineTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
-        handPath.addCircle(0.5f, 0.5f, 0.025f, Path.Direction.CW);
+        if (!this.isInEditMode())
+        {
+            handPath = new Path(); // X Y
+
+            handPath.moveTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
+            handPath.lineTo(0.5f - 0.010f, 0.5f + 0.2f - 0.007f); // 0.490, 0.630
+            handPath.lineTo(0.5f - 0.002f, 0.5f - 0.40f); // 0.498, 0.100
+            handPath.lineTo(0.5f + 0.002f, 0.5f - 0.40f); // 0.502, 0.100
+            handPath.lineTo(0.5f + 0.010f, 0.5f + 0.2f - 0.007f); // 0.510, 0.630
+            handPath.lineTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
+            handPath.addCircle(0.5f, 0.5f, 0.025f, Path.Direction.CW);
+        }
     }
 
     @Override
@@ -489,7 +515,10 @@ public final class Gauge extends View
         // draw the inner rim circle
         canvas.drawOval(faceRect, rimCirclePaint);
         // draw the rim shadow inside the face
-        canvas.drawOval(faceRect, rimShadowPaint);
+        if (!this.isInEditMode())
+        {
+            canvas.drawOval(faceRect, rimShadowPaint);
+        }
     }
 
     private void drawBackground(Canvas canvas)
@@ -510,14 +539,14 @@ public final class Gauge extends View
         canvas.drawOval(scaleRect, scalePaint);
 
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.rotate(-rangeSegmentOffset, 0.5f, 0.5f);
-        for (int i = 0; i <= 360; ++i)
+        canvas.rotate(valueToAngle(scaleMinValue), 0.5f, 0.5f);
+        for (int i = 0; i <= this.totalNotches; ++i)
         {
             float y1 = scaleRect.top;
             float y2 = y1 - 0.015f;
             float y3 = y1 - 0.025f;
 
-            int value = notchToValue(i);
+            float value = notchToValue(i);
 
             if (i % (incrementPerLargeNotch / incrementPerSmallNotch) == 0)
             {
@@ -526,7 +555,15 @@ public final class Gauge extends View
                     // draw a nick
                     canvas.drawLine(0.5f, y1, 0.5f, y3, scalePaint);
 
-                    String valueString = Integer.toString(value);
+                    String valueString;
+                    if (incrementPerSmallNotch >= 1)
+                    {
+                        valueString = Integer.toString((int) value);
+                    }
+                    else
+                    {
+                        valueString = Float.toString(value);
+                    }
                     // Draw the text 0.15 away from y3 which is the long nick.
                     canvas.drawText(valueString, 0.5f, y3 - 0.015f, scalePaint);
                 }
@@ -570,14 +607,17 @@ public final class Gauge extends View
         // use the same rectangular but the spacing between the title and the ranges
         // is not equal for the upper and lower title and therefore, the upper title is
         // moved downwards.
-        canvas.drawTextOnPath(upperTitle, upperTitlePath, 0.0f, 0.02f, upperTitlePaint);
-        canvas.drawTextOnPath(Integer.toString((int) targetValue), lowerTitlePath, 0.0f, 0.0f, lowerTitlePaint);
-        canvas.drawTextOnPath(unitTitle, unitPath, 0.0f, 0.0f, unitPaint);
+        if (!this.isInEditMode())
+        {
+            canvas.drawTextOnPath(upperTitle, upperTitlePath, 0.0f, 0.02f, upperTitlePaint);
+            canvas.drawTextOnPath(Integer.toString((int) targetValue), lowerTitlePath, 0.0f, 0.0f, lowerTitlePaint);
+            canvas.drawTextOnPath(unitTitle, unitPath, 0.0f, 0.0f, unitPaint);
+        }
     }
 
     private void drawHand(Canvas canvas)
     {
-        if (dialInitialized)
+        if (dialInitialized && !this.isInEditMode())
         {
             float angle = valueToAngle(currentValue);
 
@@ -597,22 +637,21 @@ public final class Gauge extends View
             // When currentValue is not rotated, the tip of the hand points to n -90 degrees.
             float angle = valueToAngle(currentValue) - 90;
 
+            Paint colour = valueOkPaint;
             if (targetValue <= rangeOkMaxValue)
             {
-                canvas.drawArc(valueRect, degreeMinValue, angle - degreeMinValue, false, valueOkPaint);
+                colour = valueOkPaint;
             }
             if ((targetValue > rangeOkMaxValue) && (targetValue <= rangeWarningMaxValue))
             {
-                canvas.drawArc(valueRect, degreeMinValue, degreeOkMaxValue - degreeMinValue, false, valueOkPaint);
-                canvas.drawArc(valueRect, degreeWarningMinValue, angle - degreeWarningMinValue, false, valueWarningPaint);
+                colour = valueWarningPaint;
             }
             if ((targetValue > rangeWarningMaxValue) && (targetValue <= rangeErrorMaxValue))
             {
-                canvas.drawArc(valueRect, degreeMinValue, degreeOkMaxValue - degreeMinValue, false, valueOkPaint);
-                canvas.drawArc(valueRect, degreeWarningMinValue, degreeWarningMaxValue - degreeWarningMinValue, false,
-                        valueWarningPaint);
-                canvas.drawArc(valueRect, degreeErrorMinValue, angle - degreeErrorMinValue, false, valueErrorPaint);
+                colour = valueErrorPaint;
             }
+            canvas.drawArc(valueRect, degreeMinValue, angle - degreeMinValue, false, colour);
+
         }
     }
 
@@ -628,23 +667,25 @@ public final class Gauge extends View
      * Translate a notch to a value for the scale. The notches are evenly spread across the scale, half of the notches on the left hand side and the other half on the right hand side. The raw value
      * calculation uses a constant so that each notch represents a value n + 2.
      */
-    private int notchToValue(int notch)
+    private float notchToValue(int notch)
     {
-        int rawValue = notch * incrementPerSmallNotch;
-        int shiftedValue = rawValue;// + scaleCenterValue;
+        float rawValue = notch * incrementPerSmallNotch;
+        float shiftedValue = rawValue + scaleMinValue;
         return shiftedValue;
     }
 
     private float valueToAngle(float value)
     {
-        return (value / scaleMaxValue) * rangeSegmentDegrees - rangeSegmentOffset;
+        float scaleRange = scaleMaxValue - scaleMinValue;
+        float scaledValue = (value - scaleMinValue) / scaleRange;
+        float angle = scaledValue * rangeSegmentDegrees - rangeSegmentOffset;
+        return angle;
     }
 
     @Override
     protected void onDraw(Canvas canvas)
     {
         drawBackground(canvas);
-        drawTitle(canvas);
 
         float scale = (float) getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
@@ -660,6 +701,7 @@ public final class Gauge extends View
         {
             drawHand(canvas);
         }
+        drawTitle(canvas);
 
         canvas.restore();
 
@@ -760,6 +802,63 @@ public final class Gauge extends View
     public float getValue()
     {
         return targetValue;
+    }
+
+    public float getScaleMinValue()
+    {
+        return scaleMinValue;
+    }
+
+    public void setScaleMinValue(float scaleMinValue)
+    {
+        this.scaleMinValue = scaleMinValue;
+    }
+
+    public float getScaleMaxValue()
+    {
+        return scaleMaxValue;
+    }
+
+    public void setScaleMaxValue(float scaleMaxValue)
+    {
+        this.scaleMaxValue = scaleMaxValue;
+    }
+
+    public String getUpperTitle()
+    {
+        return upperTitle;
+    }
+
+    public void setUpperTitle(String upperTitle)
+    {
+        this.upperTitle = upperTitle;
+    }
+
+    public String getUnitTitle()
+    {
+        return unitTitle;
+    }
+
+    public void setUnitTitle(String unitTitle)
+    {
+        this.unitTitle = unitTitle;
+    }
+
+    public float getCurrentValue()
+    {
+        return currentValue;
+    }
+
+    public void startAnimation()
+    {
+        if (animating)
+            return;
+        animating = true;
+    }
+
+    public void stopAnimation()
+    {
+        animating = false;
     }
 
 }

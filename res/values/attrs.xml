@@ -5,24 +5,24 @@
 		<attr name="rangeSegmentDegrees" format="integer" />
 		<attr name="rangeSegmentOffset" format="integer"/>
 	
-		<attr name="incrementPerLargeNotch" format="integer"/>
-		<attr name="incrementPerSmallNotch" format="integer"/>
+		<attr name="incrementPerLargeNotch" format="float"/>
+		<attr name="incrementPerSmallNotch" format="float"/>
 
 		<attr name="scaleColor" format="integer"/>
-		<attr name="scaleMinValue" format="integer"/>
-		<attr name="scaleMaxValue" format="integer"/>
+		<attr name="scaleMinValue" format="float"/>
+		<attr name="scaleMaxValue" format="float"/>
 
 		<attr name="rangeOkColor" format="integer"/>
-		<attr name="rangeOkMinValue" format="integer"/>
-		<attr name="rangeOkMaxValue" format="integer"/>
+		<attr name="rangeOkMinValue" format="float"/>
+		<attr name="rangeOkMaxValue" format="float"/>
 
 		<attr name="rangeWarningColor" format="integer"/>
-		<attr name="rangeWarningMinValue" format="integer"/>
-		<attr name="rangeWarningMaxValue" format="integer"/>
+		<attr name="rangeWarningMinValue" format="float"/>
+		<attr name="rangeWarningMaxValue" format="float"/>
 
 		<attr name="rangeErrorColor" format="integer"/>
-		<attr name="rangeErrorMinValue" format="integer"/>
-		<attr name="rangeErrorMaxValue" format="integer"/>
+		<attr name="rangeErrorMinValue" format="float"/>
+		<attr name="rangeErrorMaxValue" format="float"/>
 
 		<attr name="upperTitle" format="string"/>
 		<attr name="lowerTitle" format="string"/>
