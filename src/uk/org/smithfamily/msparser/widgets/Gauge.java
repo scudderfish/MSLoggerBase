@@ -159,8 +159,6 @@ public final class Gauge extends View
 
     private int                 rangeSegmentOffset     = 0;
 
-    private boolean             animating              = false;
-
     public Gauge(Context context)
     {
         super(context);
@@ -845,17 +843,4 @@ public final class Gauge extends View
     {
         return currentValue;
     }
-
-    public void startAnimation()
-    {
-        if (animating)
-            return;
-        animating = true;
-    }
-
-    public void stopAnimation()
-    {
-        animating = false;
-    }
-
 }
