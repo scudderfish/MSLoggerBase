@@ -27,9 +27,6 @@
 
 package uk.org.smithfamily.msparser.widgets;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import uk.org.smithfamily.msparser.R;
 import android.content.Context;
 import android.content.res.TypedArray;
