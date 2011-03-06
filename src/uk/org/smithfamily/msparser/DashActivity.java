@@ -7,7 +7,9 @@ import uk.org.smithfamily.msparser.widgets.Gauge;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class DashActivity extends Activity
 {
@@ -17,8 +19,10 @@ public class DashActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.display);
+        //setContentView(R.layout.display);
 
+        loadDashboard();
+        
         Button minBut = (Button) findViewById(R.id.MinButton);
         Button maxBut = (Button) findViewById(R.id.MaxButtob);
         gauges.add((Gauge) findViewById(R.id.RPMMeter));
@@ -51,6 +55,21 @@ public class DashActivity extends Activity
             }
         });
 
+    }
+
+    private void loadDashboard()
+    {
+        LinearLayout parent = new LinearLayout(this);
+        parent.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout gaugeRow = new LinearLayout(this);
+        gaugeRow.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout buttonRow = new LinearLayout(this);
+        buttonRow.setOrientation(LinearLayout.HORIZONTAL);
+        parent.addView(gaugeRow);
+        parent.addView(buttonRow);
+        
+        
+        setContentView(parent);
     }
 
 }
