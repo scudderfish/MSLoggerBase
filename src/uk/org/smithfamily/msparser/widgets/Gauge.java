@@ -27,6 +27,9 @@
 
 package uk.org.smithfamily.msparser.widgets;
 
+import java.io.Serializable;
+
+import uk.org.smithfamily.msdisp.parser.ui.GaugeConfiguration;
 import uk.org.smithfamily.msparser.R;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -162,7 +165,13 @@ public final class Gauge extends View
     public Gauge(Context context)
     {
         super(context);
-        init(context, null);
+        init(context, (AttributeSet)null);
+    }
+
+    public Gauge(Context context,GaugeConfiguration config)
+    {
+        super(context);
+        init(context,config);
     }
 
     public Gauge(Context context, AttributeSet attrs)
@@ -219,6 +228,42 @@ public final class Gauge extends View
         state.putLong("lastDialMoveTime", lastDialMoveTime);
         return state;
     }
+    private void init(Context context, GaugeConfiguration config)
+    {
+        if(context != null && config != null)
+        {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
+            showRange = config.getShowRange();// a.getBoolean(R.styleable.Dial_showRange, showRange);
+            showGauge = config.getShowGauge();//a.getBoolean(R.styleable.Dial_showGauge, showGauge);
+            showHand = config.getShowHand();//a.getBoolean(R.styleable.Dial_showHand, showHand);
+
+            rangeSegmentDegrees = config.getRangeSegmentDegrees();//a.getInt(R.styleable.Dial_rangeSegmentDegrees, rangeSegmentDegrees);
+            rangeSegmentOffset = config.getRangeSegmentOffset();//a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset);
+            incrementPerLargeNotch = config.getIncrementPerLargeNotch();//a.getFloat(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
+            incrementPerSmallNotch = config.getIncrementPerSmallNotch();//a.getFloat(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
+            scaleColor = a.getInt(R.styleable.Dial_scaleColor, scaleColor);
+            scaleMinValue = a.getFloat(R.styleable.Dial_scaleMinValue, scaleMinValue);
+            scaleMaxValue = a.getFloat(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
+            rangeOkColor = a.getInt(R.styleable.Dial_rangeOkColor, rangeOkColor);
+            rangeOkMinValue = a.getFloat(R.styleable.Dial_rangeOkMinValue, rangeOkMinValue);
+            rangeOkMaxValue = a.getFloat(R.styleable.Dial_rangeOkMaxValue, rangeOkMaxValue);
+            rangeWarningColor = a.getInt(R.styleable.Dial_rangeWarningColor, rangeWarningColor);
+            rangeWarningMinValue = a.getFloat(R.styleable.Dial_rangeWarningMinValue, rangeWarningMinValue);
+            rangeWarningMaxValue = a.getFloat(R.styleable.Dial_rangeWarningMaxValue, rangeWarningMaxValue);
+            rangeErrorColor = a.getInt(R.styleable.Dial_rangeErrorColor, rangeErrorColor);
+            rangeErrorMinValue = a.getFloat(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
+            rangeErrorMaxValue = a.getFloat(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
+            String unitTitle = a.getString(R.styleable.Dial_unitTitle);
+            String upperTitle = a.getString(R.styleable.Dial_upperTitle);
+            if (unitTitle != null)
+                this.unitTitle = unitTitle;
+
+            if (upperTitle != null)
+                this.upperTitle = upperTitle;
+
+        }
+        init(context);
+    }
 
     private void init(Context context, AttributeSet attrs)
     {
@@ -254,6 +299,12 @@ public final class Gauge extends View
             if (upperTitle != null)
                 this.upperTitle = upperTitle;
         }
+        init(context);
+
+    }
+
+    private void init(Context context)
+    {
         totalNotches = (int) ((scaleMaxValue - scaleMinValue) / incrementPerSmallNotch);
 
         degreesPerNotch = (float) rangeSegmentDegrees / (float) totalNotches;
@@ -271,7 +322,6 @@ public final class Gauge extends View
         setValue((scaleMinValue));
 
         initDrawingTools(context);
-
     }
 
     private void initDrawingTools(Context context)

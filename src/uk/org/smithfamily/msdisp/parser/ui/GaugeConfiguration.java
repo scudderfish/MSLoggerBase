@@ -109,4 +109,46 @@ public class GaugeConfiguration
         return super.equals(o);
     }
 
+    public boolean getShowRange()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean getShowHand()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean getShowGauge()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public int getRangeSegmentDegrees()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public int getRangeSegmentOffset()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public float getIncrementPerLargeNotch()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public float getIncrementPerSmallNotch()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }
