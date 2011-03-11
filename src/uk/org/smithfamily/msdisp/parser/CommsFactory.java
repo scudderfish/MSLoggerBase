@@ -18,4 +18,16 @@ public class CommsFactory
     {
         return new SocketComm();
     }
+
+    public String probe()
+    {
+        String response = "MS1/Extra format 029y3 *********";
+        
+        
+        
+        
+        return response;
+        
+    
+    }
 }

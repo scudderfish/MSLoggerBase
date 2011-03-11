@@ -28,11 +28,7 @@ public abstract class MsComm
         return 0;
     }
 
-    public boolean read(ByteBuffer bytes, int nBytes)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public abstract boolean read(ByteBuffer bytes, int nBytes);
 
     public void flush()
     {

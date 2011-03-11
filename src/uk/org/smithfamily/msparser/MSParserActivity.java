@@ -23,11 +23,12 @@ public class MSParserActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // super.onCreate(savedInstanceState);
-        // Repository.getInstance().readInit(this);
-        // setContentView(R.layout.main);
-        // setFont("fonts/ziska.ttf", R.id.text);
-
+        super.onCreate(savedInstanceState);
+        //Debug.startMethodTracing("Repo");
+        Repository.getInstance().readInit(this);
+        //Debug.stopMethodTracing();
+        setContentView(R.layout.main);
+        
         Button prefBtn = (Button) findViewById(R.id.Button01);
         prefBtn.setOnClickListener(new OnClickListener()
         {

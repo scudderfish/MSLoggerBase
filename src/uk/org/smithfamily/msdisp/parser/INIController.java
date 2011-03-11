@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -17,6 +18,8 @@ public class INIController
     private static final INIController instance = new INIController();
     private Map<String, String>        inis     = new HashMap<String, String>();
 
+    private String[] probeCommands={"S","Q"};
+    
     public static final INIController getInstance()
     {
         return instance;
@@ -71,5 +74,37 @@ public class INIController
                 break;
             }
         }
+    }
+
+    public String probe(String defaultResult)
+    {
+        String result = defaultResult;
+        MsComm comm = CommsFactory.getInstance().getComInstance();
+        int nBytes = 1024;
+        ByteBuffer pBytes = ByteBuffer.allocate(nBytes );
+        boolean found = false;
+        String response = null;
+        for(String probeCommand : probeCommands)
+        {
+            for (int x=0; x < 3 && !found ; x++)
+            {
+                comm.write(probeCommand.getBytes());
+                
+                comm.read(pBytes, nBytes);
+                
+                response = new String(pBytes.array());
+                pBytes.rewind();
+                
+                if(inis.containsKey(response))
+                {
+                    found = true;
+                    result = inis.get(response);
+                }
+            }
+        }
+    
+    
+        return result;
+    
     }
 }

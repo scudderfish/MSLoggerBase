@@ -73,6 +73,7 @@ public class SocketComm extends MsComm
         try
         {
             s.getOutputStream().write(buf);
+            s.getOutputStream().flush();
         }
         catch (IOException e)
         {

@@ -5,65 +5,67 @@
 	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
 	android:orientation="vertical" android:layout_gravity="center"
 	android:layout_margin="1px" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" >
-
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
-		android:orientation="horizontal" android:layout_gravity="center"
+	android:layout_height="fill_parent">
+	<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+		xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser" 
+		android:orientation="horizontal" android:layout_gravity="center" android:layout_margin="1px" 
+		android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1" 
+		> <uk.org.smithfamily.msparser.widgets.Gauge android:id="@+id/RPMMeter" android:layout_gravity="center" 
+		android:layout_width="wrap_content" android:layout_height="240px" android:layout_margin="2px" 
+		dgs:rangeSegmentDegrees="270" dgs:rangeSegmentOffset="180" dgs:incrementPerLargeNotch="1000" 
+		dgs:incrementPerSmallNotch="200" dgs:scaleColor="0x9f004d0f" dgs:scaleMinValue="0" 
+		dgs:scaleMaxValue="6000" dgs:rangeOkColor="0x9f00ff00" dgs:rangeOkMinValue="0" 
+		dgs:rangeOkMaxValue="4500" dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="4500" 
+		dgs:rangeWarningMaxValue="5000" dgs:rangeErrorColor="0x9fff0000" dgs:rangeErrorMinValue="5000" 
+		dgs:rangeErrorMaxValue="6000" dgs:unitTitle="RPM" dgs:lowerTitle="" dgs:upperTitle="" 
+		dgs:showGauge="true" dgs:showHand="true" dgs:showRange="true" /> <uk.org.smithfamily.msparser.widgets.Gauge 
+		android:id="@+id/MAPMeter" android:layout_gravity="center" android:layout_width="wrap_content" 
+		android:layout_height="240px" android:layout_margin="2px" dgs:rangeSegmentDegrees="180" 
+		dgs:rangeSegmentOffset="90" dgs:incrementPerLargeNotch="20" dgs:incrementPerSmallNotch="5" 
+		dgs:scaleColor="0x9f004d0f" dgs:scaleMinValue="0" dgs:scaleMaxValue="100" 
+		dgs:rangeOkColor="0x9f00ff00" dgs:rangeOkMinValue="0" dgs:rangeOkMaxValue="100" 
+		dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="100" dgs:rangeWarningMaxValue="100" 
+		dgs:rangeErrorColor="0x9fff0000" dgs:rangeErrorMinValue="100" dgs:rangeErrorMaxValue="100" 
+		dgs:unitTitle="MAP" dgs:lowerTitle="" dgs:upperTitle="" dgs:showGauge="true" 
+		dgs:showHand="true" dgs:showRange="true" /> <uk.org.smithfamily.msparser.widgets.Gauge 
+		android:id="@+id/AFRMeter" android:layout_gravity="center" android:layout_width="wrap_content" 
+		android:layout_height="360px" android:layout_margin="2px" dgs:rangeSegmentDegrees="135" 
+		dgs:rangeSegmentOffset="45" dgs:incrementPerLargeNotch="2" dgs:incrementPerSmallNotch="0.2" 
+		dgs:scaleColor="0x9f004d0f" dgs:scaleMinValue="10" dgs:scaleMaxValue="20" 
+		dgs:rangeOkColor="0x9f00ff00" dgs:rangeOkMinValue="10" dgs:rangeOkMaxValue="15.5" 
+		dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="15.5" dgs:rangeWarningMaxValue="16.5" 
+		dgs:rangeErrorColor="0x9fff0000" dgs:rangeErrorMinValue="16.5" dgs:rangeErrorMaxValue="20" 
+		dgs:unitTitle="AFR" dgs:lowerTitle="" dgs:upperTitle="" dgs:showGauge="true" 
+		dgs:showHand="true" dgs:showRange="true" /> </LinearLayout> -->
+	<TableLayout android:id="@+id/tableLayout1"
+		android:layout_weight="1" android:layout_height="match_parent"
+		android:layout_width="match_parent">
+		<TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content"
+			android:layout_weight="1" android:layout_height="wrap_content">
+			<TextView android:id="@+id/RPMLabel" style="@style/Label"
+				android:text="RPM" ></TextView>
+			<uk.org.smithfamily.msparser.widgets.NumericIndicator android:id="@+id/RPMInd" style="@style/Indicator" android:text="3100"></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content"
+			android:layout_weight="1" android:layout_height="wrap_content">
+			<TextView android:id="@+id/MAPLabel" android:text="MAP" style="@style/Label"></TextView>
+			<uk.org.smithfamily.msparser.widgets.NumericIndicator android:id="@+id/MAPInd" style="@style/Indicator"></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content"
+			android:layout_weight="1" android:layout_height="wrap_content">
+			<TextView  android:id="@+id/AFRLabel" android:text="AFR"  
+				style="@style/Label"></TextView>
+			<uk.org.smithfamily.msparser.widgets.NumericIndicator android:id="@+id/AFRInd" style="@style/Indicator"></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+		</TableRow>
+	</TableLayout>
+	<LinearLayout android:id="@+id/linearLayout1"
 		android:layout_margin="1px" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:layout_weight="1"
-		>
-		<uk.org.smithfamily.msparser.widgets.Gauge
-			android:id="@+id/RPMMeter" android:layout_gravity="center"
-			android:layout_width="wrap_content" android:layout_height="240px"
-			android:layout_margin="2px" dgs:rangeSegmentDegrees="270"
-			dgs:rangeSegmentOffset="180" dgs:incrementPerLargeNotch="1000"
-			dgs:incrementPerSmallNotch="200" dgs:scaleColor="0x9f004d0f"
-			dgs:scaleMinValue="0" dgs:scaleMaxValue="6000" dgs:rangeOkColor="0x9f00ff00"
-			dgs:rangeOkMinValue="0" dgs:rangeOkMaxValue="4500"
-			dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="4500"
-			dgs:rangeWarningMaxValue="5000" dgs:rangeErrorColor="0x9fff0000"
-			dgs:rangeErrorMinValue="5000" dgs:rangeErrorMaxValue="6000"
-			dgs:unitTitle="RPM" dgs:lowerTitle="" dgs:upperTitle=""
-			dgs:showGauge="true" dgs:showHand="true" dgs:showRange="true" />
-		
-
-		<uk.org.smithfamily.msparser.widgets.Gauge
-			android:id="@+id/MAPMeter" android:layout_gravity="center"
-			android:layout_width="wrap_content" android:layout_height="240px"
-			android:layout_margin="2px" dgs:rangeSegmentDegrees="180"
-			dgs:rangeSegmentOffset="90" dgs:incrementPerLargeNotch="20"
-			dgs:incrementPerSmallNotch="5" dgs:scaleColor="0x9f004d0f"
-			dgs:scaleMinValue="0" dgs:scaleMaxValue="100" dgs:rangeOkColor="0x9f00ff00"
-			dgs:rangeOkMinValue="0" dgs:rangeOkMaxValue="100"
-			dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="100"
-			dgs:rangeWarningMaxValue="100" dgs:rangeErrorColor="0x9fff0000"
-			dgs:rangeErrorMinValue="100" dgs:rangeErrorMaxValue="100"
-			dgs:unitTitle="MAP" dgs:lowerTitle="" dgs:upperTitle=""
-			dgs:showGauge="true" dgs:showHand="true" dgs:showRange="true" />
-
-		<uk.org.smithfamily.msparser.widgets.Gauge
-			android:id="@+id/AFRMeter" android:layout_gravity="center"
-			android:layout_width="wrap_content" android:layout_height="360px"
-			android:layout_margin="2px" dgs:rangeSegmentDegrees="135"
-			dgs:rangeSegmentOffset="45" dgs:incrementPerLargeNotch="2"
-			dgs:incrementPerSmallNotch="0.2" dgs:scaleColor="0x9f004d0f"
-			dgs:scaleMinValue="10" dgs:scaleMaxValue="20" dgs:rangeOkColor="0x9f00ff00"
-			dgs:rangeOkMinValue="10" dgs:rangeOkMaxValue="15.5"
-			dgs:rangeWarningColor="0x9fff8800" dgs:rangeWarningMinValue="15.5"
-			dgs:rangeWarningMaxValue="16.5" dgs:rangeErrorColor="0x9fff0000"
-			dgs:rangeErrorMinValue="16.5" dgs:rangeErrorMaxValue="20"
-			dgs:unitTitle="AFR" dgs:lowerTitle="" dgs:upperTitle=""
-			dgs:showGauge="true" dgs:showHand="true" dgs:showRange="true" />
-	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
-		android:orientation="horizontal" android:layout_gravity="center"
-		android:layout_margin="1px" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:layout_weight="8">
-	
-	<Button android:text="Min" android:id="@+id/MinButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"></Button>
-	<Button android:text="Max" android:id="@+id/MaxButtob" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"></Button>
+		android:layout_gravity="center" android:orientation="horizontal"
+		android:layout_weight="5" android:layout_height="fill_parent">
+		<Button android:id="@+id/MinButton" android:layout_width="wrap_content"
+			android:text="Min" android:layout_weight="1" android:layout_height="wrap_content"></Button>
+		<Button android:id="@+id/MaxButtob" android:layout_width="wrap_content"
+			android:text="Max" android:layout_weight="1" android:layout_height="wrap_content"></Button>
 	</LinearLayout>
 
 </LinearLayout>
