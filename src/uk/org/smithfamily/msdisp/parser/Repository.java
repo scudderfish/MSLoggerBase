@@ -250,6 +250,7 @@ public class Repository
     {
         this.context = c;
         mdb = MsDatabase.getInstance();
+        INIController.getInstance().initialise(c);
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
                                                           // this isn't changed.
@@ -259,7 +260,7 @@ public class Repository
 
         mdb.init();
 
-        String defaultFilename = "ecuDef/msns-extra.29y.ini";
+        String defaultFilename = INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
 
         try
         {
@@ -305,14 +306,14 @@ public class Repository
     {
         for (String pageName : pageMap.keySet())
         {
-            Map<String, GaugeConfiguration> gaugeMap = pageMap.get(pageName);
+            Map<String, GaugeConfiguration> gaugeMap = getPage(pageName);
 
             for (String gaugeName : gaugeMap.keySet())
             {
                 GaugeConfiguration g = gaugeMap.get(gaugeName);
                 if (g.ref != null)
                 {
-                    GaugeConfiguration def = pageMap.get(StringConstants.S_GaugeConfigurations).get(g.ref);
+                    GaugeConfiguration def = getPage(StringConstants.S_GaugeConfigurations).get(g.ref);
                     if (def != null)
                     {
                         gaugeMap.put(gaugeName, def);
@@ -332,7 +333,7 @@ public class Repository
     {
         for (String pageName : pageMap.keySet())
         {
-            Map<String, GaugeConfiguration> gaugeMap = pageMap.get(pageName);
+            Map<String, GaugeConfiguration> gaugeMap = getPage(pageName);
 
             for (String gaugeName : gaugeMap.keySet())
             {
@@ -1455,7 +1456,7 @@ public class Repository
 
     private void setGaugeRef(String pageName, String gaugeId, String ref)
     {
-        Map<String, GaugeConfiguration> page = pageMap.get(pageName);
+        Map<String, GaugeConfiguration> page = getPage(pageName);
 
         GaugeConfiguration g = page.get(gaugeId);
 
@@ -1471,15 +1472,23 @@ public class Repository
 
     }
 
+    private Map<String, GaugeConfiguration> getPage(String pageName)
+    {
+        Map<String, GaugeConfiguration> result = pageMap.get(pageName);
+        
+        if(result == null)
+        {
+            result = new HashMap<String, GaugeConfiguration>();
+            pageMap.put(pageName, result);
+        }
+        return result;
+    }
+
     private void setLimits(String pageName, String name, Tokenizer t)
     {
         Map<String, GaugeConfiguration> page;
 
-        if (pageMap.get(pageName) == null)
-        {
-            pageMap.put(pageName, new HashMap<String, GaugeConfiguration>());
-        }
-        page = pageMap.get(pageName);
+        page = getPage(pageName);
         GaugeConfiguration g = page.get(name);
         if (g == null)
         {

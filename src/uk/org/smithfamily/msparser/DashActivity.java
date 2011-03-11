@@ -7,7 +7,6 @@ import uk.org.smithfamily.msparser.widgets.Gauge;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -19,15 +18,15 @@ public class DashActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.display);
+        setContentView(R.layout.display);
 
-        loadDashboard();
-        
+        //loadDashboard();
+ /*       
         Button minBut = (Button) findViewById(R.id.MinButton);
         Button maxBut = (Button) findViewById(R.id.MaxButtob);
-        gauges.add((Gauge) findViewById(R.id.RPMMeter));
-        gauges.add((Gauge) findViewById(R.id.MAPMeter));
-        gauges.add((Gauge) findViewById(R.id.AFRMeter));
+        //gauges.add((Gauge) findViewById(R.id.RPMMeter));
+        //gauges.add((Gauge) findViewById(R.id.MAPMeter));
+        //gauges.add((Gauge) findViewById(R.id.AFRMeter));
 
         minBut.setOnClickListener(new View.OnClickListener()
         {
@@ -54,7 +53,7 @@ public class DashActivity extends Activity
 
             }
         });
-
+*/
     }
 
     private void loadDashboard()

@@ -27,8 +27,6 @@
 
 package uk.org.smithfamily.msparser.widgets;
 
-import java.io.Serializable;
-
 import uk.org.smithfamily.msdisp.parser.ui.GaugeConfiguration;
 import uk.org.smithfamily.msparser.R;
 import android.content.Context;
@@ -53,7 +51,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-public final class Gauge extends View
+public final class Gauge extends View implements Indicator
 {
     Handler                     h                      = new Handler();
     private static final String TAG                    = Gauge.class.getSimpleName();
@@ -232,7 +230,7 @@ public final class Gauge extends View
     {
         if(context != null && config != null)
         {
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
+            //TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
             showRange = config.getShowRange();// a.getBoolean(R.styleable.Dial_showRange, showRange);
             showGauge = config.getShowGauge();//a.getBoolean(R.styleable.Dial_showGauge, showGauge);
             showHand = config.getShowHand();//a.getBoolean(R.styleable.Dial_showHand, showHand);
@@ -241,6 +239,7 @@ public final class Gauge extends View
             rangeSegmentOffset = config.getRangeSegmentOffset();//a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset);
             incrementPerLargeNotch = config.getIncrementPerLargeNotch();//a.getFloat(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
             incrementPerSmallNotch = config.getIncrementPerSmallNotch();//a.getFloat(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
+/*
             scaleColor = a.getInt(R.styleable.Dial_scaleColor, scaleColor);
             scaleMinValue = a.getFloat(R.styleable.Dial_scaleMinValue, scaleMinValue);
             scaleMaxValue = a.getFloat(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
@@ -260,7 +259,7 @@ public final class Gauge extends View
 
             if (upperTitle != null)
                 this.upperTitle = upperTitle;
-
+*/
         }
         init(context);
     }
@@ -892,5 +891,44 @@ public final class Gauge extends View
     public float getCurrentValue()
     {
         return currentValue;
+    }
+
+    public void setMin(float min)
+    {
+        this.scaleMinValue = min;
+        this.rangeOkMinValue = min;
+    }
+
+    public void setMax(float max)
+    {
+
+        this.scaleMaxValue = max;
+        this.rangeErrorMaxValue = max;
+        
+    }
+
+    public void setTitle(String title)
+    {
+        this.upperTitle=title;
+        
+    }
+
+    public void setWarningPoint(float warn)
+    {
+
+        this.rangeWarningMinValue=warn;
+        this.rangeOkMaxValue=warn;
+        
+    }
+
+    public void setErrorPoint(float err)
+    {
+        this.rangeWarningMaxValue=err;
+        this.rangeErrorMinValue=err;
+    }
+
+    public void setCurrentValue(float value)
+    {
+        setValue(value);
     }
 }
