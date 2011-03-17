@@ -5,6 +5,7 @@ import uk.org.smithfamily.msdisp.parser.comms.SocketComm;
 public class CommsFactory
 {
     static final private CommsFactory instance = new CommsFactory();
+    static final private MsComm comm = new SocketComm();
 
     static public CommsFactory getInstance()
     {
@@ -16,7 +17,7 @@ public class CommsFactory
     }
     public MsComm getComInstance()
     {
-        return new SocketComm();
+        return comm;
     }
 
     public String probe()

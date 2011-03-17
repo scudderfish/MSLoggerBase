@@ -11,12 +11,14 @@ public class SocketComm extends MsComm
 {
     private Socket            s;
     private InputStreamReader is;
+    private OutputStream os;
 
     public SocketComm()
     {
         try
         {
             s = new Socket("10.0.2.2", 7893);
+            os = s.getOutputStream();
             is = new InputStreamReader(s.getInputStream());
         }
         catch (UnknownHostException e)
@@ -44,12 +46,12 @@ public class SocketComm extends MsComm
         try
         {
             int i = 0;
-            while (i < nBytes)
+            while (i < nBytes && is.ready())
             {
                 int c = is.read();
                 if (c == -1)
                     break;
-                bytes.put(i++, (byte) c);
+                bytes.put((byte) c);
             }
             return true;
         }
@@ -72,8 +74,8 @@ public class SocketComm extends MsComm
         boolean ok = true;
         try
         {
-            s.getOutputStream().write(buf);
-            s.getOutputStream().flush();
+            os.write(buf);
+            os.flush();
         }
         catch (IOException e)
         {
@@ -81,6 +83,31 @@ public class SocketComm extends MsComm
             ok = false;
         }
         return ok;
+
+    }
+
+    @Override
+    public String read(int nBytes)
+    {
+        StringBuffer bytes=new StringBuffer();
+        
+        try
+        {
+            int i = 0;
+            while (i < nBytes && is.ready())
+            {
+                int c = is.read();
+                if (c == -1)
+                    break;
+                bytes.append((char)c);
+            }
+            return bytes.toString();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return "";
+        }
 
     }
 
