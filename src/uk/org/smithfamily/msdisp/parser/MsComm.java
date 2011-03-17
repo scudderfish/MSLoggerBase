@@ -39,4 +39,5 @@ public abstract class MsComm
     public abstract boolean write(byte[] bs)
     ;
 
+    public abstract String read(int nBytes);
 }

@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +20,9 @@ import android.content.res.AssetManager;
 
 public class INIController
 {
+    public static Charset charset = Charset.forName("UTF-8");
+    public static CharsetDecoder decoder = charset.newDecoder();
+    
     private static final INIController instance = new INIController();
     private Map<String, String>        inis     = new HashMap<String, String>();
 
@@ -61,7 +69,7 @@ public class INIController
         BufferedReader rd = new BufferedReader(new InputStreamReader(assetManager.open(path)));
 
         String line;
-        String pattern = "\\s*signature=\"(.*)\"";
+        String pattern = "\\s*signature\\s*=\\s*\"(.*)\"";
         Pattern sig = Pattern.compile(pattern);
         int lineCount = 0;
 
@@ -70,7 +78,8 @@ public class INIController
             Matcher m = sig.matcher(line);
             if (m.find())
             {
-                inis.put(m.group(1), path);
+                String actualSig = m.group(1);
+                inis.put(actualSig, path);
                 break;
             }
         }
@@ -81,7 +90,6 @@ public class INIController
         String result = defaultResult;
         MsComm comm = CommsFactory.getInstance().getComInstance();
         int nBytes = 1024;
-        ByteBuffer pBytes = ByteBuffer.allocate(nBytes );
         boolean found = false;
         String response = null;
         for(String probeCommand : probeCommands)
@@ -90,10 +98,8 @@ public class INIController
             {
                 comm.write(probeCommand.getBytes());
                 
-                comm.read(pBytes, nBytes);
+                response = comm.read(nBytes);
                 
-                response = new String(pBytes.array());
-                pBytes.rewind();
                 
                 if(inis.containsKey(response))
                 {
