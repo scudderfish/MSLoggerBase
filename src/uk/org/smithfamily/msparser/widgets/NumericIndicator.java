@@ -3,7 +3,10 @@ package uk.org.smithfamily.msparser.widgets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
+import uk.org.smithfamily.msparser.R;
+
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -25,6 +28,7 @@ public class NumericIndicator extends TextView implements Indicator
     private int          dp;
     private NumberFormat formatter;
     private float        defaultSize = 12;
+    private String       channel;
 
     public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
     {
@@ -39,7 +43,15 @@ public class NumericIndicator extends TextView implements Indicator
         super(context, attrs);
         setFont(context);
         setupDefaults(context);
-
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
+        value = a.getFloat(R.styleable.Dial_numValue, value);
+        max = a.getFloat(R.styleable.Dial_scaleMaxValue, max);
+        min = a.getFloat(R.styleable.Dial_scaleMinValue, min);
+        warningPoint = a.getFloat(R.styleable.Dial_rangeWarningMinValue, warningPoint);
+        errorPoint = a.getFloat(R.styleable.Dial_rangeErrorMinValue, errorPoint);
+        channel = a.getString(R.styleable.Dial_channel);
+        
+        setupFormat();
     }
 
     public NumericIndicator(Context context)
@@ -47,6 +59,7 @@ public class NumericIndicator extends TextView implements Indicator
         super(context);
         setFont(context);
         setupDefaults(context);
+        setupFormat();
     }
 
     private void setupDefaults(Context context)
@@ -57,8 +70,9 @@ public class NumericIndicator extends TextView implements Indicator
         title = "AFR";
         warningPoint = 16;
         errorPoint = 17;
-        setupFormat();
+
         defaultSize = getTextSize();
+
     }
 
     private void setupFormat()
@@ -71,8 +85,16 @@ public class NumericIndicator extends TextView implements Indicator
         else
             this.dp = 0;
 
-        formatter = NumberFormat.getNumberInstance();
+        if (dp == 0)
+        {
+            formatter = NumberFormat.getIntegerInstance();
+        }
+        else
+        {
+            formatter = NumberFormat.getNumberInstance();
+        }
 
+        formatter.setGroupingUsed(false);
         formatter.setMaximumFractionDigits(dp);
         formatter.setMinimumFractionDigits(dp);
         this.setText(formatter.format(this.value));
@@ -124,15 +146,17 @@ public class NumericIndicator extends TextView implements Indicator
     {
         int h = getHeight();
         int w = getWidth();
-        int padding = getPaddingTop()+getPaddingBottom();
-        setTextSize(TypedValue.COMPLEX_UNIT_PX,h-padding);
-        
-        if(value < warningPoint)
+        int padding = getPaddingTop() + getPaddingBottom();
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, h - padding);
+
+        if (value < warningPoint)
             setTextColor(Color.GREEN);
         else if (value < errorPoint)
             setTextColor(Color.YELLOW);
         else
             setTextColor(Color.RED);
+        this.setText(formatter.format(this.value));
+
         super.onDraw(canvas);
     }
 
@@ -149,23 +173,6 @@ public class NumericIndicator extends TextView implements Indicator
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type)
-    {
-        super.setText(text, type);
-        try
-        {
-            if(text != null )
-            {
-                value = Float.parseFloat(text.toString());
-            }
-        }
-        catch (NumberFormatException e)
-        {
-            //Swallow
-        }
-    }
-
     /**
      * Gets the width in pixels of the text
      * 
@@ -174,5 +181,15 @@ public class NumericIndicator extends TextView implements Indicator
     private float getTextWidth()
     {
         return getPaint().measureText(getText().toString());
+    }
+
+    public String getChannel()
+    {
+        return channel;
+    }
+
+    public void setChannel(String channel)
+    {
+        this.channel = channel;
     }
 }
