@@ -159,6 +159,8 @@ public final class Gauge extends View implements Indicator
     private long                lastDialMoveTime       = -1L;
 
     private int                 rangeSegmentOffset     = 0;
+    
+    private String channel;
 
     public Gauge(Context context)
     {
@@ -930,5 +932,15 @@ public final class Gauge extends View implements Indicator
     public void setCurrentValue(float value)
     {
         setValue(value);
+    }
+
+    public String getChannel()
+    {
+        return channel;
+    }
+
+    public void setChannel(String channel)
+    {
+        this.channel = channel;
     }
 }

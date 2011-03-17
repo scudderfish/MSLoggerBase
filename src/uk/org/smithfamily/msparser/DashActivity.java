@@ -55,20 +55,4 @@ public class DashActivity extends Activity
         });
 */
     }
-
-    private void loadDashboard()
-    {
-        LinearLayout parent = new LinearLayout(this);
-        parent.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout gaugeRow = new LinearLayout(this);
-        gaugeRow.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout buttonRow = new LinearLayout(this);
-        buttonRow.setOrientation(LinearLayout.HORIZONTAL);
-        parent.addView(gaugeRow);
-        parent.addView(buttonRow);
-        
-        
-        setContentView(parent);
-    }
-
 }

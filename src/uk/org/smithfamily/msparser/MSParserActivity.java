@@ -16,73 +16,49 @@ import android.widget.Toast;
 
 public class MSParserActivity extends Activity
 {
+    private boolean logging = false;
+    private Button  logButton;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.display);
 
         super.onCreate(savedInstanceState);
-        //Debug.startMethodTracing("Repo");
+        // Debug.startMethodTracing("Repo");
         Repository.getInstance().readInit(this);
-        //Debug.stopMethodTracing();
+        // Debug.stopMethodTracing();
         setContentView(R.layout.main);
-        
-        Button prefBtn = (Button) findViewById(R.id.Button01);
-        prefBtn.setOnClickListener(new OnClickListener()
+
+        Button logButton = (Button) findViewById(R.id.LoggingBtn);
+        if (logButton != null)
         {
-            public void onClick(View v)
+            logButton.setOnClickListener(new OnClickListener()
             {
-                showPreferences();
-            }
-        });
+                public void onClick(View v)
+                {
+                    toggleLogging();
+                }
 
-        Button connectButton = (Button) findViewById(R.id.connectButton);
-        connectButton.setOnClickListener(new OnClickListener()
+            });
+        }
+    }
+
+    private void toggleLogging()
+    {
+        logging = !logging;
+
+        if (!logging)
         {
-            public void onClick(View v)
-            {
-                showConnection();
-            }
-        });
+            logButton.setText(R.string.start_logging);
+        }
+
+        else
+        {
+            logButton.setText(R.string.stop_logging);
+        }
     }
 
-    private void showPreferences()
-    {
-        Intent settingsActivity = new Intent(this, PreferencesActivity.class);
-        startActivity(settingsActivity);
-
-    }
-
-    private void showConnection()
-    {
-        Intent connectActivity = new Intent(this, ConnectActivity.class);
-        startActivity(connectActivity);
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        Toast.makeText(this, "Just a test", Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    void setFont(String path, int res)
-    {
-        TextView name = (TextView) findViewById(res);
-        Typeface font = Typeface.createFromAsset(this.getAssets(), path);
-
-        name.setTypeface(font);
-
-    }
 }

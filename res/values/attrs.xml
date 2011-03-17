@@ -31,6 +31,8 @@
 		<attr name="showRange" format="boolean"/>
 		<attr name="showHand" format="boolean"/>
 		<attr name="showGauge" format="boolean"/>
-
+		
+		<attr name="numValue" format="float" />
+		<attr name="channel" format="string"/>
 	</declare-styleable>
 </resources>
