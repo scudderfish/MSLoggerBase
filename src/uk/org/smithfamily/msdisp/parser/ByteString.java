@@ -22,5 +22,8 @@ public class ByteString
     {
         return contents.getBytes();
     }
-
+    public String toString()
+    {
+        return new String(bytes());
+    }
 }

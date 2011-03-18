@@ -9,6 +9,11 @@ public class ParserStack
     Exception                 e;
     private Stack<StackEntry> stack = new Stack<StackEntry>();
 
+    public ParserStack(ExprError e2)
+    {
+       e = e2;
+    }
+
     public int topI()
     {
         return stack.peek().i;
@@ -111,4 +116,13 @@ public class ParserStack
         stack.push(new StackEntry(f.apply(x.d,y.d)));
     }
 
+    public boolean topIs(entType strv)
+    {
+    return stack.peek().getType() == strv; 
+    }
+
+    public int getSize()
+    {
+        return stack.size();
+    }
 }

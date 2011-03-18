@@ -1,26 +1,26 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
 import uk.org.smithfamily.msdisp.parser.log.Datalog;
 
 public class MsDatabase
 {
-    private static final int N_RETRIES = 3;
-    private static MsDatabase   instance = new MsDatabase();
-    public ControllerDescriptor cDesc ;
+    private static final int    N_RETRIES    = 3;
+    private static MsDatabase   instance     = new MsDatabase();
+    public ControllerDescriptor cDesc;
 
     Datalog                     log;
     MsComm                      io;
     int                         _pageNo;
-    boolean                     _loaded;                    // Memory image is
-                                                             // valid
-                                                             // from either file
-                                                             // or
-                                                             // MS.
-    boolean                     _burned;                    // MS RAM and flash
-                                                             // are
-                                                             // different.
+    boolean                     _loaded;                        // Memory image is
+                                                                 // valid
+                                                                 // from either file
+                                                                 // or
+                                                                 // MS.
+    boolean                     _burned;                        // MS RAM and flash
+                                                                 // are
+                                                                 // different.
     String                      signature;
     String                      title;
     static String               settingsFile;
@@ -33,10 +33,11 @@ public class MsDatabase
     int                         burstCommPort;
     int                         burstCommRate;
 
-    boolean                     controllerReset;            // Reset detected.
+    boolean                     controllerReset;                // Reset detected.
     String                      m_logFileName;
 
-    double[]                    wwuX     = new double[10];
+    double[]                    wwuX         = new double[10];
+    static double               previousSecl = 255;
 
     enum thermType
     {
@@ -87,7 +88,7 @@ public class MsDatabase
         commPortRate = io.rate();
         burstCommPort = commPortNumber;
         burstCommRate = 115200;
-   }
+    }
 
     public boolean init()
     {
@@ -119,7 +120,7 @@ public class MsDatabase
         wwuX[9] = 160.0;
 
         boolean status = readConfig();
-        //load(); // Attempt to grab data from controller.
+        // load(); // Attempt to grab data from controller.
 
         return status;
     }
@@ -139,25 +140,28 @@ public class MsDatabase
 
     private boolean getConst(int pageNo)
     {
-        if (bursting) return true;
+        if (bursting)
+            return true;
 
-        if (pageNo == -1) pageNo = _pageNo;
-        int  nBytes = cDesc.pageSize  (pageNo);
-        int  ofs    = cDesc.pageOffset(pageNo);
+        if (pageNo == -1)
+            pageNo = _pageNo;
+        int nBytes = cDesc.pageSize(pageNo);
+        int ofs = cDesc.pageOffset(pageNo);
 
-        ByteBuffer pBytes = ByteBuffer.allocate(nBytes);
+        byte[] pBytes = new byte[nBytes];
 
         boolean getOk = false;
-        for (int i = 0; i < N_RETRIES && !getOk; i++) {
-           cDesc.flush(); // Flush the comm input.
-           cDesc.sendPageReadWhole(pageNo);
-           getOk = cDesc.read(pBytes, nBytes); // Don't read directly into database, in case we don't get data.
+        for (int i = 0; i < N_RETRIES && !getOk; i++)
+        {
+            cDesc.flush(); // Flush the comm input.
+            cDesc.sendPageReadWhole(pageNo);
+            getOk = cDesc.read(pBytes, nBytes); // Don't read directly into database, in case we don't get data.
         }
 
-       // if (getOk) memcpy(cDesc._const+ofs, pBytes, nBytes);
+        // if (getOk) memcpy(cDesc._const+ofs, pBytes, nBytes);
 
         return getOk;
- }
+    }
 
     private void getVersion()
     {
@@ -175,4 +179,73 @@ public class MsDatabase
         return existed;
     }
 
+    public boolean getRuntime()
+    {
+        controllerReset = false;
+        
+        int nBytes = cDesc.ochBlockSize(0);
+
+        boolean getOk = false;
+        byte[] pBytes = new byte[nBytes];
+        for (int i = 0; i < N_RETRIES && !getOk; i++) 
+        {
+           cDesc.flush(); // Flush the comm input.
+
+           if (bursting) cDesc.sendOchBurstCommand(0);
+           else          cDesc.sendOchGetCommand  (0);
+
+           getOk = cDesc.read(pBytes , nBytes);
+        }
+
+        if (getOk) 
+        {
+           for (int i = 0; i < nBytes; i++) cDesc.setOch(pBytes[i], i);
+        }
+        else 
+        {
+           for (int i = 0; i < nBytes; i++) cDesc.setOch((byte) 0,         i);
+        }
+
+        byte[] rBuf = cDesc.ochBuffer();
+        cDesc.populateUserVars();
+
+
+        cDesc.recalc();
+        //uml.enable();
+        //uil.enable();
+
+        if (getOk) 
+        {
+           Symbol sSecl = null;
+           if (sSecl == null) sSecl = cDesc.lookup(StringConstants.S_secl);
+           double secl = (sSecl != null) ? sSecl.valueUser(0) : 0.0;
+           if (secl != previousSecl) {
+
+              if (secl == 0 && previousSecl != 255) 
+              {
+                 // An unexpected reset of controller has occurred.
+                 //MessageBeep(MB_ICONEXCLAMATION);
+                 //Beep(2000,100);
+                 //Beep(1000,100);
+                 //Beep(2000,100);
+                 controllerReset = true;
+                 controllerResetCount++;
+              }
+              previousSecl = secl;
+           }
+
+            try
+            {
+                if (log!=null)
+                    log.write();
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        return getOk;
+    }
 }

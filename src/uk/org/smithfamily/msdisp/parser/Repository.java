@@ -297,7 +297,7 @@ public class Repository
             e.printStackTrace();
         }
 
-        logFormat.resolve();
+        getLogFormat().resolve();
         lop.resolve();
 
     }
@@ -1403,7 +1403,7 @@ public class Repository
                     if (t.get(0).equals(StringConstants.S_entry))
                     {
                         // entry = time, "Time", float, "%.3f"
-                        logFormat.add(new DatalogEntry(t.get(1), t.get(2), t.get(3), t.get(4)));
+                        getLogFormat().add(new DatalogEntry(t.get(1), t.get(2), t.get(3), t.get(4)));
                         break;
                     }
                     msg.send(MsgInfo.mWarning, MessageFormat.format("Unexpected or unsupported token '{0}'", t.get(0)));
@@ -1578,5 +1578,15 @@ public class Repository
         hitEGO = t.v(2);
         rdtEGO = t.v(3);
     } // LED meter
+
+    public void setLogFormat(DatalogList logFormat)
+    {
+        this.logFormat = logFormat;
+    }
+
+    public DatalogList getLogFormat()
+    {
+        return logFormat;
+    }
 
 }

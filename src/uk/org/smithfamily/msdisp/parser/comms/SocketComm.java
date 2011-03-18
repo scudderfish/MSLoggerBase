@@ -36,12 +36,11 @@ public class SocketComm extends MsComm
     @Override
     public int port()
     {
-        // TODO Auto-generated method stub
         return super.port();
     }
 
     @Override
-    public boolean read(ByteBuffer bytes, int nBytes)
+    public boolean read(byte[] bytes, int nBytes)
     {
         try
         {
@@ -51,7 +50,7 @@ public class SocketComm extends MsComm
                 int c = is.read();
                 if (c == -1)
                     break;
-                bytes.put((byte) c);
+                bytes[i++] = (byte) c;
             }
             return true;
         }

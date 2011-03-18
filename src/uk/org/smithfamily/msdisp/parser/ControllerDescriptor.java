@@ -33,11 +33,11 @@ public class ControllerDescriptor
     byte[]                   _ochGetCommand;
     byte[]                   _ochBurstCommand;
     int                      _ochBlockSize;
-    short[]                  _ochBuffer;
+    byte[]                   _ochBuffer;
 
     public List<Double>      _userVar;
     int                      _userVarSize;
-    private short[]          _const;
+    private byte[]           _const;
     private Expression       _exprs;
     private int              lastPage;
     private boolean          force;
@@ -96,9 +96,9 @@ public class ControllerDescriptor
         // _io.setReadTimeouts(_blockReadTimeout);
 
         final int n = totalSpace() < 257 ? 257 : totalSpace();
-        _const = new short[n];
+        _const = new byte[n];
 
-        _ochBuffer = new short[_ochBlockSize];
+        _ochBuffer = new byte[_ochBlockSize];
         int i;
         for (i = 0; i < _nPages; i++)
         {
@@ -226,9 +226,9 @@ public class ControllerDescriptor
         return _page.get(mxi(n)).siz();
     }
 
-    public boolean read(ByteBuffer bytes, int nBytes)
+    public boolean read(byte[] pBytes, int nBytes)
     {
-        final boolean success = _io.read(bytes, nBytes);
+        final boolean success = _io.read(pBytes, nBytes);
         if (!success)
         {
             lastPage = -99;
@@ -385,6 +385,11 @@ public class ControllerDescriptor
 
     }
 
+    public String getSignature()
+    {
+        return _signature.toString();
+    }
+
     public void setVerify(boolean eq)
     {
         _verifying = eq;
@@ -441,5 +446,100 @@ public class ControllerDescriptor
                                                    // and all
         // that.
         return bs.bytes();
+    }
+
+    public void sendOchBurstCommand(int i)
+    {
+        _io.write(getOchBurstCommand(i));
+
+    }
+
+    private byte[] getOchBurstCommand(int i)
+    {
+        return _ochBurstCommand;
+    }
+
+    public void sendOchGetCommand(int i)
+    {
+        _io.write(ochGetCommand(i));
+
+    }
+
+    private byte[] ochGetCommand(int i)
+    {
+        return _ochGetCommand;
+    }
+
+    public void setOch(byte b, int i)
+    {
+        _ochBuffer[i] = b;
+    }
+
+    public byte[] ochBuffer()
+    {
+        return _ochBuffer;
+    }
+
+    public void populateUserVars()
+    {
+
+        for (String key : symMap.keySet())
+        {
+            Symbol s = symMap.get(key);
+            if (s.isVar() && !s.isExpr())
+            {
+                _userVar.add(s.varIndex(), s.valueUser(0));
+            }
+        }
+
+    }
+
+    public void recalc()
+    {
+        _exprs.recalc();
+    }
+
+    public long getB(int _pageNo, int ofs, int db)
+    {
+        byte[] d = db == 0 ? _const : _ochBuffer;
+        return d[ofs + pageOffset(mxi(_pageNo))];
+    }
+
+    public int getW(int pNo, int ofs, int db)
+    {
+        byte[] d = db == 0 ? _const : _ochBuffer;
+        int v = 0;
+        int po = pageOffset(mxi(pNo));
+        byte[] b = new byte[2];
+        b[0] = d[po + ofs + 0];
+        b[1] = d[po + ofs + 1];
+        if (_bigEnd)
+            v = (int) bigEndIt(b, 2);
+        return v;
+    }
+
+    private long bigEndIt(byte[] b, int numBytes)
+    {
+       long val = 0;
+       for(int i = 0; i < numBytes;i++)
+       {
+           val = val * 256 + b[i];
+       }
+       return val;
+    }
+
+    public long getD(int _pageNo, int ofs, int db)
+    {
+        byte[] d = db == 0 ? _const : _ochBuffer;
+        long v = 0;
+        int po = pageOffset(mxi(_pageNo));
+        byte[] b = new byte[4];
+        b[0] = d[po + ofs + 0];
+        b[1] = d[po + ofs + 1];
+        b[2] = d[po + ofs + 2];
+        b[3] = d[po + ofs + 3];
+        if (_bigEnd)
+            v = bigEndIt(b, 4);
+        return v;
     }
 }

@@ -1,7 +1,7 @@
 package uk.org.smithfamily.msdisp.parser.log;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class DatalogList
         }
     }
 
-    void header(BufferedWriter of) throws IOException
+    void header(Writer of) throws IOException
     {
         boolean needDelim = false;
         for (DatalogEntry l : ll)
@@ -40,7 +40,7 @@ public class DatalogList
         of.write("\n");
     }
 
-    void write(BufferedWriter of) throws IOException
+    void write(Writer of) throws IOException
     {
         for (int i = 0; i < columns(); i++)
         {

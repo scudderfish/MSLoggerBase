@@ -1,10 +1,12 @@
 package uk.org.smithfamily.msparser;
 
+import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import uk.org.smithfamily.msdisp.parser.Repository;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,8 +18,19 @@ import android.widget.Toast;
 
 public class MSParserActivity extends Activity
 {
-    private boolean logging = false;
-    private Button  logButton;
+    private boolean  logging         = false;
+    private Button   logButton;
+    private Handler  mHandler        = new Handler();
+
+    private Runnable mUpdateTimeTask = new Runnable()
+                                     {
+                                         public void run()
+                                         {
+                                             boolean _connected = MsDatabase.getInstance().getRuntime();
+                                             showConnection(_connected);
+                                             mHandler.postDelayed(this, 100);
+                                         }
+                                     };
 
     /** Called when the activity is first created. */
     @Override
@@ -32,6 +45,9 @@ public class MSParserActivity extends Activity
         // Debug.stopMethodTracing();
         setContentView(R.layout.main);
 
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        mHandler.postDelayed(mUpdateTimeTask, 100);
+
         Button logButton = (Button) findViewById(R.id.LoggingBtn);
         if (logButton != null)
         {
@@ -44,6 +60,11 @@ public class MSParserActivity extends Activity
 
             });
         }
+    }
+
+    private void showConnection(boolean connected)
+    {
+
     }
 
     private void toggleLogging()
