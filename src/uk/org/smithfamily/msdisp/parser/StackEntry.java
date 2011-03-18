@@ -32,7 +32,10 @@ public class StackEntry
 
     public double AsDouble()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return d;
+    }
+    public  entType getType()
+    {
+        return t;
     }
 }

@@ -19,92 +19,92 @@ class symErr
 
 public class Symbol
 {
-    int                  _sequence;                            // Order in
-                                                                // which they
-                                                                // were defined.
+    int                  _sequence;                             // Order in
+                                                                 // which they
+                                                                 // were defined.
 
     String               _name;
     String               _units;
-    boolean              _;                                    // True means in
-                                                                // ants, false
-                                                                // in output
-                                                                // channels/variables.
+    boolean              _;                                     // True means in
+                                                                 // ants, false
+                                                                 // in output
+                                                                 // channels/variables.
 
-    int                  _pageNo;                              // Zero-based
-                                                                // index into
-                                                                // tables.
-    int                  _offset;                              // Offset of
-                                                                // first byte in
-                                                                // this table.
-    int                  _sizeOf;                              // Number of
-                                                                // bytes in one
-                                                                // value, 1, 2
-                                                                // or 4 are
-                                                                // valid.
-    boolean              _signed;                              // Is data
-                                                                // signed or
-                                                                // unsigned?
+    int                  _pageNo;                               // Zero-based
+                                                                 // index into
+                                                                 // tables.
+    int                  _offset;                               // Offset of
+                                                                 // first byte in
+                                                                 // this table.
+    int                  _sizeOf;                               // Number of
+                                                                 // bytes in one
+                                                                 // value, 1, 2
+                                                                 // or 4 are
+                                                                 // valid.
+    boolean              _signed;                               // Is data
+                                                                 // signed or
+                                                                 // unsigned?
 
     // -- User-units formatting information. -----------------------------------
-    double               _scale;                               // Scale of raw
-                                                                // value.
-    double               _trans;                               // Translation
-                                                                // of raw value.
-    int                  _digits;                              // Display
-                                                                // digits to
-                                                                // right of
-                                                                // decimal.
-    double               _round;                               // Fudge factor
-                                                                // based upon
-                                                                // digits count.
-    double               _lo, _hi;                             // Limit values.
-    long                 _loRaw, _hiRaw;                       // Limits in
-                                                                // internal
-                                                                // format.
+    double               _scale;                                // Scale of raw
+                                                                 // value.
+    double               _trans;                                // Translation
+                                                                 // of raw value.
+    int                  _digits;                               // Display
+                                                                 // digits to
+                                                                 // right of
+                                                                 // decimal.
+    double               _round;                                // Fudge factor
+                                                                 // based upon
+                                                                 // digits count.
+    double               _lo, _hi;                              // Limit values.
+    long                 _loRaw, _hiRaw;                        // Limits in
+                                                                 // internal
+                                                                 // format.
 
     // -- Data for array types. ------------------------------------------------
-    boolean              _xOrder;                              // Is table in
-                                                                // x- or
-                                                                // y-order?
-    int                  _order;                               // Tensor order,
-                                                                // 0=scalar.
-    int[]                _shape      = new int[2];             // Size in up to
-                                                                // two
-                                                                // dimensions.
+    boolean              _xOrder;                               // Is table in
+                                                                 // x- or
+                                                                 // y-order?
+    int                  _order;                                // Tensor order,
+                                                                 // 0=scalar.
+    int[]                _shape      = new int[2];              // Size in up to
+                                                                 // two
+                                                                 // dimensions.
 
     // -- Data for bit fields. -------------------------------------------------
-    int                  _bitLo;                               // Starting bit
-                                                                // in a
-                                                                // byte-base
-                                                                // bitfield,
-                                                                // zero-based.
-    int                  _bitHi;                               // Ending bit in
-                                                                // bitfield.
-    int                  _bitOfs;                              // Offset for
-                                                                // user value
-                                                                // when
-                                                                // extracted
-                                                                // from bits.
-                                                                // For instance,
-                                                                // MS-I stores
-                                                                // nCylinders in
-                                                                // 0:3 as 1..16,
-                                                                // so valueUser
-                                                                // returns
-                                                                // 0+1==1 for
-                                                                // the first
-                                                                // value.
+    int                  _bitLo;                                // Starting bit
+                                                                 // in a
+                                                                 // byte-base
+                                                                 // bitfield,
+                                                                 // zero-based.
+    int                  _bitHi;                                // Ending bit in
+                                                                 // bitfield.
+    int                  _bitOfs;                               // Offset for
+                                                                 // user value
+                                                                 // when
+                                                                 // extracted
+                                                                 // from bits.
+                                                                 // For instance,
+                                                                 // MS-I stores
+                                                                 // nCylinders in
+                                                                 // 0:3 as 1..16,
+                                                                 // so valueUser
+                                                                 // returns
+                                                                 // 0+1==1 for
+                                                                 // the first
+                                                                 // value.
 
     // -- Data for output channels. --------------------------------------------
-    int                  _index;                               // Index into
-                                                                // userVars data
-                                                                // block,
-                                                                // different
-                                                                // than
-                                                                // _offset,
-                                                                // which indexes
-                                                                // into
-                                                                // _ochRaw...
+    int                  _index;                                // Index into
+                                                                 // userVars data
+                                                                 // block,
+                                                                 // different
+                                                                 // than
+                                                                 // _offset,
+                                                                 // which indexes
+                                                                 // into
+                                                                 // _ochRaw...
     String               _expr;
     String               _file;
     int                  _line;
@@ -124,6 +124,8 @@ public class Symbol
     char                 S08max      = (0x7f);
     short                S16max      = (0x7fff);
     long                 S32max      = (0x7fffffff);
+
+    private MsDatabase   mdb         = MsDatabase.getInstance();
 
     String name()
     {
@@ -307,8 +309,7 @@ public class Symbol
         setScalar(name, type, page, d, units, scale, trans, lo, hi, e, true);
     }
 
-    void setOScalar(String name, String type, int page, double e, String units, double scale, double trans)
-            throws SymbolException
+    void setOScalar(String name, String type, int page, double e, String units, double scale, double trans) throws SymbolException
     {
         int d = 0;
         double s = scale;
@@ -346,7 +347,7 @@ public class Symbol
         }
         if (closepos < 0 || openpos < 0)
         {
-            throw new SymbolException("Cannot parse array spec",shape);
+            throw new SymbolException("Cannot parse array spec", shape);
         }
         else
         {
@@ -464,6 +465,62 @@ public class Symbol
         _units = units;
         _file = file;
         _line = line;
+    }
+
+    public double valueUser(int index)
+    {
+        return isExpr() ? MsDatabase.getInstance().cDesc._userVar.get(_index + index) : toUser(valueRaw(index), _scale, _trans)
+                + _bitOfs;
+    }
+
+    private double toUser(long v, double s, double t)
+    {
+        return (double) ((v + t) * s);
+    }
+
+    private long valueRaw(int index)
+    {
+        long v = 0;
+        switch (_sizeOf)
+        {
+        case 1:
+            v = mdb.cDesc.getB(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            break;
+        case 2:
+            v = mdb.cDesc.getW(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            break;
+        case 4:
+            v = mdb.cDesc.getD(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            break;
+        }
+
+        if (_signed)
+        {
+            // Sign extend signed negatives if _sizeOf < 4.
+            switch (_sizeOf)
+            {
+            case 1:
+                if ((v & 0x00000080) != 0)
+                    v |= 0xffffff00;
+                break;
+            case 2:
+                if ((v & 0x00008000) != 0)
+                    v |= 0xffff0000;
+                break;
+            }
+        }
+
+        if (isBits())
+        {
+            long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
+            v = (v & mask) >> _bitLo;
+        }
+        return v;
+    }
+
+    public boolean isVar()
+    {
+        return !_const && (_expr == null || _expr.trim().equals(""));
     }
 
 }
