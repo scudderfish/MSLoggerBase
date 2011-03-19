@@ -392,7 +392,7 @@ public class MsDatabase
         return (int) nn;
     }
 
-    void readTable(String fileName, List<Integer> values)
+    public void readTable(String fileName, List<Integer> values)
     {
         values.clear();
         Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");

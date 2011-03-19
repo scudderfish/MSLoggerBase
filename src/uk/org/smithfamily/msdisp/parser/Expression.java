@@ -6,7 +6,7 @@ public class Expression
 {
 
     private List<Double> _och   = null;
-    private CodeGen      _code;
+    private CodeGen      _code = new CodeGen();
     static boolean       inEval = false;
 
     void setOutputBuffer(List<Double> _userVar)
