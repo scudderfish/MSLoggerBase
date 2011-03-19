@@ -88,7 +88,7 @@ interface RelOp
 public class CodeGen
 {
     
-    ExprError        e;
+    ExprError        e = new ExprError();
     List<MemoryItem> Memory = new ArrayList<MemoryItem>();
     int              sizeMem;
     int              nextMemLoc;
