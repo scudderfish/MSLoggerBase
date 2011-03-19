@@ -1,8 +1,7 @@
 package uk.org.smithfamily.msdisp.parser.functions;
 
-import uk.org.smithfamily.msdisp.parser.UnaryFunc;
 
-public class Sqrt implements UnaryFunc
+public class Sqrt extends UnaryFunc
 {
 
     public double apply(double d)

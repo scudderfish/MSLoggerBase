@@ -245,7 +245,12 @@ public class Repository
         lorACC = t.v(1);
         hirACC = t.v(2);
     }
+    public InputStreamReader getFile(String fileName) throws IOException
+    {
+        AssetManager assetManager = context.getResources().getAssets();
 
+        return new InputStreamReader(assetManager.open(fileName));
+    }
     public void readInit(Context c)
     {
         this.context = c;
@@ -265,9 +270,7 @@ public class Repository
         try
         {
 
-            AssetManager assetManager = c.getResources().getAssets();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(assetManager.open(defaultFilename)));
+            BufferedReader in = new BufferedReader(getFile(defaultFilename));
             Date start = new Date();
             doRead(in, defaultFilename, 0);
             Date end = new Date();

@@ -1,6 +1,9 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.org.smithfamily.msdisp.parser.log.Datalog;
 
@@ -13,12 +16,15 @@ public class MsDatabase
     Datalog                     log;
     MsComm                      io;
     int                         _pageNo;
-    boolean                     _loaded;                        // Memory image is
+    boolean                     _loaded;                        // Memory image
+                                                                 // is
                                                                  // valid
-                                                                 // from either file
+                                                                 // from either
+                                                                 // file
                                                                  // or
                                                                  // MS.
-    boolean                     _burned;                        // MS RAM and flash
+    boolean                     _burned;                        // MS RAM and
+                                                                 // flash
                                                                  // are
                                                                  // different.
     String                      signature;
@@ -33,7 +39,8 @@ public class MsDatabase
     int                         burstCommPort;
     int                         burstCommRate;
 
-    boolean                     controllerReset;                // Reset detected.
+    boolean                     controllerReset;                // Reset
+                                                                 // detected.
     String                      m_logFileName;
 
     double[]                    wwuX         = new double[10];
@@ -53,7 +60,7 @@ public class MsDatabase
         return instance;
     }
 
-    double tempFromDb(double t)
+    public double tempFromDb(double t)
     {
         if (therm == thermType.Celsius)
         {
@@ -155,7 +162,9 @@ public class MsDatabase
         {
             cDesc.flush(); // Flush the comm input.
             cDesc.sendPageReadWhole(pageNo);
-            getOk = cDesc.read(pBytes, nBytes); // Don't read directly into database, in case we don't get data.
+            getOk = cDesc.read(pBytes, nBytes); // Don't read directly into
+                                                // database, in case we don't
+                                                // get data.
         }
 
         // if (getOk) memcpy(cDesc._const+ofs, pBytes, nBytes);
@@ -182,64 +191,67 @@ public class MsDatabase
     public boolean getRuntime()
     {
         controllerReset = false;
-        
+
         int nBytes = cDesc.ochBlockSize(0);
 
         boolean getOk = false;
         byte[] pBytes = new byte[nBytes];
-        for (int i = 0; i < N_RETRIES && !getOk; i++) 
+        for (int i = 0; i < N_RETRIES && !getOk; i++)
         {
-           cDesc.flush(); // Flush the comm input.
+            cDesc.flush(); // Flush the comm input.
 
-           if (bursting) cDesc.sendOchBurstCommand(0);
-           else          cDesc.sendOchGetCommand  (0);
+            if (bursting)
+                cDesc.sendOchBurstCommand(0);
+            else
+                cDesc.sendOchGetCommand(0);
 
-           getOk = cDesc.read(pBytes , nBytes);
+            getOk = cDesc.read(pBytes, nBytes);
         }
 
-        if (getOk) 
+        if (getOk)
         {
-           for (int i = 0; i < nBytes; i++) cDesc.setOch(pBytes[i], i);
-        }
-        else 
+            for (int i = 0; i < nBytes; i++)
+                cDesc.setOch(pBytes[i], i);
+        } else
         {
-           for (int i = 0; i < nBytes; i++) cDesc.setOch((byte) 0,         i);
+            for (int i = 0; i < nBytes; i++)
+                cDesc.setOch((byte) 0, i);
         }
 
         byte[] rBuf = cDesc.ochBuffer();
         cDesc.populateUserVars();
 
-
         cDesc.recalc();
-        //uml.enable();
-        //uil.enable();
+        // uml.enable();
+        // uil.enable();
 
-        if (getOk) 
+        if (getOk)
         {
-           Symbol sSecl = null;
-           if (sSecl == null) sSecl = cDesc.lookup(StringConstants.S_secl);
-           double secl = (sSecl != null) ? sSecl.valueUser(0) : 0.0;
-           if (secl != previousSecl) {
+            Symbol sSecl = null;
+            if (sSecl == null)
+                sSecl = cDesc.lookup(StringConstants.S_secl);
+            double secl = (sSecl != null) ? sSecl.valueUser(0) : 0.0;
+            if (secl != previousSecl)
+            {
 
-              if (secl == 0 && previousSecl != 255) 
-              {
-                 // An unexpected reset of controller has occurred.
-                 //MessageBeep(MB_ICONEXCLAMATION);
-                 //Beep(2000,100);
-                 //Beep(1000,100);
-                 //Beep(2000,100);
-                 controllerReset = true;
-                 controllerResetCount++;
-              }
-              previousSecl = secl;
-           }
+                if (secl == 0 && previousSecl != 255)
+                {
+                    // An unexpected reset of controller has occurred.
+                    // MessageBeep(MB_ICONEXCLAMATION);
+                    // Beep(2000,100);
+                    // Beep(1000,100);
+                    // Beep(2000,100);
+                    controllerReset = true;
+                    controllerResetCount++;
+                }
+                previousSecl = secl;
+            }
 
             try
             {
-                if (log!=null)
+                if (log != null)
                     log.write();
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -247,5 +259,182 @@ public class MsDatabase
         }
 
         return getOk;
+    }
+
+    // ------------------------------------------------------------------------------
+    // There are three input messages handled here.
+    //
+    // Signature (response to the "S" request);
+    // VE/constants tables (response to the "V" request);
+    // Run-time variables (response to the "A" request).
+    //
+    // The signature is arbitrary length, you must check it
+    // on input. The VE/constants table is 128 bytes long and
+    // the run-time variables are 22 bytes.
+    // ------------------------------------------------------------------------------
+
+    public long number(String s)
+    {
+
+        // Prefixes: % = binary, $ = hexadecimal, ! = decimal.
+        // Suffixes: Q = binary, H = hexadecimal, T = decimal.
+
+        int base = 10;
+        char ch = s.charAt(0);
+
+        switch (ch)
+        {
+        case '%':
+            base = 2;
+            s = ' ' + s.substring(1);
+            break;
+        case '$':
+            base = 16;
+            s = ' ' + s.substring(1);
+            break;
+        case '!':
+            base = 10;
+            s = ' ' + s.substring(1);
+            break;
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+            ch = s.charAt(s.length() - 1);
+            switch (ch)
+            {
+            case 'Q':
+            case 'q':
+                base = 2;
+                break;
+            case 'H':
+            case 'h':
+                base = 16;
+                break;
+            case 'T':
+            case 't':
+                base = 10;
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                // Everthing is ok so far.
+                break;
+
+            default:
+                throw new NumberFormatException(s);
+
+            }
+            break;
+        default:
+            throw new NumberFormatException(s);
+
+        }
+
+        long n = Long.valueOf(s, base);
+        return n;
+    }
+
+    public int numberW(String s)
+    {
+        long nn = number(s);
+        if (nn > 65536 || nn < 0)
+            throw new NumberFormatException(s);
+        return (int) nn;
+
+    }
+
+    public int numberB(String s)
+    {
+        long nn = number(s);
+        if (nn > 255 || nn < 0)
+            throw new NumberFormatException(s);
+
+        return (int) nn;
+    }
+
+    void readTable(String fileName, List<Integer> values)
+    {
+        values.clear();
+        Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
+        File tableFile = new File(fileName);
+        BufferedReader input = null;
+        try
+        {
+            try
+            {
+                input = new BufferedReader(new FileReader(tableFile));
+                String line;
+                
+                while((line=input.readLine())!= null)
+                {
+                    Matcher matcher = 
+                        p.matcher(line);
+                    if(matcher.matches())
+                    {
+                        String num = matcher.group(1);
+                        
+                        if(num !=null)
+                        {
+                            values.add(Integer.valueOf(num));
+                        }
+                    }
+                }
+                
+            } finally
+            {
+                if (input != null)
+                    input.close();
+            }
+
+        } catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
     }
 }
