@@ -1,8 +1,7 @@
 package uk.org.smithfamily.msdisp.parser.functions;
 
-import uk.org.smithfamily.msdisp.parser.UnaryFunc;
 
-public class Fabs implements UnaryFunc
+public class Fabs extends UnaryFunc
 {
 
     public double apply(double d)

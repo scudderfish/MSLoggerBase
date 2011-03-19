@@ -3,6 +3,8 @@ package uk.org.smithfamily.msdisp.parser;
 import java.util.Stack;
 
 import uk.org.smithfamily.msdisp.parser.StackEntry.entType;
+import uk.org.smithfamily.msdisp.parser.functions.BinaryFunc;
+import uk.org.smithfamily.msdisp.parser.functions.UnaryFunc;
 
 public class ParserStack
 {
@@ -29,22 +31,22 @@ public class ParserStack
         return stack.peek().s;
     }
 
-    void push(double d)
+    public void push(double d)
     {
         stack.push(new StackEntry(d));
     }
 
-    void push(int i)
+    public void push(int i)
     {
         stack.push(new StackEntry(i));
     }
 
-    void push(String s)
+    public void push(String s)
     {
         stack.push(new StackEntry(s));
     }
 
-    String popS()
+    public String popS()
     {
         StackEntry top = stack.pop();
         if (top.t != entType.strV)
@@ -54,7 +56,7 @@ public class ParserStack
         return top.s;
     }
 
-    int popI()
+    public int popI()
     {
         StackEntry top = stack.pop();
         switch (top.t)
@@ -71,7 +73,7 @@ public class ParserStack
         }
     }
 
-    double popD()
+    public double popD()
     {
         StackEntry top = stack.pop();
         switch (top.t)

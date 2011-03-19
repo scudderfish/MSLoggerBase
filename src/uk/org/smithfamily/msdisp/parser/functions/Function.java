@@ -1,8 +1,10 @@
 package uk.org.smithfamily.msdisp.parser.functions;
 
-public interface Function
+import uk.org.smithfamily.msdisp.parser.ParserStack;
+
+public abstract class Function
 {
-
-    int argCnt();
-
+    public abstract int argCnt();
+    
+    public abstract void evaluate(ParserStack s);
 }
