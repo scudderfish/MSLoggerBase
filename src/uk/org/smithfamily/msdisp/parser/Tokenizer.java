@@ -156,7 +156,13 @@ public class Tokenizer
 
 	String stripped(int idx)
 	{
-		return "";
+		Token tok = tokens.get(idx);
+		String str = tok.str;
+		str = str.replace('{', ' ');
+		str = str.replace('}', ' ');
+
+		str=str.trim();
+		return str;
 	}
 
 	public int size()
