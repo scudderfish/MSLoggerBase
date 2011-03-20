@@ -19,6 +19,10 @@ class symErr
 
 public class Symbol
 {
+    public Symbol()
+    {
+        int x =1 ;
+    }
     int                  _sequence;                             // Order in
                                                                  // which they
                                                                  // were defined.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.smithfamily.msdisp.parser.MemoryItem.op;
+import uk.org.smithfamily.msdisp.parser.functions.Function;
 
 class MemoryItem
 {
@@ -14,7 +15,7 @@ class MemoryItem
 
     public enum Type
     {
-        OperatorType, IntegerType, DoubleType, StringType, SymbolType
+        OperatorType, IntegerType, DoubleType, StringType, SymbolType, FunctionType
     };
 
     private Symbol symbol;
@@ -23,6 +24,7 @@ class MemoryItem
     private double doubleVal;
     private String stringVal;
     private op   opVal;
+    private Function function;
 
     public MemoryItem(int i)
     {
@@ -52,6 +54,12 @@ class MemoryItem
         this.type = Type.SymbolType;
         symbol = s;
     }
+    public MemoryItem(Function f)
+    {
+        this.type = Type.FunctionType;
+        function = f;
+    }
+
     public op getOpVal()
     {
         return opVal;
@@ -143,7 +151,7 @@ public class CodeGen
         }
     }
 
-    void Gen1Op(op theOperator)
+    public void Gen1Op(op theOperator)
     {
         alloc(1);
         Memory.add(nextMemLoc, new MemoryItem(theOperator));
@@ -157,10 +165,26 @@ public class CodeGen
         nextMemLoc++;
         Memory.add(nextMemLoc,new MemoryItem(theOperand));
         nextMemLoc++;
-
+    }
+    void Gen2Op(op theOperator, Symbol theOperand)
+    {
+        alloc(2);
+        Memory.add(nextMemLoc,new MemoryItem(theOperator));
+        nextMemLoc++;
+        Memory.add(nextMemLoc,new MemoryItem(theOperand));
+        nextMemLoc++;
     }
 
     void Gen2Op(op theOperator, double theOperand)
+    {
+        alloc(2);
+        Memory.add(nextMemLoc,new MemoryItem(theOperator));
+        nextMemLoc++;
+        Memory.add(nextMemLoc,new MemoryItem(theOperand));
+        nextMemLoc++;
+
+    }
+    void Gen2Op(op theOperator, Function theOperand)
     {
         alloc(2);
         Memory.add(nextMemLoc,new MemoryItem(theOperator));
