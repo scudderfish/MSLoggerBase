@@ -527,4 +527,10 @@ public class Symbol
         return !_const && (_expr == null || _expr.trim().equals(""));
     }
 
+    @Override
+    public String toString()
+    {
+        return "Symbol [_sequence=" + _sequence + ", _name=" + _name + ", _units=" + _units + ", _expr=" + _expr + "]";
+    }
+
 }

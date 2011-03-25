@@ -69,6 +69,7 @@ public class ExprError extends Exception
 
     void display()
     {
+        System.out.println(str);
     }
 
     void Error(String Msg) throws ExprError
@@ -80,5 +81,12 @@ public class ExprError extends Exception
             str = file + ":" + lineNumber + ":" + Msg + " " + tok;
         ;
         throw this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ExprError [file=" + file + ", lineNumber=" + lineNumber + ", tok=" + tok + ", str=" + str + ", title=" + title
+                + ", found=" + found + "]";
     }
 }
