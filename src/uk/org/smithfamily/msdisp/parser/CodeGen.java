@@ -85,6 +85,13 @@ class MemoryItem
     {
         return symbol;
     }
+
+    @Override
+    public String toString()
+    {
+        return "MemoryItem [type=" + type + ", intVal=" + intVal + ", doubleVal=" + doubleVal + ", stringVal=" + stringVal
+                + ", opVal=" + opVal + ", function=" + function + "]";
+    }
 }
 
 interface RelOp
@@ -510,5 +517,12 @@ public class CodeGen
     {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CodeGen [e=" + e + ", Memory=" + Memory + ", sizeMem=" + sizeMem + ", nextMemLoc=" + nextMemLoc
+                + ", checkPointLoc=" + checkPointLoc + "]";
     }
 }

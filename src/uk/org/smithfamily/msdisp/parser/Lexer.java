@@ -38,33 +38,49 @@ public class Lexer
     };
 
     private ExprError e;
-    private String    inputLine;
-    private int       nextChar;
+    private String    inputLine  = "";
+    //private int       nextChar;
 
+    private int nextCharPos = 1;
     public Token      CurrentTok;
     Function          CurrentFnc;
     public int        fnArgCount;
     public int        CurrentVar;
     public Symbol     CurrentSym;
-    public String     CurrentStr;
+    public String     CurrentStr = "";
     public int        CurrentInt;
     public double     CurrentDbl;
 
+    char currentChar()
+    {
+        return inputLine.charAt(nextCharPos-1);
+    }
+    char nextChar() throws ExprError
+    {
+        if (nextCharPos > inputLine.length()-1)
+        {
+            e.Error("Attempt to move beyond length of input: input='"+inputLine+"'");
+        }
+        return inputLine.charAt(nextCharPos++);
+    }
     String GetSequence(char firstChar, String validChars)
     {
         String result = "";
         char inputChar = firstChar;
         int inputLoc = 0;
         int itsThere = validChars.indexOf(inputChar);
-        while (itsThere >= 0)
+        
+        do
         {
             result += inputChar;
             inputLoc++;
-
-            inputChar = inputLine.charAt(nextChar);
-            if ((itsThere = validChars.indexOf(inputChar)) >= 0)
-                e.append(inputLine.charAt(nextChar++));
+            if(nextChar < inputLine.length())
+            {
+                inputChar = inputLine.charAt(nextChar++);
+                itsThere = validChars.indexOf(inputChar);   
+            }
         }
+        while (nextChar < inputLine.length() && itsThere >= 0);
         return result;
     }
 
@@ -90,7 +106,7 @@ public class Lexer
         int base = 10;
         String Numeric = Lexer.DecimalNumeric;
 
-        if (firstChar == '0')
+        if (firstChar == '0' && inputLine.length() > nextChar)
         { // Allow for binary numbers with a variant on C's hex: 0b10101
             switch (inputLine.charAt(nextChar))
             {

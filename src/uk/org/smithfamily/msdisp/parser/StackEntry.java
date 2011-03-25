@@ -38,4 +38,10 @@ public class StackEntry
     {
         return t;
     }
+
+    @Override
+    public String toString()
+    {
+        return "StackEntry [t=" + t + ", d=" + d + ", i=" + i + ", s=" + s + "]";
+    }
 }
