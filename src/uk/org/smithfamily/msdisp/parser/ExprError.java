@@ -63,7 +63,7 @@ public class ExprError extends Exception
     int backup()
     {
         int len = tok.length();
-        tok = tok.substring(0, len - 2);
+        //tok = tok.substring(0, len - 2);
         return len;
     }
 
