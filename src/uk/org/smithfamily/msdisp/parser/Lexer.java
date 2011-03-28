@@ -63,7 +63,7 @@ public class Lexer
         {
             result += inputChar;
             inputLoc++;
-            currentCharPos++;
+            moveForwardNoTest();
             if (currentCharPos < inputLine.length())
             {
                 inputChar = inputLine.charAt(currentCharPos);
@@ -81,12 +81,13 @@ public class Lexer
     String GetUntil(char untilChar) throws ExprError
     {
         String destStr = "";
-        testPosition();
+        
         while (currentCharPos < inputLine.length() && inputLine.charAt(currentCharPos) != untilChar)
         {
-            destStr += inputLine.charAt(currentCharPos++);
+            destStr += inputLine.charAt(currentCharPos);
+            moveForward();
         }
-        currentCharPos++;
+        moveForward();
 
         return destStr;
     }
@@ -106,12 +107,12 @@ public class Lexer
             {
             case 'b':
                 base = 2;
-                currentCharPos++;
+                moveForwardNoTest();
                 Numeric = BinaryNumeric;
                 break;
             case 'x':
                 base = 16;
-                currentCharPos++;
+                moveForwardNoTest();
                 Numeric = HexNumeric;
                 break;
             }
@@ -140,7 +141,7 @@ public class Lexer
                 {
                     numStr += ".";
                     moveForward();
-                    inputChar = inputLine.charAt(currentCharPos++);
+                    inputChar = inputLine.charAt(currentCharPos);
 
                     newStr = GetSequence(inputChar, DecimalNumeric);
                     if (newStr != null)
@@ -158,20 +159,20 @@ public class Lexer
                 if(currentCharPos < inputLine.length())
                 {
                     testPosition();
-                    inputChar = inputLine.charAt(currentCharPos++);
+                    inputChar = nextChar();
                     
                     if ("Ee".indexOf(inputChar) >= 0)
                     {
                         numStr += 'e';
                         testPosition();
-                        inputChar = inputLine.charAt(currentCharPos++);
+                        inputChar = nextChar();
     
                         if (inputChar == '+' || inputChar == '-')
                         {
                             if (inputChar == '-')
                                 numStr += "-";
                             testPosition();
-                            inputChar = inputLine.charAt(currentCharPos++);
+                            inputChar = nextChar();
                         }
     
                         newStr = GetSequence(inputChar, DecimalNumeric);
@@ -179,14 +180,14 @@ public class Lexer
                         if (newStr.length() == 0)
                             e.Error("Expected number for exponent");
                         testPosition();
-                        inputChar = inputLine.charAt(currentCharPos++);
+                        inputChar = nextChar();
     
                     }
                 }
             }
          
-            e.backup();
-            currentCharPos--;
+            //e.backup();
+            //currentCharPos--;
 
             // DiagPrint("   Real value: >%s<\n", numStr);
             CurrentTok = Token.DblTok;
@@ -199,6 +200,13 @@ public class Lexer
             CurrentTok = Token.IntTok;
             CurrentInt = Integer.valueOf(numStr, base);
         }
+    }
+
+    private char nextChar()
+    {
+        char c = inputLine.charAt(currentCharPos);
+        e.append(c);
+        return c;
     }
 
     private void testPosition() throws ExprError
@@ -228,7 +236,7 @@ public class Lexer
             return;
         }
         while (currentCharPos < inputLine.length() && Character.isWhitespace(inputLine.charAt(currentCharPos)))
-            currentCharPos++;
+            moveForwardNoTest();
 
         char InputChar = inputLine.charAt(currentCharPos);
         ;
@@ -271,10 +279,11 @@ public class Lexer
             switch (InputChar)
             {
             case QuoteChar:
+                moveForward();
                 CurrentStr = GetUntil(QuoteChar);
                 CurrentTok = Token.StrTok;
-                moveForward();
                 break;
+            
             case PlusChar:
                 CurrentTok = Token.PlusTok;
                 moveForward();
@@ -333,7 +342,7 @@ public class Lexer
                 {
                 case AndChar:
                     CurrentTok = Token.LAndTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.BAndTok;
@@ -346,7 +355,7 @@ public class Lexer
                 {
                 case OrChar:
                     CurrentTok = Token.LOrTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.BOrTok;
@@ -359,7 +368,7 @@ public class Lexer
                 {
                 case EqualChar:
                     CurrentTok = Token.NeTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.LNotTok;
@@ -372,7 +381,7 @@ public class Lexer
                 {
                 case EqualChar:
                     CurrentTok = Token.EqTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.EqualTok;
@@ -384,11 +393,11 @@ public class Lexer
                 switch (inputLine.charAt(currentCharPos))
                 {
                 case LtChar:
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 case EqualChar:
                     CurrentTok = Token.LeTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.LtTok;
@@ -401,11 +410,11 @@ public class Lexer
                 {
                 case GtChar:
                     CurrentTok = Token.RShiftTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 case EqualChar:
                     CurrentTok = Token.GeTok;
-                    currentCharPos++;
+                    moveForwardNoTest();
                     break;
                 default:
                     CurrentTok = Token.GtTok;
@@ -421,15 +430,17 @@ public class Lexer
 
     private void moveForwardNoTest()
     {
-        
         currentCharPos++;
-        
+        if(currentCharPos < inputLine.length())
+            e.append(inputLine.charAt(currentCharPos));
     }
 
     private void moveForward() throws ExprError
     {
         currentCharPos++;
         testPosition();
+        e.append(inputLine.charAt(currentCharPos));
+        
     }
 
 }

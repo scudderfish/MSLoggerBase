@@ -1,6 +1,5 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 
 public class ControllerDescriptor
@@ -122,8 +121,7 @@ public class ControllerDescriptor
             try
             {
                 _wholePage.get(i).setCArray("__page__", "U08", i, 0, "", shape, 1.0, 0.0, 0.0, 1.0, 0);
-            }
-            catch (SymbolException e)
+            } catch (SymbolException e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -137,23 +135,31 @@ public class ControllerDescriptor
 
         _exprs = new Expression();
 
-        for (int index = 0; index < symMap.size(); index++)
+        List<Symbol> sortedSymbols = new ArrayList<Symbol>();
+        sortedSymbols.addAll(symMap.values());
+
+        Collections.sort(sortedSymbols, new Comparator<Symbol>()
         {
-            for (final String key : symMap.keySet())
+            @Override
+            public int compare(Symbol arg0, Symbol arg1)
             {
-                final Symbol s = symMap.get(key);
-                if (s._sequence == index)
-                {
-                    if (s.isExpr())
-                    {
-                        if (!"---".equals(s.exprText()))
-                        {
-                            _exprs.addExpr(s.varIndex(), s.exprText(), s.exprFile(), s.exprLine());
-                        }
-                    }
-                }
+                if (arg0._sequence > arg1._sequence)
+                    return 1;
+                if (arg0._sequence < arg1._sequence)
+                    return -1;
+                return 0;
+            }
+        });
+
+        for (Symbol s : sortedSymbols)
+        {
+            if (s.isExpr() && !"---".equals(s.exprText()))
+            {
+                _exprs.addExpr(s.varIndex(), s.exprText(), s.exprFile(), s.exprLine());
+
             }
         }
+
         try
         {
             _exprs.setOutputBuffer(_userVar);
@@ -163,8 +169,7 @@ public class ControllerDescriptor
             setPageIdentifier("", 0);
             setPageReadWhole("V", 0);
             setPageWriteValue("W%1o%1v", 0);
-        }
-        catch (CommandException e)
+        } catch (CommandException e)
         {
             e.printStackTrace();
         }
@@ -410,8 +415,7 @@ public class ControllerDescriptor
         try
         {
             Thread.sleep(period);
-        }
-        catch (final InterruptedException e)
+        } catch (final InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -520,12 +524,12 @@ public class ControllerDescriptor
 
     private long bigEndIt(byte[] b, int numBytes)
     {
-       long val = 0;
-       for(int i = 0; i < numBytes;i++)
-       {
-           val = val * 256 + b[i];
-       }
-       return val;
+        long val = 0;
+        for (int i = 0; i < numBytes; i++)
+        {
+            val = val * 256 + b[i];
+        }
+        return val;
     }
 
     public long getD(int _pageNo, int ofs, int db)

@@ -18,6 +18,7 @@ public class Functions
     
     static void add(String name,Function implementation,FuncInfo.argType[] argTypes)
     {
+        implementation.setName(name);
         functionList.add(implementation);
         funcMap.put(name,implementation);
     }
