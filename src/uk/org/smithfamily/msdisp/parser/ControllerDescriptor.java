@@ -153,11 +153,9 @@ public class ControllerDescriptor
 
         for (Symbol s : sortedSymbols)
         {
-            if (s.isExpr() && !"---".equals(s.exprText()))
-            {
-                _exprs.addExpr(s.varIndex(), s.exprText(), s.exprFile(), s.exprLine());
 
-            }
+            _exprs.addExpr(s);
+
         }
 
         try
