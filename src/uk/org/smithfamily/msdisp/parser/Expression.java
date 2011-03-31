@@ -1,34 +1,37 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import bsh.Interpreter;
 
 public class Expression
 {
-
+    private Interpreter interpreter = new Interpreter();
     private List<Double> _och   = null;
-    private CodeGen      _code = new CodeGen();
     static boolean       inEval = false;
-
+    private List<String> functionDefinitions = new ArrayList<String>();
+    private List<String> functions = new ArrayList<String>();
     void setOutputBuffer(List<Double> _userVar)
     {
         _och = _userVar;
     }
 
-    void addExpr(int destVar, String expr, String file, int lineNo)
+    void addExpr(String name, String expr, String file, int lineNo)
     {
-        try
-        {
-            // DiagPrint("Adding %3d %s\n", destVar, expr);
-            _code.checkPoint();
-            Parser p = new Parser(expr, _code, file, lineNo);
-            p.parse(destVar);
-        }
-        catch (ExprError e)
-        {
-            _code.recover();
-            e.display();
-        }
+        String processedExpression = processExpression(expr);
+        String functionName = "func"+name+"()";
+        processedExpression=functionName+"{"+processedExpression+"};";
+        functions.add(functionName+";");
+        functionDefinitions.add(processedExpression);
 
+    }
+
+    private String processExpression(String expr)
+    {
+        String retval = expr;
+    
+        return retval;
     }
 
     void recalc()
@@ -39,7 +42,7 @@ public class Expression
         if (!inEval)
         {
             inEval = true;
-            try
+/*            try
             {
                 _code.Evaluate(_och);
             }
@@ -47,8 +50,13 @@ public class Expression
             {
                 e.display();
             }
-            inEval = false;
+*/            inEval = false;
         }
+    }
+
+    public void addExpr(Symbol s)
+    {
+        System.out.println(s.toString());
     }
 
 }
