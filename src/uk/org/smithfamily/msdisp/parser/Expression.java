@@ -1,62 +1,45 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import bsh.Interpreter;
 
 public class Expression
 {
-    private Interpreter interpreter = new Interpreter();
-    private List<Double> _och   = null;
-    static boolean       inEval = false;
-    private List<String> functionDefinitions = new ArrayList<String>();
-    private List<String> functions = new ArrayList<String>();
-    void setOutputBuffer(List<Double> _userVar)
+    private Symbol symbol;
+    private String shellExpression;
+    
+    public Expression(Symbol s)
     {
-        _och = _userVar;
+        this.symbol = s;
+
+        if (symbol.isExpr() && !"---".equals(symbol.exprText()))
+        {
+            shellExpression = processExpression();
+        }
     }
 
-    void addExpr(String name, String expr, String file, int lineNo)
+   
+    private String processExpression()
     {
-        String processedExpression = processExpression(expr);
-        String functionName = "func"+name+"()";
-        processedExpression=functionName+"{"+processedExpression+"};";
-        functions.add(functionName+";");
-        functionDefinitions.add(processedExpression);
-
-    }
-
-    private String processExpression(String expr)
-    {
-        String retval = expr;
+        String retval = symbol._expr;
     
         return retval;
     }
 
-    void recalc()
-    {
-        if (_och == null)
-            return;
-
-        if (!inEval)
-        {
-            inEval = true;
-/*            try
-            {
-                _code.Evaluate(_och);
-            }
-            catch (ExprError e)
-            {
-                e.display();
-            }
-*/            inEval = false;
-        }
-    }
-
+   
     public void addExpr(Symbol s)
     {
+        
+        if (s.isExpr() && !"---".equals(s.exprText()))
+        {
+//            _exprs.addExpr(s.varIndex(), s.exprText(), s.exprFile(), s.exprLine());
+
+        }
         System.out.println(s.toString());
+    }
+
+    public String getShellExpression()
+    {
+        return shellExpression;
     }
 
 }

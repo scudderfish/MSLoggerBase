@@ -1,11 +1,19 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 public class ControllerDescriptor
 {
-    private static final int maxPages   = 50;
-    Map<String, Symbol>      symMap     = new HashMap<String, Symbol>();
+    private static final int maxPages       = 50;
+    Map<String, Symbol>      symMap         = new HashMap<String, Symbol>();
     MsComm                   _io;
     // MT and MS memory are different.
     boolean                  _changed;
@@ -18,9 +26,9 @@ public class ControllerDescriptor
     String                   _sigFile;
 
     int                      _nPages;
-    ArrayList<PageInfo>      _page      = new ArrayList<PageInfo>(maxPages);
+    ArrayList<PageInfo>      _page          = new ArrayList<PageInfo>(maxPages);
     // Internal symbols pointing to whole page.
-    ArrayList<Symbol>        _wholePage = new ArrayList<Symbol>(maxPages);
+    ArrayList<Symbol>        _wholePage     = new ArrayList<Symbol>(maxPages);
     // Milliseconds between writes.
     int                      _interWriteDelay;
     // Use a single write or multi?
@@ -34,17 +42,19 @@ public class ControllerDescriptor
     int                      _ochBlockSize;
     byte[]                   _ochBuffer;
 
-    public List<Double>      _userVar;
     int                      _userVarSize;
     private byte[]           _const;
     private Expression       _exprs;
     private int              lastPage;
     private boolean          force;
+    List<Symbol>             outputChannels = new ArrayList<Symbol>();
+    List<Expression>         expressions    = new ArrayList<Expression>();
+    Interpreter              interpreter    = new Interpreter();
 
     public ControllerDescriptor(MsComm io)
     {
         this._io = io;
-        _userVar = new ArrayList<Double>();
+
         for (int x = 0; x < maxPages; x++)
         {
             _page.add(new PageInfo());
@@ -121,7 +131,8 @@ public class ControllerDescriptor
             try
             {
                 _wholePage.get(i).setCArray("__page__", "U08", i, 0, "", shape, 1.0, 0.0, 0.0, 1.0, 0);
-            } catch (SymbolException e)
+            }
+            catch (SymbolException e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -133,7 +144,7 @@ public class ControllerDescriptor
         // this needs to parse the expression in the same order in which they
         // are entered...
 
-        _exprs = new Expression();
+       
 
         List<Symbol> sortedSymbols = new ArrayList<Symbol>();
         sortedSymbols.addAll(symMap.values());
@@ -151,23 +162,22 @@ public class ControllerDescriptor
             }
         });
 
-        for (Symbol s : sortedSymbols)
+        for (Symbol s : outputChannels)
         {
-
             _exprs.addExpr(s);
-
         }
 
         try
         {
-            _exprs.setOutputBuffer(_userVar);
+
             setBurnCommand("B", 0);
             setPageSize(125, 0);
             setPageActivate("P%1p", 0);
             setPageIdentifier("", 0);
             setPageReadWhole("V", 0);
             setPageWriteValue("W%1o%1v", 0);
-        } catch (CommandException e)
+        }
+        catch (CommandException e)
         {
             e.printStackTrace();
         }
@@ -413,7 +423,8 @@ public class ControllerDescriptor
         try
         {
             Thread.sleep(period);
-        } catch (final InterruptedException e)
+        }
+        catch (final InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -482,25 +493,6 @@ public class ControllerDescriptor
         return _ochBuffer;
     }
 
-    public void populateUserVars()
-    {
-
-        for (String key : symMap.keySet())
-        {
-            Symbol s = symMap.get(key);
-            if (s.isVar() && !s.isExpr())
-            {
-                _userVar.add(s.varIndex(), s.valueUser(0));
-            }
-        }
-
-    }
-
-    public void recalc()
-    {
-        _exprs.recalc();
-    }
-
     public long getB(int _pageNo, int ofs, int db)
     {
         byte[] d = db == 0 ? _const : _ochBuffer;
@@ -544,4 +536,63 @@ public class ControllerDescriptor
             v = bigEndIt(b, 4);
         return v;
     }
+
+    public void addOutput(Symbol s)
+    {
+        if (s.isVar())
+            outputChannels.add(s);
+        else
+            expressions.add(new Expression(s));
+    }
+
+    public List<Symbol> getOutputChannels()
+    {
+        return outputChannels;
+    }
+
+    public List<Expression> getExpressions()
+    {
+        return expressions;
+
+    }
+
+    public void populateUserVars()
+    {
+        int x = 1;
+        for (Symbol s : outputChannels)
+        {
+            if (s.isVar() && !s.isExpr())
+            {
+                double value = s.valueUser(0);
+                String name = s.name();
+                System.out.println(name + "=" + value);
+                try
+                {
+                    interpreter.set(name, value);
+                }
+                catch (EvalError e)
+                {
+                    System.out.println("Error tyrying to set " + name + "=" + value + " : " + e.getLocalizedMessage());
+                }
+            }
+        }
+
+    }
+
+    public void recalc()
+    {
+        for (Expression expr : expressions)
+        {
+            try
+            {
+                interpreter.eval(expr.getShellExpression());
+            }
+            catch (EvalError e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

@@ -59,9 +59,7 @@ public class Datalog
     {
         if (_recording && out != null)
         {
-            if (lop._enableWrite >= 0 && mdb.cDesc._userVar.get(lop._enableWrite) == 0)
-                return;
-
+   
             Repository.getInstance().getLogFormat().write(out);
             out.flush();
         }
