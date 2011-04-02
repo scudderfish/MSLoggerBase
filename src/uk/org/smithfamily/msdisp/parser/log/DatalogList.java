@@ -50,14 +50,14 @@ public class DatalogList
             switch (ll.get(i).type())
             {
             case eInt:
-                of.write(""
-                        + mdb.cDesc._userVar.get(ll.get(i)
-                                .ochIdx()));
+//                of.write(""
+//                        + mdb.cDesc._userVar.get(ll.get(i)
+//                                .ochIdx()));
                 break;
             case eFloat:
-                of.write(""
-                        + mdb.cDesc._userVar.get(ll.get(i)
-                                .ochIdx()));
+//                of.write(""
+//                        + mdb.cDesc._userVar.get(ll.get(i)
+//                                .ochIdx()));
                 break;
             }
         }

@@ -44,13 +44,12 @@ public class SocketComm extends MsComm
     {
         try
         {
-            int i = 0;
-            while (i < nBytes && is.ready())
-            {
-                int c = is.read();
-                if (c == -1)
-                    break;
-                bytes[i++] = (byte) c;
+            int bytesRead=0;
+            
+            while (bytesRead < nBytes) {
+                int result = s.getInputStream().read(bytes, bytesRead, nBytes - bytesRead);
+                if (result == -1) break;
+                bytesRead += result;
             }
             return true;
         }

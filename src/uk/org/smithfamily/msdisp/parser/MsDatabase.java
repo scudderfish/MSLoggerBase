@@ -109,11 +109,11 @@ public class MsDatabase
         Repository.UveTuneRpmIdx = cDesc.varIndex(StringConstants.S_veTuneRpmIdx);
         Repository.UveTuneValue = cDesc.varIndex(StringConstants.S_veTuneValue);
 
-        cDesc._userVar.add(Repository.UveTuneLodIdx, 0.0); // Defaults until the
+//        cDesc._userVar.add(Repository.UveTuneLodIdx, 0.0); // Defaults until the
                                                            // tuning dialog is
                                                            // displayed.
-        cDesc._userVar.add(Repository.UveTuneRpmIdx, 0.0);
-        cDesc._userVar.add(Repository.UveTuneValue, 0.0);
+//        cDesc._userVar.add(Repository.UveTuneRpmIdx, 0.0);
+//        cDesc._userVar.add(Repository.UveTuneValue, 0.0);
 
         wwuX[0] = -40.0;
         wwuX[1] = -20.0;

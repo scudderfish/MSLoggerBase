@@ -21,8 +21,9 @@ public class Symbol
 {
     public Symbol()
     {
-        int x =1 ;
+        int x = 1;
     }
+
     int                  _sequence;                             // Order in
                                                                  // which they
                                                                  // were defined.
@@ -77,12 +78,12 @@ public class Symbol
                                                                  // dimensions.
 
     // -- Data for bit fields. -------------------------------------------------
-    int                  _bitLo;                                // Starting bit
+    int                  _bitLo      = -1;                      // Starting bit
                                                                  // in a
                                                                  // byte-base
                                                                  // bitfield,
                                                                  // zero-based.
-    int                  _bitHi;                                // Ending bit in
+    int                  _bitHi      = -1;                      // Ending bit in
                                                                  // bitfield.
     int                  _bitOfs;                               // Offset for
                                                                  // user value
@@ -511,6 +512,21 @@ public class Symbol
                 if ((v & 0x00008000) != 0)
                     v |= 0xffff0000;
                 break;
+            }
+        }
+        else
+        {
+            if (v < 0)
+            {
+                switch (_sizeOf)
+                {
+                case 1:
+                    v = 256 + v;
+                    break;
+                case 2:
+                    v = 65536 + v;
+                    break;
+                }
             }
         }
 

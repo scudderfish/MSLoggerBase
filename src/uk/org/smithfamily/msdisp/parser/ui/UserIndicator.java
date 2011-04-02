@@ -54,7 +54,7 @@ public class UserIndicator
     // void attach(CWnd *p);
     boolean enable()
     {
-        if (_val == -1)
+ /*       if (_val == -1)
             return false;
         boolean on = (MsDatabase.getInstance().cDesc._userVar.get(_val) != 0.0);
         // SetWindowText(_label[on]);
@@ -63,7 +63,7 @@ public class UserIndicator
         // EnableWindow(on);
         Invalidate();
         _on = on;
-        return true;
+*/        return true;
     }
 
     private void Invalidate()

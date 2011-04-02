@@ -1019,6 +1019,7 @@ public class Repository
                             break;
                         }
                         mdb.cDesc.addSymbol(s);
+                        mdb.cDesc.addOutput(s);
 
                         // Validate page boundaries.
                         if (s.offset(0) + s.size() > mdb.cDesc.ochBlockSize(0))
