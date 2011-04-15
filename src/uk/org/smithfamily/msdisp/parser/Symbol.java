@@ -26,11 +26,13 @@ public class Symbol
 
     int                  _sequence;                             // Order in
                                                                  // which they
-                                                                 // were defined.
+                                                                 // were
+                                                                 // defined.
 
     String               _name;
     String               _units;
-    boolean              _;                                     // True means in
+    boolean              _;                                     // True means
+                                                                 // in
                                                                  // ants, false
                                                                  // in output
                                                                  // channels/variables.
@@ -39,7 +41,8 @@ public class Symbol
                                                                  // index into
                                                                  // tables.
     int                  _offset;                               // Offset of
-                                                                 // first byte in
+                                                                 // first byte
+                                                                 // in
                                                                  // this table.
     int                  _sizeOf;                               // Number of
                                                                  // bytes in one
@@ -54,15 +57,18 @@ public class Symbol
     double               _scale;                                // Scale of raw
                                                                  // value.
     double               _trans;                                // Translation
-                                                                 // of raw value.
+                                                                 // of raw
+                                                                 // value.
     int                  _digits;                               // Display
                                                                  // digits to
                                                                  // right of
                                                                  // decimal.
     double               _round;                                // Fudge factor
                                                                  // based upon
-                                                                 // digits count.
-    double               _lo, _hi;                              // Limit values.
+                                                                 // digits
+                                                                 // count.
+    double               _lo, _hi;                              // Limit
+                                                                 // values.
     long                 _loRaw, _hiRaw;                        // Limits in
                                                                  // internal
                                                                  // format.
@@ -71,9 +77,11 @@ public class Symbol
     boolean              _xOrder;                               // Is table in
                                                                  // x- or
                                                                  // y-order?
-    int                  _order;                                // Tensor order,
+    int                  _order;                                // Tensor
+                                                                 // order,
                                                                  // 0=scalar.
-    int[]                _shape      = new int[2];              // Size in up to
+    int[]                _shape      = new int[2];              // Size in up
+                                                                 // to
                                                                  // two
                                                                  // dimensions.
 
@@ -83,17 +91,21 @@ public class Symbol
                                                                  // byte-base
                                                                  // bitfield,
                                                                  // zero-based.
-    int                  _bitHi      = -1;                      // Ending bit in
+    int                  _bitHi      = -1;                      // Ending bit
+                                                                 // in
                                                                  // bitfield.
     int                  _bitOfs;                               // Offset for
                                                                  // user value
                                                                  // when
                                                                  // extracted
                                                                  // from bits.
-                                                                 // For instance,
+                                                                 // For
+                                                                 // instance,
                                                                  // MS-I stores
-                                                                 // nCylinders in
-                                                                 // 0:3 as 1..16,
+                                                                 // nCylinders
+                                                                 // in
+                                                                 // 0:3 as
+                                                                 // 1..16,
                                                                  // so valueUser
                                                                  // returns
                                                                  // 0+1==1 for
@@ -102,12 +114,14 @@ public class Symbol
 
     // -- Data for output channels. --------------------------------------------
     int                  _index;                                // Index into
-                                                                 // userVars data
+                                                                 // userVars
+                                                                 // data
                                                                  // block,
                                                                  // different
                                                                  // than
                                                                  // _offset,
-                                                                 // which indexes
+                                                                 // which
+                                                                 // indexes
                                                                  // into
                                                                  // _ochRaw...
     String               _expr;
@@ -281,8 +295,7 @@ public class Symbol
                 _hiRaw = _hi == noRange ? S32max : toIntr(_hi, Math.abs(_scale), _trans);
                 break;
             }
-        }
-        else
+        } else
         {
             switch (_sizeOf)
             {
@@ -353,8 +366,7 @@ public class Symbol
         if (closepos < 0 || openpos < 0)
         {
             throw new SymbolException("Cannot parse array spec", shape);
-        }
-        else
+        } else
         {
             x = Integer.parseInt(shape.substring(Math.max(1, colonpos + 1), xpos < 0 ? closepos : xpos).trim());
 
@@ -472,30 +484,38 @@ public class Symbol
         _line = line;
     }
 
-    public double valueUser(int index)
+    public int valueFromRaw()
     {
-        return isExpr() ? MsDatabase.getInstance().cDesc._userVar.get(_index + index) : toUser(valueRaw(index), _scale, _trans)
-                + _bitOfs;
+        int v;
+        if (isExpr())
+        {
+            v = -1;// MsDatabase.getInstance().cDesc._userVar.get(_index + index);
+        } else
+        {
+            v = toUser(valueRaw(), _scale, _trans) + _bitOfs;
+        }
+
+        return v;
     }
 
-    private double toUser(long v, double s, double t)
+    private int toUser(long v, double s, double t)
     {
-        return (double) ((v + t) * s);
+        return  (int) ((v + t) * s);
     }
 
-    private long valueRaw(int index)
+    private long valueRaw()
     {
         long v = 0;
         switch (_sizeOf)
         {
         case 1:
-            v = mdb.cDesc.getB(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            v = mdb.cDesc.getB(_pageNo, _offset, _const ? 0 : 1);
             break;
         case 2:
-            v = mdb.cDesc.getW(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            v = mdb.cDesc.getW(_pageNo, _offset , _const ? 0 : 1);
             break;
         case 4:
-            v = mdb.cDesc.getD(_pageNo, _offset + _sizeOf * index, _const ? 0 : 1);
+            v = mdb.cDesc.getD(_pageNo, _offset , _const ? 0 : 1);
             break;
         }
 
@@ -513,8 +533,7 @@ public class Symbol
                     v |= 0xffff0000;
                 break;
             }
-        }
-        else
+        } else
         {
             if (v < 0)
             {
@@ -547,6 +566,12 @@ public class Symbol
     public String toString()
     {
         return "Symbol [_sequence=" + _sequence + ", _name=" + _name + ", _units=" + _units + ", _expr=" + _expr + "]";
+    }
+
+    public double getValue()
+    {
+        // TODO Auto-generated method stub
+        return MsDatabase.getInstance().cDesc.getValue(this._name);
     }
 
 }

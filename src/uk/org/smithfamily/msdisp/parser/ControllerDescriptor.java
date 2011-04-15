@@ -44,7 +44,6 @@ public class ControllerDescriptor
 
     int                      _userVarSize;
     private byte[]           _const;
-    private Expression       _exprs;
     private int              lastPage;
     private boolean          force;
     List<Symbol>             outputChannels = new ArrayList<Symbol>();
@@ -161,11 +160,6 @@ public class ControllerDescriptor
                 return 0;
             }
         });
-
-        for (Symbol s : outputChannels)
-        {
-            _exprs.addExpr(s);
-        }
 
         try
         {
@@ -563,7 +557,7 @@ public class ControllerDescriptor
         {
             if (s.isVar() && !s.isExpr())
             {
-                double value = s.valueUser(0);
+                int value = s.valueFromRaw();
                 String name = s.name();
                 System.out.println(name + "=" + value);
                 try
@@ -595,4 +589,17 @@ public class ControllerDescriptor
         }
     }
 
+    public double getValue(String name)
+    {
+        double value = 0;
+        try
+        {
+            value = (Double) interpreter.get(name);
+        } catch (EvalError e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return value;
+    }
 }
