@@ -127,12 +127,11 @@ public class MsDatabase
         wwuX[9] = 160.0;
 
         boolean status = readConfig();
-        // load(); // Attempt to grab data from controller.
-
+        
         return status;
     }
 
-    private boolean load()
+    public boolean load()
     {
         getVersion();
         for (int iPage = 0; iPage < cDesc.nPages(); iPage++)
@@ -230,7 +229,7 @@ public class MsDatabase
             Symbol sSecl = null;
             if (sSecl == null)
                 sSecl = cDesc.lookup(StringConstants.S_secl);
-            double secl = (sSecl != null) ? sSecl.valueUser(0) : 0.0;
+            double secl = (sSecl != null) ? sSecl.getValue() : 0.0;
             if (secl != previousSecl)
             {
 

@@ -302,7 +302,7 @@ public class Repository
 
         getLogFormat().resolve();
         lop.resolve();
-
+        mdb.load();
     }
 
     private void resolveGaugeReferences()
