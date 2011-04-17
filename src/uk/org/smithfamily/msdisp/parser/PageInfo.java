@@ -1,5 +1,8 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PageInfo
 {
     PageParameters _pp          = new PageParameters();
@@ -11,6 +14,7 @@ public class PageInfo
     CommandFormat  _writeWhole  = new CommandFormat();
     CommandFormat  _writeChunk  = new CommandFormat();
     CommandFormat  _writeValue  = new CommandFormat();
+    List<Symbol>   constSymbols = new ArrayList<Symbol>();
 
     int siz(int s)
     {
@@ -47,4 +51,16 @@ public class PageInfo
         return siz(0);
     }
 
+    @Override
+    public String toString()
+    {
+        return "PageInfo [_pp=" + _pp + ", _activate=" + _activate + ", _burnCommand=" + _burnCommand + ", _readWhole="
+                + _readWhole + ", _readChunk=" + _readChunk + ", _readValue=" + _readValue + ", _writeWhole=" + _writeWhole
+                + ", _writeChunk=" + _writeChunk + ", _writeValue=" + _writeValue + "]";
+    }
+
+    public void addConstSymbol(Symbol s)
+    {
+        constSymbols.add(s);
+    }
 }

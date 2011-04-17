@@ -109,11 +109,11 @@ public class MsDatabase
         Repository.UveTuneRpmIdx = cDesc.varIndex(StringConstants.S_veTuneRpmIdx);
         Repository.UveTuneValue = cDesc.varIndex(StringConstants.S_veTuneValue);
 
-//        cDesc._userVar.add(Repository.UveTuneLodIdx, 0.0); // Defaults until the
-                                                           // tuning dialog is
-                                                           // displayed.
-//        cDesc._userVar.add(Repository.UveTuneRpmIdx, 0.0);
-//        cDesc._userVar.add(Repository.UveTuneValue, 0.0);
+        // cDesc._userVar.add(Repository.UveTuneLodIdx, 0.0); // Defaults until the
+        // tuning dialog is
+        // displayed.
+        // cDesc._userVar.add(Repository.UveTuneRpmIdx, 0.0);
+        // cDesc._userVar.add(Repository.UveTuneValue, 0.0);
 
         wwuX[0] = -40.0;
         wwuX[1] = -20.0;
@@ -127,7 +127,7 @@ public class MsDatabase
         wwuX[9] = 160.0;
 
         boolean status = readConfig();
-        
+
         return status;
     }
 
@@ -164,10 +164,15 @@ public class MsDatabase
             getOk = cDesc.read(pBytes, nBytes); // Don't read directly into
                                                 // database, in case we don't
                                                 // get data.
+        
+
+            if (getOk)
+            {
+                System.arraycopy(pBytes, 0, cDesc._const,ofs, nBytes);
+                //memcpy(cDesc._const + ofs, pBytes, nBytes);
+                cDesc.updateConstPage(i);
+            }
         }
-
-        // if (getOk) memcpy(cDesc._const+ofs, pBytes, nBytes);
-
         return getOk;
     }
 
@@ -211,7 +216,8 @@ public class MsDatabase
         {
             for (int i = 0; i < nBytes; i++)
                 cDesc.setOch(pBytes[i], i);
-        } else
+        }
+        else
         {
             for (int i = 0; i < nBytes; i++)
                 cDesc.setOch((byte) 0, i);
@@ -250,7 +256,8 @@ public class MsDatabase
             {
                 if (log != null)
                     log.write();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -403,33 +410,35 @@ public class MsDatabase
             {
                 input = new BufferedReader(new FileReader(tableFile));
                 String line;
-                
-                while((line=input.readLine())!= null)
+
+                while ((line = input.readLine()) != null)
                 {
-                    Matcher matcher = 
-                        p.matcher(line);
-                    if(matcher.matches())
+                    Matcher matcher = p.matcher(line);
+                    if (matcher.matches())
                     {
                         String num = matcher.group(1);
-                        
-                        if(num !=null)
+
+                        if (num != null)
                         {
                             values.add(Integer.valueOf(num));
                         }
                     }
                 }
-                
-            } finally
+
+            }
+            finally
             {
                 if (input != null)
                     input.close();
             }
 
-        } catch (FileNotFoundException e)
+        }
+        catch (FileNotFoundException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
