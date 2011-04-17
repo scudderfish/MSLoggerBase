@@ -245,12 +245,14 @@ public class Repository
         lorACC = t.v(1);
         hirACC = t.v(2);
     }
+
     public InputStreamReader getFile(String fileName) throws IOException
     {
         AssetManager assetManager = context.getResources().getAssets();
 
         return new InputStreamReader(assetManager.open(fileName));
     }
+
     public void readInit(Context c)
     {
         this.context = c;
@@ -290,11 +292,13 @@ public class Repository
             resolveVarReferences();
             resolveGaugeReferences();
 
-        } catch (FileNotFoundException e)
+        }
+        catch (FileNotFoundException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -320,7 +324,8 @@ public class Repository
                     if (def != null)
                     {
                         gaugeMap.put(gaugeName, def);
-                    } else
+                    }
+                    else
                     {
                         Toast.makeText(context, "Gauge labeled '" + g.label + "' references gauge configuration\n'" + g.ref
                                 + "', which cannot be found.", Toast.LENGTH_SHORT);
@@ -413,14 +418,16 @@ public class Repository
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
                         ifStack.peek().reading = reading;
                         msg.send(MsgInfo.mInfo, MessageFormat.format("#if {0}, including={1}", t.get(2), ifBlock.sReading(reading)));
                         continue;
-                    } else if ("ifnot".equals(t.get(1)))
+                    }
+                    else if ("ifnot".equals(t.get(1)))
                     { // ------------------------------
                         if (nT < 3)
                         {
@@ -437,7 +444,8 @@ public class Repository
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
@@ -469,7 +477,8 @@ public class Repository
                                 reading = ifBlock.readState.nowReading;
                             else
                                 reading = ifBlock.readState.yetToRead;
-                        } else
+                        }
+                        else
                         {
                             reading = ifBlock.readState.doneReading;
                         }
@@ -495,7 +504,8 @@ public class Repository
                         if (msg.ssize == 0)
                         {
                             msg.send(MsgInfo.mWarning, "Extra '#endif'.\n\nThings are going to be goofed up.\t");
-                        } else
+                        }
+                        else
                         {
                             reading = ifStack.peek().restoreState;
                             ifStack.pop();
@@ -525,7 +535,8 @@ public class Repository
                             {
                                 doRead(incRead, t.get(2), msg.level + 1);
                             }
-                        } else if ("alert".equals(t.get(1)))
+                        }
+                        else if ("alert".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
@@ -534,7 +545,8 @@ public class Repository
                             }
                             ;
                             msg.send(MsgInfo.mAlert, MessageFormat.format("{0}", t.get(2)));
-                        } else if ("log".equals(t.get(1)))
+                        }
+                        else if ("log".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
@@ -543,7 +555,8 @@ public class Repository
                             }
                             ;
                             msg.send(MsgInfo.mInfo, MessageFormat.format("{0}", t.get(2)));
-                        } else if ("set".equals(t.get(1)))
+                        }
+                        else if ("set".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
@@ -553,7 +566,8 @@ public class Repository
                             ;
                             varSet(t.get(2), true);
                             msg.send(MsgInfo.mInfo, MessageFormat.format("  set {0} (true)", t.get(2)));
-                        } else if ("unset".equals(t.get(1)))
+                        }
+                        else if ("unset".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
@@ -563,7 +577,8 @@ public class Repository
                             ;
                             varSet(t.get(2), false);
                             msg.send(MsgInfo.mInfo, MessageFormat.format("unset {0} (false)", t.get(2)));
-                        } else if ("error".equals(t.get(1)))
+                        }
+                        else if ("error".equals(t.get(1)))
                         {
                             if (nT < 3)
                             {
@@ -572,10 +587,12 @@ public class Repository
                             }
                             ;
                             msg.send(MsgInfo.mError, MessageFormat.format("{0}", t.get(2)));
-                        } else if ("exit".equals(t.get(1)))
+                        }
+                        else if ("exit".equals(t.get(1)))
                         {
                             msg.send(MsgInfo.mExit, "#exit");
-                        } else
+                        }
+                        else
                         {
                             msg.send(MsgInfo.mWarning, MessageFormat.format("Unrecognized directive '{0}', ignored.", t.get(1)));
                         }
@@ -786,7 +803,8 @@ public class Repository
                         // Array of int, one per page.
                         for (int i = 0; i < nT - 1; i++)
                         {
-                            mdb.cDesc.setPageSize(t.v(i + 1), i);
+                            double v = t.v(i + 1);
+                            mdb.cDesc.setPageSize(v, i);
                         }
                         break;
                     }
@@ -800,21 +818,30 @@ public class Repository
                         // checkPageCount(StringConstants.S_burnCommand, nT-1,
                         // msg);
                         for (int i = 0; i < nT - 1; i++)
-                            mdb.cDesc.setBurnCommand(t.get(i + 1), i);
+                        {
+                            String cmd = t.get(i + 1);
+                            mdb.cDesc.setBurnCommand(cmd, i);
+                        }
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageActivate))
                     {
                         checkPageCount(StringConstants.S_pageActivate, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
-                            mdb.cDesc.setPageActivate(t.get(i + 1), i);
+                        {
+                            String cmd = t.get(i + 1);
+                            mdb.cDesc.setPageActivate(cmd, i);
+                        }
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageIdentifier))
                     {
                         checkPageCount(StringConstants.S_pageIdentifier, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
-                            mdb.cDesc.setPageIdentifier(t.get(i + 1), i);
+                        {
+                            String cmd = t.get(i + 1);
+                            mdb.cDesc.setPageIdentifier(cmd, i);
+                        }
                         break;
                     }
 
@@ -822,7 +849,10 @@ public class Repository
                     { // == Read commands ==
                         checkPageCount(StringConstants.S_pageReadCommand, nT - 1, msg);
                         for (int i = 0; i < nT - 1; i++)
-                            mdb.cDesc.setPageReadWhole(t.get(i + 1), i);
+                        {
+                            String cmd = t.get(i + 1);
+                            mdb.cDesc.setPageReadWhole(cmd, i);
+                        }
                         break;
                     }
                     if (t.get(0).equals(StringConstants.S_pageChunkRead))
@@ -924,7 +954,8 @@ public class Repository
 
                                 s.setCScalar(t.get(0), t.get(2), currentCP, t.v(3), t.get(4), t.v(5), t.v(6), t.v(7), t.v(8),
                                         t.v(9));
-                            } else if (t.eq(StringConstants.S_array, 1))
+                            }
+                            else if (t.eq(StringConstants.S_array, 1))
                             {
                                 if (nT > 11)
                                     msg.send(MsgInfo.mWarning, MessageFormat.format(
@@ -932,7 +963,8 @@ public class Repository
                                             t.get(0), nT));
                                 s.setCArray(t.get(0), t.get(2), currentCP, t.v(3), t.get(5), t.get(4), t.v(6), t.v(7), t.v(8),
                                         t.v(9), t.v(10));
-                            } else if (t.eq(StringConstants.S_bits, 1))
+                            }
+                            else if (t.eq(StringConstants.S_bits, 1))
                             {
                                 s.setCBits(t.get(0), t.get(2), currentCP, t.v(3), t.get(4));
                                 for (int i = 5; i < nT; i++)
@@ -945,7 +977,8 @@ public class Repository
                                     String autoLbl = "" + (i + ofs);
                                     s.userStrings.add(autoLbl);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 msg.send(
                                         MsgInfo.mWarning,
@@ -954,7 +987,7 @@ public class Repository
                                                         t.get(0), t.get(1)));
                                 break;
                             }
-                            mdb.cDesc.addSymbol(s);
+                            mdb.cDesc.addConstantSymbol(s,currentCP);
 
                             // Validate page boundaries.
                             if (s.offset(0) + s.size() > mdb.cDesc.pageSize(currentCP))
@@ -967,7 +1000,8 @@ public class Repository
                                                         mdb.cDesc.pageSize(currentCP) - 1));
                             }
                             break;
-                        } catch (SymbolException e)
+                        }
+                        catch (SymbolException e)
                         {
                             msg.send(MsgInfo.mError,
                                     MessageFormat.format("Failed to parse symbol {0} - {1}", e.getMessage(), e.getSymbol()));
@@ -1002,16 +1036,19 @@ public class Repository
                             // name hunk type ofs units scale trans
                             // rpm = scalar, S16, 7, "RPM", 1.000, 0.000
                             s.setOScalar(t.get(0), t.get(2), 0, t.v(3), t.get(4), t.v(5), t.v(6));
-                        } else if (t.eq(StringConstants.S_bits, 1))
+                        }
+                        else if (t.eq(StringConstants.S_bits, 1))
                         {
                             // name hunk type ofs bitSpec
                             // sch = bits, U08, 11, [2:2]
                             s.setOBits(t.get(0), t.get(2), 0, t.v(3), t.get(4));
-                        } else if (t.t(1) == Tokenizer.type.Texp)
+                        }
+                        else if (t.t(1) == Tokenizer.type.Texp)
                         {
                             // var = { expr } [, "units"]
                             s.setExpr(t.get(0), t.stripped(1), t.get(2), msg.fileName, msg.lineNo);
-                        } else
+                        }
+                        else
                         {
                             msg.send(MsgInfo.mWarning, MessageFormat.format(
                                     "OutputChannel definition for \"{0}\" is corrupted, starts with \"{1}\"     \n\n"
@@ -1031,7 +1068,8 @@ public class Repository
                                     mdb.cDesc.ochBlockSize(0) - 1));
                         }
                         break;
-                    } catch (SymbolException e)
+                    }
+                    catch (SymbolException e)
                     {
                         msg.send(MsgInfo.mError,
                                 MessageFormat.format("Failed to parse symbol {0} - {1}", e.getMessage(), e.getSymbol()));
@@ -1430,23 +1468,28 @@ public class Repository
 
                 // End while
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (ParseException e)
+        }
+        catch (ParseException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (RepositoryException e)
+        }
+        catch (RepositoryException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (CommandException e)
+        }
+        catch (CommandException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally
+        }
+        finally
         {
 
         }
@@ -1469,7 +1512,8 @@ public class Repository
             g = new GaugeConfiguration();
             g.ref = ref;
             page.put(gaugeId, g);
-        } else
+        }
+        else
         {
             g.ref = ref;
         }
@@ -1479,8 +1523,8 @@ public class Repository
     private Map<String, GaugeConfiguration> getPage(String pageName)
     {
         Map<String, GaugeConfiguration> result = pageMap.get(pageName);
-        
-        if(result == null)
+
+        if (result == null)
         {
             result = new HashMap<String, GaugeConfiguration>();
             pageMap.put(pageName, result);

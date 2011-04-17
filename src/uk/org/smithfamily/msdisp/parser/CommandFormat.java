@@ -1,5 +1,6 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandFormat
@@ -21,8 +22,8 @@ public class CommandFormat
     int     _vOfs; // Address part
     int     _vSiz; // Size of one value in bytes.
     int     _vCnt; // Number of values (not bytes).
-    byte[]  _blt;
-    byte[]  _raw;
+    byte[]  _blt = new byte[0];
+    byte[]  _raw = new byte[0];;
 
     public CommandFormat()
     {
@@ -201,6 +202,15 @@ public class CommandFormat
     int valueSize()
     {
         return _vSiz;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CommandFormat [_empty=" + _empty + ", _dSiz=" + _dSiz + ", _pOfs=" + _pOfs + ", _pSiz=" + _pSiz + ", _iOfs="
+                + _iOfs + ", _iSiz=" + _iSiz + ", _cOfs=" + _cOfs + ", _cSiz=" + _cSiz + ", _oOfs=" + _oOfs + ", _oSiz=" + _oSiz
+                + ", _vOfs=" + _vOfs + ", _vSiz=" + _vSiz + ", _vCnt=" + _vCnt + ", _blt=" + Arrays.toString(_blt) + ", _raw="
+                + Arrays.toString(_raw) + "]";
     }
 
 }
