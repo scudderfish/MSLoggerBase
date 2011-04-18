@@ -17,6 +17,7 @@ public class Expression
             String source = s.exprText();
             source = replaceBinary(source);
             source = intToBool(source);
+            
             source = s._name+ " = ("+source+")";
             
             shellExpression = source;

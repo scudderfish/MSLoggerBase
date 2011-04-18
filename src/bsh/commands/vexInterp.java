@@ -1,6 +1,6 @@
 package bsh.commands;
 
-public class VexInterp
+public class vexInterp
 {
 
 }

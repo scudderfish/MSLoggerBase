@@ -295,7 +295,8 @@ public class Symbol
                 _hiRaw = _hi == noRange ? S32max : toIntr(_hi, Math.abs(_scale), _trans);
                 break;
             }
-        } else
+        }
+        else
         {
             switch (_sizeOf)
             {
@@ -366,7 +367,8 @@ public class Symbol
         if (closepos < 0 || openpos < 0)
         {
             throw new SymbolException("Cannot parse array spec", shape);
-        } else
+        }
+        else
         {
             x = Integer.parseInt(shape.substring(Math.max(1, colonpos + 1), xpos < 0 ? closepos : xpos).trim());
 
@@ -435,12 +437,19 @@ public class Symbol
         _bitHi = -1;
         _bitOfs = 0;
 
-        if (openPos < 0 || closePos < 0 || colonPos < 0 || plusPos < 0)
+        if (openPos < 0 || closePos < 0 || colonPos < 0 )
             throw new SymbolException("Cannot parse bitspec", bitSpec);
 
         _bitLo = Integer.parseInt(bitSpec.substring(openPos + 1, colonPos).trim());
-        _bitHi = Integer.parseInt(bitSpec.substring(colonPos + 1, plusPos).trim());
-        _bitOfs = Integer.parseInt(bitSpec.substring(plusPos + 1, closePos).trim());
+        if (plusPos > 0)
+        {
+            _bitHi = Integer.parseInt(bitSpec.substring(colonPos + 1, plusPos).trim());
+            _bitOfs = Integer.parseInt(bitSpec.substring(plusPos + 1, closePos).trim());
+        }
+        else
+        {
+            _bitHi = Integer.parseInt(bitSpec.substring(colonPos + 1, closePos).trim());
+        }
     }
 
     public int nValues()
@@ -490,7 +499,8 @@ public class Symbol
         if (isExpr())
         {
             v = -1;// MsDatabase.getInstance().cDesc._userVar.get(_index + index);
-        } else
+        }
+        else
         {
             v = toUser(valueRaw(), _scale, _trans) + _bitOfs;
         }
@@ -500,7 +510,7 @@ public class Symbol
 
     private int toUser(long v, double s, double t)
     {
-        return  (int) ((v + t) * s);
+        return (int) ((v + t) * s);
     }
 
     private long valueRaw()
@@ -512,10 +522,10 @@ public class Symbol
             v = mdb.cDesc.getB(_pageNo, _offset, _const ? 0 : 1);
             break;
         case 2:
-            v = mdb.cDesc.getW(_pageNo, _offset , _const ? 0 : 1);
+            v = mdb.cDesc.getW(_pageNo, _offset, _const ? 0 : 1);
             break;
         case 4:
-            v = mdb.cDesc.getD(_pageNo, _offset , _const ? 0 : 1);
+            v = mdb.cDesc.getD(_pageNo, _offset, _const ? 0 : 1);
             break;
         }
 
@@ -533,7 +543,8 @@ public class Symbol
                     v |= 0xffff0000;
                 break;
             }
-        } else
+        }
+        else
         {
             if (v < 0)
             {

@@ -4,7 +4,7 @@ import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import bsh.CallStack;
 import bsh.Interpreter;
 
-public class TempCvt
+public class tempCvt
 {
     public static double invoke(Interpreter env, CallStack callstack, double value)
     {

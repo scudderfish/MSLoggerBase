@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import uk.org.smithfamily.msdisp.parser.log.Datalog;
 
 public class MsDatabase
@@ -44,6 +47,7 @@ public class MsDatabase
     String                      m_logFileName;
 
     double[]                    wwuX         = new double[10];
+    private Context context;
     static double               previousSecl = 255;
 
     enum thermType
@@ -164,14 +168,13 @@ public class MsDatabase
             getOk = cDesc.read(pBytes, nBytes); // Don't read directly into
                                                 // database, in case we don't
                                                 // get data.
-        
 
-            if (getOk)
-            {
-                System.arraycopy(pBytes, 0, cDesc._const,ofs, nBytes);
-                //memcpy(cDesc._const + ofs, pBytes, nBytes);
-                cDesc.updateConstPage(i);
-            }
+        }
+        if (getOk)
+        {
+            System.arraycopy(pBytes, 0, cDesc._const, ofs, nBytes);
+            // memcpy(cDesc._const + ofs, pBytes, nBytes);
+            cDesc.updateConstPage(pageNo);
         }
         return getOk;
     }
@@ -402,13 +405,17 @@ public class MsDatabase
     {
         values.clear();
         Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
-        File tableFile = new File(fileName);
+        
+        
+        fileName = "tables"+File.separator+fileName;
+        AssetManager assetManager = context.getResources().getAssets();
+
         BufferedReader input = null;
         try
         {
             try
             {
-                input = new BufferedReader(new FileReader(tableFile));
+                input = new BufferedReader(new InputStreamReader(assetManager.open(fileName)));
                 String line;
 
                 while ((line = input.readLine()) != null)
@@ -444,5 +451,10 @@ public class MsDatabase
             e.printStackTrace();
 
         }
+    }
+
+    public void setContext(Context c)
+    {
+        this.context = c;
     }
 }

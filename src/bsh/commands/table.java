@@ -9,7 +9,7 @@ import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import bsh.CallStack;
 import bsh.Interpreter;
 
-public class Table
+public class table
 {
     static Map<String,List<Integer> > tables = new HashMap<String,List<Integer> >();
 
