@@ -622,7 +622,7 @@ public class ControllerDescriptor
         constantSymbols.add(s);
         PageInfo pi = _page.get(pageNo);
         pi.addConstSymbol(s);
-
+        System.out.println("Added "+s+" to page "+pageNo);
     }
 
     public void updateConstPage(int i)
@@ -630,10 +630,11 @@ public class ControllerDescriptor
         PageInfo pi = _page.get(i);
         for(Symbol constSym : pi.constSymbols)
         {
-            String cmd = constSym._name+" = "+constSym.valueFromRaw();
+            String cmd = constSym._name+" = "+constSym.valueFromRaw()+";";
             try
             {
-                interpreter.eval(cmd);
+                System.out.println(cmd);
+                interpreter.set(constSym._name, constSym.valueFromRaw());
             }
             catch (EvalError e)
             {

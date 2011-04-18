@@ -30,12 +30,20 @@ class ifBlock
     {
         lineNo = ln;
         reading = readState.yetToRead;
+        restoreState = curRd;
         fileName = fn;
     }
 
     static String sReading(readState s)
     {
         return s == readState.nowReading ? "true" : "false";
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ifBlock [fileName=" + fileName + ", lineNo=" + lineNo + ", reading=" + reading + ", restoreState=" + restoreState
+                + "]";
     }
 };
 
@@ -257,6 +265,7 @@ public class Repository
     {
         this.context = c;
         mdb = MsDatabase.getInstance();
+        mdb.setContext(c);
         INIController.getInstance().initialise(c);
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
@@ -264,6 +273,30 @@ public class Repository
         ochInit(StringConstants.S_veTuneLodIdx, UveTuneLodIdx);
         ochInit(StringConstants.S_veTuneRpmIdx, UveTuneRpmIdx);
         ochInit(StringConstants.S_veTuneValue, UveTuneValue);
+
+        varSet("AEM_LINEAR", false);
+        varSet("AEM_NON_LINEAR", false);
+        varSet("AIR_FLOW_METER", false);
+        varSet("ALPHA_N", false);
+        varSet("CELSIUS", true);
+        varSet("DIYWB_NON_LINEAR", false);
+        varSet("DYNOJET_LINEAR", false);
+        varSet("INNOVATE_0_5_LINEAR", false);
+        varSet("INNOVATE_1_2_LINEAR", false);
+        varSet("INNOVATE_LC1_DEFAULT", false);
+        varSet("KPa", true);
+        varSet("MPX4250", true);
+        varSet("MPXH6300A", false);
+        varSet("MPXH6400A", false);
+        varSet("MSLVV_COMPATIBLE", false);
+        varSet("NARROW_BAND_EGO", false);
+        varSet("SPEED_DENSITY", true);
+        varSet("TECHEDGE_LINEAR", true);
+        varSet("WB_1_0_LINEAR", false);
+        varSet("WB_UNKNOWN", false);
+        varSet("ZEITRONIX_NON_LINEAR", false);
+        varSet("MEMPAGES_OFF", true);
+        varSet("LOGPAGES", true);
 
         mdb.init();
 
@@ -311,6 +344,7 @@ public class Repository
 
     private void resolveGaugeReferences()
     {
+        /*
         for (String pageName : pageMap.keySet())
         {
             Map<String, GaugeConfiguration> gaugeMap = getPage(pageName);
@@ -334,6 +368,7 @@ public class Repository
                 }
             }
         }
+        */
 
     }
 
@@ -415,9 +450,17 @@ public class Repository
                         if (reading == ifBlock.readState.nowReading)
                         {
                             if (isVarSet(t.get(2)))
+                            {
+                                msg.send(MsgInfo.mInfo, MessageFormat.format("{0} is set, nowReading", t.get(2)));
                                 reading = ifBlock.readState.nowReading;
+                            }
                             else
+                            {
+                                msg.send(MsgInfo.mInfo, MessageFormat.format("{0} is NOT set, yetToRead", t.get(2)));
+
                                 reading = ifBlock.readState.yetToRead;
+
+                            }
                         }
                         else
                         {
@@ -509,9 +552,9 @@ public class Repository
                         {
                             reading = ifStack.peek().restoreState;
                             ifStack.pop();
-                            // msg.send(msgInfo.mInfo, "#endif, including={0}",
-                            // ifBlock.sReading(reading ?
-                            // ifBlock.readState.nowReading:ifBlock.readState.yetToRead));
+                            msg.send(MsgInfo.mInfo, MessageFormat.format("#endif, including={0}", ifBlock
+                                    .sReading(reading != ifBlock.readState.yetToRead ? ifBlock.readState.nowReading
+                                            : ifBlock.readState.yetToRead)));
                         }
                         continue;
                     }
@@ -529,8 +572,9 @@ public class Repository
                                 continue;
                             }
                             ;
-                            File incFile = new File(t.get(2));
-                            BufferedReader incRead = new BufferedReader(new FileReader(incFile));
+                            String incFile = "ecuDef"+File.separator+t.get(2);
+                            
+                            BufferedReader incRead = new BufferedReader(getFile(incFile));
                             if (incRead != null)
                             {
                                 doRead(incRead, t.get(2), msg.level + 1);
@@ -599,6 +643,8 @@ public class Repository
                         continue;
                     }
                 }
+                if (reading != ifBlock.readState.nowReading)
+                    continue;
 
                 if (t.eq(StringConstants.S__AccelerationWizard_, 0))
                 {
@@ -987,7 +1033,7 @@ public class Repository
                                                         t.get(0), t.get(1)));
                                 break;
                             }
-                            mdb.cDesc.addConstantSymbol(s,currentCP);
+                            mdb.cDesc.addConstantSymbol(s, currentCP);
 
                             // Validate page boundaries.
                             if (s.offset(0) + s.size() > mdb.cDesc.pageSize(currentCP))
@@ -1005,6 +1051,7 @@ public class Repository
                         {
                             msg.send(MsgInfo.mError,
                                     MessageFormat.format("Failed to parse symbol {0} - {1}", e.getMessage(), e.getSymbol()));
+                            msg.send(MsgInfo.mError,lineBuffer);
                             break;
                         }
                     }
@@ -1570,8 +1617,8 @@ public class Repository
 
         if (b == null)
         {
-            msg.send(MsgInfo.mWarning, MessageFormat.format("Conditional check references undefined value '{0}'.     \n\n"
-                    + "Only first reference will be reported.", setName));
+            msg.send(MsgInfo.mWarning, MessageFormat.format(
+                    "Conditional check references undefined value {0}. Only first reference will be reported.", setName));
             varSet(setName, false);
             return false;
 

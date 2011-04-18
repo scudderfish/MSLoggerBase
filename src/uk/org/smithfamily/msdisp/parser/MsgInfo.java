@@ -1,5 +1,7 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import android.util.Log;
+
 public class MsgInfo
 {
 
@@ -20,7 +22,7 @@ public class MsgInfo
 
     public void send(int mwarning2, String string)
     {
-        // TODO Auto-generated method stub
+       Log.d("Send", string);
         
     }
 

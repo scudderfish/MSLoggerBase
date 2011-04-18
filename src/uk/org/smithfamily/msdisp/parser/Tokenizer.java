@@ -26,6 +26,12 @@ public class Tokenizer
 			typ = t;
 			num = d;
 		}
+
+        @Override
+        public String toString()
+        {
+            return "Token [str=" + str + ", typ=" + typ + ", num=" + num + "]";
+        }
 	};
 
 	List<Token> tokens;
@@ -184,6 +190,12 @@ public class Tokenizer
     {
         
         return tokens.get(i).str;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Tokenizer [tokens=" + tokens + "]";
     }
 
 }
