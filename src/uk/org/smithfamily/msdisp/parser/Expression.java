@@ -80,4 +80,11 @@ public class Expression
 
     }
 
+
+    @Override
+    public String toString()
+    {
+        return "Expression [symbol=" + symbol + ", shellExpression=" + shellExpression + "]";
+    }
+
 }

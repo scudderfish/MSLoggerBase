@@ -48,8 +48,9 @@ public class ControllerDescriptor
     private boolean          force;
     List<Symbol>             outputChannels  = new ArrayList<Symbol>();
     List<Symbol>             constantSymbols = new ArrayList<Symbol>();
-    List<Expression>         expressions     = new ArrayList<Expression>();
+    private List<Expression> expressions     = new ArrayList<Expression>();
     Interpreter              interpreter     = new Interpreter();
+    private boolean          functionDefined;
 
     public ControllerDescriptor(MsComm io)
     {
@@ -587,16 +588,58 @@ public class ControllerDescriptor
 
     public void recalc()
     {
-        for (Expression expr : expressions)
+        if (functionDefined)
         {
             try
             {
-                interpreter.eval(expr.getShellExpression());
+                interpreter.eval("runtimeExpressions();");
             }
             catch (EvalError e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            }
+        }
+        else
+        {
+            List<Expression> duff = new ArrayList<Expression>();
+            for (Expression expr : expressions)
+            {
+                try
+                {
+                    interpreter.eval(expr.getShellExpression());
+                }
+                catch (EvalError e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    duff.add(expr);
+                }
+            }
+            if (duff.size() > 0)
+            {
+                expressions.removeAll(duff);
+            }
+            else
+            {
+                String func="void runtimeExpressions(){\n";
+                for(Expression expr : expressions)
+                {
+                    func += expr.getShellExpression()+";\n";
+                }
+                func += "}\n";
+                System.out.println(func);
+                try
+                {
+                    interpreter.eval(func);
+                }
+                catch (EvalError e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+                functionDefined = true;
             }
         }
     }
@@ -616,21 +659,21 @@ public class ControllerDescriptor
         return value;
     }
 
-    public void addConstantSymbol(Symbol s,int pageNo)
+    public void addConstantSymbol(Symbol s, int pageNo)
     {
         this.addSymbol(s);
         constantSymbols.add(s);
         PageInfo pi = _page.get(pageNo);
         pi.addConstSymbol(s);
-        System.out.println("Added "+s+" to page "+pageNo);
+        System.out.println("Added " + s + " to page " + pageNo);
     }
 
     public void updateConstPage(int i)
     {
         PageInfo pi = _page.get(i);
-        for(Symbol constSym : pi.constSymbols)
+        for (Symbol constSym : pi.constSymbols)
         {
-            String cmd = constSym._name+" = "+constSym.valueFromRaw()+";";
+            String cmd = constSym._name + " = " + constSym.valueFromRaw() + ";";
             try
             {
                 System.out.println(cmd);
