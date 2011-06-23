@@ -600,48 +600,6 @@ public class ControllerDescriptor
                 e.printStackTrace();
             }
         }
-        else
-        {
-            List<Expression> duff = new ArrayList<Expression>();
-            for (Expression expr : expressions)
-            {
-                try
-                {
-                    interpreter.eval(expr.getShellExpression());
-                }
-                catch (EvalError e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    duff.add(expr);
-                }
-            }
-            if (duff.size() > 0)
-            {
-                expressions.removeAll(duff);
-            }
-            else
-            {
-                String func="void runtimeExpressions(){\n";
-                for(Expression expr : expressions)
-                {
-                    func += expr.getShellExpression()+";\n";
-                }
-                func += "}\n";
-                System.out.println(func);
-                try
-                {
-                    interpreter.eval(func);
-                }
-                catch (EvalError e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
-                functionDefined = true;
-            }
-        }
     }
 
     public int getValue(String name)
@@ -685,5 +643,59 @@ public class ControllerDescriptor
                 e.printStackTrace();
             }
         }
+    }
+
+    public void generateRuntimeFunction()
+    {
+        for (int iPage = 0; iPage < nPages(); iPage++)
+        {
+            updateConstPage(iPage);
+        }
+        
+        
+        populateUserVars();
+        List<Expression> duff = new ArrayList<Expression>();
+        do
+        {
+            duff.clear();
+            for (Expression expr : expressions)
+            {
+                try
+                {
+                    String shellExpression = expr.getShellExpression();
+                    interpreter.eval(shellExpression);
+                }
+                catch (EvalError e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    duff.add(expr);
+                }
+            }
+            if (duff.size() > 0)
+            {
+                expressions.removeAll(duff);
+            }
+        } while(duff.size() > 0);
+        
+        String func="void runtimeExpressions(){\n";
+        for(Expression expr : expressions)
+        {
+            func += expr.getShellExpression()+";\n";
+        }
+        func += "}\n";
+        System.out.println(func);
+        try
+        {
+            interpreter.eval(func);
+        }
+        catch (EvalError e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        functionDefined = true;
+        
     }
 }
