@@ -324,7 +324,7 @@ public class Repository
 
             resolveVarReferences();
             resolveGaugeReferences();
-
+            mdb.cDesc.generateRuntimeFunction();
         }
         catch (FileNotFoundException e)
         {
