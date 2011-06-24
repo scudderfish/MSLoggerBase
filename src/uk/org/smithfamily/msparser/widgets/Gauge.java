@@ -161,6 +161,7 @@ public final class Gauge extends View implements Indicator
     private int                 rangeSegmentOffset     = 0;
     
     private String channel;
+    private boolean disabled;
 
     public Gauge(Context context)
     {
@@ -184,18 +185,6 @@ public final class Gauge extends View implements Indicator
     {
         super(context, attrs, defStyle);
         init(context, attrs);
-    }
-
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        super.onDetachedFromWindow();
     }
 
     @Override
@@ -292,6 +281,7 @@ public final class Gauge extends View implements Indicator
             rangeErrorColor = a.getInt(R.styleable.Dial_rangeErrorColor, rangeErrorColor);
             rangeErrorMinValue = a.getFloat(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
             rangeErrorMaxValue = a.getFloat(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
+            disabled = a.getBoolean(R.styleable.Dial_disabled, false);
             String unitTitle = a.getString(R.styleable.Dial_unitTitle);
             String upperTitle = a.getString(R.styleable.Dial_upperTitle);
             if (unitTitle != null)
@@ -942,5 +932,23 @@ public final class Gauge extends View implements Indicator
     public void setChannel(String channel)
     {
         this.channel = channel;
+    }
+    
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        
+        IndicatorManager.getInstance().registerIndicator(this);
+
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+        
+        IndicatorManager.getInstance().deregisterIndicator(this);
+
     }
 }

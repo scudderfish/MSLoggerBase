@@ -1,14 +1,24 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
-import uk.org.smithfamily.msdisp.parser.log.*;
+import uk.org.smithfamily.msdisp.parser.log.DatalogEntry;
+import uk.org.smithfamily.msdisp.parser.log.DatalogList;
+import uk.org.smithfamily.msdisp.parser.log.DatalogOptions;
 import uk.org.smithfamily.msdisp.parser.ui.GaugeConfiguration;
 import uk.org.smithfamily.msdisp.parser.ui.UserIndicatorList;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +27,7 @@ class ifBlock
 {
     String fileName;
     int    lineNo;
+
 
     enum readState
     {
@@ -49,6 +60,18 @@ class ifBlock
 
 public class Repository
 {
+    public enum RepositoryState
+    {
+        Disconnected,Connected,Reading,Parsing,Ready,Running
+    }
+    
+    private RepositoryState currentState = RepositoryState.Disconnected;
+    
+    public RepositoryState getCurrentState()
+    {
+        return currentState;
+    }
+    
     static private final Repository instance = new Repository();
 
     public static final Repository getInstance()
@@ -135,6 +158,8 @@ public class Repository
     private int                                  t_fontSize;
 
     private UserIndicatorList                    uil       = new UserIndicatorList();
+
+    private long iniSize;
 
     GaugeConfiguration gauge(String page, String name)
     {
@@ -257,7 +282,8 @@ public class Repository
     public InputStreamReader getFile(String fileName) throws IOException
     {
         AssetManager assetManager = context.getResources().getAssets();
-
+        AssetFileDescriptor fd = assetManager.openFd(fileName);
+        iniSize = fd.getDeclaredLength();
         return new InputStreamReader(assetManager.open(fileName));
     }
 
@@ -300,14 +326,17 @@ public class Repository
 
         mdb.init();
 
-        String defaultFilename = INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
+        String defaultFilename = "ecuDef/msns-extra.29y.ini";//INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
 
         try
         {
 
             BufferedReader in = new BufferedReader(getFile(defaultFilename));
             Date start = new Date();
+            this.currentState=RepositoryState.Reading;
             doRead(in, defaultFilename, 0);
+            this.currentState=RepositoryState.Parsing;
+            
             Date end = new Date();
             Log.v("INIParse", "Time = " + (end.getTime() - start.getTime()));
             if (!ifStack.isEmpty())
@@ -340,6 +369,7 @@ public class Repository
         getLogFormat().resolve();
         lop.resolve();
         mdb.load();
+        this.currentState=RepositoryState.Ready;
     }
 
     private void resolveGaugeReferences()

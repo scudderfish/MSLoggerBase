@@ -11,7 +11,7 @@ public class ModifyLayoutActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.modify);
+        //setContentView(R.layout.modify);
     }
 
     @Override
