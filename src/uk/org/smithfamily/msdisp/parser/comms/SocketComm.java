@@ -11,11 +11,23 @@ public class SocketComm extends MsComm
     public Socket s;
     public SocketComm()
     {
+    }
+
+    @Override
+    public int port()
+    {
+        return super.port();
+    }
+
+    @Override
+    protected boolean openDevice()
+    {
         try
         {
             s = new Socket("192.168.32.101", 7893);
             os = s.getOutputStream();
             is = s.getInputStream();
+            setConnected(true);
         }
         catch (UnknownHostException e)
         {
@@ -27,12 +39,25 @@ public class SocketComm extends MsComm
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return isConnected();
     }
 
     @Override
-    public int port()
+    protected boolean closeDevice(boolean force)
     {
-        return super.port();
+        try
+        {
+            is.close();
+            os.close();
+            s.close();
+            setConnected(false);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return !isConnected();
     }
 
 }

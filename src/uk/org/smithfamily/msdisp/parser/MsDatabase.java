@@ -457,4 +457,9 @@ public class MsDatabase
     {
         this.context = c;
     }
+    public Context getContext()
+    {
+        return context;
+        
+    }
 }
