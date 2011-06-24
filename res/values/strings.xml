@@ -7,4 +7,6 @@
     <string name="Preferences">Preferences</string>
     <string name="connected">Connected</string>
 	<string name="disconnected">Disconnected</string>
+	<string name="cannot_connect">Cannot connect to Megasquirt.</string>
+	<string name="interrupted">Initialisation interrupted</string>
 </resources>

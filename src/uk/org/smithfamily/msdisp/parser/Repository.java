@@ -287,7 +287,7 @@ public class Repository
         return new InputStreamReader(assetManager.open(fileName));
     }
 
-    public void readInit(Context c)
+    public boolean readInit(Context c)
     {
         this.context = c;
         mdb = MsDatabase.getInstance();
@@ -326,8 +326,11 @@ public class Repository
 
         mdb.init();
 
-        String defaultFilename = "ecuDef/msns-extra.29y.ini";//INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
-
+        String defaultFilename = INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
+        if(defaultFilename == null)//Could not connect
+        {
+        	return false;
+        }
         try
         {
 
@@ -359,17 +362,20 @@ public class Repository
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return false;
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return false;
         }
 
         getLogFormat().resolve();
         lop.resolve();
         mdb.load();
         this.currentState=RepositoryState.Ready;
+        return true;
     }
 
     private void resolveGaugeReferences()

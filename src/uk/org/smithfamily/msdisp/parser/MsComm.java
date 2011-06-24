@@ -1,19 +1,17 @@
 package uk.org.smithfamily.msdisp.parser;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Observable;
-import java.util.Observer;
-import java.util.concurrent.Semaphore;
 
+import uk.org.smithfamily.msparser.MSParserActivity;
 import uk.org.smithfamily.msparser.R;
-
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 public abstract class MsComm extends Observable
 {
 
@@ -167,17 +165,29 @@ public abstract class MsComm extends Observable
         }
         CharSequence text = context.getText(res);
         Notification notification = new Notification(R.drawable.injector,text,System.currentTimeMillis());
-        
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(), 0);
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		
+		// Set the info for the views that show in the notification panel.
+		notification.setLatestEventInfo(context, context.getText(R.string.app_name), text, contentIntent);
+
         mNM.notify(res, notification );
     }
     protected void open()
     {
-        openDevice();
-        notifyMsg(R.string.connected);
+        if(openDevice())
+        	notifyMsg(R.string.connected);
+        else
+        	notifyMsg(R.string.cannot_connect);
     }
     protected void close()
     {
         closeDevice(true);
         notifyMsg(R.string.disconnected);
     }
+	public boolean openConnection()
+	{
+		open();
+		return isConnected();
+	}
 }
