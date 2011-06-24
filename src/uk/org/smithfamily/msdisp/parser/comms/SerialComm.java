@@ -14,11 +14,7 @@ public class SerialComm extends MsComm
 {
     UUID RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     protected BluetoothSocket sock;
-    public SerialComm()
-    {
-        init();
-    }
-
+ 
     private String locateAdapter()
     {
         return "00:12:6F:03:BC:63";
@@ -41,12 +37,14 @@ public class SerialComm extends MsComm
             sock.connect();
             is=sock.getInputStream();
             os=sock.getOutputStream();
+            setConnected(true);
         }
         catch (IOException e)
         {
             Log.e("BT", "IOException", e);
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return false;
         }
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         // If there are paired devices
@@ -60,6 +58,31 @@ public class SerialComm extends MsComm
                 Log.v("BlueTooth Testing", device.getName() + "\n" + device.getAddress());
             }
         }
+        return true;
+    }
+
+    @Override
+    protected boolean openDevice()
+    {
+        return init();
+    }
+
+    @Override
+    protected boolean closeDevice(boolean force)
+    {
+        try
+        {
+            os.close();
+            is.close();
+            sock.close();
+            setConnected(false);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         return true;
     }
 }
