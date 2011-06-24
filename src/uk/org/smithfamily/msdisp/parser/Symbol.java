@@ -146,7 +146,7 @@ public class Symbol
 
     private MsDatabase   mdb         = MsDatabase.getInstance();
 
-    String name()
+    public String name()
     {
         return _name;
     }

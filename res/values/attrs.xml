@@ -34,5 +34,7 @@
 		
 		<attr name="numValue" format="float" />
 		<attr name="channel" format="string"/>
+		
+		<attr name="disabled" format="boolean" />
 	</declare-styleable>
 </resources>

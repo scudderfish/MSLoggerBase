@@ -1,20 +1,16 @@
 package uk.org.smithfamily.msparser.widgets;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 
 import uk.org.smithfamily.msparser.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.widget.TextView;
 
-public class NumericIndicator extends TextView implements Indicator
+public class NumericIndicator extends AutoResizeTextView implements Indicator
 
 {
 
@@ -27,15 +23,14 @@ public class NumericIndicator extends TextView implements Indicator
     private Typeface     font;
     private int          dp;
     private NumberFormat formatter;
-    private float        defaultSize = 12;
     private String       channel;
+    private boolean disabled;
 
     public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         setFont(context);
         setupDefaults(context);
-
     }
 
     public NumericIndicator(Context context, AttributeSet attrs)
@@ -50,6 +45,8 @@ public class NumericIndicator extends TextView implements Indicator
         warningPoint = a.getFloat(R.styleable.Dial_rangeWarningMinValue, warningPoint);
         errorPoint = a.getFloat(R.styleable.Dial_rangeErrorMinValue, errorPoint);
         channel = a.getString(R.styleable.Dial_channel);
+        disabled = a.getBoolean(R.styleable.Dial_disabled, false);
+        
         
         setupFormat();
     }
@@ -70,9 +67,6 @@ public class NumericIndicator extends TextView implements Indicator
         title = "AFR";
         warningPoint = 16;
         errorPoint = 17;
-
-        defaultSize = getTextSize();
-
     }
 
     private void setupFormat()
@@ -144,43 +138,22 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     protected void onDraw(Canvas canvas)
     {
-        int h = getHeight();
-        int w = getWidth();
-        int padding = getPaddingTop() + getPaddingBottom();
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, h - padding);
-
         if (value < warningPoint)
             setTextColor(Color.GREEN);
         else if (value < errorPoint)
             setTextColor(Color.YELLOW);
         else
             setTextColor(Color.RED);
-        this.setText(formatter.format(this.value));
-
+        if(disabled)
+        {
+            setTextColor(Color.LTGRAY);
+            this.setText("---");
+        }
+        else
+        {
+            this.setText(formatter.format(this.value));
+        }
         super.onDraw(canvas);
-    }
-
-    public void setDefaultSize(float size)
-    {
-        defaultSize = size;
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize);
-
-        super.onSizeChanged(w, h, oldw, oldh);
-    }
-
-    /**
-     * Gets the width in pixels of the text
-     * 
-     * @return
-     */
-    private float getTextWidth()
-    {
-        return getPaint().measureText(getText().toString());
     }
 
     public String getChannel()
@@ -191,5 +164,23 @@ public class NumericIndicator extends TextView implements Indicator
     public void setChannel(String channel)
     {
         this.channel = channel;
+    }
+
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        
+        IndicatorManager.getInstance().registerIndicator(this);
+
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+        
+        IndicatorManager.getInstance().deregisterIndicator(this);
+
     }
 }

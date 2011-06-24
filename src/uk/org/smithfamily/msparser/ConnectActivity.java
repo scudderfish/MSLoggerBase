@@ -70,7 +70,7 @@ public class ConnectActivity extends Activity
         {
             finish();
         }
-        setContentView(R.layout.main);
+        //setContentView(R.layout.main);
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter
                 .getDefaultAdapter();
         //IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
