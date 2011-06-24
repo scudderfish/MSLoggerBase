@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MSControlService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -125,7 +126,19 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
             public void run()
             {
                 Looper.prepare();
-                Repository.getInstance().readInit(MSControlService.this);
+                while (Repository.getInstance().readInit(MSControlService.this) == false)
+                {
+                	Toast.makeText(MSControlService.this, R.string.cannot_connect, Toast.LENGTH_SHORT);
+                	try
+					{
+						Thread.sleep(5000);
+					}
+					catch (InterruptedException e)
+					{
+						Toast.makeText(MSControlService.this, R.string.interrupted, Toast.LENGTH_SHORT);
+						
+					}
+                }
 
                 Intent broadcast = new Intent();
                 broadcast.setAction(CONNECTED);

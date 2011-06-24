@@ -82,6 +82,9 @@ public class INIController
     {
         String result = defaultResult;
         MsComm comm = CommsFactory.getInstance().getComInstance();
+        if(!comm.openConnection())
+        	return null;
+        
         int nBytes = 1024;
         boolean found = false;
         String response = null;
