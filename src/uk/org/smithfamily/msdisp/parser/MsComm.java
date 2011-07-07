@@ -5,36 +5,56 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Observable;
 
-import uk.org.smithfamily.msparser.MSParserActivity;
-import uk.org.smithfamily.msparser.R;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 public abstract class MsComm extends Observable
 {
 
     protected InputStream  is;
     protected OutputStream os;
-    private boolean connected = false;
+    private boolean        connected        = false;
+    private boolean        writeBlocks      = false;
+    private int            interWriteDelay  = 0;
+    private int            totalReadTimeout = 0;
+    protected long         lastComms        = System.currentTimeMillis();
+    protected long         throttleWait     = 0;
 
     protected abstract boolean openDevice();
+
     protected abstract boolean closeDevice(boolean force);
-    private NotificationManager mNM;
+
+    protected void throttle()
+    {
+        long now = System.currentTimeMillis();
+        if ((lastComms + throttleWait) <= now)
+        {
+            lastComms = now;
+            return;
+        }
+        long duration = now - lastComms + throttleWait;
+        try
+        {
+            Thread.sleep(duration);
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     protected MsComm()
     {
     }
- 
+
     void setChunking(boolean _writeBlocks, int _interWriteDelay)
     {
-
+        writeBlocks = _writeBlocks;
+        interWriteDelay = _interWriteDelay;
+        throttleWait = interWriteDelay;
     }
 
     public void setReadTimeouts(int _blockReadTimeout)
     {
-
+        totalReadTimeout = _blockReadTimeout;
     }
 
     public int port()
@@ -49,15 +69,18 @@ public abstract class MsComm extends Observable
 
     public void flush() throws IOException
     {
-        if(!connected) return;
+        if (!connected)
+            return;
         os.flush();
     }
 
     public boolean read(byte[] bytes, int nBytes)
     {
-        if(!connected && !openDevice()) return false;
+        if (!connected && !openDevice())
+            return false;
         try
         {
+            throttle();
             int bytesRead = 0;
 
             while (bytesRead < nBytes)
@@ -79,13 +102,28 @@ public abstract class MsComm extends Observable
 
     public boolean write(byte[] buf)
     {
-        if(!connected && !openDevice()) return false;
+        if (!connected && !openDevice())
+            return false;
 
         boolean ok = true;
         try
         {
-            os.write(buf);
+            throttle();
+
+            if (writeBlocks)
+            {
+                os.write(buf);
+            }
+            else
+            {
+                for (int n = 0; n < buf.length; n++)
+                {
+                    os.write(buf[n]);
+                    throttle();
+                }
+            }
             os.flush();
+
         }
         catch (IOException e)
         {
@@ -99,8 +137,9 @@ public abstract class MsComm extends Observable
 
     public String read(int nBytes)
     {
-        if(!connected && !openDevice()) return null;
-        
+        if (!connected && !openDevice())
+            return null;
+
         StringBuffer bytes = new StringBuffer();
 
         try
@@ -117,7 +156,7 @@ public abstract class MsComm extends Observable
         }
         catch (IOException e)
         {
-            
+
             e.printStackTrace();
             close();
             return "";
@@ -145,49 +184,20 @@ public abstract class MsComm extends Observable
     {
         return os;
     }
-    protected void notifyMsg(int res)
-    {
-        if(res == 0)
-        {
-            mNM.cancelAll();
-            return;
-        }
-        Context context = MsDatabase.getInstance().getContext();
-        if(context == null)
-        {
-            return;
-        }
-        
-        if(mNM == null)
-        {
-            mNM = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        }
-        CharSequence text = context.getText(res);
-        Notification notification = new Notification(R.drawable.injector,text,System.currentTimeMillis());
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(), 0);
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		
-		// Set the info for the views that show in the notification panel.
-		notification.setLatestEventInfo(context, context.getText(R.string.app_name), text, contentIntent);
-
-        mNM.notify(res, notification );
-    }
     protected void open()
     {
-        if(openDevice())
-        	notifyMsg(R.string.connected);
-        else
-        	notifyMsg(R.string.cannot_connect);
+        openDevice();
     }
+
     protected void close()
     {
         closeDevice(true);
-        notifyMsg(R.string.disconnected);
     }
-	public boolean openConnection()
-	{
-		open();
-		return isConnected();
-	}
+
+    public boolean openConnection()
+    {
+        open();
+        return isConnected();
+    }
 }

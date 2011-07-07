@@ -3,7 +3,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
-	android:orientation="vertical" android:layout_gravity="center"
+	android:orientation="horizontal" android:layout_gravity="center"
 	android:layout_margin="1px" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
@@ -115,17 +115,18 @@
 				dgs:scaleMaxValue="10"
 				dgs:rangeWarningMinValue="10"
 				dgs:rangeErrorMinValue="10"
-				dgs:channel="advSpark"
+				dgs:channel="advance"
 			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
 
 		</TableRow>
 	</TableLayout>
 	<LinearLayout android:id="@+id/linearLayout1"
 		android:layout_margin="1px" android:layout_width="fill_parent"
-		android:layout_gravity="center" android:orientation="horizontal"
+		android:layout_gravity="center" android:orientation="vertical"
 		android:layout_weight="5" android:layout_height="fill_parent">
 		<Button android:id="@+id/LoggingBtn" android:layout_width="wrap_content"
 			android:text="Start Logging" android:layout_weight="1" android:layout_height="wrap_content"></Button>
+		<Button android:layout_height="wrap_content" android:id="@+id/dieButton" android:text="Die!" android:layout_width="wrap_content"  android:layout_weight="1"></Button>
 		
 	</LinearLayout>
 
