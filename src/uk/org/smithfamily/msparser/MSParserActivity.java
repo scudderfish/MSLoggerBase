@@ -18,6 +18,9 @@ import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class MSParserActivity extends Activity
 {
@@ -33,6 +36,17 @@ public class MSParserActivity extends Activity
                                                       if (intent.getAction().equals(MSControlService.CONNECTED))
                                                       {
                                                           setContentView(R.layout.display);
+                                                          Button button = (Button)findViewById(R.id.dieButton);
+                                                          button.setOnClickListener(new OnClickListener(){
+
+                                                              @Override
+                                                              public void onClick(View arg0)
+                                                              {
+                                                                  mBoundService.stopSelf();
+                                                                  System.exit(0);
+                                                              }});
+                                                          
+
                                                       }
                                                       if (intent.getAction().equals(MSControlService.NEW_DATA))
                                                       {
@@ -41,6 +55,7 @@ public class MSParserActivity extends Activity
                                                   }
 
                                               };
+    private IndicatorManager   indicatorManager;
 
     /** Called when the activity is first created. */
     @Override
@@ -50,7 +65,8 @@ public class MSParserActivity extends Activity
         setContentView(R.layout.disconnected);
 
         super.onCreate(savedInstanceState);
-         doBindService();
+        doBindService();
+        
 
         IntentFilter connectedFilter = new IntentFilter(MSControlService.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
@@ -61,17 +77,22 @@ public class MSParserActivity extends Activity
 
     protected void processData()
     {
-        List<Symbol> syms = mBoundService.getCurrentData();
-
-        for (Symbol sym : syms)
+        if (mIsBound)
         {
-            List<Indicator> indicators;
-            if ((indicators = IndicatorManager.getInstance().getIndicators(sym.name())) != null)
+            List<Symbol> syms = mBoundService.getCurrentData();
+            indicatorManager = IndicatorManager.getInstance();
+            for (Symbol sym : syms)
             {
-                float value = (float) sym.getValue();
-                for (Indicator i : indicators)
+                String symbolName = sym.name();
+                List<Indicator> indicators;
+                if ((indicators = indicatorManager.getIndicators(symbolName)) != null)
                 {
-                    i.setCurrentValue(value);
+
+                    float value = (float) sym.getValue();
+                    for (Indicator i : indicators)
+                    {
+                        i.setCurrentValue(value);
+                    }
                 }
             }
         }
@@ -104,12 +125,9 @@ public class MSParserActivity extends Activity
 
     void doUnbindService()
     {
-        if (mIsBound)
-        {
-            Intent intent = new Intent(this, MSControlService.class);
-            stopService(intent);
-            mIsBound = false;
-        }
+        Intent intent = new Intent(this, MSControlService.class);
+        stopService(intent);
+        mIsBound = false;
     }
 
     @Override

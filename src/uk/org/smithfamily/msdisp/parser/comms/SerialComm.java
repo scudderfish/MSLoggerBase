@@ -55,7 +55,7 @@ public class SerialComm extends MsComm
             {
                 // Add the name and address to an array adapter to show
                 // in a ListView
-                Log.v("BlueTooth Testing", device.getName() + "\n" + device.getAddress());
+                Log.v("BlueTooth Testing", device.getName() + "\n" + device.getAddress()+"\n");
             }
         }
         return true;

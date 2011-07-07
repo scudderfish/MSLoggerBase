@@ -159,8 +159,7 @@ public class Repository
 
     private UserIndicatorList                    uil       = new UserIndicatorList();
 
-    private long iniSize;
-
+    
     GaugeConfiguration gauge(String page, String name)
     {
         GaugeConfiguration result = null;
@@ -282,8 +281,6 @@ public class Repository
     public InputStreamReader getFile(String fileName) throws IOException
     {
         AssetManager assetManager = context.getResources().getAssets();
-        AssetFileDescriptor fd = assetManager.openFd(fileName);
-        iniSize = fd.getDeclaredLength();
         return new InputStreamReader(assetManager.open(fileName));
     }
 
@@ -356,7 +353,8 @@ public class Repository
 
             resolveVarReferences();
             resolveGaugeReferences();
-            mdb.cDesc.generateRuntimeFunction();
+           
+            //mdb.cDesc.generateRuntimeFunction();
         }
         catch (FileNotFoundException e)
         {

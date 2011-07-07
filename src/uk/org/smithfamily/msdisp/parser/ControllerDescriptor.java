@@ -102,8 +102,8 @@ public class ControllerDescriptor
 
     void init()
     {
-        // _io.setChunking(_writeBlocks, _interWriteDelay);
-        // _io.setReadTimeouts(_blockReadTimeout);
+        _io.setChunking(_writeBlocks, _interWriteDelay);
+        _io.setReadTimeouts(_blockReadTimeout);
 
         final int n = totalSpace() < 257 ? 257 : totalSpace();
         _const = new byte[n];
@@ -546,9 +546,9 @@ public class ControllerDescriptor
 
     public void addOutput(Symbol s)
     {
-        if (s.isVar())
-            outputChannels.add(s);
-        else
+        outputChannels.add(s);
+ 
+        if (!s.isVar())
             expressions.add(new Expression(s));
     }
 
@@ -592,7 +592,7 @@ public class ControllerDescriptor
         {
             try
             {
-                interpreter.eval("runtimeExpressions();");
+                interpreter.eval("runtimeExpressions()");
             }
             catch (EvalError e)
             {
@@ -602,12 +602,12 @@ public class ControllerDescriptor
         }
     }
 
-    public int getValue(String name)
+    public double getValue(String name)
     {
-        int value = 0;
+        double value = 0;
         try
         {
-            value = (Integer) interpreter.get(name);
+            value = getValue(interpreter.get(name));
         }
         catch (EvalError e)
         {
@@ -615,6 +615,18 @@ public class ControllerDescriptor
             e.printStackTrace();
         }
         return value;
+    }
+
+    private double getValue(Object o)
+    {
+        if(o instanceof Integer)
+            return (Integer)o;
+        if(o instanceof Double)
+            return(Double)o;
+        if(o instanceof Float)
+            return(Float)o;
+        
+        return 1.0;
     }
 
     public void addConstantSymbol(Symbol s, int pageNo)
@@ -634,7 +646,7 @@ public class ControllerDescriptor
             String cmd = constSym._name + " = " + constSym.valueFromRaw() + ";";
             try
             {
-                System.out.println(cmd);
+                System.out.println("Update const : " + cmd);
                 interpreter.set(constSym._name, constSym.valueFromRaw());
             }
             catch (EvalError e)

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import uk.org.smithfamily.msdisp.parser.log.Datalog;
+import uk.org.smithfamily.msdisp.parser.log.FRDLogManager;
 
 public class MsDatabase
 {
@@ -198,7 +199,7 @@ public class MsDatabase
     public boolean getRuntime()
     {
         controllerReset = false;
-
+        
         int nBytes = cDesc.ochBlockSize(0);
 
         boolean getOk = false;
@@ -216,9 +217,9 @@ public class MsDatabase
         }
 
         if (getOk)
+            
         {
-            for (int i = 0; i < nBytes; i++)
-                cDesc.setOch(pBytes[i], i);
+            System.arraycopy(pBytes, 0, cDesc._ochBuffer, 0, nBytes);
         }
         else
         {
@@ -227,9 +228,11 @@ public class MsDatabase
         }
 
         byte[] rBuf = cDesc.ochBuffer();
-        cDesc.populateUserVars();
+        
+        
+        //cDesc.populateUserVars();
 
-        cDesc.recalc();
+        //cDesc.recalc();
         // uml.enable();
         // uil.enable();
 
@@ -257,8 +260,7 @@ public class MsDatabase
 
             try
             {
-                if (log != null)
-                    log.write();
+                FRDLogManager.getInstance().write();
             }
             catch (IOException e)
             {

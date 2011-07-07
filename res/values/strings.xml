@@ -5,6 +5,7 @@
     <string name="start_logging">Start Logging</string>
     <string name="stop_logging">Stop Logging</string>
     <string name="Preferences">Preferences</string>
+    <string name="connecting">Connecting</string>
     <string name="connected">Connected</string>
 	<string name="disconnected">Disconnected</string>
 	<string name="cannot_connect">Cannot connect to Megasquirt.</string>
