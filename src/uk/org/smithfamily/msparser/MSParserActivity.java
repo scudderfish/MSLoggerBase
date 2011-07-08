@@ -2,6 +2,7 @@ package uk.org.smithfamily.msparser;
 
 import java.util.List;
 
+import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import uk.org.smithfamily.msdisp.parser.Symbol;
 import uk.org.smithfamily.msparser.widgets.Indicator;
 import uk.org.smithfamily.msparser.widgets.IndicatorManager;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class MSParserActivity extends Activity
 {
@@ -36,21 +39,35 @@ public class MSParserActivity extends Activity
                                                       if (intent.getAction().equals(MSControlService.CONNECTED))
                                                       {
                                                           setContentView(R.layout.display);
-                                                          Button button = (Button)findViewById(R.id.dieButton);
-                                                          button.setOnClickListener(new OnClickListener(){
+                                                          final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
+                                                          button.setChecked(mBoundService.isLogging());
+                                                          button.setOnClickListener(new OnClickListener()
+                                                          {
 
                                                               @Override
                                                               public void onClick(View arg0)
                                                               {
-                                                                  mBoundService.stopSelf();
-                                                                  System.exit(0);
-                                                              }});
-                                                          
+                                                                  if (button.isChecked())
+                                                                  {
+                                                                      mBoundService.startLogging();
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                      mBoundService.stopLogging();
+                                                                  }
+                                                              }
+                                                          });
 
                                                       }
                                                       if (intent.getAction().equals(MSControlService.NEW_DATA))
                                                       {
                                                           processData();
+                                                      }
+                                                      if(intent.getAction().equals(MsDatabase.GENERAL_MESSAGE))
+                                                      {
+                                                          String msg = intent.getStringExtra(MsDatabase.MESSAGE);
+                                                          TextView v = (TextView) findViewById(R.id.messages);
+                                                          v.setText(msg);
                                                       }
                                                   }
 
@@ -66,12 +83,14 @@ public class MSParserActivity extends Activity
 
         super.onCreate(savedInstanceState);
         doBindService();
-        
 
         IntentFilter connectedFilter = new IntentFilter(MSControlService.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
         IntentFilter dataFilter = new IntentFilter(MSControlService.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
+        IntentFilter msgFilter = new IntentFilter(MsDatabase.GENERAL_MESSAGE);
+        registerReceiver(updateReceiver,msgFilter);
+        
 
     }
 
@@ -125,8 +144,9 @@ public class MSParserActivity extends Activity
 
     void doUnbindService()
     {
-        Intent intent = new Intent(this, MSControlService.class);
-        stopService(intent);
+  
+        mBoundService.stopLogging();
+        mBoundService.stopSelf();
         mIsBound = false;
     }
 

@@ -1,11 +1,17 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import uk.org.smithfamily.msdisp.parser.log.DebugLogManager;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -97,7 +103,15 @@ public class ControllerDescriptor
 
     public void flush()
     {
-        // _io.flush();
+        try
+        {
+            _io.flush();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     void init()
@@ -547,7 +561,7 @@ public class ControllerDescriptor
     public void addOutput(Symbol s)
     {
         outputChannels.add(s);
- 
+
         if (!s.isVar())
             expressions.add(new Expression(s));
     }
@@ -572,14 +586,15 @@ public class ControllerDescriptor
             {
                 int value = s.valueFromRaw();
                 String name = s.name();
-                System.out.println(name + "=" + value);
+                // System.out.println(name + "=" + value);
                 try
                 {
                     interpreter.set(name, value);
                 }
                 catch (EvalError e)
                 {
-                    System.out.println("Error tyrying to set " + name + "=" + value + " : " + e.getLocalizedMessage());
+                    DebugLogManager.getInstance().log(
+                            "Error tyrying to set " + name + "=" + value + " : " + e.getLocalizedMessage());
                 }
             }
         }
@@ -619,13 +634,13 @@ public class ControllerDescriptor
 
     private double getValue(Object o)
     {
-        if(o instanceof Integer)
-            return (Integer)o;
-        if(o instanceof Double)
-            return(Double)o;
-        if(o instanceof Float)
-            return(Float)o;
-        
+        if (o instanceof Integer)
+            return (Integer) o;
+        if (o instanceof Double)
+            return (Double) o;
+        if (o instanceof Float)
+            return (Float) o;
+
         return 1.0;
     }
 
@@ -635,7 +650,7 @@ public class ControllerDescriptor
         constantSymbols.add(s);
         PageInfo pi = _page.get(pageNo);
         pi.addConstSymbol(s);
-        System.out.println("Added " + s + " to page " + pageNo);
+        // DebugLogManager.getInstance().log("Added " + s + " to page " + pageNo);
     }
 
     public void updateConstPage(int i)
@@ -646,7 +661,7 @@ public class ControllerDescriptor
             String cmd = constSym._name + " = " + constSym.valueFromRaw() + ";";
             try
             {
-                System.out.println("Update const : " + cmd);
+                // DebugLogManager.getInstance().log("Update const : " + cmd);
                 interpreter.set(constSym._name, constSym.valueFromRaw());
             }
             catch (EvalError e)
@@ -663,10 +678,12 @@ public class ControllerDescriptor
         {
             updateConstPage(iPage);
         }
-        
-        
+        Set<String> needfulThings = new HashSet<String>();
+        needfulThings.addAll(Arrays.asList(new String[] { "afr2", "lambda2", "rpm", "coolant", "mat", "advance", "map" }));
+
         populateUserVars();
         List<Expression> duff = new ArrayList<Expression>();
+        List<Expression> runTime = new ArrayList<Expression>();
         do
         {
             duff.clear();
@@ -680,23 +697,29 @@ public class ControllerDescriptor
                 catch (EvalError e)
                 {
                     // TODO Auto-generated catch block
+                    DebugLogManager.getInstance().log("Error evaluating " + expr.getShellExpression() + " :: " + e.getErrorText());
                     e.printStackTrace();
                     duff.add(expr);
+                }
+                if (needfulThings.contains(expr.getName()) && !runTime.contains(expr.getName()))
+                {
+                    runTime.add(expr);
                 }
             }
             if (duff.size() > 0)
             {
                 expressions.removeAll(duff);
             }
-        } while(duff.size() > 0);
-        
-        String func="void runtimeExpressions(){\n";
-        for(Expression expr : expressions)
+        }
+        while (duff.size() > 0);
+
+        String func = "void runtimeExpressions(){\n";
+        for (Expression expr : runTime)
         {
-            func += expr.getShellExpression()+";\n";
+            func += expr.getShellExpression() + ";\n";
         }
         func += "}\n";
-        System.out.println(func);
+        DebugLogManager.getInstance().log(func);
         try
         {
             interpreter.eval(func);
@@ -706,8 +729,25 @@ public class ControllerDescriptor
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         functionDefined = true;
-        
+
+        func = "void logExpressions(){\n";
+        for (Expression expr : expressions)
+        {
+            func += expr.getShellExpression() + ";\n";
+        }
+        func += "}\n";
+        DebugLogManager.getInstance().log(func);
+        try
+        {
+            interpreter.eval(func);
+        }
+        catch (EvalError e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 }

@@ -6,14 +6,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Debug;
 
 import uk.org.smithfamily.msdisp.parser.log.Datalog;
+import uk.org.smithfamily.msdisp.parser.log.DebugLogManager;
 import uk.org.smithfamily.msdisp.parser.log.FRDLogManager;
 
 public class MsDatabase
 {
     private static final int    N_RETRIES    = 3;
+    public static final String GENERAL_MESSAGE = "uk.org.smithfamily.msdisp.parser.MsDatabase.GENERAL_MESSAGE";
+    public static final String MESSAGE = "MESSAGE";
     private static MsDatabase   instance     = new MsDatabase();
     public ControllerDescriptor cDesc;
 
@@ -48,7 +53,7 @@ public class MsDatabase
     String                      m_logFileName;
 
     double[]                    wwuX         = new double[10];
-    private Context context;
+    private Context             context;
     static double               previousSecl = 255;
 
     enum thermType
@@ -196,10 +201,41 @@ public class MsDatabase
         return existed;
     }
 
+    public boolean calculateRuntime()
+    {
+        Debug.startMethodTracing("calculateRuntime");
+        try
+        {
+            long start = System.currentTimeMillis();
+            boolean success = getRuntime();
+            DebugLogManager.getInstance().log("getRuntime() : " + (System.currentTimeMillis() - start));
+
+            if (success)
+            {
+                start = System.currentTimeMillis();
+                cDesc.populateUserVars();
+                DebugLogManager.getInstance().log("populateUserVars() : " + (System.currentTimeMillis() - start));
+
+                start = System.currentTimeMillis();
+                cDesc.recalc();
+                DebugLogManager.getInstance().log("recalc() : " + (System.currentTimeMillis() - start));
+                // uml.enable();
+                // uil.enable();
+                return true;
+            }
+            return false;
+        }
+        finally
+        {
+            Debug.stopMethodTracing();
+
+        }
+    }
+
     public boolean getRuntime()
     {
         controllerReset = false;
-        
+
         int nBytes = cDesc.ochBlockSize(0);
 
         boolean getOk = false;
@@ -217,7 +253,7 @@ public class MsDatabase
         }
 
         if (getOk)
-            
+
         {
             System.arraycopy(pBytes, 0, cDesc._ochBuffer, 0, nBytes);
         }
@@ -228,36 +264,9 @@ public class MsDatabase
         }
 
         byte[] rBuf = cDesc.ochBuffer();
-        
-        
-        //cDesc.populateUserVars();
-
-        //cDesc.recalc();
-        // uml.enable();
-        // uil.enable();
 
         if (getOk)
         {
-            Symbol sSecl = null;
-            if (sSecl == null)
-                sSecl = cDesc.lookup(StringConstants.S_secl);
-            double secl = (sSecl != null) ? sSecl.getValue() : 0.0;
-            if (secl != previousSecl)
-            {
-
-                if (secl == 0 && previousSecl != 255)
-                {
-                    // An unexpected reset of controller has occurred.
-                    // MessageBeep(MB_ICONEXCLAMATION);
-                    // Beep(2000,100);
-                    // Beep(1000,100);
-                    // Beep(2000,100);
-                    controllerReset = true;
-                    controllerResetCount++;
-                }
-                previousSecl = secl;
-            }
-
             try
             {
                 FRDLogManager.getInstance().write();
@@ -268,7 +277,6 @@ public class MsDatabase
                 e.printStackTrace();
             }
         }
-
         return getOk;
     }
 
@@ -407,9 +415,8 @@ public class MsDatabase
     {
         values.clear();
         Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
-        
-        
-        fileName = "tables"+File.separator+fileName;
+
+        fileName = "tables" + File.separator + fileName;
         AssetManager assetManager = context.getResources().getAssets();
 
         BufferedReader input = null;
@@ -459,9 +466,18 @@ public class MsDatabase
     {
         this.context = c;
     }
+
     public Context getContext()
     {
         return context;
-        
+
+    }
+    public void broadcastMessage(String s)
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(GENERAL_MESSAGE);
+        broadcast.putExtra(MESSAGE, s);
+        context.sendBroadcast(broadcast);
+
     }
 }

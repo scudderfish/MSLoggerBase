@@ -23,7 +23,8 @@ public abstract class MsComm extends Observable
 
     protected void throttle()
     {
-        long now = System.currentTimeMillis();
+        return;
+/*        long now = System.currentTimeMillis();
         if ((lastComms + throttleWait) <= now)
         {
             lastComms = now;
@@ -39,6 +40,7 @@ public abstract class MsComm extends Observable
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+ */
     }
 
     protected MsComm()
@@ -72,6 +74,10 @@ public abstract class MsComm extends Observable
         if (!connected)
             return;
         os.flush();
+        while(is.available() > 0)
+        {
+            is.read();
+        }
     }
 
     public boolean read(byte[] bytes, int nBytes)
