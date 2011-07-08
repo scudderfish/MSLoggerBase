@@ -3,7 +3,7 @@
 
 	<PreferenceCategory android:title="Bluetooth">
 	
-		<uk.org.smithfamily.msparser.widgets.BluetoothDevicePreference
+		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
 			android:key="bluetooth_mac" android:title="Bluetooth Device" android:dialogTitle="Choose Bluetooth Device"/>
 
 	</PreferenceCategory>

@@ -2,12 +2,10 @@ package uk.org.smithfamily.mslogger;
 
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import uk.org.smithfamily.mslogger.parser.Symbol;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -22,7 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
