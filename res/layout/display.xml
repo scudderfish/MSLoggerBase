@@ -2,7 +2,7 @@
 
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
+	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.mslogger"
 	android:orientation="horizontal" android:layout_gravity="center"
 	android:layout_margin="1px" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
@@ -44,18 +44,18 @@
 			android:layout_weight="1" android:layout_height="wrap_content" android:id="@+id/tableRow1">
 			<TextView android:id="@+id/RPMLabel" style="@style/Label"
 				android:text="RPM"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/RPMInd" style="@style/Indicator" 
 				dgs:numValue="3100"
 				dgs:scaleMinValue="0"
 				dgs:scaleMaxValue="7000"
 				dgs:rangeWarningMinValue="4000"
 				dgs:channel="rpm"
-			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 			
 			<TextView android:id="@+id/CLTLabel" style="@style/Label"
 				android:text="CLT"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/CLTInd" style="@style/Indicator" 
 				dgs:numValue="87.3"
 				dgs:scaleMinValue="-10"
@@ -64,24 +64,24 @@
 				dgs:rangeErrorMinValue="105"
 				dgs:channel="coolant"
 				
-			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 		</TableRow>
 		<TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content"
 			android:layout_weight="1" android:layout_height="wrap_content">
 			<TextView android:id="@+id/MAPLabel" android:text="MAP"
 				style="@style/Label"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/MAPInd" style="@style/Indicator" 
 				dgs:numValue="40"
 				dgs:scaleMinValue="00"
 				dgs:scaleMaxValue="100"
 				dgs:rangeWarningMinValue="100"
 				dgsLchannel="map"
-			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 			
 			<TextView android:id="@+id/IATLabel" style="@style/Label"
 				android:text="IAT"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/IATInd" style="@style/Indicator" 
 				dgs:numValue="19.2"
 				dgs:scaleMinValue="-10"
@@ -90,25 +90,25 @@
 				dgs:rangeErrorMinValue="55"
 				dgs:channel="mat"
 				
-			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 			
 		</TableRow>
 		<TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content"
 			android:layout_weight="1" android:layout_height="wrap_content">
 			<TextView android:id="@+id/AFRLabel" android:text="AFR"
 				style="@style/Label"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/AFRInd" style="@style/Indicator" 
 				dgs:numValue="14.6"
 				dgs:scaleMinValue="10"
 				dgs:scaleMaxValue="20"
 				dgs:channel="afr2"
 				
-				></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+				></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 
 			<TextView android:id="@+id/SparkLabel" style="@style/Label"
 				android:text="ADV"></TextView>
-			<uk.org.smithfamily.msparser.widgets.NumericIndicator
+			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/RPMInd" style="@style/Indicator" 
 				dgs:numValue="-10"
 				dgs:scaleMinValue="-35"
@@ -116,7 +116,7 @@
 				dgs:rangeWarningMinValue="10"
 				dgs:rangeErrorMinValue="10"
 				dgs:channel="advance"
-			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
+			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 
 		</TableRow>
 		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tableRow4">

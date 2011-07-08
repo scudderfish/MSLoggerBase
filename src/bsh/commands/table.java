@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.org.smithfamily.msdisp.parser.MsDatabase;
+import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import bsh.CallStack;
 import bsh.Interpreter;
 
