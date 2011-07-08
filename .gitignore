@@ -1,0 +1,8 @@
+/gen/
+/bin/uk/
+.DS_Store
+classes.dex
+/bin/msparser.apk
+/bin/resources.ap_
+bin
+gen
