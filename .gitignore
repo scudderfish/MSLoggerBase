@@ -6,3 +6,7 @@ classes.dex
 /bin/resources.ap_
 bin
 gen
+
+bin/resources.ap_
+
+bin/classes.dex
