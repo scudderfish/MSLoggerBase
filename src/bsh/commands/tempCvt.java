@@ -1,6 +1,6 @@
 package bsh.commands;
 
-import uk.org.smithfamily.msdisp.parser.MsDatabase;
+import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import bsh.CallStack;
 import bsh.Interpreter;
 

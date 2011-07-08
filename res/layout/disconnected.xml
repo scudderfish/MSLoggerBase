@@ -2,7 +2,7 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.msparser"
+	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.mslogger"
 	android:layout_gravity="center" android:layout_margin="1px"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="horizontal">
