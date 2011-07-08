@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="Bluetooth">
+	
+		<uk.org.smithfamily.msparser.widgets.BluetoothDevicePreference
+			android:key="bluetooth_mac" android:title="Bluetooth Device" android:dialogTitle="Choose Bluetooth Device"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>
