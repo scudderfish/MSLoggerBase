@@ -24,6 +24,10 @@ public class Expression
         }
     }
 
+    public String getName()
+    {
+        return symbol._name;
+    }
 
     public String getShellExpression()
     {

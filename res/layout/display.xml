@@ -40,8 +40,8 @@
 	<TableLayout android:id="@+id/tableLayout1"
 		android:layout_weight="1" android:layout_height="match_parent"
 		android:layout_width="match_parent">
-		<TableRow android:id="@+id/tableRow" android:layout_width="wrap_content"
-			android:layout_weight="1" android:layout_height="wrap_content">
+		<TableRow android:layout_width="wrap_content"
+			android:layout_weight="1" android:layout_height="wrap_content" android:id="@+id/tableRow1">
 			<TextView android:id="@+id/RPMLabel" style="@style/Label"
 				android:text="RPM"></TextView>
 			<uk.org.smithfamily.msparser.widgets.NumericIndicator
@@ -56,7 +56,7 @@
 			<TextView android:id="@+id/CLTLabel" style="@style/Label"
 				android:text="CLT"></TextView>
 			<uk.org.smithfamily.msparser.widgets.NumericIndicator
-				android:id="@+id/RPMInd" style="@style/Indicator" 
+				android:id="@+id/CLTInd" style="@style/Indicator" 
 				dgs:numValue="87.3"
 				dgs:scaleMinValue="-10"
 				dgs:scaleMaxValue="120"
@@ -76,7 +76,7 @@
 				dgs:scaleMinValue="00"
 				dgs:scaleMaxValue="100"
 				dgs:rangeWarningMinValue="100"
-
+				dgsLchannel="map"
 			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
 			
 			<TextView android:id="@+id/IATLabel" style="@style/Label"
@@ -107,7 +107,7 @@
 				></uk.org.smithfamily.msparser.widgets.NumericIndicator>
 
 			<TextView android:id="@+id/SparkLabel" style="@style/Label"
-				android:text="SPK"></TextView>
+				android:text="ADV"></TextView>
 			<uk.org.smithfamily.msparser.widgets.NumericIndicator
 				android:id="@+id/RPMInd" style="@style/Indicator" 
 				dgs:numValue="-10"
@@ -119,15 +119,10 @@
 			></uk.org.smithfamily.msparser.widgets.NumericIndicator>
 
 		</TableRow>
+		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tableRow4">
+			<ToggleButton android:text="ToggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/toggleButton"></ToggleButton>
+			<TextView android:layout_weight="1" android:layout_width="match_parent" android:text="" android:layout_height="wrap_content" android:id="@+id/messages"></TextView>
+		</TableRow>
 	</TableLayout>
-	<LinearLayout android:id="@+id/linearLayout1"
-		android:layout_margin="1px" android:layout_width="fill_parent"
-		android:layout_gravity="center" android:orientation="vertical"
-		android:layout_weight="5" android:layout_height="fill_parent">
-		<Button android:id="@+id/LoggingBtn" android:layout_width="wrap_content"
-			android:text="Start Logging" android:layout_weight="1" android:layout_height="wrap_content"></Button>
-		<Button android:layout_height="wrap_content" android:id="@+id/dieButton" android:text="Die!" android:layout_width="wrap_content"  android:layout_weight="1"></Button>
-		
-	</LinearLayout>
 
 </LinearLayout>

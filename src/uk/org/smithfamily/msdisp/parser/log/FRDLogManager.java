@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import uk.org.smithfamily.msdisp.parser.MsDatabase;
-
-import android.content.Context;
 import android.text.format.DateFormat;
 
 public class FRDLogManager
@@ -23,6 +21,7 @@ public class FRDLogManager
     private FileOutputStream os;
     private File logFile;
     private int outpc;
+    private long startTime;
     private static FRDLogManager instance = new FRDLogManager();
 
     private FRDLogManager()
@@ -34,10 +33,16 @@ public class FRDLogManager
         return instance;
     }
    
+    public long getStartTime()
+    {
+        return startTime;
+    }
+    
     public void write() throws IOException
     {
         if(os == null)
         {
+            startTime = System.currentTimeMillis();
             createLogFile();
             writeHeader();
         }

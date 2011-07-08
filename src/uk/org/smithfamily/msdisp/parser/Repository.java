@@ -289,6 +289,7 @@ public class Repository
         this.context = c;
         mdb = MsDatabase.getInstance();
         mdb.setContext(c);
+        mdb.broadcastMessage("Initialising");
         INIController.getInstance().initialise(c);
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
@@ -330,12 +331,13 @@ public class Repository
         }
         try
         {
-
+            mdb.broadcastMessage("Loading file "+defaultFilename);
             BufferedReader in = new BufferedReader(getFile(defaultFilename));
             Date start = new Date();
             this.currentState=RepositoryState.Reading;
             doRead(in, defaultFilename, 0);
             this.currentState=RepositoryState.Parsing;
+            mdb.broadcastMessage("Parsing file "+defaultFilename);
             
             Date end = new Date();
             Log.v("INIParse", "Time = " + (end.getTime() - start.getTime()));
@@ -353,8 +355,12 @@ public class Repository
 
             resolveVarReferences();
             resolveGaugeReferences();
-           
-            //mdb.cDesc.generateRuntimeFunction();
+            mdb.load();
+            mdb.getRuntime();
+            mdb.broadcastMessage("Generating functions....");
+            
+            mdb.cDesc.generateRuntimeFunction();
+            mdb.broadcastMessage("Ready");
         }
         catch (FileNotFoundException e)
         {
@@ -371,7 +377,6 @@ public class Repository
 
         getLogFormat().resolve();
         lop.resolve();
-        mdb.load();
         this.currentState=RepositoryState.Ready;
         return true;
     }

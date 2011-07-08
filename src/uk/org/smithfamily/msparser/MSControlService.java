@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import uk.org.smithfamily.msdisp.parser.MsDatabase;
 import uk.org.smithfamily.msdisp.parser.Repository;
 import uk.org.smithfamily.msdisp.parser.Symbol;
+import uk.org.smithfamily.msdisp.parser.log.DebugLogManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -24,52 +26,62 @@ import android.util.Log;
 
 public class MSControlService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    private static AtomicBoolean  initialiseStarted = new AtomicBoolean(false);
-    protected static final String CONNECTED         = "uk.org.smithfamily.msparser.CONNECTED";
-    protected static final String NEW_DATA          = "uk.org.smithfamily.msparser.NEW_DATA";
-    private static final int      NOTIFICATION_ID   = 42;
-    protected static final int    CLEAR_MESSAGES    = 0;
-    private boolean               diediedie         = false;
-    private NotificationManager   mNM;
-    private final LocalBinder     mBinder           = new LocalBinder();
-    private Handler               mHandler          = new Handler();
-    private List<Symbol>          currentOutputs    = null;
-    private Runnable              mUpdateTimeTask   = new Runnable()
-                                                    {
-                                                        public void run()
-                                                        {
-                                                            int delayTime = 100;
-                                                            boolean connected = MsDatabase.getInstance().getRuntime();
-                                                            if (connected)
-                                                            {
-                                                                handleData();
-                                                                Intent broadcast = new Intent();
-                                                                broadcast.setAction(NEW_DATA);
-                                                                // broadcast.putExtra(LOCATION, location);
-                                                                sendBroadcast(broadcast);
-                                                            }
-                                                            else
-                                                            {
-                                                                delayTime = 1000;
-                                                            }
-                                                            if (!diediedie)
-                                                                mHandler.postDelayed(this, delayTime);
-                                                        }
-                                                    };
-    private BroadcastReceiver     updateReceiver    = new BroadcastReceiver()
-                                                    {
+    private static final DebugLogManager dblog             = DebugLogManager.getInstance();
+    private static AtomicBoolean         initialiseStarted = new AtomicBoolean(false);
+    protected static final String        CONNECTED         = "uk.org.smithfamily.msparser.CONNECTED";
+    protected static final String        NEW_DATA          = "uk.org.smithfamily.msparser.NEW_DATA";
+    private static final int             NOTIFICATION_ID   = 42;
+    protected static final int           CLEAR_MESSAGES    = 0;
+    
+    private boolean                      logging           = false;
+    private NotificationManager          mNM;
+    private final LocalBinder            mBinder           = new LocalBinder();
+    private Handler                      mHandler          = new Handler();
+    private List<Symbol>                 currentOutputs    = null;
+    private Runnable                     mUpdateTimeTask   = new Runnable()
+                                                           {
+                                                               public void run()
+                                                               {
+                                                                   // Debug.startMethodTracing("MSService");
+                                                                   int delayTime = 100;
+                                                                   long start = System.currentTimeMillis();
+                                                                   boolean connected = MsDatabase.getInstance().calculateRuntime();
+                                                                   dblog.log("calculateRuntime() : "
+                                                                           + (System.currentTimeMillis() - start));
+                                                                   if (connected)
+                                                                   {
+                                                                       handleData();
+                                                                       Intent broadcast = new Intent();
+                                                                       broadcast.setAction(NEW_DATA);
+                                                                       // broadcast.putExtra(LOCATION, location);
+                                                                       sendBroadcast(broadcast);
+                                                                   }
+                                                                   else
+                                                                   {
+                                                                       delayTime = 1000;
+                                                                   }
+                                                                   // Debug.stopMethodTracing();
+                                                                   if (logging)
+                                                                       mHandler.postDelayed(this, delayTime);
+                                                               }
+                                                           };
 
-                                                        @Override
-                                                        public void onReceive(Context context, Intent intent)
-                                                        {
-                                                            if (intent.getAction().equals(MSControlService.CONNECTED))
-                                                            {
-                                                                startLogging();
-                                                            }
-                                                        }
+                                                           
+    /*                                                       
+     private BroadcastReceiver            updateReceiver    = new BroadcastReceiver()
+                                                           {
 
-                                                    };
+                                                               @Override
+                                                               public void onReceive(Context context, Intent intent)
+                                                               {
+                                                                   if (intent.getAction().equals(MSControlService.CONNECTED))
+                                                                   {
+                                                                       startLogging();
+                                                                   }
+                                                               }
 
+                                                           };
+*/
     public class LocalBinder extends Binder
     {
         MSControlService getService()
@@ -91,6 +103,10 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
         // interface.
 
     }
+    public boolean isLogging()
+    {
+        return logging;
+    }
 
     private void showNotification(int msg)
     {
@@ -108,7 +124,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
         PendingIntent pending = PendingIntent.getActivity(getBaseContext(), 0, contentIntent,
                 android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Notification nfc = new Notification(R.drawable.icon, null, System.currentTimeMillis());
+        Notification nfc = new Notification(R.drawable.injector, null, System.currentTimeMillis());
         nfc.flags |= Notification.FLAG_ONGOING_EVENT;
 
         String contentText = getString(msg);
@@ -128,26 +144,35 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
         return currentOutputs;
     }
 
-    protected void startLogging()
+    public void startLogging()
     {
         mHandler.removeCallbacks(mUpdateTimeTask);
         mHandler.postDelayed(mUpdateTimeTask, 100);
+        logging = true;
 
+    }
+
+    public void stopLogging()
+    {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        logging = false;
     }
 
     @Override
     public void onCreate()
     {
+        dblog.log("MSControlService:onCreate()");
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         settings.registerOnSharedPreferenceChangeListener(this);
 
         startInitialisation();
 
+        /*
         IntentFilter connectionFilter = new IntentFilter(MSControlService.CONNECTED);
         IntentFilter newDataFilter = new IntentFilter(MSControlService.NEW_DATA);
         registerReceiver(updateReceiver, connectionFilter);
         registerReceiver(updateReceiver, newDataFilter);
-
+*/
     }
 
     private void startInitialisation()
@@ -191,13 +216,14 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
     @Override
     public void onDestroy()
     {
-        diediedie=true;
+        stopLogging();
+        dblog.log("MSControlService:onDestroy()");
         mHandler.removeCallbacks(mUpdateTimeTask);
-
+        showNotification(CLEAR_MESSAGES);
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         settings.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
-        showNotification(CLEAR_MESSAGES);
+
     }
 
     @Override
@@ -213,5 +239,4 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
     }
-
 }

@@ -1,5 +1,6 @@
 package uk.org.smithfamily.msdisp.parser;
 
+import uk.org.smithfamily.msdisp.parser.log.DebugLogManager;
 import android.util.Log;
 
 public class MsgInfo
@@ -17,12 +18,13 @@ public class MsgInfo
 
     public MsgInfo(String fileName, int depth)
     {
-        // TODO Auto-generated constructor stub
+        
     }
 
     public void send(int mwarning2, String string)
     {
-       Log.d("Send", string);
+
+        DebugLogManager.getInstance().log(string);
         
     }
 
