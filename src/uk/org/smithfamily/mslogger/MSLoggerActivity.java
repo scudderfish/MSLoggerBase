@@ -23,7 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class MSParserActivity extends Activity
+public class MSLoggerActivity extends Activity
 {
 
     protected MSControlService mBoundService;
@@ -97,7 +97,7 @@ public class MSParserActivity extends Activity
         if (mIsBound)
         {
             List<Symbol> syms = mBoundService.getCurrentData();
-            indicatorManager = IndicatorManager.getInstance();
+            indicatorManager = IndicatorManager.INSTANCE;
             for (Symbol sym : syms)
             {
                 String symbolName = sym.name();

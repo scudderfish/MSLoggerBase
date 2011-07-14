@@ -18,7 +18,6 @@ import uk.org.smithfamily.mslogger.parser.log.DatalogOptions;
 import uk.org.smithfamily.mslogger.parser.ui.GaugeConfiguration;
 import uk.org.smithfamily.mslogger.parser.ui.UserIndicatorList;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -58,8 +57,9 @@ class ifBlock
     }
 };
 
-public class Repository
+public enum Repository
 {
+    INSTANCE;
     public enum RepositoryState
     {
         Disconnected,Connected,Reading,Parsing,Ready,Running
@@ -72,12 +72,6 @@ public class Repository
         return currentState;
     }
     
-    static private final Repository instance = new Repository();
-
-    public static final Repository getInstance()
-    {
-        return instance;
-    }
 
     enum blockType
     {
@@ -145,7 +139,7 @@ public class Repository
 
     private DatalogList                          logFormat = new DatalogList();
 
-    private DatalogOptions                       lop       = DatalogOptions.getInstance();
+    private DatalogOptions                       lop       = DatalogOptions.INSTANCE;
     Map<String, GaugeConfiguration>              gaugeMap  = new HashMap<String, GaugeConfiguration>();
     Map<String, Map<String, GaugeConfiguration>> pageMap   = new HashMap<String, Map<String, GaugeConfiguration>>();
 
@@ -287,10 +281,10 @@ public class Repository
     public boolean readInit(Context c)
     {
         this.context = c;
-        mdb = MsDatabase.getInstance();
+        mdb = MsDatabase.INSTANCE;
         mdb.setContext(c);
         mdb.broadcastMessage("Initialising");
-        INIController.getInstance().initialise(c);
+        INIController.INSTANCE.initialise(c);
         ochInit(StringConstants.S_UNDEFINED, Uundefined); // Put a guard in
                                                           // place to make sure
                                                           // this isn't changed.
@@ -324,7 +318,7 @@ public class Repository
 
         mdb.init();
 
-        String defaultFilename = INIController.getInstance().probe("ecuDef/msns-extra.29y.ini");
+        String defaultFilename = INIController.INSTANCE.probe("ecuDef/msns-extra.29y.ini");
         if(defaultFilename == null)//Could not connect
         {
         	return false;
@@ -1721,6 +1715,11 @@ public class Repository
     public DatalogList getLogFormat()
     {
         return logFormat;
+    }
+
+    public String getDataDir()
+    {
+        return "MSLogger";
     }
 
 }

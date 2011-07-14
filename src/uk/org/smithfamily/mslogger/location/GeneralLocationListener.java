@@ -25,7 +25,7 @@ class GeneralLocationListener implements LocationListener, GpsStatus.Listener
 		{
 			if (loc != null)
 			{
-			    bsh.commands.LocationManager.getInstance().log(loc.getLatitude(), loc.getLongitude());
+			    bsh.commands.LocationManager.INSTANCE.log(loc.getLatitude(), loc.getLongitude());
 //				mainActivity.OnLocationChanged(loc);
 			}
 

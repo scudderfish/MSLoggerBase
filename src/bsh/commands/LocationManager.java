@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LocationManager
+public enum LocationManager
 {
+    INSTANCE;
     public class Location implements Comparable<Location>
     {
         private double lat;
@@ -52,16 +53,7 @@ public class LocationManager
             return EQUAL;
         }
     }
-
-    private static LocationManager instance = new LocationManager();
-
     private List<Location> locations = new ArrayList<Location>();
-    
-    
-    public static LocationManager getInstance()
-    {
-        return instance;
-    };
 
     private LocationManager()
     {

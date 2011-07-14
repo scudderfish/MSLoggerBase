@@ -1,41 +1,43 @@
 package uk.org.smithfamily.mslogger.parser;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetManager;
-import android.os.Debug;
-
 import uk.org.smithfamily.mslogger.parser.log.Datalog;
 import uk.org.smithfamily.mslogger.parser.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.parser.log.FRDLogManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetManager;
 
-public class MsDatabase
+public enum MsDatabase
 {
-    private static final int    N_RETRIES    = 3;
-    public static final String GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.parser.MsDatabase.GENERAL_MESSAGE";
-    public static final String MESSAGE = "MESSAGE";
-    private static MsDatabase   instance     = new MsDatabase();
+    INSTANCE;
+    private static final int    N_RETRIES       = 3;
+    public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.parser.MsDatabase.GENERAL_MESSAGE";
+    public static final String  MESSAGE         = "MESSAGE";
     public ControllerDescriptor cDesc;
 
     Datalog                     log;
     MsComm                      io;
     int                         _pageNo;
-    boolean                     _loaded;                        // Memory image
-                                                                 // is
-                                                                 // valid
-                                                                 // from either
-                                                                 // file
-                                                                 // or
-                                                                 // MS.
-    boolean                     _burned;                        // MS RAM and
-                                                                 // flash
-                                                                 // are
-                                                                 // different.
+    boolean                     _loaded;                                                                          // Memory image
+                                                                                                                   // is
+                                                                                                                   // valid
+                                                                                                                   // from either
+                                                                                                                   // file
+                                                                                                                   // or
+                                                                                                                   // MS.
+    boolean                     _burned;                                                                          // MS RAM and
+                                                                                                                   // flash
+                                                                                                                   // are
+                                                                                                                   // different.
     String                      signature;
     String                      title;
     static String               settingsFile;
@@ -48,13 +50,13 @@ public class MsDatabase
     int                         burstCommPort;
     int                         burstCommRate;
 
-    boolean                     controllerReset;                // Reset
-                                                                 // detected.
+    boolean                     controllerReset;                                                                  // Reset
+                                                                                                                   // detected.
     String                      m_logFileName;
 
-    double[]                    wwuX         = new double[10];
+    double[]                    wwuX            = new double[10];
     private Context             context;
-    static double               previousSecl = 255;
+    static double               previousSecl    = 255;
 
     enum thermType
     {
@@ -64,11 +66,6 @@ public class MsDatabase
     static thermType therm;
 
     static boolean   rawTPS;
-
-    public static MsDatabase getInstance()
-    {
-        return instance;
-    }
 
     public double tempFromDb(double t)
     {
@@ -91,7 +88,7 @@ public class MsDatabase
     private MsDatabase()
     {
         log = null;
-        io = CommsFactory.getInstance().getComInstance();
+        io = CommsFactory.INSTANCE.getComInstance();
         cDesc = new ControllerDescriptor(io);
         _pageNo = 0;
         _loaded = false;
@@ -203,33 +200,25 @@ public class MsDatabase
 
     public boolean calculateRuntime()
     {
-        Debug.startMethodTracing("calculateRuntime");
-        try
+        long start = System.currentTimeMillis();
+        boolean success = getRuntime();
+        DebugLogManager.INSTANCE.log("getRuntime() : " + (System.currentTimeMillis() - start));
+
+        if (success)
         {
-            long start = System.currentTimeMillis();
-            boolean success = getRuntime();
-            DebugLogManager.getInstance().log("getRuntime() : " + (System.currentTimeMillis() - start));
+            start = System.currentTimeMillis();
+            cDesc.populateUserVars();
+            DebugLogManager.INSTANCE.log("populateUserVars() : " + (System.currentTimeMillis() - start));
 
-            if (success)
-            {
-                start = System.currentTimeMillis();
-                cDesc.populateUserVars();
-                DebugLogManager.getInstance().log("populateUserVars() : " + (System.currentTimeMillis() - start));
-
-                start = System.currentTimeMillis();
-                cDesc.recalc();
-                DebugLogManager.getInstance().log("recalc() : " + (System.currentTimeMillis() - start));
-                // uml.enable();
-                // uil.enable();
-                return true;
-            }
-            return false;
+            start = System.currentTimeMillis();
+            cDesc.recalc();
+            DebugLogManager.INSTANCE.log("recalc() : " + (System.currentTimeMillis() - start));
+            // uml.enable();
+            // uil.enable();
+            return true;
         }
-        finally
-        {
-            Debug.stopMethodTracing();
+        return false;
 
-        }
     }
 
     public boolean getRuntime()
@@ -269,7 +258,7 @@ public class MsDatabase
         {
             try
             {
-                FRDLogManager.getInstance().write();
+                FRDLogManager.INSTANCE.write();
             }
             catch (IOException e)
             {
@@ -472,6 +461,7 @@ public class MsDatabase
         return context;
 
     }
+
     public void broadcastMessage(String s)
     {
         Intent broadcast = new Intent();
@@ -480,5 +470,5 @@ public class MsDatabase
         context.sendBroadcast(broadcast);
 
     }
-    
- }
+
+}

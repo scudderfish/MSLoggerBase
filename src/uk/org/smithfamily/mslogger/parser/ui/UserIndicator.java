@@ -56,7 +56,7 @@ public class UserIndicator
     {
  /*       if (_val == -1)
             return false;
-        boolean on = (MsDatabase.getInstance().cDesc._userVar.get(_val) != 0.0);
+        boolean on = (MsDatabase.INSTANCE.cDesc._userVar.get(_val) != 0.0);
         // SetWindowText(_label[on]);
         if (on == _on)
             return false;

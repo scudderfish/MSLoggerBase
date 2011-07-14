@@ -8,7 +8,7 @@ public class tempCvt
 {
     public static double invoke(Interpreter env, CallStack callstack, double value)
     {
-        double temp = MsDatabase.getInstance().tempFromDb(value);
+        double temp = MsDatabase.INSTANCE.tempFromDb(value);
 
         return temp;
     }

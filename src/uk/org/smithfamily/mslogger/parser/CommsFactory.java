@@ -2,16 +2,11 @@ package uk.org.smithfamily.mslogger.parser;
 
 import uk.org.smithfamily.mslogger.parser.comms.SerialComm;
 
-public class CommsFactory
+public enum CommsFactory
 {
-    static final private CommsFactory instance = new CommsFactory();
+    INSTANCE;
     static private MsComm comm = new SerialComm();
     
-    static public CommsFactory getInstance()
-    {
-        return instance;
-    }
-
     private CommsFactory()
     {
     }

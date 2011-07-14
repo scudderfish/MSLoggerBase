@@ -22,7 +22,7 @@ import android.util.Log;
 
 public class MSControlService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    private static final DebugLogManager dblog             = DebugLogManager.getInstance();
+    private static final DebugLogManager dblog             = DebugLogManager.INSTANCE;
     private static AtomicBoolean         initialiseStarted = new AtomicBoolean(false);
     protected static final String        CONNECTED         = "uk.org.smithfamily.mslogger.CONNECTED";
     protected static final String        NEW_DATA          = "uk.org.smithfamily.mslogger.NEW_DATA";
@@ -41,7 +41,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
                                                                    // Debug.startMethodTracing("MSService");
                                                                    int delayTime = 100;
                                                                    long start = System.currentTimeMillis();
-                                                                   boolean connected = MsDatabase.getInstance().calculateRuntime();
+                                                                   boolean connected = MsDatabase.INSTANCE.calculateRuntime();
                                                                    dblog.log("calculateRuntime() : "
                                                                            + (System.currentTimeMillis() - start));
                                                                    if (connected)
@@ -115,7 +115,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
             return;
         }
         // What happens when the notification item is clicked
-        Intent contentIntent = new Intent(this, MSParserActivity.class);
+        Intent contentIntent = new Intent(this, MSLoggerActivity.class);
 
         PendingIntent pending = PendingIntent.getActivity(getBaseContext(), 0, contentIntent,
                 android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -132,7 +132,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 
     protected void handleData()
     {
-        currentOutputs = MsDatabase.getInstance().cDesc.getOutputChannels();
+        currentOutputs = MsDatabase.INSTANCE.cDesc.getOutputChannels();
     }
 
     public List<Symbol> getCurrentData()
@@ -184,7 +184,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
             {
                 showNotification(R.string.connecting);
                 Looper.prepare();
-                while (Repository.getInstance().readInit(MSControlService.this) == false)
+                while (Repository.INSTANCE.readInit(MSControlService.this) == false)
                 {
                     showNotification(R.string.cannot_connect);
                     try

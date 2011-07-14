@@ -593,7 +593,7 @@ public class ControllerDescriptor
                 }
                 catch (EvalError e)
                 {
-                    DebugLogManager.getInstance().log(
+                    DebugLogManager.INSTANCE.log(
                             "Error tyrying to set " + name + "=" + value + " : " + e.getLocalizedMessage());
                 }
             }
@@ -650,7 +650,7 @@ public class ControllerDescriptor
         constantSymbols.add(s);
         PageInfo pi = _page.get(pageNo);
         pi.addConstSymbol(s);
-        // DebugLogManager.getInstance().log("Added " + s + " to page " + pageNo);
+        // DebugLogManager.INSTANCE.log("Added " + s + " to page " + pageNo);
     }
 
     public void updateConstPage(int i)
@@ -661,7 +661,7 @@ public class ControllerDescriptor
             String cmd = constSym._name + " = " + constSym.valueFromRaw() + ";";
             try
             {
-                // DebugLogManager.getInstance().log("Update const : " + cmd);
+                // DebugLogManager.INSTANCE.log("Update const : " + cmd);
                 interpreter.set(constSym._name, constSym.valueFromRaw());
             }
             catch (EvalError e)
@@ -697,7 +697,7 @@ public class ControllerDescriptor
                 catch (EvalError e)
                 {
                     // TODO Auto-generated catch block
-                    DebugLogManager.getInstance().log("Error evaluating " + expr.getShellExpression() + " :: " + e.getErrorText());
+                    DebugLogManager.INSTANCE.log("Error evaluating " + expr.getShellExpression() + " :: " + e.getErrorText());
                     e.printStackTrace();
                     duff.add(expr);
                 }
@@ -719,7 +719,7 @@ public class ControllerDescriptor
             func += expr.getShellExpression() + ";\n";
         }
         func += "}\n";
-        DebugLogManager.getInstance().log(func);
+        DebugLogManager.INSTANCE.log(func);
         try
         {
             interpreter.eval(func);
@@ -738,7 +738,7 @@ public class ControllerDescriptor
             func += expr.getShellExpression() + ";\n";
         }
         func += "}\n";
-        DebugLogManager.getInstance().log(func);
+        DebugLogManager.INSTANCE.log(func);
         try
         {
             interpreter.eval(func);
