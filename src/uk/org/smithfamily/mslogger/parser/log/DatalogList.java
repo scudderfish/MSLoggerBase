@@ -10,7 +10,7 @@ import uk.org.smithfamily.mslogger.parser.MsDatabase;
 public class DatalogList
 {
     private List<DatalogEntry> ll = new ArrayList<DatalogEntry>();
-    final MsDatabase mdb = MsDatabase.getInstance();
+    final MsDatabase mdb = MsDatabase.INSTANCE;
     
     public void add(DatalogEntry de)
     {
@@ -32,7 +32,7 @@ public class DatalogList
         {
             if (needDelim)
             {
-                of.write(DatalogOptions.getInstance()._delimiter);
+                of.write(DatalogOptions.INSTANCE._delimiter);
             }
             needDelim = true;
             of.write(l.label());
@@ -45,7 +45,7 @@ public class DatalogList
         for (int i = 0; i < columns(); i++)
         {
             if (i > 0)
-                of.write(DatalogOptions.getInstance()._delimiter); // fputc('\t',
+                of.write(DatalogOptions.INSTANCE._delimiter); // fputc('\t',
                                                                    // of);
             switch (ll.get(i).type())
             {

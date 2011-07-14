@@ -63,7 +63,7 @@ public class DatalogEntry
 
     void resolve()
     {
-        final MsDatabase mdb = MsDatabase.getInstance();
+        final MsDatabase mdb = MsDatabase.INSTANCE;
         _och = mdb.cDesc.varIndex(name());
         if (_och == -1)
         {

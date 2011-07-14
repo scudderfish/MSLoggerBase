@@ -5,28 +5,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
+import uk.org.smithfamily.mslogger.parser.Repository;
+
 import android.text.format.DateFormat;
 
-public class DebugLogManager
+public enum DebugLogManager
 {
-    private static final DebugLogManager instance = new DebugLogManager();
-
-    public static DebugLogManager getInstance()
-    {
-        return instance;
-    }
-
+    INSTANCE;
+ 
     private File       logFile;
     private FileWriter os;
 
-    private DebugLogManager()
-    {
-
-    }
-
+ 
     private void createLogFile() throws IOException
     {
-        File dir = new File("/sdcard/MSParser");
+        File dir = new File("/sdcard/"+Repository.INSTANCE.getDataDir());
         dir.mkdirs();
 
         Date now = new Date();

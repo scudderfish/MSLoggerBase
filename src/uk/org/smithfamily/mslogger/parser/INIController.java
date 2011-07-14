@@ -11,25 +11,16 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-public class INIController
+public enum INIController
 {
+    INSTANCE;
     public static Charset charset = Charset.forName("UTF-8");
     public static CharsetDecoder decoder = charset.newDecoder();
     
-    private static final INIController instance = new INIController();
     private Map<String, String>        inis     = new HashMap<String, String>();
 
     private String[] probeCommands={"S","Q"};
     
-    public static final INIController getInstance()
-    {
-        return instance;
-    }
-
-    private INIController()
-    {
-    }
-
     private boolean initialised = false;
 
     public void initialise(Context c)
@@ -81,7 +72,7 @@ public class INIController
     public String probe(String defaultResult)
     {
         String result = defaultResult;
-        MsComm comm = CommsFactory.getInstance().getComInstance();
+        MsComm comm = CommsFactory.INSTANCE.getComInstance();
         if(!comm.openConnection())
         	return null;
         

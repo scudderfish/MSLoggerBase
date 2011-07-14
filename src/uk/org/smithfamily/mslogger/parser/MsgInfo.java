@@ -1,7 +1,6 @@
 package uk.org.smithfamily.mslogger.parser;
 
 import uk.org.smithfamily.mslogger.parser.log.DebugLogManager;
-import android.util.Log;
 
 public class MsgInfo
 {
@@ -24,7 +23,7 @@ public class MsgInfo
     public void send(int mwarning2, String string)
     {
 
-        DebugLogManager.getInstance().log(string);
+        DebugLogManager.INSTANCE.log(string);
         
     }
 

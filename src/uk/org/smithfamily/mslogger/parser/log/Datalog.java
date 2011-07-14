@@ -13,7 +13,7 @@ public class Datalog
 
     int                    _markerNumber  = 0;
     boolean                _lastMarkState = false;
-    private MsDatabase     mdb            = MsDatabase.getInstance();
+    private MsDatabase     mdb            = MsDatabase.INSTANCE;
     private DatalogOptions lop;
 
     public Datalog()
@@ -36,7 +36,7 @@ public class Datalog
 
             // if (lop._dumpBefore) mdb.dAll(_recordFile, true);
             _recording = true;
-            Repository.getInstance().getLogFormat().header(out);
+            Repository.INSTANCE.getLogFormat().header(out);
         }
         catch (IOException e)
         {
@@ -60,7 +60,7 @@ public class Datalog
         if (_recording && out != null)
         {
    
-            Repository.getInstance().getLogFormat().write(out);
+            Repository.INSTANCE.getLogFormat().write(out);
             out.flush();
         }
     }

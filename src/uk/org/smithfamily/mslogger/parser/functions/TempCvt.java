@@ -17,7 +17,7 @@ public class TempCvt extends Function
     {
         double t;
         t = s.popD();
-        double temp = MsDatabase.getInstance().tempFromDb(t);
+        double temp = MsDatabase.INSTANCE.tempFromDb(t);
         s.push(temp);
     }
 

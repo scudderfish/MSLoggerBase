@@ -20,7 +20,7 @@ public class table
         if(table == null)
         {
             table = new ArrayList<Integer>();
-            MsDatabase.getInstance().readTable(s2, table);
+            MsDatabase.INSTANCE.readTable(s2, table);
             tables.put(s2, table);
         }
         return table.get(i1);

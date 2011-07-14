@@ -7,85 +7,79 @@ import java.io.IOException;
 import java.util.Date;
 
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
+import uk.org.smithfamily.mslogger.parser.Repository;
 import android.text.format.DateFormat;
 
-public class FRDLogManager
+public enum FRDLogManager
 {
-    private static final MsDatabase mdb = MsDatabase.getInstance();
-    private static final byte[] fileFormat = {0x46, 0x52, 0x44, 0x00, 0x00, 0x00};
-    private static final byte[] formatVersion = {0x00,0x01};
-    private byte[] timeStamp={0,0,0,0};
-    private byte[] firmware={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    private byte[] beginIndex={0,0,0,81};
-    private byte[] outputLength = {0,0};
-    private FileOutputStream os;
-    private File logFile;
-    private int outpc;
-    private long startTime;
-    private static FRDLogManager instance = new FRDLogManager();
-
-    private FRDLogManager()
-    {
-    }
+    INSTANCE;
     
-    public static FRDLogManager getInstance()
+    public enum State
     {
-        return instance;
-    }
-   
+        Logging, Reading
+    };
+
+    private static final MsDatabase mdb          = MsDatabase.INSTANCE;
+    private FRDLogFile              frdLog       = new FRDLogFile();
+    private FRDLogFileHeader        header       = frdLog.getHeader();
+    private FRDLogFileBody          body         = frdLog.getBody();
+    private FileOutputStream        os;
+    private File                    logFile;
+    private long                    startTime;
+    private State                   currentState = State.Logging;
+
     public long getStartTime()
     {
         return startTime;
     }
-    
+
     public void write() throws IOException
     {
-        if(os == null)
+        if (currentState == State.Reading)
+        {
+            throw new IOException("Can't log whilst reading!");
+        }
+        if (os == null)
         {
             startTime = System.currentTimeMillis();
             createLogFile();
             writeHeader();
         }
-        os.write(1);
-        os.write((byte)(outpc++));
-        os.write(mdb.cDesc.ochBuffer());
+        body.addRecord(mdb.cDesc.ochBuffer());
+        os.write(body.getCurrentRecord().getBytes());
         os.flush();
     }
 
     private void writeHeader() throws IOException
     {
-        String sig = mdb.cDesc.getSignature();
 
-        int now = (int) (System.currentTimeMillis()/1000l);
-        os.write(fileFormat);
-        os.write(formatVersion);
-        timeStamp[0]=(byte)(now>>24);
-        timeStamp[1]=(byte)(now>>16);
-        timeStamp[2]=(byte)(now>>8);
-        timeStamp[3]=(byte)(now);
-        os.write(timeStamp);
-        System.arraycopy(sig.getBytes(), 0, firmware, 0, sig.length());
-        os.write(firmware);
-        os.write(beginIndex);
-        int blockSize = mdb.cDesc.ochBlockSize(0);
-        outputLength[0]=(byte)(blockSize>>8);
-        outputLength[1]=(byte)(blockSize);
-        os.write(outputLength);
+        os.write(header.getHeaderRecord());
         os.flush();
-        outpc = 0;
     }
 
     private void createLogFile() throws FileNotFoundException
     {
-        File dir = new File("/sdcard/MSParser");
+        File dir = new File("/sdcard/" + Repository.INSTANCE.getDataDir());
         dir.mkdirs();
-        
+
         Date now = new Date();
-        
-        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString()+".frd";
-        
-        logFile = new File(dir,fileName);
+
+        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".frd";
+
+        logFile = new File(dir, fileName);
 
         os = new FileOutputStream(logFile);
+    }
+
+    public FRDLogFile getFRDLogFile()
+    {
+
+        return frdLog;
+    }
+
+    public void setState(State state)
+    {
+        currentState = state;
+        
     }
 }

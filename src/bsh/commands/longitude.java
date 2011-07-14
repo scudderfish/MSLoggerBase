@@ -7,6 +7,6 @@ public class longitude
 {
     public static double invoke(Interpreter env, CallStack callstack, long time)
     {
-        return LocationManager.getInstance().get(time).getLon();
+        return LocationManager.INSTANCE.get(time).getLon();
     }
 }

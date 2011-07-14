@@ -257,7 +257,7 @@ public class Lexer
             {
                 // Search the variables table in controller symbol table; if not
                 // there, error.
-                final MsDatabase mdb = MsDatabase.getInstance();
+                final MsDatabase mdb = MsDatabase.INSTANCE;
                 CurrentVar = mdb.cDesc.varIndex(CurrentStr);
                 if (CurrentVar != -1)
                     CurrentTok = Token.VariableTok;

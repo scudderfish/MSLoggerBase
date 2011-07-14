@@ -3,15 +3,10 @@ package uk.org.smithfamily.mslogger.parser.log;
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import android.text.TextUtils;
 
-public class DatalogOptions
+public enum DatalogOptions
 {
-    private static DatalogOptions instance = new DatalogOptions();
-
-    public static DatalogOptions getInstance()
-    {
-        return DatalogOptions.instance;
-    };
-
+    INSTANCE;
+    
     String  _commentText         = "";
     boolean _dumpBefore          = false;
     boolean _dumpAfter           = false;
@@ -24,14 +19,10 @@ public class DatalogOptions
     public String  _delimiter           = ",";
     public String  _defaultLogExtension = ".csv";
 
-    private DatalogOptions()
-    {
-
-    }
-
+    
     public void resolve()
     {
-        final MsDatabase mdb = MsDatabase.getInstance();
+        final MsDatabase mdb = MsDatabase.INSTANCE;
         if (!TextUtils.isEmpty(_markerVar))
         {
             _markOnTrue = mdb.cDesc.varIndex(_markerVar);

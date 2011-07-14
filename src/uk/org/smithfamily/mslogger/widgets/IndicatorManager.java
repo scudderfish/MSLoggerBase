@@ -5,38 +5,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IndicatorManager
+public enum IndicatorManager
 {
-    private Map<String,List<Indicator>> indicatorMap = new HashMap<String,List<Indicator>>();
-    private IndicatorManager() {}
-    static private IndicatorManager instance = new IndicatorManager();
-    static public IndicatorManager getInstance() { return instance;}
+    INSTANCE;
+    private Map<String, List<Indicator>> indicatorMap = new HashMap<String, List<Indicator>>();
 
-    
     void registerIndicator(Indicator i)
     {
         List<Indicator> indicators = indicatorMap.get(i.getChannel());
-        if(indicators == null)
+        if (indicators == null)
         {
             indicators = new ArrayList<Indicator>();
             indicatorMap.put(i.getChannel(), indicators);
         }
         indicators.add(i);
     }
+
     void deregisterIndicator(Indicator i)
     {
         List<Indicator> indicators = indicatorMap.get(i.getChannel());
-        if(indicators == null)
+        if (indicators == null)
         {
-            //Ignore
+            // Ignore
             return;
         }
         indicators.remove(i);
     }
+
     public List<Indicator> getIndicators(String channel)
     {
         List<Indicator> indicators = indicatorMap.get(channel);
         return indicators;
     }
-    
+
 }

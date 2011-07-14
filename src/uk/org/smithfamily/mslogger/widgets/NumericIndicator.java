@@ -171,7 +171,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
     {
         super.onAttachedToWindow();
         
-        IndicatorManager.getInstance().registerIndicator(this);
+        IndicatorManager.INSTANCE.registerIndicator(this);
 
     }
 
@@ -180,7 +180,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
     {
         super.onDetachedFromWindow();
         
-        IndicatorManager.getInstance().deregisterIndicator(this);
+        IndicatorManager.INSTANCE.deregisterIndicator(this);
 
     }
 }

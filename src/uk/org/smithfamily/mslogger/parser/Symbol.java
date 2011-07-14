@@ -144,7 +144,7 @@ public class Symbol
     short                S16max      = (0x7fff);
     long                 S32max      = (0x7fffffff);
 
-    private MsDatabase   mdb         = MsDatabase.getInstance();
+    private MsDatabase   mdb         = MsDatabase.INSTANCE;
 
     public String name()
     {
@@ -498,7 +498,7 @@ public class Symbol
         int v;
         if (isExpr())
         {
-            v = -1;// MsDatabase.getInstance().cDesc._userVar.get(_index + index);
+            v = -1;// MsDatabase.INSTANCE.cDesc._userVar.get(_index + index);
         }
         else
         {
@@ -582,7 +582,7 @@ public class Symbol
     public double getValue()
     {
         // TODO Auto-generated method stub
-        return MsDatabase.getInstance().cDesc.getValue(this._name);
+        return MsDatabase.INSTANCE.cDesc.getValue(this._name);
     }
 
 }
