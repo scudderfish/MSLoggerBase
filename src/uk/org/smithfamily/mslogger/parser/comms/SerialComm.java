@@ -8,13 +8,17 @@ import uk.org.smithfamily.mslogger.parser.MsComm;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 public class SerialComm extends MsComm
 {
-    UUID RFCOMM_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final String REQUEST_ENABLE_BT = null;
+    //private static final int  REQUEST_ENABLE_BT = 1;
+    UUID                      RFCOMM_UUID       = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     protected BluetoothSocket sock;
- 
+
     private String locateAdapter()
     {
         return "00:12:6F:03:BC:63";
@@ -29,14 +33,13 @@ public class SerialComm extends MsComm
         // registerReceiver(mReceiver, filter); // Don't forget to unregister
         // during onDestroy
         // mBluetoothAdapter.startDiscovery();
-
         BluetoothDevice remote = mBluetoothAdapter.getRemoteDevice(btAddr);
         try
         {
             sock = remote.createRfcommSocketToServiceRecord(RFCOMM_UUID);
             sock.connect();
-            is=sock.getInputStream();
-            os=sock.getOutputStream();
+            is = sock.getInputStream();
+            os = sock.getOutputStream();
             setConnected(true);
         }
         catch (IOException e)
@@ -55,7 +58,7 @@ public class SerialComm extends MsComm
             {
                 // Add the name and address to an array adapter to show
                 // in a ListView
-                Log.v("BlueTooth Testing", device.getName() + "\n" + device.getAddress()+"\n");
+                Log.v("BlueTooth Testing", device.getName() + "\n" + device.getAddress() + "\n");
             }
         }
         return true;
@@ -82,7 +85,7 @@ public class SerialComm extends MsComm
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return true;
     }
 }

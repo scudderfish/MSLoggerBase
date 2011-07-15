@@ -7,6 +7,7 @@ import uk.org.smithfamily.mslogger.parser.Symbol;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,51 +27,53 @@ import android.widget.ToggleButton;
 public class MSLoggerActivity extends Activity
 {
 
+    private static final int   REQUEST_ENABLE_BT = 0;
     protected MSControlService mBoundService;
     private boolean            mIsBound;
-    private BroadcastReceiver  updateReceiver = new BroadcastReceiver()
-                                              {
+    private BroadcastReceiver  updateReceiver    = new BroadcastReceiver()
+                                                 {
 
-                                                  @Override
-                                                  public void onReceive(Context context, Intent intent)
-                                                  {
-                                                      if (intent.getAction().equals(MSControlService.CONNECTED))
-                                                      {
-                                                          setContentView(R.layout.display);
-                                                          final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
-                                                          button.setChecked(mBoundService.isLogging());
-                                                          button.setOnClickListener(new OnClickListener()
-                                                          {
+                                                     @Override
+                                                     public void onReceive(Context context, Intent intent)
+                                                     {
+                                                         if (intent.getAction().equals(MSControlService.CONNECTED))
+                                                         {
+                                                             setContentView(R.layout.display);
+                                                             final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
+                                                             button.setChecked(mBoundService.isLogging());
+                                                             button.setOnClickListener(new OnClickListener()
+                                                             {
 
-                                                              @Override
-                                                              public void onClick(View arg0)
-                                                              {
-                                                                  if (button.isChecked())
-                                                                  {
-                                                                      mBoundService.startLogging();
-                                                                  }
-                                                                  else
-                                                                  {
-                                                                      mBoundService.stopLogging();
-                                                                  }
-                                                              }
-                                                          });
+                                                                 @Override
+                                                                 public void onClick(View arg0)
+                                                                 {
+                                                                     if (button.isChecked())
+                                                                     {
+                                                                         mBoundService.startLogging();
+                                                                     }
+                                                                     else
+                                                                     {
+                                                                         mBoundService.stopLogging();
+                                                                     }
+                                                                 }
+                                                             });
 
-                                                      }
-                                                      if (intent.getAction().equals(MSControlService.NEW_DATA))
-                                                      {
-                                                          processData();
-                                                      }
-                                                      if(intent.getAction().equals(MsDatabase.GENERAL_MESSAGE))
-                                                      {
-                                                          String msg = intent.getStringExtra(MsDatabase.MESSAGE);
-                                                          TextView v = (TextView) findViewById(R.id.messages);
-                                                          v.setText(msg);
-                                                      }
-                                                  }
+                                                         }
+                                                         if (intent.getAction().equals(MSControlService.NEW_DATA))
+                                                         {
+                                                             processData();
+                                                         }
+                                                         if (intent.getAction().equals(MsDatabase.GENERAL_MESSAGE))
+                                                         {
+                                                             String msg = intent.getStringExtra(MsDatabase.MESSAGE);
+                                                             TextView v = (TextView) findViewById(R.id.messages);
+                                                             v.setText(msg);
+                                                         }
+                                                     }
 
-                                              };
+                                                 };
     private IndicatorManager   indicatorManager;
+    private boolean            bluetoothOK       = false;
 
     /** Called when the activity is first created. */
     @Override
@@ -87,8 +90,18 @@ public class MSLoggerActivity extends Activity
         IntentFilter dataFilter = new IntentFilter(MSControlService.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(MsDatabase.GENERAL_MESSAGE);
-        registerReceiver(updateReceiver,msgFilter);
-        
+        registerReceiver(updateReceiver, msgFilter);
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null)
+        {
+            // Device does not support Bluetooth
+        }
+        bluetoothOK = mBluetoothAdapter.isEnabled();
+        if (!bluetoothOK)
+        {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
 
     }
 
@@ -142,7 +155,7 @@ public class MSLoggerActivity extends Activity
 
     void doUnbindService()
     {
-  
+
         mBoundService.stopLogging();
         mBoundService.stopSelf();
         mIsBound = false;
@@ -181,6 +194,19 @@ public class MSLoggerActivity extends Activity
     {
         super.onDestroy();
         doUnbindService();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BT)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                bluetoothOK = true;
+            }
+        }
     }
 
 }
