@@ -9,9 +9,9 @@ import uk.org.smithfamily.mslogger.parser.MsDatabase;
 
 public class DatalogList
 {
-    private List<DatalogEntry> ll = new ArrayList<DatalogEntry>();
-    final MsDatabase mdb = MsDatabase.INSTANCE;
-    
+    private List<DatalogEntry> ll  = new ArrayList<DatalogEntry>();
+    final MsDatabase           mdb = MsDatabase.INSTANCE;
+
     public void add(DatalogEntry de)
     {
         ll.add(de);
@@ -46,18 +46,14 @@ public class DatalogList
         {
             if (i > 0)
                 of.write(DatalogOptions.INSTANCE._delimiter); // fputc('\t',
-                                                                   // of);
+                                                              // of);
             switch (ll.get(i).type())
             {
             case eInt:
-//                of.write(""
-//                        + mdb.cDesc._userVar.get(ll.get(i)
-//                                .ochIdx()));
+                of.write("" + mdb.cDesc.getOutputChannels().get(ll.get(i).ochIdx()));
                 break;
             case eFloat:
-//                of.write(""
-//                        + mdb.cDesc._userVar.get(ll.get(i)
-//                                .ochIdx()));
+                of.write("" + mdb.cDesc.getOutputChannels().get(ll.get(i).ochIdx()));
                 break;
             }
         }
