@@ -5,8 +5,9 @@ import java.io.*;
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import uk.org.smithfamily.mslogger.parser.Repository;
 
-public class Datalog
+public enum Datalog
 {
+	INSTANCE;
     boolean                _recording     = false;
     File                   _recordFile    = null;
     FileWriter             out            = null;
@@ -16,12 +17,8 @@ public class Datalog
     private MsDatabase     mdb            = MsDatabase.INSTANCE;
     private DatalogOptions lop;
 
-    public Datalog()
-    {
-
-    }
-
-    boolean open(String fileName)
+   
+    public boolean open(String fileName)
     {
         try
         {
@@ -47,10 +44,18 @@ public class Datalog
         return true;
     }
 
-    void close() throws IOException
+    public void close()
     {
         if (out != null)
-            out.close();
+			try
+			{
+				out.close();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         out = null;
         _recordFile = null;
     }

@@ -1,11 +1,14 @@
 package uk.org.smithfamily.mslogger;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
 import uk.org.smithfamily.mslogger.parser.Repository;
 import uk.org.smithfamily.mslogger.parser.Symbol;
+import uk.org.smithfamily.mslogger.parser.log.Datalog;
 import uk.org.smithfamily.mslogger.parser.log.DebugLogManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,6 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 public class MSControlService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener
@@ -142,6 +146,15 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 
     public void startLogging()
     {
+        File dir = new File("/sdcard/" + Repository.INSTANCE.getDataDir());
+        dir.mkdirs();
+
+        Date now = new Date();
+
+        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".msl";
+
+        Datalog.INSTANCE.open(fileName);
+    	
         mHandler.removeCallbacks(mUpdateTimeTask);
         mHandler.postDelayed(mUpdateTimeTask, 100);
         logging = true;
@@ -152,6 +165,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
     {
         mHandler.removeCallbacks(mUpdateTimeTask);
         logging = false;
+        Datalog.INSTANCE.close();
     }
 
     @Override
