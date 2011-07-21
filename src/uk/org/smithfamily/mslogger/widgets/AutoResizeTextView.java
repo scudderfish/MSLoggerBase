@@ -276,18 +276,20 @@ public class AutoResizeTextView extends TextView
             StaticLayout layout = new StaticLayout(text, textPaint, width, Alignment.ALIGN_NORMAL, mSpacingMult, mSpacingAdd, false);
             layout.draw(sTextResizeCanvas);
             int lastLine = layout.getLineForVertical(height) - 1;
-            int start = layout.getLineStart(lastLine);
-            int end = layout.getLineEnd(lastLine);
-            float lineWidth = layout.getLineWidth(lastLine);
-            float ellipseWidth = textPaint.measureText(mEllipsis);
-
-            // Trim characters off until we have enough room to draw the ellipsis
-            while (width < lineWidth + ellipseWidth)
+            if (lastLine > 0)
             {
-                lineWidth = textPaint.measureText(text.subSequence(start, --end + 1).toString());
-            }
-            setText(text.subSequence(0, end) + mEllipsis);
+                int start = layout.getLineStart(lastLine);
+                int end = layout.getLineEnd(lastLine);
+                float lineWidth = layout.getLineWidth(lastLine);
+                float ellipseWidth = textPaint.measureText(mEllipsis);
 
+                // Trim characters off until we have enough room to draw the ellipsis
+                while (width < lineWidth + ellipseWidth)
+                {
+                    lineWidth = textPaint.measureText(text.subSequence(start, --end + 1).toString());
+                }
+                setText(text.subSequence(0, end) + mEllipsis);
+            }
         }
 
         // Some devices try to auto adjust line spacing, so force default line spacing

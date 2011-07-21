@@ -163,6 +163,11 @@ public class ControllerDescriptor
         List<Symbol> sortedSymbols = new ArrayList<Symbol>();
         sortedSymbols.addAll(symMap.values());
 
+        int varIndex =0;
+        for(Symbol s : getOutputChannels())
+        {
+            s.varIndex(varIndex++);
+        }
         Collections.sort(sortedSymbols, new Comparator<Symbol>()
         {
             @Override
@@ -463,7 +468,8 @@ public class ControllerDescriptor
 
     public int varIndex(String name)
     {
-        if (symMap.get(name) == null)
+        Symbol symbol = symMap.get(name);
+        if (symbol == null)
         {
             // msgOk("Symbol Lookup", CString("Couldn't find "+name));
             return -1;
@@ -471,7 +477,7 @@ public class ControllerDescriptor
         // assert(!symbolTable[name]->isConst()); // This is often false, since
         // this function is called from expression parsing to find out if indeed
         // the symbol is a variable or not.
-        return symMap.get(name).varIndex();
+        return symbol.varIndex();
     }
 
     public static byte[] xlate(String s)

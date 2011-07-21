@@ -96,7 +96,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
 
     private void setFont(Context context)
     {
-        this.font = Typeface.createFromAsset(context.getAssets(), "fonts/ziska.ttf");
+        this.font = Typeface.createFromAsset(context.getAssets(), "fonts/7segment.ttf");
         this.setTypeface(font);
 
     }

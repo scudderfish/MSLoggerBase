@@ -18,15 +18,14 @@ public enum Datalog
     private DatalogOptions lop;
 
    
-    public boolean open(String fileName)
+    public boolean open(File logFile)
     {
         try
         {
             close();
-            _recordFile = new File(fileName);
+            _recordFile = logFile;
 
-            if (_recordFile == null || !_recordFile.canWrite())
-                return false;
+            
             out = new FileWriter(_recordFile);
 
             out.write("\"" + mdb.cDesc.getSignature() + "\"\n");
