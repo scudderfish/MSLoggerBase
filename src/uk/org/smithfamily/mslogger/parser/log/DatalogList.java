@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.smithfamily.mslogger.parser.MsDatabase;
+import uk.org.smithfamily.mslogger.parser.Symbol;
 
 public class DatalogList
 {
@@ -42,18 +43,23 @@ public class DatalogList
 
     void write(Writer of) throws IOException
     {
+        List<Symbol> outputChannels = mdb.cDesc.getOutputChannels();
         for (int i = 0; i < columns(); i++)
         {
             if (i > 0)
                 of.write(DatalogOptions.INSTANCE._delimiter); // fputc('\t',
                                                               // of);
-            switch (ll.get(i).type())
+            
+            DatalogEntry datalogEntry = ll.get(i);
+            int ochIdx = datalogEntry.ochIdx();
+            
+            switch (datalogEntry.type())
             {
             case eInt:
-                of.write("" + mdb.cDesc.getOutputChannels().get(ll.get(i).ochIdx()));
+                of.write("" + (int)outputChannels.get(ochIdx).getValue());
                 break;
             case eFloat:
-                of.write("" + mdb.cDesc.getOutputChannels().get(ll.get(i).ochIdx()));
+                of.write(String.format(datalogEntry.format(),  outputChannels.get(ochIdx).getValue()));
                 break;
             }
         }

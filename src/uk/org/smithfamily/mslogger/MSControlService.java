@@ -17,6 +17,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -146,14 +147,15 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 
     public void startLogging()
     {
-        File dir = new File("/sdcard/" + Repository.INSTANCE.getDataDir());
+        File externalStorageDirectory = Environment.getExternalStorageDirectory();
+        File dir = new File(externalStorageDirectory, Repository.INSTANCE.getDataDir());
         dir.mkdirs();
 
         Date now = new Date();
 
         String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".msl";
-
-        Datalog.INSTANCE.open(fileName);
+        File logFile = new File(dir,fileName);
+        Datalog.INSTANCE.open(logFile);
     	
         mHandler.removeCallbacks(mUpdateTimeTask);
         mHandler.postDelayed(mUpdateTimeTask, 100);
