@@ -15,9 +15,7 @@ public enum Datalog
     int                    _markerNumber  = 0;
     boolean                _lastMarkState = false;
     private MsDatabase     mdb            = MsDatabase.INSTANCE;
-    private DatalogOptions lop;
-
-   
+      
     public boolean open(File logFile)
     {
         try

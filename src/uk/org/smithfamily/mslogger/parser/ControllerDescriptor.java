@@ -756,4 +756,43 @@ public class ControllerDescriptor
         }
 
     }
+	MsCommThread	t;
+	int				lastReadIndex	= -1;
+	byte[]			buffer;
+	private byte[]	ochBuffer;
+
+	public void startReading()
+	{
+		buffer = new byte[ochBuffer.length];
+	
+		t = new MsCommThread(_ochGetCommand, buffer, _io, 10);
+
+		t.start();
+	}
+
+	public void stopReading()
+	{
+		t.setRunning(false);
+	}
+
+	public boolean waitForData()
+	{
+		try
+		{
+			buffer.wait(1000);
+		}
+		catch (InterruptedException e)
+		{
+		}
+		if (t.getReadIndex() > lastReadIndex)
+		{
+			synchronized (buffer)
+			{
+				System.arraycopy(buffer, 0, ochBuffer, 0, ochBuffer.length);
+				lastReadIndex = t.getReadIndex();
+				return true;
+			}
+		}
+		return false;
+	}
 }
