@@ -16,7 +16,6 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
 
     private float        min;
     private float        max;
-    private String       title;
     private float        warningPoint;
     private float        errorPoint;
     private float        value;
@@ -64,7 +63,6 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
         min = 10;
         max = 20;
         value = 14.7f;
-        title = "AFR";
         warningPoint = 16;
         errorPoint = 17;
     }
@@ -117,7 +115,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
 
     public void setTitle(String title)
     {
-        this.title = title;
+        //No Op
     }
 
     public void setWarningPoint(float warn)

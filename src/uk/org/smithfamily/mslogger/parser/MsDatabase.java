@@ -192,24 +192,26 @@ public enum MsDatabase
 	public boolean calculateRuntime()
 	{
 		long start = System.currentTimeMillis();
-		boolean success = getRuntime();
+		boolean success = cDesc.waitForData();
 		DebugLogManager.INSTANCE.log("getRuntime() : " + (System.currentTimeMillis() - start));
 
 		if (success)
 		{
 			start = System.currentTimeMillis();
-			cDesc.populateUserVars();
-			DebugLogManager.INSTANCE.log("populateUserVars() : " + (System.currentTimeMillis() - start));
+			synchronized (cDesc._ochBuffer)
+			{
+				cDesc.populateUserVars();
+				DebugLogManager.INSTANCE.log("populateUserVars() : " + (System.currentTimeMillis() - start));
 
-			start = System.currentTimeMillis();
-			cDesc.recalc();
+				start = System.currentTimeMillis();
+				cDesc.recalc();
+			}
 			DebugLogManager.INSTANCE.log("recalc() : " + (System.currentTimeMillis() - start));
 			// uml.enable();
 			// uil.enable();
 			return true;
 		}
 		return false;
-
 	}
 
 	public boolean getRuntime()
@@ -461,6 +463,16 @@ public enum MsDatabase
 		broadcast.putExtra(MESSAGE, s);
 		context.sendBroadcast(broadcast);
 
+	}
+
+	public void startLogging()
+	{
+		cDesc.startReading();
+	}
+
+	public void stopLogging()
+	{
+		cDesc.stopReading();
 	}
 
 }
