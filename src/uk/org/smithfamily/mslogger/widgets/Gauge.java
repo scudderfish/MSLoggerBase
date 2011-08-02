@@ -28,22 +28,9 @@
 package uk.org.smithfamily.mslogger.widgets;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.parser.ui.GaugeConfiguration;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.Typeface;
+import android.graphics.*;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -169,12 +156,7 @@ public final class Gauge extends View implements Indicator
         init(context, (AttributeSet)null);
     }
 
-    public Gauge(Context context,GaugeConfiguration config)
-    {
-        super(context);
-        init(context,config);
-    }
-
+    
     public Gauge(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -217,45 +199,7 @@ public final class Gauge extends View implements Indicator
         state.putLong("lastDialMoveTime", lastDialMoveTime);
         return state;
     }
-    private void init(Context context, GaugeConfiguration config)
-    {
-        if(context != null && config != null)
-        {
-            //TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
-            showRange = config.getShowRange();// a.getBoolean(R.styleable.Dial_showRange, showRange);
-            showGauge = config.getShowGauge();//a.getBoolean(R.styleable.Dial_showGauge, showGauge);
-            showHand = config.getShowHand();//a.getBoolean(R.styleable.Dial_showHand, showHand);
-
-            rangeSegmentDegrees = config.getRangeSegmentDegrees();//a.getInt(R.styleable.Dial_rangeSegmentDegrees, rangeSegmentDegrees);
-            rangeSegmentOffset = config.getRangeSegmentOffset();//a.getInt(R.styleable.Dial_rangeSegmentOffset, rangeSegmentOffset);
-            incrementPerLargeNotch = config.getIncrementPerLargeNotch();//a.getFloat(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
-            incrementPerSmallNotch = config.getIncrementPerSmallNotch();//a.getFloat(R.styleable.Dial_incrementPerSmallNotch, incrementPerSmallNotch);
-/*
-            scaleColor = a.getInt(R.styleable.Dial_scaleColor, scaleColor);
-            scaleMinValue = a.getFloat(R.styleable.Dial_scaleMinValue, scaleMinValue);
-            scaleMaxValue = a.getFloat(R.styleable.Dial_scaleMaxValue, scaleMaxValue);
-            rangeOkColor = a.getInt(R.styleable.Dial_rangeOkColor, rangeOkColor);
-            rangeOkMinValue = a.getFloat(R.styleable.Dial_rangeOkMinValue, rangeOkMinValue);
-            rangeOkMaxValue = a.getFloat(R.styleable.Dial_rangeOkMaxValue, rangeOkMaxValue);
-            rangeWarningColor = a.getInt(R.styleable.Dial_rangeWarningColor, rangeWarningColor);
-            rangeWarningMinValue = a.getFloat(R.styleable.Dial_rangeWarningMinValue, rangeWarningMinValue);
-            rangeWarningMaxValue = a.getFloat(R.styleable.Dial_rangeWarningMaxValue, rangeWarningMaxValue);
-            rangeErrorColor = a.getInt(R.styleable.Dial_rangeErrorColor, rangeErrorColor);
-            rangeErrorMinValue = a.getFloat(R.styleable.Dial_rangeErrorMinValue, rangeErrorMinValue);
-            rangeErrorMaxValue = a.getFloat(R.styleable.Dial_rangeErrorMaxValue, rangeErrorMaxValue);
-            String unitTitle = a.getString(R.styleable.Dial_unitTitle);
-            String upperTitle = a.getString(R.styleable.Dial_upperTitle);
-            if (unitTitle != null)
-                this.unitTitle = unitTitle;
-
-            if (upperTitle != null)
-                this.upperTitle = upperTitle;
-*/
-        }
-        init(context);
-    }
-
-    private void init(Context context, AttributeSet attrs)
+     private void init(Context context, AttributeSet attrs)
     {
         // Get the properties from the resource file.
         if (context != null && attrs != null)

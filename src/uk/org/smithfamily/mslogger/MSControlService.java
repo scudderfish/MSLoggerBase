@@ -2,19 +2,12 @@ package uk.org.smithfamily.mslogger;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import uk.org.smithfamily.mslogger.parser.MsDatabase;
-import uk.org.smithfamily.mslogger.parser.Repository;
-import uk.org.smithfamily.mslogger.parser.Symbol;
-import uk.org.smithfamily.mslogger.parser.log.Datalog;
-import uk.org.smithfamily.mslogger.parser.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.*;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.location.LocationListener;
+import android.content.*;
 import android.location.LocationManager;
 import android.os.*;
 import android.preference.PreferenceManager;
@@ -34,37 +27,10 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 	private boolean							logging				= false;
 	private NotificationManager				mNM;
 	private final LocalBinder				mBinder				= new LocalBinder();
-	private Handler							mHandler			= new Handler();
-	private List<Symbol>					currentOutputs		= null;
-	private Runnable						mUpdateTimeTask		= new Runnable()
-																{
-																	public void run()
-																	{
-																		// Debug.startMethodTracing("MSService");
-																		int delayTime = 100;
-																		long start = System.currentTimeMillis();
-																		boolean connected = MsDatabase.INSTANCE.calculateRuntime();
-																		dblog.log("calculateRuntime() : "
-																				+ (System.currentTimeMillis() - start));
-																		if (connected)
-																		{
-																			handleData();
-																			Intent broadcast = new Intent();
-																			broadcast.setAction(NEW_DATA);
-																			// broadcast.putExtra(LOCATION,
-																			// location);
-																			sendBroadcast(broadcast);
-																		}
-																		else
-																		{
-																			delayTime = 1000;
-																		}
-																		// Debug.stopMethodTracing();
-																		if (logging)
-																			mHandler.postDelayed(this, delayTime);
-																	}
-																};
 	private LocationManager					gpsLocationManager;
+	private Thread							controller;
+	private Megasquirt						ecu;
+	private BroadcastReceiver				updateReceiver;
 
 	/*
 	 * private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
@@ -88,7 +54,7 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 	{
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		gpsLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		
+
 		gpsLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, LocationController.INSTANCE);
 
 		// Display a notification about us starting. We put an icon in the
@@ -133,57 +99,37 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 
 	protected void handleData()
 	{
-		currentOutputs = MsDatabase.INSTANCE.cDesc.getOutputChannels();
-	}
-
-	public List<Symbol> getCurrentData()
-	{
-		return currentOutputs;
 	}
 
 	public void startLogging()
 	{
-		File externalStorageDirectory = Environment.getExternalStorageDirectory();
-		File dir = new File(externalStorageDirectory, Repository.INSTANCE.getDataDir());
-		dir.mkdirs();
-
 		Date now = new Date();
 
 		String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".msl";
-		File logFile = new File(dir, fileName);
-		Datalog.INSTANCE.open(logFile);
+		File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
+		// Datalog.INSTANCE.open(logFile);
 
-		MsDatabase.INSTANCE.startLogging();
-		mHandler.removeCallbacks(mUpdateTimeTask);
-		mHandler.postDelayed(mUpdateTimeTask, 100);
 		logging = true;
 
 	}
 
 	public void stopLogging()
 	{
-		MsDatabase.INSTANCE.stopLogging();
-		mHandler.removeCallbacks(mUpdateTimeTask);
 		logging = false;
-		Datalog.INSTANCE.close();
+		// Datalog.INSTANCE.close();
 	}
 
 	@Override
 	public void onCreate()
 	{
-		dblog.log("MSControlService:onCreate()");
+		dblog.log("MSControlService:onCreate()", this);
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		settings.registerOnSharedPreferenceChangeListener(this);
 
 		startInitialisation();
+		IntentFilter newDataFilter = new IntentFilter(MSControlService.NEW_DATA);
+		registerReceiver(updateReceiver, newDataFilter);
 
-		/*
-		 * IntentFilter connectionFilter = new
-		 * IntentFilter(MSControlService.CONNECTED); IntentFilter newDataFilter
-		 * = new IntentFilter(MSControlService.NEW_DATA);
-		 * registerReceiver(updateReceiver, connectionFilter);
-		 * registerReceiver(updateReceiver, newDataFilter);
-		 */
 	}
 
 	private void startInitialisation()
@@ -199,7 +145,10 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 			{
 				showNotification(R.string.connecting);
 				Looper.prepare();
-				while (Repository.INSTANCE.readInit(MSControlService.this) == false)
+				ApplicationSettings.INSTANCE.initialise(MSControlService.this);
+				ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+				while (!ecu.initialised())
 				{
 					showNotification(R.string.cannot_connect);
 					try
@@ -218,8 +167,11 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 				// broadcast.putExtra(LOCATION, location);
 				sendBroadcast(broadcast);
 				showNotification(R.string.connected);
-
+				controller = new Thread(ecu);
+				controller.setDaemon(true);
+				controller.start();
 			}
+
 		}).start();
 
 	}
@@ -227,12 +179,16 @@ public class MSControlService extends Service implements SharedPreferences.OnSha
 	@Override
 	public void onDestroy()
 	{
+		if (controller != null)
+		{
+			ecu.setRunning(false);
+		}
 		stopLogging();
-		dblog.log("MSControlService:onDestroy()");
-		mHandler.removeCallbacks(mUpdateTimeTask);
+		this.updateReceiver=null;	
+		dblog.log("MSControlService:onDestroy()", this);
 		showNotification(CLEAR_MESSAGES);
 		gpsLocationManager.removeUpdates(LocationController.INSTANCE);
-		
+
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		settings.unregisterOnSharedPreferenceChangeListener(this);
 		super.onDestroy();
