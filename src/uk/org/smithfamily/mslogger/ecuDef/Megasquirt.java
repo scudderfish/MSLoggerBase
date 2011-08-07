@@ -1,21 +1,22 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.comms.MsComm;
-
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
+import android.text.format.DateFormat;
 
 public abstract class Megasquirt implements Runnable
 {
 	public static final String	NEW_DATA	= "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
+
+	public static final String	CONNECTED	= "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
 
 	protected Context			context;
 
@@ -35,13 +36,13 @@ public abstract class Megasquirt implements Runnable
 
 	public abstract int getBlockSize();
 
-	static Map<String, List<Integer>>	tables		= new HashMap<String, List<Integer>>();
-
 	private long						lastTime	= System.currentTimeMillis();
 
 	private volatile boolean			running		= false;
 	protected MsComm					comm;
 	private byte[]						ochBuffer;
+
+	private boolean	logging;
 
 	public void setRunning(boolean r)
 	{
@@ -51,7 +52,9 @@ public abstract class Megasquirt implements Runnable
 	public void run()
 	{
 		running = true;
-
+		comm = ApplicationSettings.INSTANCE.getComms();
+		comm.openConnection();
+		
 		if(connected())
 		{
 			loadConstants();
@@ -63,6 +66,7 @@ public abstract class Megasquirt implements Runnable
 				comm.flush();
 				getRuntimeVars();
 				calculateValues();
+				logValues();
 				broadcastNewData();
 				throttle();
 			}
@@ -73,11 +77,30 @@ public abstract class Megasquirt implements Runnable
 			}
 		}
 		disconnect();
+	
+	}
+
+	private void logValues()
+	{
+		if(!logging)
+		{
+			return;
+		}
+		try
+		{
+			FRDLogManager.INSTANCE.write(ochBuffer);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void disconnect()
 	{
-		// TODO Auto-generated method stub
+		comm.flush();
+		comm.close();
 
 	}
 
@@ -265,52 +288,6 @@ public abstract class Megasquirt implements Runnable
 		return (int) nn;
 	}
 
-	public void readTable(String fileName, List<Integer> values)
-	{
-		values.clear();
-		Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
-
-		fileName = "tables" + File.separator + fileName;
-		AssetManager assetManager = context.getResources().getAssets();
-
-		BufferedReader input = null;
-		try
-		{
-			try
-			{
-				input = new BufferedReader(new InputStreamReader(assetManager.open(fileName)));
-				String line;
-
-				while ((line = input.readLine()) != null)
-				{
-					Matcher matcher = p.matcher(line);
-					if (matcher.matches())
-					{
-						String num = matcher.group(1);
-
-						if (num != null)
-						{
-							values.add(Integer.valueOf(num));
-						}
-					}
-				}
-
-			}
-			finally
-			{
-				if (input != null)
-					input.close();
-			}
-
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
-	}
-
 	protected int getWord(byte[] ochBuffer, int i)
 	{
 
@@ -332,18 +309,6 @@ public abstract class Megasquirt implements Runnable
 		return (t - 32.0) * 5.0 / 9.0;
 	}
 
-	protected int table(int i1, String s2)
-	{
-		List<Integer> table = tables.get(s2);
-		if (table == null)
-		{
-			table = new ArrayList<Integer>();
-			readTable(s2, table);
-			tables.put(s2, table);
-		}
-		return table.get(i1);
-
-	}
 
 	public boolean initialised()
 	{
@@ -376,6 +341,38 @@ public abstract class Megasquirt implements Runnable
 			e.printStackTrace();
 		}
 		return value;
+	}
+
+	public void startLogging()
+	{
+		if(logging)
+		{
+			return;
+		}
+		Date now = new Date();
+
+		String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".msl";
+		File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
+		// Datalog.INSTANCE.open(logFile);
+
+		logging = true;
+
+	}
+
+	public void stopLogging()
+	{
+		logging = false;
+	}
+
+	protected int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
+	{
+		int val = 0;
+		byte b = pageBuffer[i];
+	
+		long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
+		val = (int) ((b & mask) >> _bitLo);
+	
+		return val;
 	}
 
 }

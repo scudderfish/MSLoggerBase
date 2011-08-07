@@ -113,19 +113,19 @@ public class MS1Extra29y extends Megasquirt
 		accDecEnrich = ((engine & 32) != 0) ? 100
 				: ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
 		batteryVoltage = batADC / 255.0 * 30.0;
-		coolant = tempCvt(table(cltADC, "thermfactor.inc") - 40); // Coolant
-																	// sensor
-																	// temperature
-																	// in
-																	// user
-																	// units.
+		coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40); // Coolant
+		// sensor
+		// temperature
+		// in
+		// user
+		// units.
 		egoVoltage = (egoADC / 255.0 * 5.0); // EGO sensor voltage.
 		ego2Voltage = (fuelADC / 255.0 * 5.0); // EGO sensor voltage 2.
-		mat = (tempCvt(table(matADC, "matfactor.inc") - 40)); // Manifold
-																// temperature
-																// in
-																// user
-																// units.
+		mat = (tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40)); // Manifold
+		// temperature
+		// in
+		// user
+		// units.
 		rpm = (rpm100 * 100); // True RPM.
 		time = (timeNow()); // "timeNow" is a parameterless built-in
 							// function.
@@ -136,11 +136,13 @@ public class MS1Extra29y extends Megasquirt
 		lambda2 = (fuelADC / 255.0 + 0.5);
 		afr2 = (lambda2 * 14.7);
 
-		barometer = (table(baroADC, "kpafactor4250.inc"));
-		map = (table(mapADC, "kpafactor4250.inc")); // Manifold pressure in
-													// kPa.
+		barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4250.inc"));
+		map = (TableManager.INSTANCE.table(mapADC, "kpafactor4250.inc")); // Manifold
+																			// pressure
+																			// in
+		// kPa.
 
-		throttle = (table(tpsADC, "throttlefactor.inc"));
+		throttle = (TableManager.INSTANCE.table(tpsADC, "throttlefactor.inc"));
 		advSpark = ((advance * 0.352) - 10);
 		// ; Enhanced Stuff
 		KnockAng = ((KnockAngle * 90 / 256));
@@ -294,7 +296,6 @@ public class MS1Extra29y extends Megasquirt
 	@Override
 	public byte[] getSigCommand()
 	{
-		// TODO Auto-generated method stub
 		return sigCommand;
 	}
 
@@ -324,16 +325,5 @@ public class MS1Extra29y extends Megasquirt
 		twoStroke2 = getBits(pageBuffer, 182, 2, 2);
 		nCylinders2 = getBits(pageBuffer, 182, 4, 7) + 1;
 		divider2 = pageBuffer[149];
-	}
-
-	private int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
-	{
-		int val = 0;
-		byte b = pageBuffer[i];
-
-		long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
-		val = (int) ((b & mask) >> _bitLo);
-
-		return val;
 	}
 }
