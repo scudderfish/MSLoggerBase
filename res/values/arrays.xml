@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="MSNames">
+        <item>MS1Extra</item>
+        <item>MS2Extra</item>
+    </string-array>
+    
+</resources>
