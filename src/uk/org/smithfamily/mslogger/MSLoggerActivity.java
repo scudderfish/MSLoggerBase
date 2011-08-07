@@ -2,89 +2,102 @@ package uk.org.smithfamily.mslogger;
 
 import java.util.List;
 
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+
 public class MSLoggerActivity extends Activity
 {
+	private final class LogButtonListener implements OnClickListener
+	{
+		private final ToggleButton	button;
+
+		private LogButtonListener(ToggleButton button)
+		{
+			this.button = button;
+		}
+
+		@Override
+		public void onClick(View arg0)
+		{
+			if (button.isChecked())
+			{
+				ApplicationSettings.INSTANCE.getEcuDefinition().startLogging();
+			}
+			else
+			{
+				ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
+			}
+		}
+	}
+
+	private final class Reciever extends BroadcastReceiver
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (intent.getAction().equals(Megasquirt.CONNECTED))
+			{
+				setContentView(R.layout.display);
+				final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
+				button.setChecked(false);
+				button.setOnClickListener(new LogButtonListener(button));
+
+			}
+
+			if (intent.getAction().equals(Megasquirt.NEW_DATA))
+			{
+				processData();
+			}
+			if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
+			{
+				String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
+				TextView v = (TextView) findViewById(R.id.messages);
+				v.setText(msg);
+			}
+		}
+	}
 
 	private static final int	REQUEST_ENABLE_BT	= 0;
-	protected MSControlService	mBoundService;
-	private boolean				mIsBound;
-	private BroadcastReceiver	updateReceiver		= new BroadcastReceiver()
-													{
-
-														@Override
-														public void onReceive(Context context, Intent intent)
-														{
-															if (intent.getAction().equals(MSControlService.CONNECTED))
-															{
-																setContentView(R.layout.display);
-																final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
-																button.setChecked(mBoundService.isLogging());
-																button.setOnClickListener(new OnClickListener()
-																{
-
-																	@Override
-																	public void onClick(View arg0)
-																	{
-																		if (button.isChecked())
-																		{
-																			mBoundService.startLogging();
-																		}
-																		else
-																		{
-																			mBoundService.stopLogging();
-																		}
-																	}
-																});
-
-															}
-															if (intent.getAction().equals(MSControlService.NEW_DATA))
-															{
-																processData();
-															}
-															if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
-															{
-																String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
-																TextView v = (TextView) findViewById(R.id.messages);
-																v.setText(msg);
-															}
-														}
-
-													};
+	private BroadcastReceiver	updateReceiver		= new Reciever();
 	private IndicatorManager	indicatorManager;
 	private boolean				bluetoothOK			= false;
+	private Thread				controller;
+	private Megasquirt			ecu;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		ApplicationSettings.INSTANCE.initialise(this);
+		ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.disconnected);
 
 		super.onCreate(savedInstanceState);
-		doBindService();
 
-		IntentFilter connectedFilter = new IntentFilter(MSControlService.CONNECTED);
+		IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
 		registerReceiver(updateReceiver, connectedFilter);
-		IntentFilter dataFilter = new IntentFilter(MSControlService.NEW_DATA);
+		IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
 		registerReceiver(updateReceiver, dataFilter);
 		IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
 		registerReceiver(updateReceiver, msgFilter);
+
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (mBluetoothAdapter == null)
 		{
-			// Device does not support Bluetooth
+			bluetoothOK = false;
+			return;
 		}
 		bluetoothOK = mBluetoothAdapter.isEnabled();
 		if (!bluetoothOK)
@@ -93,56 +106,24 @@ public class MSLoggerActivity extends Activity
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
 
+		controller = new Thread(ecu);
+		controller.setDaemon(true);
+		controller.start();
+
 	}
 
 	protected void processData()
 	{
-		if (mIsBound)
+		indicatorManager = IndicatorManager.INSTANCE;
+		List<Indicator> indicators;
+		if ((indicators = indicatorManager.getIndicators()) != null)
 		{
-			indicatorManager = IndicatorManager.INSTANCE;
-			List<Indicator> indicators;
-			if ((indicators = indicatorManager.getIndicators()) != null)
+			for (Indicator i : indicators)
 			{
-				for (Indicator i : indicators)
-				{
-					float value = ApplicationSettings.INSTANCE.getEcuDefinition().getValue(i.getChannel());
-					i.setCurrentValue(value);
-				}
+				float value = ApplicationSettings.INSTANCE.getEcuDefinition().getValue(i.getChannel());
+				i.setCurrentValue(value);
 			}
 		}
-	}
-
-	void doBindService()
-	{
-		Intent intent = new Intent(this, MSControlService.class);
-		startService(intent);
-		ServiceConnection connection = new ServiceConnection()
-		{
-
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service)
-			{
-				mBoundService = ((MSControlService.LocalBinder) service).getService();
-				mIsBound = true;
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name)
-			{
-				mBoundService = null;
-				mIsBound = false;
-			}
-		};
-
-		bindService(intent, connection, 0);
-	}
-
-	void doUnbindService()
-	{
-
-		mBoundService.stopLogging();
-		mBoundService.stopSelf();
-		mIsBound = false;
 	}
 
 	@Override
@@ -176,8 +157,8 @@ public class MSLoggerActivity extends Activity
 	@Override
 	protected void onDestroy()
 	{
+		ecu.setRunning(false);
 		super.onDestroy();
-		doUnbindService();
 	}
 
 	@Override

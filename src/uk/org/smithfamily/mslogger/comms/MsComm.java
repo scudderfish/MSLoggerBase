@@ -11,7 +11,7 @@ public abstract class MsComm extends Observable
 	protected InputStream	is;
 	protected OutputStream	os;
 	private boolean			connected			= false;
-	private boolean			writeBlocks			= false;
+	private boolean			writeBlocks			= true;
 	private int				interWriteDelay		= 0;
 	private int				totalReadTimeout	= 0;
 	protected long			lastComms			= System.currentTimeMillis();
@@ -131,7 +131,6 @@ public abstract class MsComm extends Observable
 					throttle();
 				}
 			}
-			os.flush();
 
 		}
 		catch (IOException e)
@@ -199,7 +198,7 @@ public abstract class MsComm extends Observable
 		openDevice();
 	}
 
-	protected void close()
+	public void close()
 	{
 		closeDevice(true);
 	}
@@ -223,6 +222,7 @@ public abstract class MsComm extends Observable
 			write(sigCommand);
 			sig = read(63);
 		}
+		flush();
 		return sig;
 	}
 
