@@ -2,24 +2,14 @@ package uk.org.smithfamily.mslogger;
 
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.parser.MsDatabase;
-import uk.org.smithfamily.mslogger.parser.Symbol;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.content.*;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -27,186 +17,161 @@ import android.widget.ToggleButton;
 public class MSLoggerActivity extends Activity
 {
 
-    private static final int   REQUEST_ENABLE_BT = 0;
-    protected MSControlService mBoundService;
-    private boolean            mIsBound;
-    private BroadcastReceiver  updateReceiver    = new BroadcastReceiver()
-                                                 {
+	private final class LogButtonListener implements OnClickListener
+	{
+		private final ToggleButton	button;
 
-                                                     @Override
-                                                     public void onReceive(Context context, Intent intent)
-                                                     {
-                                                         if (intent.getAction().equals(MSControlService.CONNECTED))
-                                                         {
-                                                             setContentView(R.layout.display);
-                                                             final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
-                                                             button.setChecked(mBoundService.isLogging());
-                                                             button.setOnClickListener(new OnClickListener()
-                                                             {
+		private LogButtonListener(ToggleButton button)
+		{
+			this.button = button;
+		}
 
-                                                                 @Override
-                                                                 public void onClick(View arg0)
-                                                                 {
-                                                                     if (button.isChecked())
-                                                                     {
-                                                                         mBoundService.startLogging();
-                                                                     }
-                                                                     else
-                                                                     {
-                                                                         mBoundService.stopLogging();
-                                                                     }
-                                                                 }
-                                                             });
+		@Override
+		public void onClick(View arg0)
+		{
+			if (button.isChecked())
+			{
+				ApplicationSettings.INSTANCE.getEcuDefinition().startLogging();
+			}
+			else
+			{
+				ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
+			}
+		}
+	}
 
-                                                         }
-                                                         if (intent.getAction().equals(MSControlService.NEW_DATA))
-                                                         {
-                                                             processData();
-                                                         }
-                                                         if (intent.getAction().equals(MsDatabase.GENERAL_MESSAGE))
-                                                         {
-                                                             String msg = intent.getStringExtra(MsDatabase.MESSAGE);
-                                                             TextView v = (TextView) findViewById(R.id.messages);
-                                                             v.setText(msg);
-                                                         }
-                                                     }
+	private final class Reciever extends BroadcastReceiver
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (intent.getAction().equals(Megasquirt.CONNECTED))
+			{
+				setContentView(R.layout.display);
+				final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
+				button.setChecked(false);
+				button.setOnClickListener(new LogButtonListener(button));
 
-                                                 };
-    private IndicatorManager   indicatorManager;
-    private boolean            bluetoothOK       = false;
+			}
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.disconnected);
+			if (intent.getAction().equals(Megasquirt.NEW_DATA))
+			{
+				processData();
+			}
+			if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
+			{
+				String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
+				TextView v = (TextView) findViewById(R.id.messages);
+				v.setText(msg);
+			}
+		}
+	}
 
-        super.onCreate(savedInstanceState);
-        doBindService();
+	private static final int	REQUEST_ENABLE_BT	= 0;
+	private BroadcastReceiver	updateReceiver		= new Reciever();
+	private IndicatorManager	indicatorManager;
+	private boolean				bluetoothOK			= false;
+	private Thread				controller;
+	private Megasquirt			ecu;
 
-        IntentFilter connectedFilter = new IntentFilter(MSControlService.CONNECTED);
-        registerReceiver(updateReceiver, connectedFilter);
-        IntentFilter dataFilter = new IntentFilter(MSControlService.NEW_DATA);
-        registerReceiver(updateReceiver, dataFilter);
-        IntentFilter msgFilter = new IntentFilter(MsDatabase.GENERAL_MESSAGE);
-        registerReceiver(updateReceiver, msgFilter);
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null)
-        {
-            // Device does not support Bluetooth
-        }
-        bluetoothOK = mBluetoothAdapter.isEnabled();
-        if (!bluetoothOK)
-        {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		ApplicationSettings.INSTANCE.initialise(this);
+		ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-    }
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.disconnected);
 
-    protected void processData()
-    {
-        if (mIsBound)
-        {
-            List<Symbol> syms = mBoundService.getCurrentData();
-            indicatorManager = IndicatorManager.INSTANCE;
-            for (Symbol sym : syms)
-            {
-                String symbolName = sym.name();
-                List<Indicator> indicators;
-                if ((indicators = indicatorManager.getIndicators(symbolName)) != null)
-                {
+		super.onCreate(savedInstanceState);
 
-                    float value = (float) sym.getValue();
-                    for (Indicator i : indicators)
-                    {
-                        i.setCurrentValue(value);
-                    }
-                }
-            }
-        }
-    }
+		IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
+		registerReceiver(updateReceiver, connectedFilter);
+		IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
+		registerReceiver(updateReceiver, dataFilter);
+		IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
+		registerReceiver(updateReceiver, msgFilter);
 
-    void doBindService()
-    {
-        Intent intent = new Intent(this, MSControlService.class);
-        startService(intent);
-        ServiceConnection connection = new ServiceConnection()
-        {
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothAdapter == null)
+		{
+			bluetoothOK = false;
+			return;
+		}
+		bluetoothOK = mBluetoothAdapter.isEnabled();
+		if (!bluetoothOK)
+		{
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		}
 
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service)
-            {
-                mBoundService = ((MSControlService.LocalBinder) service).getService();
-                mIsBound = true;
-            }
+		controller = new Thread(ecu);
+		controller.setDaemon(true);
+		controller.start();
 
-            @Override
-            public void onServiceDisconnected(ComponentName name)
-            {
-                mBoundService = null;
-                mIsBound = false;
-            }
-        };
+	}
 
-        bindService(intent, connection, 0);
-    }
+	protected void processData()
+	{
+		indicatorManager = IndicatorManager.INSTANCE;
+		List<Indicator> indicators;
+		if ((indicators = indicatorManager.getIndicators()) != null)
+		{
+			for (Indicator i : indicators)
+			{
+				float value = ApplicationSettings.INSTANCE.getEcuDefinition().getValue(i.getChannel());
+				i.setCurrentValue(value);
+			}
+		}
+	}
 
-    void doUnbindService()
-    {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
 
-        mBoundService.stopLogging();
-        mBoundService.stopSelf();
-        mIsBound = false;
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle item selection
+		switch (item.getItemId())
+		{
+		case R.id.preferences:
+			openPreferences();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
+	private void openPreferences()
+	{
+		Intent launchPrefs = new Intent(this, PreferencesActivity.class);
+		startActivity(launchPrefs);
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle item selection
-        switch (item.getItemId())
-        {
-        case R.id.preferences:
-            openPreferences();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
+	@Override
+	protected void onDestroy()
+	{
+		ecu.setRunning(false);
+		super.onDestroy();
+	}
 
-    private void openPreferences()
-    {
-        Intent launchPrefs = new Intent(this, PreferencesActivity.class);
-        startActivity(launchPrefs);
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        doUnbindService();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                bluetoothOK = true;
-            }
-        }
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_ENABLE_BT)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				bluetoothOK = true;
+			}
+		}
+	}
 
 }

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="Bluetooth">
-	
-		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
-			android:key="bluetooth_mac" android:title="Bluetooth Device" android:dialogTitle="Choose Bluetooth Device"/>
+	<PreferenceCategory android:title="@string/Files">
+		<EditTextPreference android:dialogTitle="Data Log Directory"
+			android:defaultValue="@string/app_name" android:key="DataDir"></EditTextPreference>
+	</PreferenceCategory>
 
+	<PreferenceCategory android:title="Bluetooth">
+		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
+			android:title="Bluetooth Device" android:key="bluetooth_mac"
+			android:dialogTitle="Choose Bluetooth Device" />
+
+
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/megasquirt">
+		<ListPreference android:entries="@array/MSNames" android:key="mstype"
+            android:entryValues="@array/MSNames" android:defaultValue="MS1Extra"></ListPreference>
 	</PreferenceCategory>
 
 </PreferenceScreen>
