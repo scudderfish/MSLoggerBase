@@ -4,10 +4,8 @@ import java.io.File;
 
 import uk.org.smithfamily.mslogger.comms.MsComm;
 import uk.org.smithfamily.mslogger.comms.SerialComm;
-import uk.org.smithfamily.mslogger.comms.SocketComm;
 import uk.org.smithfamily.mslogger.ecuDef.MS1Extra29y;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -34,7 +32,7 @@ public enum ApplicationSettings
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 10);
-        comms = new SocketComm();
+        comms = new SerialComm();
 
 	}
 	public File getDataDir()

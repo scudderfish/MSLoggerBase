@@ -110,7 +110,9 @@ public class MS1Extra29y extends Megasquirt
 	{
 		setupRuntime(ochBuffer);
 
-		accDecEnrich = ((engine & 32) != 0) ? 100
+		int running = engine & 32;
+		    
+        accDecEnrich = (running == 0) ? 100
 				: ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
 		batteryVoltage = batADC / 255.0 * 30.0;
 		coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40); // Coolant

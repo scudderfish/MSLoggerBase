@@ -57,6 +57,7 @@ public abstract class Megasquirt implements Runnable
 		
 		if(connected())
 		{
+		    broadcastConnected();
 			loadConstants();
 		}
 		while (running)
@@ -74,6 +75,11 @@ public abstract class Megasquirt implements Runnable
 			{
 				sendMessage("Cannot connect to Megasquirt");
 				delay(5000);
+				if(connected())
+		        {
+		            broadcastConnected();
+		            loadConstants();
+		        }
 			}
 		}
 		disconnect();
@@ -143,6 +149,16 @@ public abstract class Megasquirt implements Runnable
 
 	}
 
+    private void broadcastConnected()
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(CONNECTED);
+        // broadcast.putExtra(LOCATION, location);
+        context.sendBroadcast(broadcast);
+        sendMessage("Connected to "+this.getSignature());
+
+    }
+
 	private void broadcastNewData()
 	{
 		Intent broadcast = new Intent();
@@ -154,6 +170,10 @@ public abstract class Megasquirt implements Runnable
 
 	private void getRuntimeVars()
 	{
+	    if(ochBuffer == null)
+	    {
+	        ochBuffer = new byte[this.getBlockSize()];
+	    }
 		comm.write(this.getOchCommand());
 		comm.read(ochBuffer);
 	}
