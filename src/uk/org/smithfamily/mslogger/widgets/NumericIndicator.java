@@ -24,7 +24,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
     private int          dp;
     private NumberFormat formatter;
     private String       channel;
-    private boolean disabled;
+    private boolean      disabled;
 
     public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
     {
@@ -46,8 +46,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
         errorPoint = a.getFloat(R.styleable.Dial_rangeErrorMinValue, errorPoint);
         channel = a.getString(R.styleable.Dial_channel);
         disabled = a.getBoolean(R.styleable.Dial_disabled, false);
-        
-        
+
         setupFormat();
     }
 
@@ -96,9 +95,11 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
 
     private void setFont(Context context)
     {
-        this.font = Typeface.createFromAsset(context.getAssets(), "fonts/7segment.ttf");
-        this.setTypeface(font);
-
+        if (!isInEditMode())
+        {
+            this.font = Typeface.createFromAsset(context.getAssets(), "fonts/digital.ttf");
+            this.setTypeface(font);
+        }
     }
 
     public void setMin(float min)
@@ -144,7 +145,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
             setTextColor(Color.YELLOW);
         else
             setTextColor(Color.RED);
-        if(disabled)
+        if (disabled)
         {
             setTextColor(Color.LTGRAY);
             this.setText("---");
@@ -170,7 +171,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
     protected void onAttachedToWindow()
     {
         super.onAttachedToWindow();
-        
+
         IndicatorManager.INSTANCE.registerIndicator(this);
 
     }
@@ -179,7 +180,7 @@ public class NumericIndicator extends AutoResizeTextView implements Indicator
     protected void onDetachedFromWindow()
     {
         super.onDetachedFromWindow();
-        
+
         IndicatorManager.INSTANCE.deregisterIndicator(this);
 
     }
