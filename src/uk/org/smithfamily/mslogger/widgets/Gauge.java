@@ -863,9 +863,9 @@ public final class Gauge extends View implements Indicator
         this.rangeErrorMinValue=err;
     }
 
-    public void setCurrentValue(float value)
+    public void setCurrentValue(double value)
     {
-        setValue(value);
+        setValue((float) value);
     }
 
     public String getChannel()

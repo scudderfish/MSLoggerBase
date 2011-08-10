@@ -64,45 +64,45 @@ public class MS1Extra29y extends Megasquirt
 
 	// Eqns store START
 	int				injOpen1;
-	private double	boost;
-	private int		accDecEnrich;
-	private double	batteryVoltage;
-	private double	coolant;
-	private double	egoVoltage;
-	private double	ego2Voltage;
-	private double	mat;
-	private int		rpm;
-	private double	time;
-	private double	egttemp;
-	private double	lambda2;
-	private double	afr2;
-	private int		barometer;
-	private int		map;
-	private int		throttle;
-	private double	advSpark;
-	private int		KnockAng;
-	private int		KnockDeg;
-	private int		CltIatAng;
-	private double	fuelvolt;
-	private double	fuelpress;
-	private int		altDiv1;
-	private int		altDiv2;
-	private double	cycleTime1;
-	private int		nSquirts1;
-	private double	dutyCycle1;
-	private double	cycleTime2;
-	private int		nSquirts2;
-	private double	dutyCycle2;
-	private int		veCurr;
-	private int		pulseWidth;
-	private int		iTimefull;
-	private double	RpmHitmp;
-	private double	RpmHiRes;
-	private double	vacuum;
-	private double	boostVac;
-	private int		floodclear;
-	private byte[]	sigCommand	= { 83 };	// 'S'
-	private byte[]	ochCommand	= { 82 };	// 'R'
+	double	boost;
+	int		accDecEnrich;
+	double	batteryVoltage;
+	double	coolant;
+	double	egoVoltage;
+	double	ego2Voltage;
+	double	mat;
+	int		rpm;
+	double	time;
+	double	egttemp;
+	double	lambda2;
+	double	afr2;
+	int		barometer;
+	int		map;
+	int		throttle;
+	double	advSpark;
+	int		KnockAng;
+	int		KnockDeg;
+	int		CltIatAng;
+	double	fuelvolt;
+	double	fuelpress;
+	int		altDiv1;
+	int		altDiv2;
+	double	cycleTime1;
+	int		nSquirts1;
+	double	dutyCycle1;
+	double	cycleTime2;
+	int		nSquirts2;
+	double	dutyCycle2;
+	int		veCurr;
+	int		pulseWidth;
+	int		iTimefull;
+	double	RpmHitmp;
+	double	RpmHiRes;
+	double	vacuum;
+	double	boostVac;
+	int		floodclear;
+	byte[]	sigCommand	= { 83 };	// 'S'
+	byte[]	ochCommand	= { 82 };	// 'R'
 
 	@Override
 	public void calculate(byte[] ochBuffer)
@@ -304,6 +304,7 @@ public class MS1Extra29y extends Megasquirt
 	@Override
 	public void loadConstants()
 	{
+		
 		byte[] pageBuffer = new byte[189];
 
 		byte[] selectPage1 = { 80, 1 };

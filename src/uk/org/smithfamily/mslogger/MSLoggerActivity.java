@@ -82,7 +82,7 @@ public class MSLoggerActivity extends Activity
 		ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.disconnected);
+		setContentView(R.layout.display);
 
 		super.onCreate(savedInstanceState);
 
@@ -120,7 +120,7 @@ public class MSLoggerActivity extends Activity
 		{
 			for (Indicator i : indicators)
 			{
-				float value = ApplicationSettings.INSTANCE.getEcuDefinition().getValue(i.getChannel());
+				double value = ApplicationSettings.INSTANCE.getEcuDefinition().getValue(i.getChannel());
 				i.setCurrentValue(value);
 			}
 		}

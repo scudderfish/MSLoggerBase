@@ -29,14 +29,14 @@ public class NumericIndicator extends TextView implements Indicator
 	public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
 	{
 		super(context, attrs, defStyle);
-		setFont(context);
+//		setFont(context);
 		setupDefaults(context);
 	}
 
 	public NumericIndicator(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		setFont(context);
+//		setFont(context);
 		setupDefaults(context);
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
 		value = a.getFloat(R.styleable.Dial_numValue, value);
@@ -53,7 +53,7 @@ public class NumericIndicator extends TextView implements Indicator
 	public NumericIndicator(Context context)
 	{
 		super(context);
-		setFont(context);
+//		setFont(context);
 		setupDefaults(context);
 		setupFormat();
 	}
@@ -128,9 +128,9 @@ public class NumericIndicator extends TextView implements Indicator
 		this.errorPoint = err;
 	}
 
-	public void setCurrentValue(float value)
+	public void setCurrentValue(double value)
 	{
-		this.value = value;
+		this.value = (float) value;
 	}
 
 	@Override
@@ -149,7 +149,8 @@ public class NumericIndicator extends TextView implements Indicator
 		}
 		else
 		{
-			this.setText(formatter.format(this.value));
+			String val = formatter.format(this.value);
+			this.setText(val);
 		}
 		super.onDraw(canvas);
 	}
