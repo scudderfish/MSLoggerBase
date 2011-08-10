@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.concurrent.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.comms.MsComm;
@@ -36,13 +37,14 @@ public abstract class Megasquirt implements Runnable
 
 	public abstract int getBlockSize();
 
-	private long						lastTime	= System.currentTimeMillis();
+	private long				lastTime	= System.currentTimeMillis();
 
-	private volatile boolean			running		= false;
-	protected MsComm					comm;
-	private byte[]						ochBuffer;
+	private volatile boolean	running		= false;
+	protected MsComm			comm;
+	private byte[]				ochBuffer;
 
-	private boolean	logging;
+	private boolean				logging;
+	private int					counter		= 0;
 
 	public void setRunning(boolean r)
 	{
@@ -54,11 +56,11 @@ public abstract class Megasquirt implements Runnable
 		running = true;
 		comm = ApplicationSettings.INSTANCE.getComms();
 		comm.openConnection();
-		
-		if(connected())
+
+		if (connected())
 		{
-		    broadcastConnected();
-			loadConstants();
+			broadcastConnected();
+			loadConstantsWithTimeout();
 		}
 		while (running)
 		{
@@ -70,25 +72,70 @@ public abstract class Megasquirt implements Runnable
 				logValues();
 				broadcastNewData();
 				throttle();
+				sendMessage("Data " + (counter++));
 			}
 			else
 			{
 				sendMessage("Cannot connect to Megasquirt");
 				delay(5000);
-				if(connected())
-		        {
-		            broadcastConnected();
-		            loadConstants();
-		        }
+				comm.openConnection();
+				if (connected())
+				{
+					broadcastConnected();
+					loadConstantsWithTimeout();
+				}
 			}
 		}
 		disconnect();
-	
+
+	}
+
+	private void loadConstantsWithTimeout()
+	{
+		sendMessage("Loading constants...");
+		boolean constantsLoaded = false;
+		int counter =0;
+		do
+		{
+			FutureTask<?> theTask = null;
+			try
+			{
+				// create new task
+				theTask = new FutureTask<Object>(new Runnable()
+				{
+					public void run()
+					{
+						loadConstants();
+					}
+				}, null);
+
+				// start task in a new thread
+				new Thread(theTask).start();
+
+				// wait for the execution to finish, timeout after 10 secs
+				theTask.get(1L, TimeUnit.SECONDS);
+				constantsLoaded = true;
+				sendMessage("Constants loaded");
+			}
+
+			catch (Exception e)
+			{
+				counter++;
+				sendMessage("Failed to load constants : "+counter);
+				constantsLoaded = false;
+				comm.flush();
+				comm.close();
+				comm.openConnection();
+				comm.flush();
+			}
+			
+		}
+		while (!constantsLoaded);
 	}
 
 	private void logValues()
 	{
-		if(!logging)
+		if (!logging)
 		{
 			return;
 		}
@@ -115,7 +162,7 @@ public abstract class Megasquirt implements Runnable
 		return comm.isConnected();
 	}
 
-	private void sendMessage(String msg)
+	protected void sendMessage(String msg)
 	{
 		Intent broadcast = new Intent();
 		broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);
@@ -149,15 +196,15 @@ public abstract class Megasquirt implements Runnable
 
 	}
 
-    private void broadcastConnected()
-    {
-        Intent broadcast = new Intent();
-        broadcast.setAction(CONNECTED);
-        // broadcast.putExtra(LOCATION, location);
-        context.sendBroadcast(broadcast);
-        sendMessage("Connected to "+this.getSignature());
+	private void broadcastConnected()
+	{
+		Intent broadcast = new Intent();
+		broadcast.setAction(CONNECTED);
+		// broadcast.putExtra(LOCATION, location);
+		context.sendBroadcast(broadcast);
+		sendMessage("Connected to " + this.getSignature());
 
-    }
+	}
 
 	private void broadcastNewData()
 	{
@@ -170,10 +217,10 @@ public abstract class Megasquirt implements Runnable
 
 	private void getRuntimeVars()
 	{
-	    if(ochBuffer == null)
-	    {
-	        ochBuffer = new byte[this.getBlockSize()];
-	    }
+		if (ochBuffer == null)
+		{
+			ochBuffer = new byte[this.getBlockSize()];
+		}
 		comm.write(this.getOchCommand());
 		comm.read(ochBuffer);
 	}
@@ -329,7 +376,6 @@ public abstract class Megasquirt implements Runnable
 		return (t - 32.0) * 5.0 / 9.0;
 	}
 
-
 	public boolean initialised()
 	{
 		comm = ApplicationSettings.INSTANCE.getComms();
@@ -346,14 +392,14 @@ public abstract class Megasquirt implements Runnable
 
 	}
 
-	public float getValue(String channel)
+	public double getValue(String channel)
 	{
-		float value = 0;
+		double value = 0;
 		Class<?> c = this.getClass();
 		try
 		{
-			Field f = c.getField(channel);
-			value = f.getFloat(this);
+			Field f = c.getDeclaredField(channel);
+			value = f.getDouble(this);
 		}
 		catch (Exception e)
 		{
@@ -365,7 +411,7 @@ public abstract class Megasquirt implements Runnable
 
 	public void startLogging()
 	{
-		if(logging)
+		if (logging)
 		{
 			return;
 		}
@@ -388,10 +434,10 @@ public abstract class Megasquirt implements Runnable
 	{
 		int val = 0;
 		byte b = pageBuffer[i];
-	
+
 		long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
 		val = (int) ((b & mask) >> _bitLo);
-	
+
 		return val;
 	}
 

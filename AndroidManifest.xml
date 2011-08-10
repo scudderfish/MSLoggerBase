@@ -14,7 +14,7 @@
 	<application android:label="@string/app_name" android:icon="@drawable/injector">
 		<service android:name="MSControlService"/>
 
-		<activity android:name="MSLoggerActivity" android:label="@string/app_name" android:launchMode="singleTask" android:screenOrientation="landscape" >
+		<activity android:name="MSLoggerActivity" android:label="@string/app_name" android:screenOrientation="landscape" android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

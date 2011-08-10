@@ -12,7 +12,7 @@ public interface Indicator
 
     public void setErrorPoint(float err);
     
-    public void setCurrentValue(float value);
+    public void setCurrentValue(double value);
     
     public void setChannel(String channelName);
     
