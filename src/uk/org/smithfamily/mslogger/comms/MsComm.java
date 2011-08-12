@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Observable;
+import java.util.concurrent.*;
 
 public abstract class MsComm extends Observable
 {
@@ -11,11 +12,12 @@ public abstract class MsComm extends Observable
 	protected InputStream	is;
 	protected OutputStream	os;
 	private boolean			connected			= false;
-	private boolean			writeBlocks			= true;
+	private boolean			writeBlocks			= false;
 	private int				interWriteDelay		= 0;
 	private int				totalReadTimeout	= 0;
 	protected long			lastComms			= System.currentTimeMillis();
 	protected long			throttleWait		= 0;
+	ExecutorService			executor			= Executors.newFixedThreadPool(1);
 
 	protected abstract boolean openDevice();
 
@@ -59,10 +61,14 @@ public abstract class MsComm extends Observable
 		return 0;
 	}
 
-	public void flush()
+	private void testConnection() throws LostCommsException
 	{
-		if (!connected)
-			return;
+		if (!connected && !openDevice())
+			throw new LostCommsException();
+	}
+	public void flush() throws LostCommsException
+	{
+		testConnection();
 		try
 		{
 			os.flush();
@@ -77,10 +83,40 @@ public abstract class MsComm extends Observable
 		}
 	}
 
-	public boolean read(byte[] bytes)
+	public void readWithTimeout(final byte[] bytes, long timeout, TimeUnit unit) throws LostCommsException
 	{
-		if (!connected && !openDevice())
-			return false;
+		testConnection();
+		FutureTask<Boolean> future = new FutureTask<Boolean>(new Callable<Boolean>()
+		{
+			public Boolean call()
+			{
+				try
+				{
+					read(bytes);
+				}
+				catch (LostCommsException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return true;
+			}
+		});
+		executor.execute(future);
+		try
+		{
+			future.get(timeout, unit);
+		}
+		catch (Exception e)
+		{
+			throw new LostCommsException(e);
+			
+		}
+	}
+
+	public void read(byte[] bytes) throws LostCommsException
+	{
+		testConnection();
 		try
 		{
 			int nBytes = bytes.length;
@@ -99,13 +135,10 @@ public abstract class MsComm extends Observable
 			{
 				System.arraycopy(buffer, 0, bytes, 0, bytes.length);
 			}
-			return true;
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
-			close();
-			return false;
+			throw new LostCommsException(e);
 		}
 	}
 
@@ -209,12 +242,11 @@ public abstract class MsComm extends Observable
 		return isConnected();
 	}
 
-	public String getSignature(byte[] sigCommand)
+	public String getSignature(byte[] sigCommand) throws LostCommsException
 	{
+		testConnection();
 		String lastVal = "NotConnected";
-		if (!openConnection())
-			return lastVal;
-
+		
 		String sig = "NotGotItYet";
 		for (int x = 0; x < 5 && !lastVal.equals(sig); x++)
 		{
