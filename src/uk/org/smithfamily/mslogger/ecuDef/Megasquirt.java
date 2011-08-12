@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.concurrent.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import uk.org.smithfamily.mslogger.comms.MsComm;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
@@ -27,7 +28,7 @@ public abstract class Megasquirt implements Runnable
 
 	public abstract byte[] getSigCommand();
 
-	public abstract void loadConstants();
+	public abstract void loadConstants() throws LostCommsException;
 
 	public abstract void calculate(byte[] ochBuffer);
 
@@ -56,79 +57,84 @@ public abstract class Megasquirt implements Runnable
 		running = true;
 		comm = ApplicationSettings.INSTANCE.getComms();
 		comm.openConnection();
-
-		if (connected())
-		{
-			broadcastConnected();
-			loadConstantsWithTimeout();
-		}
+		boolean init = initialised();
+		
 		while (running)
 		{
-			if (connected())
+			try
 			{
-				comm.flush();
-				getRuntimeVars();
-				calculateValues();
-				logValues();
-				broadcastNewData();
-				throttle();
-				sendMessage("Data " + (counter++));
-			}
-			else
-			{
-				sendMessage("Cannot connect to Megasquirt");
-				delay(5000);
-				comm.openConnection();
 				if (connected())
 				{
-					broadcastConnected();
-					loadConstantsWithTimeout();
+					comm.flush();
+					getRuntimeVars();
+					calculateValues();
+					logValues();
+					broadcastNewData();
+					throttle();
+					sendMessage("Data " + (counter++));
 				}
+				else
+				{
+					reconnectToMS("Cannot connect to Megasquirt");
+				}
+			}
+			catch (LostCommsException e)
+			{
+				reconnectToMS("Lost connection to Megasquirt");
 			}
 		}
 		disconnect();
 
 	}
 
-	private void loadConstantsWithTimeout()
+	private void reconnectToMS(String msg)
+	{
+		if (msg != null)
+		{
+			sendMessage(msg);
+			delay(5000);
+		}
+		comm.openConnection();
+		if (connected())
+		{
+			broadcastConnected();
+			try
+			{
+				loadConstantsWithTimeout();
+			}
+			catch (LostCommsException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void loadConstantsWithTimeout() throws LostCommsException
 	{
 		sendMessage("Loading constants...");
 		boolean constantsLoaded = false;
-		int counter =0;
+		int counter = 0;
 		do
 		{
-			FutureTask<?> theTask = null;
 			try
 			{
-				// create new task
-				theTask = new FutureTask<Object>(new Runnable()
-				{
-					public void run()
-					{
-						loadConstants();
-					}
-				}, null);
-
-				// start task in a new thread
-				new Thread(theTask).start();
-
-				// wait for the execution to finish, timeout after 10 secs
-				theTask.get(1L, TimeUnit.SECONDS);
-				constantsLoaded = true;
+				loadConstants();
 				sendMessage("Constants loaded");
+				constantsLoaded = true;
 			}
 
 			catch (Exception e)
 			{
 				counter++;
-				sendMessage("Failed to load constants : "+counter);
+				sendMessage("Failed to load constants : " + counter);
 				constantsLoaded = false;
 				comm.flush();
 				comm.close();
 				comm.openConnection();
 				comm.flush();
 			}
-			
+
 		}
 		while (!constantsLoaded);
 	}
@@ -152,8 +158,16 @@ public abstract class Megasquirt implements Runnable
 
 	private void disconnect()
 	{
-		comm.flush();
-		comm.close();
+		try
+		{
+			comm.flush();
+			comm.close();
+		}
+		catch (LostCommsException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -215,14 +229,14 @@ public abstract class Megasquirt implements Runnable
 
 	}
 
-	private void getRuntimeVars()
+	private void getRuntimeVars() throws LostCommsException
 	{
 		if (ochBuffer == null)
 		{
 			ochBuffer = new byte[this.getBlockSize()];
 		}
 		comm.write(this.getOchCommand());
-		comm.read(ochBuffer);
+		comm.readWithTimeout(ochBuffer, 500, TimeUnit.MILLISECONDS);
 	}
 
 	private void calculateValues()
@@ -380,14 +394,30 @@ public abstract class Megasquirt implements Runnable
 	{
 		comm = ApplicationSettings.INSTANCE.getComms();
 		ochBuffer = new byte[this.getBlockSize()];
-		boolean connected = comm.openConnection();
-
-		if (connected)
+		boolean connected = false;
+		String sig = null;
+		try
 		{
-			String sig = comm.getSignature(this.getSigCommand());
-			connected = getSignature().equals(sig);
+			sig = comm.getSignature(this.getSigCommand());
 		}
-
+		catch (LostCommsException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		connected = getSignature().equals(sig);
+		if(connected)
+		{
+			broadcastConnected();
+			try
+			{
+				loadConstantsWithTimeout();
+			}
+			catch (LostCommsException e)
+			{
+				connected = false;
+			}
+		}
 		return connected;
 
 	}

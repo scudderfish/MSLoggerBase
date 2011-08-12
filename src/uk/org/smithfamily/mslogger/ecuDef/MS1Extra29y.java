@@ -1,5 +1,9 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import java.util.concurrent.TimeUnit;
+
+import uk.org.smithfamily.mslogger.comms.LostCommsException;
+
 import android.content.Context;
 
 public class MS1Extra29y extends Megasquirt
@@ -302,7 +306,7 @@ public class MS1Extra29y extends Megasquirt
 	}
 
 	@Override
-	public void loadConstants()
+	public void loadConstants() throws LostCommsException
 	{
 		
 		byte[] pageBuffer = new byte[189];
@@ -320,7 +324,7 @@ public class MS1Extra29y extends Megasquirt
 		nCylinders1 = getBits(pageBuffer, 182, 4, 7) + 1;
 		divider1 = pageBuffer[149];
 
-		comm.flush();
+//		comm.flush();
 		comm.write(selectPage2);
 		comm.write(readPage);
 		comm.read(pageBuffer);
