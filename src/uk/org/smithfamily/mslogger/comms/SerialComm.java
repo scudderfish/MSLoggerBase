@@ -40,7 +40,7 @@ public class SerialComm extends MsComm
 		catch (IOException e)
 		{
 			Log.e("BT", "IOException", e);
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}
 		return true;
@@ -64,7 +64,7 @@ public class SerialComm extends MsComm
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 
 		return true;
