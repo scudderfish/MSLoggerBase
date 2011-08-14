@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -16,7 +18,7 @@ public class SerialComm extends MsComm
 
 	private String locateAdapter()
 	{
-		return "00:12:6F:03:BC:63";
+		return ApplicationSettings.INSTANCE.getBluetoothMac();
 	}
 
 	boolean init()

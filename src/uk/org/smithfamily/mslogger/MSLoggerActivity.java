@@ -16,6 +16,13 @@ import android.widget.ToggleButton;
 
 public class MSLoggerActivity extends Activity
 {
+    private static final int  REQUEST_ENABLE_BT = 0;
+    private BroadcastReceiver updateReceiver    = new Reciever();
+    private IndicatorManager  indicatorManager;
+    private boolean           bluetoothOK       = false;
+    private Thread            controller;
+    private Megasquirt        ecuDefinition;
+
     private final class LogButtonListener implements OnClickListener
     {
         private final ToggleButton button;
@@ -30,11 +37,19 @@ public class MSLoggerActivity extends Activity
         {
             if (button.isChecked())
             {
+                if (controller == null)
+                {
+                    controller = new Thread(ecuDefinition);
+                    controller.setDaemon(true);
+                    controller.start();
+                }
                 ApplicationSettings.INSTANCE.getEcuDefinition().startLogging();
             }
             else
             {
                 ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
+                ecuDefinition.setRunning(false);
+                controller = null;
             }
         }
     }
@@ -66,20 +81,15 @@ public class MSLoggerActivity extends Activity
         }
     }
 
-    private static final int  REQUEST_ENABLE_BT = 0;
-    private BroadcastReceiver updateReceiver    = new Reciever();
-    private IndicatorManager  indicatorManager;
-    private boolean           bluetoothOK       = false;
-    private Thread            controller;
-    private Megasquirt        ecu;
-    private Megasquirt        ecuDefinition;
+  
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         ApplicationSettings.INSTANCE.initialise(this);
-        ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        indicatorManager = IndicatorManager.INSTANCE;
+        ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display);
@@ -105,13 +115,7 @@ public class MSLoggerActivity extends Activity
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        indicatorManager = IndicatorManager.INSTANCE;
-        ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-        controller = new Thread(ecu);
-        controller.setDaemon(true);
-        controller.start();
-
+        
     }
 
     protected void processData()
@@ -167,7 +171,7 @@ public class MSLoggerActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        ecu.setRunning(false);
+        ecuDefinition.setRunning(false);
         super.onDestroy();
     }
 

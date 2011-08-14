@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="@string/Files">
+	<PreferenceCategory android:title="@string/AppSettings">
 		<EditTextPreference android:dialogTitle="Data Log Directory"
 			android:defaultValue="@string/app_name" android:key="DataDir"></EditTextPreference>
+		<ListPreference android:title="Temp. Unit"
+			android:entries="@array/tempent" android:entryValues="@array/tempvalues"
+			android:defaultValue="C"></ListPreference>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="Bluetooth">
 		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
 			android:title="Bluetooth Device" android:key="bluetooth_mac"
 			android:dialogTitle="Choose Bluetooth Device" />
-
-
 	</PreferenceCategory>
+
 	<PreferenceCategory android:title="@string/megasquirt">
-		<ListPreference android:entries="@array/MSNames" android:key="mstype"
-            android:entryValues="@array/MSNames" android:defaultValue="MS1Extra"></ListPreference>
+		<ListPreference android:entries="@array/MSNames"
+			android:key="mstype" android:entryValues="@array/MSNames"
+			android:defaultValue="MS1Extra" android:title="MS Model"></ListPreference>
+		<ListPreference android:key="maptype" android:entries="@array/mapnames"
+			android:entryValues="@array/maptypes" android:title="MAP Sensor"></ListPreference>
+		<ListPreference android:key="egotype" android:entries="@array/egonames"
+			android:entryValues="@array/egotypes" android:title="EGO Sensor"></ListPreference>
 	</PreferenceCategory>
 
 </PreferenceScreen>

@@ -78,7 +78,7 @@ public class MS1Extra29y extends Megasquirt
     double   lambda2;
     double   afr2;
     int      barometer;
-    int      map;
+    double   map;
     int      throttle;
     double   advSpark;
     int      KnockAng;
@@ -129,101 +129,92 @@ public class MS1Extra29y extends Megasquirt
 
         try
         {
-        accDecEnrich = ((engine & 32) == 0) ? 100
-                : ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
-        batteryVoltage = batADC / 255.0 * 30.0;
-        coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40); // Coolant
-        // sensor
-        // temperature
-        // in
-        // user
-        // units.
-        egoVoltage = (egoADC / 255.0 * 5.0); // EGO sensor voltage.
-        ego2Voltage = (fuelADC / 255.0 * 5.0); // EGO sensor voltage 2.
-        mat = (tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40)); // Manifold
-        // temperature
-        // in
-        // user
-        // units.
-        rpm = (rpm100 * 100); // True RPM.
-        time = (timeNow()); // "timeNow" is a parameterless built-in
-                            // function.
-        egttemp = (egtADC * 3.90625); // Setup for converting 0-5V = 0 -
-                                      // 1000C
+            accDecEnrich = ((engine & 32) == 0) ? 100
+                    : ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
+            batteryVoltage = batADC / 255.0 * 30.0;
+            coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40); 
+            egoVoltage = (egoADC / 255.0 * 5.0); // EGO sensor voltage.
+            ego2Voltage = (fuelADC / 255.0 * 5.0); // EGO sensor voltage 2.
+            mat = (tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40));
+            rpm = (rpm100 * 100); // True RPM.
+            time = (timeNow()); // "timeNow" is a parameterless built-in
+                                // function.
+            egttemp = (egtADC * 3.90625); // Setup for converting 0-5V = 0 -
+                                          // 1000C
 
-        // ; Added for second O2 sensor
-        lambda2 = (fuelADC / 255.0 + 0.5);
-        afr2 = (lambda2 * 14.7);
+            // ; Added for second O2 sensor
+            lambda2 = (fuelADC / 255.0 + 0.5);
+            afr2 = (lambda2 * 14.7);
 
-        barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4250.inc"));
-        map = (TableManager.INSTANCE.table(mapADC, "kpafactor4250.inc")); // Manifold
-                                                                          // pressure
-                                                                          // in
-        // kPa.
+            barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4250.inc"));
+            map = (TableManager.INSTANCE.table(mapADC, "kpafactor4250.inc")); // Manifold
+                                                                              // pressure
+                                                                              // in
+            // kPa.
 
-        throttle = (TableManager.INSTANCE.table(tpsADC, "throttlefactor.inc"));
-        advSpark = ((advance * 0.352) - 10);
-        // ; Enhanced Stuff
-        KnockAng = ((KnockAngle * 90 / 256));
-        KnockDeg = (-KnockAng);
-        CltIatAng = (CltIatAngle * 90 / 256);
-        fuelvolt = (fuelADC < 1 ? 0.0 : fuelADC * (5 / 255) - 0.5);
-        fuelpress = (fuelADC < 1 ? 0.0 : fuelvolt / 0.04 + 1);
-        altDiv1 = (alternate1 != 0 ? 2 : 1);
-        altDiv2 = (alternate2 != 0 ? 2 : 1);
-        cycleTime1 = (rpm < 100 ? 0 : 60000.0 / rpm * (2.0 - twoStroke1));
-        nSquirts1 = (nCylinders1 / divider1);
-        dutyCycle1 = (rpm < 100 ? 0 : 100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
-        cycleTime2 = (rpm < 100 ? 0 : 60000.0 / rpm * (2.0 - twoStroke2));
-        nSquirts2 = (nCylinders2 / divider2);
-        dutyCycle2 = (rpm < 100 ? 0 : 100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
+            throttle = (TableManager.INSTANCE.table(tpsADC, "throttlefactor.inc"));
+            advSpark = ((advance * 0.352) - 10);
+            // ; Enhanced Stuff
+            KnockAng = ((KnockAngle * 90 / 256));
+            KnockDeg = (-KnockAng);
+            CltIatAng = (CltIatAngle * 90 / 256);
+            fuelvolt = (fuelADC < 1 ? 0.0 : fuelADC * (5 / 255) - 0.5);
+            fuelpress = (fuelADC < 1 ? 0.0 : fuelvolt / 0.04 + 1);
+            altDiv1 = (alternate1 != 0 ? 2 : 1);
+            altDiv2 = (alternate2 != 0 ? 2 : 1);
+            cycleTime1 = (rpm < 100 ? 0 : 60000.0 / rpm * (2.0 - twoStroke1));
+            nSquirts1 = (nCylinders1 / divider1);
+            dutyCycle1 = (rpm < 100 ? 0 : 100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
+            cycleTime2 = (rpm < 100 ? 0 : 60000.0 / rpm * (2.0 - twoStroke2));
+            nSquirts2 = (nCylinders2 / divider2);
+            dutyCycle2 = (rpm < 100 ? 0 : 100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
 
-        // ; These next two are needed to make the runtime dialog look good.
-        veCurr = (veCurr1);
-        pulseWidth = (pulseWidth1);
+            // ; These next two are needed to make the runtime dialog look good.
+            veCurr = (veCurr1);
+            pulseWidth = (pulseWidth1);
 
-        iTimefull = ((iTimeX * 65536) + iTime);
-        RpmHitmp = (iTimefull > 0 ? (60000000 * (2.0 - twoStroke1)) / (iTimefull * nCylinders1) : 0);
-        // ; get rid of the 1 or 2 rpm display that seems to worry some users
-        RpmHiRes = (RpmHitmp > 20 ? RpmHitmp : 0);
+            iTimefull = ((iTimeX * 65536) + iTime);
+            RpmHitmp = (iTimefull > 0 ? (60000000 * (2.0 - twoStroke1)) / (iTimefull * nCylinders1) : 0);
+            // ; get rid of the 1 or 2 rpm display that seems to worry some users
+            RpmHiRes = (RpmHitmp > 20 ? RpmHitmp : 0);
 
-        // ; Vacuum and Boost Gauges
-        vacuum = ((barometer - map) * 0.2953007);// ; Calculate vacuum in
-                                                 // in-Hg.
-        boost = (map < barometer ? 0.0 : (map - barometer) * 0.1450377);// ;
-                                                                        // Calculate
-                                                                        // boost
-                                                                        // in
-                                                                        // PSIG.
-        boostVac = (map < barometer ? -vacuum : (map - barometer) * 0.1450377);
+            // ; Vacuum and Boost Gauges
+            vacuum = ((barometer - map) * 0.2953007);// ; Calculate vacuum in
+                                                     // in-Hg.
+            boost = (map < barometer ? 0.0 : (map - barometer) * 0.1450377);// ;
+                                                                            // Calculate
+                                                                            // boost
+                                                                            // in
+                                                                            // PSIG.
+            boostVac = (map < barometer ? -vacuum : (map - barometer) * 0.1450377);
 
-        floodclear = (tpsADC > 200 ? 1 : 0);// ; For flood clear indicator
-                                            // on main screen
+            floodclear = (tpsADC > 200 ? 1 : 0);// ; For flood clear indicator
+                                                // on main screen
 
-        //Now change to 2dp
-        boost = round(boost);
-        batteryVoltage = round(batteryVoltage);
-        coolant = round(coolant);
-        egoVoltage = round(egoVoltage);
-        ego2Voltage = round(ego2Voltage);
-        mat = round(mat);
-        time = round(time);
-        egttemp = round(egttemp);
-        lambda2 = round(lambda2);
-        afr2 = round(afr2);
-        advSpark = round(advSpark);
-        fuelvolt = round(fuelvolt);
-        fuelpress = round(fuelpress);
-        cycleTime1 = round(cycleTime1);
-        dutyCycle1 = round(dutyCycle1);
-        cycleTime2 = round(cycleTime2);
-        dutyCycle2 = round(dutyCycle2);
-        RpmHitmp = round(RpmHitmp);
-        RpmHiRes = round(RpmHiRes);
-        vacuum = round(vacuum);
-        boostVac = round(boostVac);
+            // Now change to 2dp
+            boost = round(boost);
+            batteryVoltage = round(batteryVoltage);
+            coolant = round(coolant);
+            egoVoltage = round(egoVoltage);
+            ego2Voltage = round(ego2Voltage);
+            mat = round(mat);
+            time = round(time);
+            egttemp = round(egttemp);
+            lambda2 = round(lambda2);
+            afr2 = round(afr2);
+            advSpark = round(advSpark);
+            fuelvolt = round(fuelvolt);
+            fuelpress = round(fuelpress);
+            cycleTime1 = round(cycleTime1);
+            dutyCycle1 = round(dutyCycle1);
+            cycleTime2 = round(cycleTime2);
+            dutyCycle2 = round(dutyCycle2);
+            RpmHitmp = round(RpmHitmp);
+            RpmHiRes = round(RpmHiRes);
+            vacuum = round(vacuum);
+            boostVac = round(boostVac);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             throw new LostCommsException(e);
         }

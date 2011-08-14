@@ -10,58 +10,82 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 public enum ApplicationSettings
 {
-	INSTANCE;
-	
-	public static final String GENERAL_MESSAGE="uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
-	public static final String MESSAGE="uk.org.smithfamily.mslogger.MESSAGE";
-	private Context	context;
-	private File	dataDir;
-	private int	hertz;
-	private SharedPreferences prefs;
-	private Megasquirt ecuDefinition;
-	private MsComm	comms;
-	public void initialise(Context context)
-	{
-		this.context = context;
-		
-		prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    INSTANCE;
 
-        dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
+    private static final String NONE_SELECTED = "NONE_SELECTED";
+    public static final String GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
+    public static final String MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
+    private Context            context;
+    private File               dataDir;
+    private int                hertz;
+    private SharedPreferences  prefs;
+    private Megasquirt         ecuDefinition;
+    private MsComm             comms;
+    private String             bluetoothMac;
+
+    public void initialise(Context context)
+    {
+        this.context = context;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
+                context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 10);
         comms = new SerialComm();
 
-	}
-	public File getDataDir()
-	{
-		return dataDir;
-	}
-	public Context getContext()
-	{
-		return context;
-	}
-	public int getHertz()
-	{
-		return hertz;
-	}
-	public synchronized Megasquirt getEcuDefinition()
-	{
-		if(ecuDefinition != null)
-		{
-			return ecuDefinition;
-		}
-		String ecuName = prefs.getString("mstype", "MS1Extra");
-		if(ecuName.equals("MS1Extra"))
-		{
-			ecuDefinition = new MS1Extra29y(context);
-		}
-		return ecuDefinition;
-	}
-	public MsComm getComms()
-	{
-		return comms;
-	}
+    }
+
+    public File getDataDir()
+    {
+        return dataDir;
+    }
+
+    public Context getContext()
+    {
+        return context;
+    }
+
+    public int getHertz()
+    {
+        return hertz;
+    }
+
+    public synchronized Megasquirt getEcuDefinition()
+    {
+        if (ecuDefinition != null)
+        {
+            return ecuDefinition;
+        }
+        String ecuName = prefs.getString("mstype", "MS1Extra");
+        if (ecuName.equals("MS1Extra"))
+        {
+            ecuDefinition = new MS1Extra29y(context);
+        }
+        return ecuDefinition;
+    }
+
+    public synchronized String getBluetoothMac()
+    {
+        if(bluetoothMac != null)
+        {
+            return bluetoothMac;
+        }
+        bluetoothMac = prefs.getString("bluetooth_mac", NONE_SELECTED);
+        if(NONE_SELECTED.equals(bluetoothMac))
+        {
+            Toast.makeText(context, "Please select your serial Bluetooth dongle", Toast.LENGTH_LONG).show();
+        }
+        return bluetoothMac;
+    }
+
+    public MsComm getComms()
+    {
+        return comms;
+    }
 }
