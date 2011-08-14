@@ -11,13 +11,7 @@ public class SocketComm extends MsComm
     public SocketComm()
     {
     }
-
-    @Override
-    public int port()
-    {
-        return super.port();
-    }
-
+ 
     @Override
     protected boolean openDevice()
     {
@@ -33,12 +27,12 @@ public class SocketComm extends MsComm
         catch (UnknownHostException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return isConnected();
     }
@@ -56,7 +50,7 @@ public class SocketComm extends MsComm
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return !isConnected();
     }
