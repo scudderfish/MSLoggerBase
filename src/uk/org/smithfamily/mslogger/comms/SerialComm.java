@@ -1,11 +1,10 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.UUID;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -42,7 +41,7 @@ public class SerialComm extends MsComm
 		catch (IOException e)
 		{
 			Log.e("BT", "IOException", e);
-			e.printStackTrace(System.out);
+			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
 			return false;
 		}
 		return true;
@@ -66,7 +65,7 @@ public class SerialComm extends MsComm
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace(System.out);
+			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
 		}
 
 		return true;

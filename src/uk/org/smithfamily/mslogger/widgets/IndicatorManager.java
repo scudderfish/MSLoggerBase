@@ -10,7 +10,15 @@ public enum IndicatorManager
     INSTANCE;
     private Map<String, List<Indicator>> indicatorMap = new HashMap<String, List<Indicator>>();
     private List<Indicator> indicatorList = new ArrayList<Indicator>();
-    
+    private boolean disabled = false;
+    public void setDisabled(boolean d)
+    {
+    	for(Indicator i : indicatorList)
+    	{
+    		i.setDisabled(d);
+    	}
+    	disabled = d;
+    }
     void registerIndicator(Indicator i)
     {
     	indicatorList.add(i);
@@ -21,6 +29,7 @@ public enum IndicatorManager
             indicatorMap.put(i.getChannel(), indicators);
         }
         indicators.add(i);
+        i.setDisabled(disabled);
     }
 
     void deregisterIndicator(Indicator i)

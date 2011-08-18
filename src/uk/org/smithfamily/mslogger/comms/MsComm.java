@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.Observable;
 import java.util.concurrent.*;
 
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
 public abstract class MsComm extends Observable
 {
 
@@ -37,7 +39,7 @@ public abstract class MsComm extends Observable
         }
         catch (InterruptedException e)
         { // TODO Auto-generated catch block
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
         }
 
     }
@@ -66,7 +68,7 @@ public abstract class MsComm extends Observable
         catch (IOException e)
         {
 
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
         }
     }
 
@@ -84,7 +86,7 @@ public abstract class MsComm extends Observable
                 catch (LostCommsException e)
                 {
                     // TODO Auto-generated catch block
-                    e.printStackTrace(System.out);
+                    e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
                 }
                 return true;
             }
@@ -154,7 +156,7 @@ public abstract class MsComm extends Observable
         }
         catch (IOException e)
         {
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
             close();
             ok = false;
         }
@@ -184,7 +186,7 @@ public abstract class MsComm extends Observable
         catch (IOException e)
         {
 
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
             close();
             return "";
         }

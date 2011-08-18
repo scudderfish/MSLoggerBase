@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
 
 public class SocketComm extends MsComm
 {
@@ -27,12 +29,12 @@ public class SocketComm extends MsComm
         catch (UnknownHostException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
         }
         return isConnected();
     }
@@ -50,7 +52,7 @@ public class SocketComm extends MsComm
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-            e.printStackTrace(System.out);
+            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
         }
         return !isConnected();
     }

@@ -895,4 +895,12 @@ public final class Gauge extends View implements Indicator
         IndicatorManager.INSTANCE.deregisterIndicator(this);
 
     }
+
+
+	@Override
+	public void setDisabled(boolean disabled)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
