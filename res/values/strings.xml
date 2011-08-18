@@ -9,4 +9,8 @@
 	<string name="disconnected">Disconnected</string>
 	<string name="cannot_connect">Cannot connect to Megasquirt.</string>
 	<string name="interrupted">Initialisation interrupted</string>
+	<string name="AppSettings">AppSettings</string>
+	<string name="megasquirt">Megasquirt</string>
+	<string name="hertz">Hertz</string>
+	<string name="quit">Quit</string>
 </resources>
