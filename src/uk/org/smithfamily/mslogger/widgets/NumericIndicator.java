@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class NumericIndicator extends TextView implements Indicator
-
 {
 
 	private float			min;
@@ -181,5 +180,12 @@ public class NumericIndicator extends TextView implements Indicator
 
 		IndicatorManager.INSTANCE.deregisterIndicator(this);
 
+	}
+
+	@Override
+	public void setDisabled(boolean disabled)
+	{
+		this.disabled = disabled;
+		this.postInvalidate();
 	}
 }

@@ -3,7 +3,7 @@
 
 	<PreferenceCategory android:title="@string/AppSettings">
 		<EditTextPreference android:dialogTitle="Data Log Directory"
-			android:defaultValue="@string/app_name" android:key="DataDir"></EditTextPreference>
+			android:defaultValue="@string/app_name" android:key="DataDir" android:title="Log Directory"></EditTextPreference>
 		<ListPreference android:title="Temp. Unit"
 			android:entries="@array/tempent" android:entryValues="@array/tempvalues"
 			android:defaultValue="C"></ListPreference>

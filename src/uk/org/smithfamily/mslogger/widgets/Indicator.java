@@ -17,4 +17,6 @@ public interface Indicator
     public void setChannel(String channelName);
     
     public String getChannel();
+    
+    public void setDisabled(boolean disabled);
 }

@@ -1,10 +1,9 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 
 import android.content.Context;
@@ -15,43 +14,59 @@ import android.text.format.DateFormat;
 
 public enum DebugLogManager
 {
-    INSTANCE;
- 
-    private File       logFile;
-    private FileWriter os;
+	INSTANCE;
 
- 
-    private void createLogFile(Context context) throws IOException
-    {
+	private File		logFile;
+	private FileWriter	os;
+
+	private void createLogFile(Context context) throws IOException
+	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        File dir = new File(Environment.getExternalStorageDirectory(),prefs.getString("DataDir", context.getString(R.string.app_name)));
-        dir.mkdirs();
+		File dir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
+				context.getString(R.string.app_name)));
+		dir.mkdirs();
 
-        Date now = new Date();
+		Date now = new Date();
 
-        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".log";
+		String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".log";
 
-        logFile = new File(dir, fileName);
+		logFile = new File(dir, fileName);
 
-        os = new FileWriter(logFile, true);
+		os = new FileWriter(logFile, true);
 
-    }
+	}
 
-    public void log(String s,Context context)
-    {
-        try
-        {
-            if (logFile == null)
-                createLogFile(context);
+	public void log(String s, Context context)
+	{
+		try
+		{
+			if (logFile == null)
+				createLogFile(context);
 
-            os.write(System.currentTimeMillis() + ":" + s+"\n");
-            os.flush();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Could not write '" + s + "' to the log file : " + e.getLocalizedMessage());
-        }
-    }
+			os.write(System.currentTimeMillis() + ":" + s + "\n");
+			os.flush();
+		}
+		catch (IOException e)
+		{
+			System.err.println("Could not write '" + s + "' to the log file : " + e.getLocalizedMessage());
+		}
+	}
 
+	public PrintWriter getPrintWriter()
+	{
+		if (os == null)
+		{
+			try
+			{
+				createLogFile(ApplicationSettings.INSTANCE.getContext());
+			}
+			catch (IOException e)
+			{
+				System.err.println("Could not create the log file : " + e.getLocalizedMessage());
+			}
+		}
+		PrintWriter pw = new PrintWriter(os);
+		return pw;
+	}
 }
