@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="MSNames">
+		<item>MS1Extra</item>
+		<item>MS2Extra</item>
+	</string-array>
+	<string-array name="egotypes">
+		<item>NARROW_BAND_EGO</item>
+		<item>WB_1_0_LINEAR</item>
+		<item>WB_UNKNOWN</item>
+		<item>DIYWB_NON_LINEAR</item>
+		<item>DYNOJET_LINEAR</item>
+		<item>TECHEDGE_LINEAR</item>
+		<item>INNOVATE_1_2_LINEAR</item>
+		<item>INNOVATE_0_5_LINEAR</item>
+		<item>INNOVATE_LC1_DEFAULT</item>
+		<item>ZEITRONIX_NON_LINEAR</item>
+		<item>AEM_LINEAR</item>
+		<item>AEM_NON_LINEAR</item>
+		<item>NGK_AFX</item>
+	</string-array>
+	<string-array name="egonames">
+		<item>NARROW_BAND_EGO</item>
+		<item>WB_1_0_LINEAR</item>
+		<item>WB_UNKNOWN</item>
+		<item>DIYWB_NON_LINEAR</item>
+		<item>DYNOJET_LINEAR</item>
+		<item>TECHEDGE_LINEAR</item>
+		<item>INNOVATE_1_2_LINEAR</item>
+		<item>INNOVATE_0_5_LINEAR</item>
+		<item>INNOVATE_LC1_DEFAULT</item>
+		<item>ZEITRONIX_NON_LINEAR</item>
+		<item>AEM_LINEAR</item>
+		<item>AEM_NON_LINEAR</item>
+		<item>NGK_AFX</item>
+	</string-array>
+
+	<string-array name="maptypes">
+		<item>MPXH6300A</item>
+		<item>MPXH6400A</item>
+		<item>MPX4250</item>
+		<item>MPX4115</item>
+	</string-array>
+	
+	<string-array name="mapnames">
+		<item>MPXH6300A</item>
+		<item>MPXH6400A</item>
+		<item>MPX4250</item>
+		<item>MPX4115</item>
+	</string-array>
+
+	<string-array name="tempent">
+		<item>C</item>
+		<item>F</item>
+	</string-array>
+	
+	<string-array name="tempvalues">
+		<item>C</item>
+		<item>F</item>
+	</string-array>
+</resources>

@@ -63,7 +63,6 @@
 				dgs:rangeWarningMinValue="85"
 				dgs:rangeErrorMinValue="105"
 				dgs:channel="coolant"
-				
 			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 		</TableRow>
 		<TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content"
@@ -89,7 +88,6 @@
 				dgs:rangeWarningMinValue="25"
 				dgs:rangeErrorMinValue="55"
 				dgs:channel="mat"
-				
 			></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 			
 		</TableRow>
@@ -103,7 +101,6 @@
 				dgs:scaleMinValue="10"
 				dgs:scaleMaxValue="20"
 				dgs:channel="afr2"
-				
 				></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 
 			<TextView android:id="@+id/SparkLabel" style="@style/Label"
@@ -120,7 +117,7 @@
 
 		</TableRow>
 		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tableRow4">
-			<ToggleButton android:text="ToggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/toggleButton"></ToggleButton>
+			<ToggleButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/toggleButton" android:text="@string/start_logging"></ToggleButton>
 			<TextView android:layout_weight="1" android:layout_width="match_parent" android:text="" android:layout_height="wrap_content" android:id="@+id/messages"></TextView>
 		</TableRow>
 	</TableLayout>
