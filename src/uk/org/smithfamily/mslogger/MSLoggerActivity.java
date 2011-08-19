@@ -9,18 +9,34 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class MSLoggerActivity extends Activity
 {
+	private MSLoggerService		service;
 	private static final int	REQUEST_ENABLE_BT	= 0;
 	private BroadcastReceiver	updateReceiver		= new Reciever();
 	private IndicatorManager	indicatorManager;
-	private boolean				bluetoothOK			= false;
-	private Megasquirt			ecuDefinition;
+	private ToggleButton		button;
+
+	private final class MSServiceConnection implements ServiceConnection
+	{
+		public void onServiceConnected(ComponentName className, IBinder binder)
+		{
+			service = ((MSLoggerService.MSLoggerBinder) binder).getService();
+			Toast.makeText(MSLoggerActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+			service = null;
+		}
+	}
 
 	private final class LogButtonListener implements OnClickListener
 	{
@@ -36,11 +52,14 @@ public class MSLoggerActivity extends Activity
 		{
 			if (button.isChecked())
 			{
-				ApplicationSettings.INSTANCE.getEcuDefinition().startLogging();
+				startService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
+				doBindService();
 			}
 			else
 			{
-				ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
+				unbindService( mConnection);
+
+				stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
 			}
 		}
 	}
@@ -52,9 +71,6 @@ public class MSLoggerActivity extends Activity
 		{
 			if (intent.getAction().equals(Megasquirt.CONNECTED))
 			{
-				final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButton);
-				button.setChecked(false);
-				button.setOnClickListener(new LogButtonListener(button));
 				indicatorManager.setDisabled(false);
 			}
 
@@ -71,19 +87,28 @@ public class MSLoggerActivity extends Activity
 		}
 	}
 
+	private ServiceConnection	mConnection	= new MSServiceConnection();
+
+	void doBindService()
+	{
+		bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		super.onCreate(savedInstanceState);
+
 		ApplicationSettings.INSTANCE.initialise(this);
 		indicatorManager = IndicatorManager.INSTANCE;
-		ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.display);
 		indicatorManager.setDisabled(true);
-
-		super.onCreate(savedInstanceState);
+		button = (ToggleButton) findViewById(R.id.toggleButton);
+		button.setEnabled(false);
+		button.setOnClickListener(new LogButtonListener(button));
 
 		IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
 		registerReceiver(updateReceiver, connectedFilter);
@@ -95,10 +120,9 @@ public class MSLoggerActivity extends Activity
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (mBluetoothAdapter == null)
 		{
-			bluetoothOK = false;
 			return;
 		}
-		bluetoothOK = mBluetoothAdapter.isEnabled();
+		boolean bluetoothOK = mBluetoothAdapter.isEnabled();
 		if (!bluetoothOK)
 		{
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -106,7 +130,7 @@ public class MSLoggerActivity extends Activity
 		}
 		else
 		{
-			ecuDefinition.start();
+			button.setEnabled(true);
 		}
 	}
 
@@ -120,7 +144,7 @@ public class MSLoggerActivity extends Activity
 				String channelName = i.getChannel();
 				if (channelName != null)
 				{
-					double value = ecuDefinition.getValue(channelName);
+					double value = service.getValue(channelName);
 					i.setCurrentValue(value);
 				}
 				else
@@ -162,7 +186,6 @@ public class MSLoggerActivity extends Activity
 	@Override
 	protected void onDestroy()
 	{
-		ecuDefinition.stop();
 		super.onDestroy();
 	}
 
@@ -170,12 +193,11 @@ public class MSLoggerActivity extends Activity
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_ENABLE_BT)
+		if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK)
 		{
-			if (resultCode == RESULT_OK)
+			if (button != null)
 			{
-				bluetoothOK = true;
-				ecuDefinition.start();
+				button.setEnabled(true);
 			}
 		}
 	}

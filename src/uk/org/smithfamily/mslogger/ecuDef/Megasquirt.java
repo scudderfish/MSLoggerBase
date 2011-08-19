@@ -67,7 +67,9 @@ public abstract class Megasquirt implements Runnable
 	public void stop()
 	{
 		running = false;
+		controller.interrupt();
 		controller = null;
+		sendMessage("");
 	}
 
 	public void setRunning(boolean r)
