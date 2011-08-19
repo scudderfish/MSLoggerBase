@@ -28,13 +28,11 @@ public class SocketComm extends MsComm
         }
         catch (UnknownHostException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
         }
         return isConnected();
     }
@@ -51,8 +49,7 @@ public class SocketComm extends MsComm
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
         }
         return !isConnected();
     }

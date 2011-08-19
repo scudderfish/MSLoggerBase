@@ -5,10 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import android.text.format.DateFormat;
-
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import android.text.format.DateFormat;
 
 public enum DatalogManager
 {

@@ -41,7 +41,7 @@ public class SerialComm extends MsComm
 		catch (IOException e)
 		{
 			Log.e("BT", "IOException", e);
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 			return false;
 		}
 		return true;
@@ -65,7 +65,7 @@ public class SerialComm extends MsComm
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 
 		return true;

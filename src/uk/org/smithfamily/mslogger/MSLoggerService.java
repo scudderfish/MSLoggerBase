@@ -18,7 +18,7 @@ public class MSLoggerService extends Service
 		}
 	}
 
-	private final IBinder	mBinder		= new MSLoggerBinder();
+	private final IBinder	mBinder	= new MSLoggerBinder();
 	private Megasquirt		ecuDefinition;
 
 	@Override
@@ -63,14 +63,14 @@ public class MSLoggerService extends Service
 
 	public void startLogging()
 	{
-		Toast.makeText(this, "Connecting to MS...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
 		connect();
 		ecuDefinition.start();
 	}
 
 	public void stopLogging()
 	{
-		Toast.makeText(this, "Disconnecting from MS...", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
 		ecuDefinition.stop();
 	}
 }

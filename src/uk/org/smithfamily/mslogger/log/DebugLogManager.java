@@ -53,7 +53,7 @@ public enum DebugLogManager
 		}
 	}
 
-	public PrintWriter getPrintWriter()
+	public void logException(Exception ex)
 	{
 		if (os == null)
 		{
@@ -67,6 +67,6 @@ public enum DebugLogManager
 			}
 		}
 		PrintWriter pw = new PrintWriter(os);
-		return pw;
+		ex.printStackTrace(pw);
 	}
 }
