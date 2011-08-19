@@ -597,7 +597,7 @@ public final class Gauge extends View implements Indicator
 
     private void drawHand(Canvas canvas)
     {
-        if (dialInitialized && !this.isInEditMode())
+        if (!disabled && dialInitialized && !this.isInEditMode())
         {
             float angle = valueToAngle(currentValue);
 

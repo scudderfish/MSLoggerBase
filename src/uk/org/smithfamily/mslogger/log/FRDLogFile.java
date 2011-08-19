@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.log;
 
+
 public class FRDLogFile 
 {
 	private FRDLogFileHeader	header	= new FRDLogFileHeader(this);

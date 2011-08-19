@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.comms;
 
+
 public class LostCommsException extends Exception
 {
 

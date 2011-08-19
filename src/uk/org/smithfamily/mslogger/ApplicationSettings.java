@@ -88,4 +88,19 @@ public enum ApplicationSettings
     {
         return comms;
     }
+
+    //This method mimics the C style preprocessor of INI files
+	public boolean isSet(String name)
+	{
+		if(prefs.getString("mstype", "NotThisOne").equals(name))
+			return true;
+		
+		if(prefs.getString("maptype", "NotThisOne").equals(name))
+			return true;
+		
+		if(prefs.getString("egotype", "NotThisOne").equals(name))
+			return true;
+		
+		return false;
+	}
 }

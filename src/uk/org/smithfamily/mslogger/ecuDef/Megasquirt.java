@@ -188,7 +188,7 @@ public abstract class Megasquirt implements Runnable
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 	}
 
@@ -201,8 +201,7 @@ public abstract class Megasquirt implements Runnable
 		}
 		catch (LostCommsException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 
 	}
@@ -224,7 +223,7 @@ public abstract class Megasquirt implements Runnable
 		}
 		catch (InterruptedException e)
 		{
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 
 	}
@@ -353,8 +352,7 @@ public abstract class Megasquirt implements Runnable
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 		return value;
 	}
@@ -397,5 +395,10 @@ public abstract class Megasquirt implements Runnable
 	protected double round(double v)
 	{
 		return Math.floor(v * 100 + .5) / 100;
+	}
+
+	protected boolean isSet(String name)
+	{
+		return ApplicationSettings.INSTANCE.isSet(name);
 	}
 }

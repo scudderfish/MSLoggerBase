@@ -50,12 +50,12 @@
 	</string-array>
 
 	<string-array name="tempent">
-		<item>C</item>
-		<item>F</item>
+		<item>Celsius</item>
+		<item>Farenheit</item>
 	</string-array>
 	
 	<string-array name="tempvalues">
-		<item>C</item>
-		<item>F</item>
+		<item>CELSIUS</item>
+		<item>FARENHEIT</item>
 	</string-array>
 </resources>

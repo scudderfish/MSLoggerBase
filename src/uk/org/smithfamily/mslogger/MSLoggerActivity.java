@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class MSLoggerActivity extends Activity
@@ -29,7 +28,6 @@ public class MSLoggerActivity extends Activity
 		public void onServiceConnected(ComponentName className, IBinder binder)
 		{
 			service = ((MSLoggerService.MSLoggerBinder) binder).getService();
-			Toast.makeText(MSLoggerActivity.this, "Connected", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onServiceDisconnected(ComponentName className)

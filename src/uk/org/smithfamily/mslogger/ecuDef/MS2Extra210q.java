@@ -1,7 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import android.content.Context;
 import uk.org.smithfamily.mslogger.comms.LostCommsException;
+import android.content.Context;
 
 public class MS2Extra210q extends Megasquirt
 {
@@ -270,12 +270,6 @@ public class MS2Extra210q extends Megasquirt
 			}
 		}
 
-	}
-
-	private boolean isSet(String string)
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	private void setupRuntime(byte[] ochBuffer)

@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-
 import android.content.res.AssetManager;
 
 public enum TableManager
@@ -69,7 +68,7 @@ public enum TableManager
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace(DebugLogManager.INSTANCE.getPrintWriter());
+			DebugLogManager.INSTANCE.logException(e);
 		}
 	}
 

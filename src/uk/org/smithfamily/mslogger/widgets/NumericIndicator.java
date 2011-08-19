@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -18,7 +17,7 @@ public class NumericIndicator extends TextView implements Indicator
 	private float			warningPoint;
 	private float			errorPoint;
 	private float			value;
-	private Typeface		font;
+//	private Typeface		font;
 	private int				dp;
 	private NumberFormat	formatter;
 	private String			channel;
@@ -89,14 +88,14 @@ public class NumericIndicator extends TextView implements Indicator
 		formatter.setMinimumFractionDigits(dp);
 		this.setText(formatter.format(this.value));
 	}
-
+/*
 	private void setFont(Context context)
 	{
 		this.font = Typeface.createFromAsset(context.getAssets(), "fonts/digital_lcd.ttf");
 		this.setTypeface(font);
 
 	}
-
+*/
 	public void setMin(float min)
 	{
 		this.min = min;
