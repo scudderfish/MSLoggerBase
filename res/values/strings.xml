@@ -21,4 +21,6 @@
 	<string name="ego_sensor">EGO Sensor</string>
 	<string name="temp_unit">Temp. Unit</string>
 	<string name="data_log_directory">Data Log Directory</string>
+	<string name="mslogger_is_running">MSLogger is running</string>
+	<string name="logging_to">Logging to %s</string>
 </resources>
