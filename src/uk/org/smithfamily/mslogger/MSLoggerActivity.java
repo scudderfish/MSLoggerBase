@@ -105,7 +105,7 @@ public class MSLoggerActivity extends Activity
 		setContentView(R.layout.display);
 		indicatorManager.setDisabled(true);
 		button = (ToggleButton) findViewById(R.id.toggleButton);
-		button.setEnabled(false);
+		button.setEnabled(MSLoggerService.isCreated());
 		button.setOnClickListener(new LogButtonListener(button));
 
 		IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
