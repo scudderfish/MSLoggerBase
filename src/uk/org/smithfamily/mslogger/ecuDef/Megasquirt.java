@@ -44,6 +44,9 @@ public abstract class Megasquirt implements Runnable
 
 	public abstract int getInterWriteDelay();
 
+	public abstract int getCurrentTPS();
+
+
 	private long				lastTime	= System.currentTimeMillis();
 
 	private volatile boolean	running		= false;

@@ -26,7 +26,7 @@ public enum ApplicationSettings
     private Megasquirt         ecuDefinition;
     private MsComm             comms;
     private String             bluetoothMac;
-
+	
     public void initialise(Context context)
     {
         this.context = context;
@@ -37,6 +37,7 @@ public enum ApplicationSettings
                 context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 10);
+        
         comms = new SerialComm();
 
     }

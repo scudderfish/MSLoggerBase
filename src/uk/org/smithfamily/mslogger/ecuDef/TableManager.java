@@ -15,20 +15,25 @@ public enum TableManager
 
 	private Map<String, List<Integer>>	tables	= new HashMap<String, List<Integer>>();
 
-	public int table(int i1, String s2)
+	public synchronized void flushTable(String name)
 	{
-		List<Integer> table = tables.get(s2);
+		tables.remove(name);
+	}
+
+	public synchronized int table(int i1, String name)
+	{
+		List<Integer> table = tables.get(name);
 		if (table == null)
 		{
 			table = new ArrayList<Integer>();
-			readTable(s2, table);
-			tables.put(s2, table);
+			readTable(name, table);
+			tables.put(name, table);
 		}
 		return table.get(i1);
 
 	}
 
-	public void readTable(String fileName, List<Integer> values)
+	private void readTable(String fileName, List<Integer> values)
 	{
 		values.clear();
 		Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");

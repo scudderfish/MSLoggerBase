@@ -327,4 +327,10 @@ public class MS1Extra29y extends Megasquirt
         nCylinders2 = getBits(pageBuffer, 182, 4, 7) + 1;
         divider2 = pageBuffer[149];
     }
+
+	@Override
+	public int getCurrentTPS()
+	{
+		return tpsADC;
+	}
 }
