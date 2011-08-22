@@ -500,4 +500,11 @@ public class MS2Extra210q extends Megasquirt
 		return 5;
 	}
 
+	@Override
+	public int getCurrentTPS()
+	{
+		return tpsADC;
+	}
+
+
 }
