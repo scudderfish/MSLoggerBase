@@ -23,4 +23,5 @@
 	<string name="data_log_directory">Data Log Directory</string>
 	<string name="mslogger_is_running">MSLogger is running</string>
 	<string name="logging_to">Logging to %s</string>
+	<string name="CalibrateTPS">Calibrate TPS</string>
 </resources>

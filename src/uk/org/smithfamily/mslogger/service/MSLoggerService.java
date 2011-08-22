@@ -1,5 +1,10 @@
-package uk.org.smithfamily.mslogger;
+package uk.org.smithfamily.mslogger.service;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.R.drawable;
+import uk.org.smithfamily.mslogger.R.string;
+import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import android.app.*;
@@ -16,7 +21,7 @@ public class MSLoggerService extends Service
 
 	public class MSLoggerBinder extends Binder
 	{
-		MSLoggerService getService()
+		public MSLoggerService getService()
 		{
 			return MSLoggerService.this;
 		}

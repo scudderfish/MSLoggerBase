@@ -1,8 +1,14 @@
-package uk.org.smithfamily.mslogger;
+package uk.org.smithfamily.mslogger.activity;
 
 import java.util.List;
 
+import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.R.id;
+import uk.org.smithfamily.mslogger.R.layout;
+import uk.org.smithfamily.mslogger.R.menu;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.service.MSLoggerService;
+import uk.org.smithfamily.mslogger.service.MSLoggerService.MSLoggerBinder;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
@@ -101,7 +107,6 @@ public class MSLoggerActivity extends Activity
 		ApplicationSettings.INSTANCE.initialise(this);
 		indicatorManager = IndicatorManager.INSTANCE;
 
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.display);
 		indicatorManager.setDisabled(true);
 		button = (ToggleButton) findViewById(R.id.toggleButton);
@@ -170,9 +175,18 @@ public class MSLoggerActivity extends Activity
 		case R.id.preferences:
 			openPreferences();
 			return true;
+		case R.id.calibrate:
+			openCalibrateTPS();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void openCalibrateTPS()
+	{
+		Intent launchCalibrate = new Intent(this,CalibrateActivity.class);
+		startActivity(launchCalibrate);
 	}
 
 	private void openPreferences()

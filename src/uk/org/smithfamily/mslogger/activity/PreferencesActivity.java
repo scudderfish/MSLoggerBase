@@ -1,8 +1,9 @@
-package uk.org.smithfamily.mslogger;
+package uk.org.smithfamily.mslogger.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.R.xml;
 
 public class PreferencesActivity extends PreferenceActivity
 {

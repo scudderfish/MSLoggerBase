@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<TextView android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_height="wrap_content" android:layout_width="wrap_content"
+		android:text="Calibrate TPS" android:layout_alignParentLeft="true"
+		android:id="@+id/calibrateTPSLabel" />
+	<ProgressBar android:layout_height="wrap_content"
+		style="?android:attr/progressBarStyleHorizontal" android:id="@+id/TPSPosition"
+		android:layout_width="match_parent" android:layout_alignParentLeft="true"
+		android:layout_below="@id/calibrateTPSLabel" android:progress="127"
+		android:max="255" />
+
+	<TableLayout android:layout_below="@+id/TPSPosition"
+		android:layout_height="wrap_content" android:id="@+id/tableLayout1"
+		android:layout_width="wrap_content" android:layout_centerHorizontal="true">
+		<TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_margin="5dip">
+			<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:id="@+id/MinLabel" android:text="Minimum Value"/>
+			<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:id="@+id/MinValue" android:text="127" android:layout_marginLeft="5dip"/>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_margin="5dip">
+			<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:id="@+id/MaxLabel" android:text="Maximum Value" />
+			<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:id="@+id/MaxValue" android:text="127" android:layout_marginLeft="5dip"/>
+
+		</TableRow>
+	</TableLayout>
+
+	<Button android:text="Confirm" android:layout_below="@id/tableLayout1" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_centerHorizontal="true" android:id="@+id/ConfirmButton"/>
+
+
+</RelativeLayout>
