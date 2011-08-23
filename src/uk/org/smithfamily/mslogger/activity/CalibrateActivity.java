@@ -1,8 +1,13 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.TableManager;
 import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
@@ -14,6 +19,17 @@ import android.widget.TextView;
 
 public class CalibrateActivity extends Activity
 {
+	private static final String	THROTTLEFACTOR_INC	= "throttlefactor.inc";
+
+	private static final String	HEADER	=          
+		"; MSLogger-generated Linear Throttle Calibration\n" +
+        "; Written on %s\n" +
+        ";\n" +
+        ";   Low ADC = %d    High ADC = %d\n" +
+        ";\n" +
+        "THROTTLEFACTOR:\n" +
+        "\t\t\t; ADC" ;
+
 	private int			minTPS	= 256;
 	private int			maxTPS	= 0;
 	private TextView	minValView;
@@ -76,8 +92,41 @@ public class CalibrateActivity extends Activity
 
 	private void saveValues()
 	{
-		// TODO Auto-generated method stub
-
+		File  dataFile=new File(ApplicationSettings.INSTANCE.getDataDir(),THROTTLEFACTOR_INC);
+		
+		try
+		{
+			PrintWriter pw = new PrintWriter(new FileWriter(dataFile));
+			String now = SimpleDateFormat.getDateTimeInstance().format(new Date());
+			String header = String.format(HEADER,now,minTPS,maxTPS);
+			
+			pw.println(header);
+			
+			for(int x=0;x<256;x++)
+			{
+				pw.println(String.format("\tDB\t%3dT\t; %3d", getPercentage(x),x));
+			}
+			pw.close();
+			TableManager.INSTANCE.flushTable(THROTTLEFACTOR_INC);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	private int getPercentage(int x)
+	{
+		if (x <= minTPS)
+		{
+			return 0;
+		}
+		if (x >= maxTPS)
+		{
+			return 100;
+		}
+		return (x - minTPS) * 100 / (maxTPS - minTPS);
+
+	}
 }
