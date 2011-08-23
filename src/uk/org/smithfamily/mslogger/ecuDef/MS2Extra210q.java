@@ -172,17 +172,28 @@ public class MS2Extra210q extends Megasquirt
 	}
 
 	@Override
-	public void loadConstants() throws LostCommsException
+	public void loadConstants(boolean simulated) throws LostCommsException
 	{
-		byte[] pageBuffer = new byte[1024];
 
-		byte[] selectPage1 = { 114, 0, 4, 0, 0, 4, 0 };
-	
-		getPage(pageBuffer, selectPage1, null);
-		alternate = getBits(pageBuffer, 611, 0, 0);
-		twoStroke = getBits(pageBuffer, 617, 0, 0);
-		nCylinders = getBits(pageBuffer, 0, 0, 3);
-		divider = getByte(pageBuffer, 610);
+		if (simulated)
+		{
+			alternate=1;
+			twoStroke=0;
+			nCylinders=8;
+			divider=1;
+		}
+		else
+		{
+			byte[] pageBuffer = new byte[1024];
+
+			byte[] selectPage1 = { 114, 0, 4, 0, 0, 4, 0 };
+
+			getPage(pageBuffer, selectPage1, null);
+			alternate = getBits(pageBuffer, 611, 0, 0);
+			twoStroke = getBits(pageBuffer, 617, 0, 0);
+			nCylinders = getBits(pageBuffer, 0, 0, 3);
+			divider = getByte(pageBuffer, 610);
+		}
 	}
 
 	@Override
@@ -505,6 +516,5 @@ public class MS2Extra210q extends Megasquirt
 	{
 		return tpsADC;
 	}
-
 
 }

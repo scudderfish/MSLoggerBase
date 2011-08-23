@@ -1,6 +1,5 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +15,8 @@ import android.content.Intent;
 
 public abstract class Megasquirt implements Runnable
 {
+	private boolean				simulated	= true;
+
 	private Thread				controller;
 
 	public static final String	NEW_DATA	= "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
@@ -30,7 +31,7 @@ public abstract class Megasquirt implements Runnable
 
 	public abstract byte[] getSigCommand();
 
-	public abstract void loadConstants() throws LostCommsException;
+	public abstract void loadConstants(boolean simulated) throws LostCommsException;
 
 	public abstract void calculate(byte[] ochBuffer) throws LostCommsException;
 
@@ -45,7 +46,6 @@ public abstract class Megasquirt implements Runnable
 	public abstract int getInterWriteDelay();
 
 	public abstract int getCurrentTPS();
-
 
 	private long				lastTime	= System.currentTimeMillis();
 
@@ -93,7 +93,7 @@ public abstract class Megasquirt implements Runnable
 				loadConstantsWithTimeout();
 				while (running)
 				{
-					comm.flush();
+					flushComms();
 					getRuntimeVars();
 					calculateValues();
 					logValues();
@@ -114,6 +114,14 @@ public abstract class Megasquirt implements Runnable
 
 	}
 
+	private void flushComms() throws LostCommsException
+	{
+		if(simulated)
+			return;
+		
+		comm.flush();
+	}
+
 	private void handleLostConnection(LostCommsException e)
 	{
 		sendMessage("Lost connection to Megasquirt : " + e.getLocalizedMessage());
@@ -122,12 +130,20 @@ public abstract class Megasquirt implements Runnable
 
 	private void verifySignature() throws LostCommsException
 	{
+		boolean connected = false;
 		String msSig = null;
-		byte[] sigCommand = this.getSigCommand();
-		sendMessage("Verifying MS");
-		msSig = comm.getSignature(sigCommand);
-		String signature = getSignature();
-		boolean connected = signature.equals(msSig);
+		if (simulated)
+		{
+			connected = true;
+		}
+		else
+		{
+			byte[] sigCommand = this.getSigCommand();
+			sendMessage("Verifying MS");
+			msSig = comm.getSignature(sigCommand);
+			String signature = getSignature();
+			connected = signature.equals(msSig);
+		}
 		if (connected)
 		{
 			broadcastConnected();
@@ -144,20 +160,24 @@ public abstract class Megasquirt implements Runnable
 		comm.setInterWriteDelay(getInterWriteDelay());
 		ochBuffer = new byte[this.getBlockSize()];
 
-		comm.openConnection();
+		if (!simulated)
+		{
+			comm.openConnection();
+		}
 
 	}
 
 	private void loadConstantsWithTimeout() throws LostCommsException
 	{
 		sendMessage("Loading constants...");
+		
 		boolean constantsLoaded = false;
 		int counter = 0;
 		do
 		{
 			try
 			{
-				loadConstants();
+				loadConstants(simulated);
 				sendMessage("Constants loaded");
 				constantsLoaded = true;
 			}
@@ -197,6 +217,8 @@ public abstract class Megasquirt implements Runnable
 
 	private void disconnect()
 	{
+		if(simulated)
+			return;
 		try
 		{
 			comm.flush();
@@ -240,7 +262,7 @@ public abstract class Megasquirt implements Runnable
 		{
 			delay(pauseTime);
 		}
-
+		lastTime = now;
 	}
 
 	private void broadcastConnected()
@@ -264,6 +286,11 @@ public abstract class Megasquirt implements Runnable
 
 	private void getRuntimeVars() throws LostCommsException
 	{
+		if(simulated)
+		{
+			MSSimulator.INSTANCE.getNextRTV(ochBuffer);
+			return;
+		}
 		comm.write(this.getOchCommand());
 		comm.readWithTimeout(ochBuffer, 1, TimeUnit.SECONDS);
 	}
