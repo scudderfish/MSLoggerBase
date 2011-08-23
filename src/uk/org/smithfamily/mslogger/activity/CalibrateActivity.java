@@ -17,6 +17,7 @@ public class CalibrateActivity extends Activity
 	private int			minTPS	= 256;
 	private int			maxTPS	= 0;
 	private TextView	minValView;
+	private TextView	curValView;
 	private TextView	maxValView;
 	private ProgressBar	tpsDisplay;
 
@@ -38,6 +39,7 @@ public class CalibrateActivity extends Activity
 			}
 		});
 		minValView = (TextView) findViewById(R.id.MinValue);
+		curValView = (TextView) findViewById(R.id.CurrentValue);
 		maxValView = (TextView) findViewById(R.id.MaxValue);
 		tpsDisplay = (ProgressBar) findViewById(R.id.TPSPosition);
 
@@ -66,6 +68,7 @@ public class CalibrateActivity extends Activity
 			maxTPS = raw;
 		}
 		minValView.setText(Integer.toString(minTPS));
+		curValView.setText(Integer.toString(raw));
 		maxValView.setText(Integer.toString(maxTPS));
 		tpsDisplay.setMax(maxTPS - minTPS);
 		tpsDisplay.setProgress(raw - minTPS);
