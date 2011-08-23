@@ -2,8 +2,6 @@ package uk.org.smithfamily.mslogger.service;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.R.drawable;
-import uk.org.smithfamily.mslogger.R.string;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;

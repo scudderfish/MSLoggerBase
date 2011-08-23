@@ -2,13 +2,10 @@ package uk.org.smithfamily.mslogger.activity;
 
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.*;
-import uk.org.smithfamily.mslogger.R.id;
-import uk.org.smithfamily.mslogger.R.layout;
-import uk.org.smithfamily.mslogger.R.menu;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
-import uk.org.smithfamily.mslogger.service.MSLoggerService.MSLoggerBinder;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
