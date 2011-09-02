@@ -5,20 +5,25 @@ import java.util.*;
 public enum IndicatorManager
 {
     INSTANCE;
-    private Map<String, List<Indicator>> indicatorMap = new HashMap<String, List<Indicator>>();
-    private List<Indicator> indicatorList = new ArrayList<Indicator>();
-    private boolean disabled = false;
+    private Map<String, List<Indicator>> indicatorMap  = new HashMap<String, List<Indicator>>();
+    private List<Indicator>              indicatorList = new ArrayList<Indicator>();
+    private boolean                      disabled      = false;
+
     public void setDisabled(boolean d)
     {
-    	for(Indicator i : indicatorList)
-    	{
-    		i.setDisabled(d);
-    	}
-    	disabled = d;
+        if (d != disabled)
+        {
+            for (Indicator i : indicatorList)
+            {
+                i.setDisabled(d);
+            }
+        }
+        disabled = d;
     }
+
     void registerIndicator(Indicator i)
     {
-    	indicatorList.add(i);
+        indicatorList.add(i);
         List<Indicator> indicators = indicatorMap.get(i.getChannel());
         if (indicators == null)
         {
@@ -31,7 +36,7 @@ public enum IndicatorManager
 
     void deregisterIndicator(Indicator i)
     {
-    	indicatorList.remove(i);
+        indicatorList.remove(i);
         List<Indicator> indicators = indicatorMap.get(i.getChannel());
         if (indicators == null)
         {
@@ -46,9 +51,10 @@ public enum IndicatorManager
         List<Indicator> indicators = indicatorMap.get(channel);
         return indicators;
     }
+
     public List<Indicator> getIndicators()
     {
-    	return indicatorList;
+        return indicatorList;
     }
 
 }
