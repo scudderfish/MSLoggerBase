@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.comms;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -23,7 +24,7 @@ public class SocketComm extends MsComm
         {
             s = new Socket("192.168.1.192", 7893);
             os = s.getOutputStream();
-            is = s.getInputStream();
+            is = new BufferedInputStream(s.getInputStream());
             setConnected(true);
         }
         catch (UnknownHostException e)

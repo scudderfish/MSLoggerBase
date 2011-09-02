@@ -73,6 +73,7 @@ public abstract class Megasquirt implements Runnable
 		running = false;
 		controller.interrupt();
 		controller = null;
+		comm.close();
 		sendMessage("");
 	}
 
@@ -163,6 +164,7 @@ public abstract class Megasquirt implements Runnable
 
 		if (!simulated)
 		{
+		    comm.close();
 			comm.openConnection();
 		}
 
@@ -420,6 +422,7 @@ public abstract class Megasquirt implements Runnable
 		{
 			comm.write(pageReadCommand);
 		}
+		delay(getPageActivationDelay());
 		comm.readWithTimeout(pageBuffer, 1, TimeUnit.SECONDS);
 	}
 

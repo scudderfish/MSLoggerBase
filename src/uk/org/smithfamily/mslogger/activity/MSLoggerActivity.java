@@ -139,6 +139,7 @@ public class MSLoggerActivity extends Activity
 		List<Indicator> indicators;
 		if ((indicators = indicatorManager.getIndicators()) != null)
 		{
+		    indicatorManager.setDisabled(false);
 			for (Indicator i : indicators)
 			{
 				String channelName = i.getChannel();
