@@ -38,8 +38,7 @@ public enum TableManager
 		values.clear();
 		Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
 
-		String assetFileName = "tables" + File.separator + fileName;
-		File  override=new File(ApplicationSettings.INSTANCE.getDataDir(),fileName);
+		fileName = "tables" + File.separator + fileName;
 		AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
 
 		BufferedReader input = null;
@@ -47,17 +46,7 @@ public enum TableManager
 		{
 			try
 			{
-				InputStream data = null;
-				if(override.canRead())
-				{
-					data = new FileInputStream(override);
-				}
-				else
-				{
-					data = assetManager.open(assetFileName);
-				}
-				
-				input = new BufferedReader(new InputStreamReader(data));
+				input = new BufferedReader(new InputStreamReader(assetManager.open(fileName)));
 				String line;
 
 				while ((line = input.readLine()) != null)

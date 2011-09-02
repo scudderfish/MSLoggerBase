@@ -77,7 +77,7 @@ public class MSLoggerService extends Service
 
 	public void startLogging()
 	{
-		Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
+	    Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
 		connect();
 		ecuDefinition.start();
 		showNotification();

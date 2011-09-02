@@ -12,10 +12,11 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 
 public abstract class Megasquirt implements Runnable
 {
-	private boolean				simulated	= true;
+	private boolean				simulated	= false;
 
 	private Thread				controller;
 
@@ -83,7 +84,7 @@ public abstract class Megasquirt implements Runnable
 	public void run()
 	{
 		running = true;
-
+		Looper.prepare();
 		while (running)
 		{
 			try
