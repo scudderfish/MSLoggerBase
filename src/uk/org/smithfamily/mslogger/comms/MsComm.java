@@ -1,24 +1,25 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Observable;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 
 public abstract class MsComm extends Observable
 {
 
-    protected BufferedInputStream is;
-    protected OutputStream        os;
-    private boolean               connected       = false;
-    private boolean               writeBlocks     = false;
-    private int                   interWriteDelay = 0;
-    protected long                lastComms       = System.currentTimeMillis();
-    ExecutorService               executor        = Executors.newFixedThreadPool(1);
+    protected InputStream  is;
+    protected OutputStream os;
+    private boolean        connected       = false;
+    private boolean        writeBlocks     = false;
+    private int            interWriteDelay = 0;
+    protected long         lastComms       = System.currentTimeMillis();
+    ExecutorService        executor        = Executors.newFixedThreadPool(1);
 
     protected abstract boolean openDevice();
 
@@ -57,12 +58,14 @@ public abstract class MsComm extends Observable
 
     public synchronized void flush() throws LostCommsException
     {
-        testConnection();
+        if(os == null || is == null)
+            return;
+        
         try
         {
             os.flush();
             int cnt = 0;
-            while (cnt != -1)
+            while (is.available() > 0)
             {
                 cnt = is.read();
             }
@@ -73,10 +76,10 @@ public abstract class MsComm extends Observable
         }
     }
 
-   
     public synchronized void readWithTimeout(final byte[] bytes, long timeout, TimeUnit unit) throws LostCommsException
     {
-        testConnection();
+ /*
+         testConnection();
         FutureTask<Boolean> future = new FutureTask<Boolean>(new Callable<Boolean>()
         {
             public Boolean call()
@@ -102,6 +105,8 @@ public abstract class MsComm extends Observable
             throw new LostCommsException(e);
 
         }
+*/
+        read(bytes);
     }
 
     public synchronized void read(byte[] bytes) throws LostCommsException
@@ -206,7 +211,7 @@ public abstract class MsComm extends Observable
         notifyObservers();
     }
 
-    public synchronized  InputStream getIs()
+    public synchronized InputStream getIs()
     {
         return is;
     }
