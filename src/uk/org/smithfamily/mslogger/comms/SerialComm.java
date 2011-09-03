@@ -1,8 +1,8 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -25,55 +25,43 @@ public class SerialComm extends MsComm
 
     synchronized boolean init()
     {
+        closeDevice(true);
         String btAddr = locateAdapter();
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        // IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 
-        // registerReceiver(mReceiver, filter); // Don't forget to unregister
-        // during onDestroy
-        // mBluetoothAdapter.startDiscovery();
         BluetoothDevice remote = mBluetoothAdapter.getRemoteDevice(btAddr);
         try
         {
             mBluetoothAdapter.cancelDiscovery();
             Method m = remote.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
-            sock = (BluetoothSocket) m.invoke(remote, Integer.valueOf(1));
+            BluetoothSocket tmpSock = (BluetoothSocket) m.invoke(remote, Integer.valueOf(1));
             // sock = remote.createRfcommSocketToServiceRecord(RFCOMM_UUID);
-            sock.connect();
-            is = new BufferedInputStream(sock.getInputStream());
-            os = sock.getOutputStream();
+            tmpSock.connect();
+            InputStream tmpIs = tmpSock.getInputStream();
+            OutputStream tmpOs = tmpSock.getOutputStream();
             setConnected(true);
+            sock = tmpSock;
+            is = tmpIs;
+            os = tmpOs;
         }
         catch (IOException e)
         {
             Log.e("BT", "IOException", e);
             DebugLogManager.INSTANCE.logException(e);
+
             return false;
         }
-        catch (SecurityException e)
+        catch (Exception e)
         {
             DebugLogManager.INSTANCE.logException(e);
             return false;
         }
-        catch (NoSuchMethodException e)
+        finally
         {
-            DebugLogManager.INSTANCE.logException(e);
-            return false;
-        }
-        catch (IllegalArgumentException e)
-        {
-            DebugLogManager.INSTANCE.logException(e);
-            return false;
-        }
-        catch (IllegalAccessException e)
-        {
-            DebugLogManager.INSTANCE.logException(e);
-            return false;
-        }
-        catch (InvocationTargetException e)
-        {
-            DebugLogManager.INSTANCE.logException(e);
-            return false;
+            if (!isConnected())
+            {
+                closeDevice(true);
+            }
         }
         return true;
     }
@@ -87,27 +75,55 @@ public class SerialComm extends MsComm
     @Override
     protected synchronized boolean closeDevice(boolean force)
     {
+        close(os);
+        os = null;
+        close(is);
+        is = null;
+        close(sock);
+        sock = null;
+        return true;
+    }
+
+    private void close(BluetoothSocket sock2)
+    {
         try
         {
-            if (os != null)
+            if (sock2 != null)
             {
-                os.close();
+                sock2.close();
             }
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
+    }
+
+    private void close(InputStream is)
+    {
+        try
+        {
             if (is != null)
-            {
                 is.close();
-            }
-            if (sock != null)
-            {
-                sock.close();
-            }
-            setConnected(false);
         }
         catch (IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
 
-        return true;
+    }
+
+    private void close(OutputStream os)
+    {
+        try
+        {
+            if (os != null)
+                os.close();
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
+
     }
 }

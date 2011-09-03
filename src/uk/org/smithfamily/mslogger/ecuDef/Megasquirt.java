@@ -73,7 +73,6 @@ public abstract class Megasquirt implements Runnable
 		running = false;
 		controller.interrupt();
 		controller = null;
-		comm.close();
 		sendMessage("");
 	}
 
@@ -85,7 +84,7 @@ public abstract class Megasquirt implements Runnable
 	public void run()
 	{
 		running = true;
-		Looper.prepare();
+//		Looper.prepare();
 		while (running)
 		{
 			try
@@ -113,7 +112,7 @@ public abstract class Megasquirt implements Runnable
 				}
 			}
 		}
-
+		disconnect();
 	}
 
 	private void flushComms() throws LostCommsException
@@ -190,7 +189,6 @@ public abstract class Megasquirt implements Runnable
 				counter++;
 				sendMessage("Failed to load constants : " + counter);
 				constantsLoaded = false;
-				comm.flush();
 				comm.close();
 				comm.openConnection();
 				comm.flush();

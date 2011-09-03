@@ -112,13 +112,13 @@ public class MS1Extra29y extends Megasquirt
 	@Override
 	public int getInterWriteDelay()
 	{
-		return 5;
+		return 50;
 	}
 
 	@Override
 	public int getPageActivationDelay()
 	{
-		return 50;
+		return 100;
 	}
 
 	@Override
