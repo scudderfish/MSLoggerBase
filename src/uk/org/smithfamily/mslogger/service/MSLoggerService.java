@@ -49,14 +49,14 @@ public class MSLoggerService extends Service
 		super.onCreate();
 		ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-		startLogging();
+		initialiseConnection();
 	}
 
 	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();
-		stopLogging();
+		disconnect();
 		created = false;
 	}
 
@@ -65,25 +65,20 @@ public class MSLoggerService extends Service
 		return created;
 	}
 
-	private void connect()
-	{
-		ecuDefinition.start();
-	}
-
+	
 	public double getValue(String channelName)
 	{
 		return ecuDefinition.getValue(channelName);
 	}
 
-	public void startLogging()
+	private void initialiseConnection()
 	{
 	    Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
-		connect();
 		ecuDefinition.start();
 		showNotification();
 	}
 
-	public void stopLogging()
+	private void disconnect()
 	{
 		Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
 		ecuDefinition.stop();
@@ -116,4 +111,14 @@ public class MSLoggerService extends Service
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		mNotificationManager.cancelAll();
 	}
+
+    public void stopLogging()
+    {
+       ecuDefinition.stopLogging(); 
+    }
+
+    public void startLogging()
+    {
+        ecuDefinition.startLogging();
+    }
 }

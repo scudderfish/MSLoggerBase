@@ -64,6 +64,7 @@ public abstract class MsComm extends Observable
         try
         {
             os.flush();
+            @SuppressWarnings("unused")
             int cnt = 0;
             while (is.available() > 0)
             {
@@ -121,6 +122,7 @@ public abstract class MsComm extends Observable
             // is.available());
             while (bytesRead < nBytes)
             {
+                @SuppressWarnings("unused")
                 int available = is.available();
                 int result = is.read(buffer, bytesRead, nBytes - bytesRead);
                 if (result == -1)
