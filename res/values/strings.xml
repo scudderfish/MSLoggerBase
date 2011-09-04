@@ -24,4 +24,6 @@
 	<string name="mslogger_is_running">MSLogger is running</string>
 	<string name="logging_to">Logging to %s</string>
 	<string name="CalibrateTPS">Calibrate TPS</string>
+	<string name="connect">Connect</string>
+	<string name="disconnect">Disconnect</string>
 </resources>

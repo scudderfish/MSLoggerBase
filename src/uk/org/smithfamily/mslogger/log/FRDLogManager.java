@@ -8,54 +8,77 @@ import android.text.format.DateFormat;
 
 public enum FRDLogManager
 {
-	INSTANCE;
-	private FRDLogFile			frdLog	= new FRDLogFile();
-	private FRDLogFileHeader	header	= frdLog.getHeader();
-	private FRDLogFileBody		body	= frdLog.getBody();
-	private FileOutputStream	os;
-	private File				logFile;
-	private long				startTime;
+    INSTANCE;
+    private FRDLogFile           frdLog = new FRDLogFile();
+    private FRDLogFileHeader     header = frdLog.getHeader();
+    private FRDLogFileBody       body   = frdLog.getBody();
+    private BufferedOutputStream os;
+    private File                 logFile;
+    private long                 startTime;
 
-	public long getStartTime()
-	{
-		return startTime;
-	}
+    public long getStartTime()
+    {
+        return startTime;
+    }
 
-	public void write(byte[] buffer) throws IOException
-	{
-		if (os == null)
-		{
-			startTime = System.currentTimeMillis();
-			createLogFile();
-			writeHeader();
-		}
-		body.addRecord(buffer);
-		os.write(body.getCurrentRecord().getBytes());
-		os.flush();
-	}
+    public void write(byte[] buffer) throws IOException
+    {
+        if (os == null)
+        {
+            startTime = System.currentTimeMillis();
+            createLogFile();
+            writeHeader();
+        }
+        body.addRecord(buffer);
+        os.write(body.getCurrentRecord().getBytes());
+    }
 
-	private void writeHeader() throws IOException
-	{
+    private void writeHeader() throws IOException
+    {
 
-		os.write(header.getHeaderRecord());
-		os.flush();
-	}
+        os.write(header.getHeaderRecord());
+    }
 
-	private void createLogFile() throws FileNotFoundException
-	{
+    private void createLogFile() throws FileNotFoundException
+    {
 
-		Date now = new Date();
+        Date now = new Date();
 
-		String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".frd";
+        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".frd";
 
-		logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
+        logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
 
-		os = new FileOutputStream(logFile);
-	}
+        os = new BufferedOutputStream(new FileOutputStream(logFile));
+    }
 
-	public FRDLogFile getFRDLogFile()
-	{
+    public FRDLogFile getFRDLogFile()
+    {
 
-		return frdLog;
-	}
+        return frdLog;
+    }
+
+    public void close()
+    {
+        try
+        {
+            if (os != null)
+            {
+                os.flush();
+                os.close();
+            }
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
+
+        os = null;
+        logFile = null;
+
+    }
+
+    public void stopLog()
+    {
+        close();
+    }
 }
