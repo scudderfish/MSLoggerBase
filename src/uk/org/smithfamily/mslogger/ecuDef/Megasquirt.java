@@ -12,12 +12,12 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 
 public abstract class Megasquirt implements Runnable
 {
     private boolean            simulated = false;
-
-    private Thread             controller;
+    private boolean initialised = false;
 
     public static final String NEW_DATA  = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
 
@@ -56,23 +56,31 @@ public abstract class Megasquirt implements Runnable
 
     private boolean          logging;
     private int              counter  = 0;
+    private Handler handler;
 
     public void start()
     {
-        if (controller == null)
+        try
         {
-            controller = new Thread(this);
-            controller.setDaemon(true);
-            controller.start();
+            initialiseConnection();
+            verifySignature();
+            loadConstantsWithTimeout();
+            logStart = System.currentTimeMillis();
+            initialised = true;
         }
-        running = true;
+        catch (LostCommsException e)
+        {
+
+        }
+        
     }
 
     public void stop()
     {
+        handler.removeCallbacks(this);
         running = false;
-        controller.interrupt();
-        controller = null;
+        disconnect();
+        initialised = false;
         sendMessage("");
     }
 
@@ -83,37 +91,25 @@ public abstract class Megasquirt implements Runnable
 
     public void run()
     {
-        running = true;
-        // Looper.prepare();
-        while (running)
+        try
         {
-            try
+            if(!initialised)
             {
-                initialiseConnection();
-                verifySignature();
-                loadConstantsWithTimeout();
-                logStart = System.currentTimeMillis();
-                while (running)
-                {
-                    flushComms();
-                    getRuntimeVars();
-                    calculateValues();
-                    logValues();
-                    broadcastNewData();
-                    throttle();
-                    sendMessage("Data " + (counter++));
-                }
-                disconnect();
+                start();
             }
-            catch (LostCommsException e)
-            {
-                if (running)
-                {
-                    handleLostConnection(e);
-                }
-            }
+            flushComms();
+            getRuntimeVars();
+            calculateValues();
+            logValues();
+            broadcastNewData();
+            if(running)
+                handler.postDelayed(this, 1000/ApplicationSettings.INSTANCE.getHertz());
+            sendMessage("Data " + (counter++));
         }
-        disconnect();
+        catch (LostCommsException e)
+        {
+
+        }
     }
 
     private void flushComms() throws LostCommsException
@@ -260,18 +256,6 @@ public abstract class Megasquirt implements Runnable
 
     }
 
-    private void throttle()
-    {
-        long now = System.currentTimeMillis();
-        long diff = now - lastTime;
-        long pauseTime = (1000 / ApplicationSettings.INSTANCE.getHertz()) - diff;
-        if (pauseTime > 0)
-        {
-            delay(pauseTime);
-        }
-        lastTime = now;
-    }
-
     private void broadcastConnected()
     {
         Intent broadcast = new Intent();
@@ -307,9 +291,10 @@ public abstract class Megasquirt implements Runnable
         calculate(ochBuffer);
     }
 
-    public Megasquirt(Context c)
+    public Megasquirt(Context c, Handler handler)
     {
         this.context = c;
+        this.handler = handler;
 
     }
 

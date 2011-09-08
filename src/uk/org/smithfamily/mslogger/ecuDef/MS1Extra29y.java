@@ -3,13 +3,14 @@ package uk.org.smithfamily.mslogger.ecuDef;
 import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
+import android.os.Handler;
 
 public class MS1Extra29y extends Megasquirt
 {
 
-    public MS1Extra29y(Context c)
+    public MS1Extra29y(Context c, Handler handler)
     {
-        super(c);
+        super(c,handler);
     }
 
     // Page constants START

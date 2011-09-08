@@ -10,10 +10,18 @@ import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -25,7 +33,7 @@ public class MSLoggerActivity extends Activity
     private BroadcastReceiver updateReceiver    = new Reciever();
     private IndicatorManager  indicatorManager;
     private ToggleButton      connectButton;
-    public boolean connected;
+    public boolean            connected;
 
     private final class MSServiceConnection implements ServiceConnection
     {
@@ -85,11 +93,13 @@ public class MSLoggerActivity extends Activity
             {
                 startService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
                 doBindService();
-                connected =true;
+                connected = true;
             }
             else
             {
                 connected = false;
+                service.stopLogging();
+                logButton.setChecked(false);
                 logButton.setEnabled(false);
                 unbindService(mConnection);
 
@@ -136,7 +146,6 @@ public class MSLoggerActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
-        ApplicationSettings.INSTANCE.initialise(this);
         indicatorManager = IndicatorManager.INSTANCE;
 
         setContentView(R.layout.display);

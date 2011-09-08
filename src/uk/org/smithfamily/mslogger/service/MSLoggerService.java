@@ -9,112 +9,120 @@ import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
 public class MSLoggerService extends Service
 {
-	private static final int	MSLOGGERSERVICE_ID	= 0;
-	private static boolean		created				= false;
+    private static final int MSLOGGERSERVICE_ID = 0;
+    private static boolean   created            = false;
+    private Handler          mHandler           = new Handler();
 
-	public class MSLoggerBinder extends Binder
-	{
-		public MSLoggerService getService()
-		{
-			return MSLoggerService.this;
-		}
-	}
+    public class MSLoggerBinder extends Binder
+    {
+        public MSLoggerService getService()
+        {
+            return MSLoggerService.this;
+        }
+    }
 
-	private final IBinder	mBinder	= new MSLoggerBinder();
-	private Megasquirt		ecuDefinition;
+    private final IBinder mBinder = new MSLoggerBinder();
+    private Megasquirt    ecuDefinition;
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
-	{
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		return START_STICKY;
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return START_STICKY;
+    }
 
-	@Override
-	public IBinder onBind(Intent arg0)
-	{
-		return mBinder;
-	}
+    @Override
+    public IBinder onBind(Intent arg0)
+    {
+        return mBinder;
+    }
 
-	@Override
-	public void onCreate()
-	{
-		created = true;
-		super.onCreate();
-		ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+    @Override
+    public void onCreate()
+    {
+        ApplicationSettings.INSTANCE.initialise(this,mHandler);
 
-		initialiseConnection();
-	}
+        created = true;
+        super.onCreate();
+        ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		disconnect();
-		created = false;
-	}
+        initialiseConnection();
+    }
 
-	public static boolean isCreated()
-	{
-		return created;
-	}
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        disconnect();
+        created = false;
+    }
 
-	
-	public double getValue(String channelName)
-	{
-		return ecuDefinition.getValue(channelName);
-	}
+    public static boolean isCreated()
+    {
+        return created;
+    }
 
-	private void initialiseConnection()
-	{
-	    Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
-		ecuDefinition.start();
-		showNotification();
-	}
+    public double getValue(String channelName)
+    {
+        return ecuDefinition.getValue(channelName);
+    }
 
-	private void disconnect()
-	{
-		Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
-		ecuDefinition.stop();
-		removeNotification();
-	}
+    private void initialiseConnection()
+    {
+        Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
+        ecuDefinition.start();
+        showNotification();
+        
+        mHandler.removeCallbacks(ecuDefinition);
+        mHandler.postDelayed(ecuDefinition, 100);
+        
+    }
 
-	private void showNotification()
-	{
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    private void disconnect()
+    {
+        Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
+        ecuDefinition.stop();
+        removeNotification();
+    }
 
-		int icon = R.drawable.injector;
-		long when = System.currentTimeMillis();
+    private void showNotification()
+    {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 
-		Notification notification = new Notification(icon, getString(R.string.mslogger_is_running), when);
+        int icon = R.drawable.injector;
+        long when = System.currentTimeMillis();
 
-		Context context = getApplicationContext();
+        Notification notification = new Notification(icon, getString(R.string.mslogger_is_running), when);
 
-		Intent notificationIntent = new Intent(this, MSLoggerActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        Context context = getApplicationContext();
 
-		notification.setLatestEventInfo(context, getString(R.string.mslogger_is_running), getString(R.string.logging_to, DatalogManager.INSTANCE.getFilename()), contentIntent);
+        Intent notificationIntent = new Intent(this, MSLoggerActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		mNotificationManager.notify(MSLOGGERSERVICE_ID, notification);
-	}
+        notification.setLatestEventInfo(context, getString(R.string.mslogger_is_running),
+                getString(R.string.logging_to, DatalogManager.INSTANCE.getFilename()), contentIntent);
 
-	private void removeNotification()
-	{
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		mNotificationManager.cancelAll();
-	}
+        mNotificationManager.notify(MSLOGGERSERVICE_ID, notification);
+    }
+
+    private void removeNotification()
+    {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+        mNotificationManager.cancelAll();
+    }
 
     public void stopLogging()
     {
-       ecuDefinition.stopLogging(); 
+        ecuDefinition.stopLogging();
     }
 
     public void startLogging()
