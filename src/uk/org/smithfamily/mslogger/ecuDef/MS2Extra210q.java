@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import android.content.Context;
+import android.os.Handler;
 
 public class MS2Extra210q extends Megasquirt
 {
@@ -148,9 +149,9 @@ public class MS2Extra210q extends Megasquirt
 	int				nCylinders;
 	int				divider;
 
-	public MS2Extra210q(Context c)
+	public MS2Extra210q(Context c,Handler h)
 	{
-		super(c);
+		super(c,h);
 	}
 
 	@Override
