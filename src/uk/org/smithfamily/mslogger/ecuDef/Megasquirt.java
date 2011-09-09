@@ -8,11 +8,11 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import uk.org.smithfamily.mslogger.comms.MsComm;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 public abstract class Megasquirt implements Runnable
 {
@@ -57,8 +57,8 @@ public abstract class Megasquirt implements Runnable
     private boolean          logging;
     private int              counter  = 0;
     private Handler handler;
-
-    public void start()
+    
+    private void start()
     {
         try
         {
@@ -67,10 +67,11 @@ public abstract class Megasquirt implements Runnable
             loadConstantsWithTimeout();
             logStart = System.currentTimeMillis();
             initialised = true;
+            running = true;
         }
         catch (LostCommsException e)
         {
-
+            handleLostConnection(e);
         }
         
     }
@@ -91,24 +92,34 @@ public abstract class Megasquirt implements Runnable
 
     public void run()
     {
+
         try
         {
             if(!initialised)
             {
                 start();
             }
+//            Log.d(ApplicationSettings.TAG,"run 1");
+
             flushComms();
+//            Log.d(ApplicationSettings.TAG,"run 2");
             getRuntimeVars();
+//            Log.d(ApplicationSettings.TAG,"run 3");
             calculateValues();
+//            Log.d(ApplicationSettings.TAG,"run 4");
             logValues();
+ //           Log.d(ApplicationSettings.TAG,"run 5");
             broadcastNewData();
+//            Log.d(ApplicationSettings.TAG,"run 6");
             if(running)
                 handler.postDelayed(this, 1000/ApplicationSettings.INSTANCE.getHertz());
+//            Log.d(ApplicationSettings.TAG,"run 7");
             sendMessage("Data " + (counter++));
+//            Log.d(ApplicationSettings.TAG,"run 8");
         }
         catch (LostCommsException e)
         {
-
+            handleLostConnection(e);
         }
     }
 
@@ -123,7 +134,12 @@ public abstract class Megasquirt implements Runnable
     private void handleLostConnection(LostCommsException e)
     {
         sendMessage("Lost connection to Megasquirt : " + e.getLocalizedMessage());
-        delay(5000);
+        initialised = false;
+        if(running)
+        {
+            handler.postDelayed(this, 5000);
+        }
+            
     }
 
     private void verifySignature() throws LostCommsException
@@ -210,7 +226,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"Megasquirt.logValues()",e);
         }
     }
 
@@ -229,7 +245,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (LostCommsException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"Megasquirt.disconnect()",e);
         }
 
     }
@@ -251,7 +267,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (InterruptedException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"Megasquirt.delay()",e);
         }
 
     }
@@ -277,13 +293,18 @@ public abstract class Megasquirt implements Runnable
 
     private void getRuntimeVars() throws LostCommsException
     {
+//        Debug.startMethodTracing("getRuntimeVars");
         if (simulated)
         {
             MSSimulator.INSTANCE.getNextRTV(ochBuffer);
             return;
         }
-        comm.write(this.getOchCommand());
+//        DebugLogManager.INSTANCE.log("1", context,false);
+        comm.write(this.getOchCommand());//
+//        DebugLogManager.INSTANCE.log("2", context,false);
         comm.readWithTimeout(ochBuffer, 1, TimeUnit.SECONDS);
+//        DebugLogManager.INSTANCE.log("3", context,true);
+//        Debug.stopMethodTracing();
     }
 
     private void calculateValues() throws LostCommsException
@@ -374,7 +395,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (Exception e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"Megasquirt.geetValue()",e);
         }
         return value;
     }

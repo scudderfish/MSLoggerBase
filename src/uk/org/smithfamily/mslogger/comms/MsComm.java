@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import android.util.Log;
 
 public abstract class MsComm extends Observable
 {
-
     protected InputStream  is;
     protected OutputStream os;
     private boolean        connected       = false;
@@ -41,7 +41,7 @@ public abstract class MsComm extends Observable
         }
         catch (InterruptedException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"throttle()",e);
         }
 
     }
@@ -73,7 +73,7 @@ public abstract class MsComm extends Observable
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"flush()",e);
         }
     }
 
@@ -120,15 +120,20 @@ public abstract class MsComm extends Observable
             byte[] buffer = new byte[bytes.length];
             // System.out.println("Want to read " + bytes.length + " is has " +
             // is.available());
+            Log.d(ApplicationSettings.TAG,"Need to read "+bytes.length+" bytes");
             while (bytesRead < nBytes)
             {
-                @SuppressWarnings("unused")
-                int available = is.available();
+                //@SuppressWarnings("unused")
+                //int available = is.available();
+                
                 int result = is.read(buffer, bytesRead, nBytes - bytesRead);
-                if (result == -1)
+                        if (result == -1)
                     break;
+                        
                 bytesRead += result;
+                //Log.d(ApplicationSettings.TAG,"Read "+result+" bytes "+(bytes.length-bytesRead)+" to go.");
             }
+            
             synchronized (bytes)
             {
                 System.arraycopy(buffer, 0, bytes, 0, bytes.length);
@@ -137,6 +142,9 @@ public abstract class MsComm extends Observable
         catch (IOException e)
         {
             throw new LostCommsException(e);
+        }
+        finally
+        {
         }
     }
 
@@ -148,7 +156,7 @@ public abstract class MsComm extends Observable
         boolean ok = true;
         try
         {
-            throttle();
+//            throttle();
 
             if (writeBlocks)
             {
@@ -166,7 +174,7 @@ public abstract class MsComm extends Observable
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"MsComm.write()",e);
             close();
             ok = false;
         }
@@ -195,7 +203,7 @@ public abstract class MsComm extends Observable
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"MsComm.read()",e);
             close();
             return "";
         }
@@ -250,7 +258,7 @@ public abstract class MsComm extends Observable
         {
             try
             {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             }
             catch (InterruptedException e)
             {

@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import android.util.Log;
 
 
 public class SocketComm extends MsComm
@@ -29,11 +30,11 @@ public class SocketComm extends MsComm
         }
         catch (UnknownHostException e)
         {
-			DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"SocketComm.openDevice()",e);
         }
         catch (IOException e)
         {
-			DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"SocketComm.openDevice()",e);
         }
         return isConnected();
     }
@@ -50,7 +51,7 @@ public class SocketComm extends MsComm
         }
         catch (IOException e)
         {
-			DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"SocketComm.closeDevice()",e);
         }
         return !isConnected();
     }

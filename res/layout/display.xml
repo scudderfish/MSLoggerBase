@@ -5,7 +5,8 @@
 	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.mslogger"
 	android:orientation="horizontal" android:layout_gravity="center"
 	android:layout_margin="1px" android:layout_width="fill_parent"
-	android:layout_height="wrap_content" android:weightSum="1.0">
+	android:layout_height="wrap_content" android:weightSum="1.0"
+	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 	<TableLayout  
 	android:id="@+id/tableLayout1"
 		android:layout_weight="1" android:layout_height="match_parent"  android:layout_width="match_parent"

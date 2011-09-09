@@ -37,6 +37,7 @@ public class MSLoggerActivity extends Activity
 
     private final class MSServiceConnection implements ServiceConnection
     {
+
         public void onServiceConnected(ComponentName className, IBinder binder)
         {
             service = ((MSLoggerService.MSLoggerBinder) binder).getService();

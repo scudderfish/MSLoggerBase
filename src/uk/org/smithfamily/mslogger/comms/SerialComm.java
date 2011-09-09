@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -47,13 +46,13 @@ public class SerialComm extends MsComm
         catch (IOException e)
         {
             Log.e("BT", "IOException", e);
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG, "SerialComm.init()", e);
 
             return false;
         }
         catch (Exception e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG, "SerialComm.init()", e);
             return false;
         }
         finally
@@ -95,7 +94,7 @@ public class SerialComm extends MsComm
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG, "SerialComm.close()", e);
         }
     }
 
@@ -108,7 +107,8 @@ public class SerialComm extends MsComm
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG, "SerialComm.close()", e);
+
         }
 
     }
@@ -122,7 +122,7 @@ public class SerialComm extends MsComm
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG, "SerialComm.close()", e);
         }
 
     }
