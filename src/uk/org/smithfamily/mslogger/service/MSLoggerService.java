@@ -76,8 +76,7 @@ public class MSLoggerService extends Service
 
     private void initialiseConnection()
     {
-        Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
-        ecuDefinition.start();
+        //Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
         showNotification();
         
         mHandler.removeCallbacks(ecuDefinition);

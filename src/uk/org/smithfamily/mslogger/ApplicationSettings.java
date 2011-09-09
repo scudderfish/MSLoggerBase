@@ -20,6 +20,7 @@ public enum ApplicationSettings
     private static final String NONE_SELECTED   = "NONE_SELECTED";
     public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
+    public static final String  TAG             = "uk.org.smithfamily.mslogger";
     private Context             context;
     private File                dataDir;
     private int                 hertz;
@@ -38,7 +39,7 @@ public enum ApplicationSettings
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
                 context.getString(R.string.app_name)));
         dataDir.mkdirs();
-        this.hertz = prefs.getInt(context.getString(R.string.hertz), 10);
+        this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
 
         comms = new SerialComm();
 

@@ -1,9 +1,10 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.comms.LostCommsException;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 public class MS1Extra29y extends Megasquirt
 {
@@ -114,7 +115,7 @@ public class MS1Extra29y extends Megasquirt
     @Override
     public int getInterWriteDelay()
     {
-        return 50;
+        return 1;
     }
 
     @Override
@@ -218,7 +219,8 @@ public class MS1Extra29y extends Megasquirt
         }
         catch (Exception e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            Log.e(ApplicationSettings.TAG,"MS1Extra29y.calculate()",e);
+
             //If we've got an arithmetic error, we've probably got duff constants.
             throw new LostCommsException(e);
         }
