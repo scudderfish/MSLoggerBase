@@ -100,8 +100,8 @@ public class MS1Extra29y extends Megasquirt
     int      veCurr;
     int      pulseWidth;
     int      iTimefull;
-    double   RpmHitmp;
-    double   RpmHiRes;
+    int   	 RpmHitmp;
+    int      RpmHiRes;
     double   vacuum;
     double   boostVac;
     int      floodclear;
@@ -176,7 +176,8 @@ public class MS1Extra29y extends Megasquirt
             pulseWidth = (pulseWidth1);
 
             iTimefull = ((iTimeX * 65536) + iTime);
-            RpmHitmp = (iTimefull > 0 ? (60000000 * (2.0 - twoStroke1)) / (iTimefull * nCylinders1) : 0);
+            
+            RpmHitmp = (int) (iTimefull > 0 ? (60000000 * (2.0 - twoStroke1)) / (iTimefull * nCylinders1) : 0);
             // ; get rid of the 1 or 2 rpm display that seems to worry some
             // users
             RpmHiRes = (RpmHitmp > 20 ? RpmHitmp : 0);
@@ -212,8 +213,8 @@ public class MS1Extra29y extends Megasquirt
             dutyCycle1 = round(dutyCycle1);
             cycleTime2 = round(cycleTime2);
             dutyCycle2 = round(dutyCycle2);
-            RpmHitmp = round(RpmHitmp);
-            RpmHiRes = round(RpmHiRes);
+            //RpmHitmp = round(RpmHitmp);
+            //RpmHiRes = round(RpmHiRes);
             vacuum = round(vacuum);
             boostVac = round(boostVac);
         }
@@ -286,7 +287,7 @@ public class MS1Extra29y extends Megasquirt
     public String getLogHeader()
     {
 
-        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V";
+        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V\tiTime\tiTimeX\ttwoStroke1\tnumCylinders";
     }
 
     @Override
@@ -297,7 +298,7 @@ public class MS1Extra29y extends Megasquirt
                 + gammaEnrich + "\t" + accDecEnrich + "\t" + veCurr1 + "\t" + pulseWidth1 + "\t" + veCurr2 + "\t" + pulseWidth2
                 + "\t" + dutyCycle1 + "\t" + dutyCycle2 + "\t" + idleDC + "\t" + bcDC + "\t" + advSpark + "\t" + egttemp + "\t"
                 + fuelpress + "\t" + KnockDeg + "\t" + RpmHiRes + "\t" + barometer + "\t" + porta + "\t" + portb + "\t" + portc
-                + "\t" + portd + "\t" + 0 + "\t" + batteryVoltage;
+                + "\t" + portd + "\t" + 0 + "\t" + batteryVoltage +"\t"+iTime+"\t"+iTimeX+"\t"+twoStroke1+"\t"+nCylinders1;
     }
 
     @Override
