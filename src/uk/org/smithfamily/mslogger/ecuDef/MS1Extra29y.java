@@ -1,121 +1,117 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import java.io.IOException;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 public class MS1Extra29y extends Megasquirt
 {
 
-    public MS1Extra29y(Context c, Handler handler)
+    public MS1Extra29y(Context c)
     {
-        super(c,handler);
+        super(c);
     }
 
     // Page constants START
-    int      alternate1;
-    int      alternate2;
-    int      twoStroke1;
-    int      nCylinders1;
-    int      divider1;
-    int      twoStroke2;
-    int      nCylinders2;
-    int      divider2;
+    int    alternate1;
+    int    alternate2;
+    int    twoStroke1;
+    int    nCylinders1;
+    int    divider1;
+    int    twoStroke2;
+    int    nCylinders2;
+    int    divider2;
     // Page constants END
 
     // Runtime vars START
-    int      secl;
-    int      squirt;
-    int      engine;
-    int      baroADC;
-    int      mapADC;
-    int      matADC;
-    int      cltADC;
-    int      tpsADC;
-    int      batADC;
-    int      egoADC;
-    int      egoCorrection;
-    int      airCorrection;
-    int      warmupEnrich;
-    int      rpm100;
-    int      pulseWidth1;
-    int      accelEnrich;
-    int      baroCorrection;
-    int      gammaEnrich;
-    int      veCurr1;
-    int      pulseWidth2;
-    int      veCurr2;
-    int      idleDC;
-    int      iTime;
-    int      advance;
-    int      afrtarget;
-    int      fuelADC;
-    int      egtADC;
-    int      CltIatAngle;
-    int      KnockAngle;
-    int      egoCorrection2;
-    int      porta;
-    int      portb;
-    int      portc;
-    int      portd;
-    int      stackL;
-    int      tpsLast;
-    int      iTimeX;
-    int      bcDC;
+    int    secl;
+    int    squirt;
+    int    engine;
+    int    baroADC;
+    int    mapADC;
+    int    matADC;
+    int    cltADC;
+    int    tpsADC;
+    int    batADC;
+    int    egoADC;
+    int    egoCorrection;
+    int    airCorrection;
+    int    warmupEnrich;
+    int    rpm100;
+    int    pulseWidth1;
+    int    accelEnrich;
+    int    baroCorrection;
+    int    gammaEnrich;
+    int    veCurr1;
+    int    pulseWidth2;
+    int    veCurr2;
+    int    idleDC;
+    int    iTime;
+    int    advance;
+    int    afrtarget;
+    int    fuelADC;
+    int    egtADC;
+    int    CltIatAngle;
+    int    KnockAngle;
+    int    egoCorrection2;
+    int    porta;
+    int    portb;
+    int    portc;
+    int    portd;
+    int    stackL;
+    int    tpsLast;
+    int    iTimeX;
+    int    bcDC;
     // Runtime vars END
 
     // Eqns store START
-    int      injOpen1;
-    double   boost;
-    int      accDecEnrich;
-    double   batteryVoltage;
-    double   coolant;
-    double   egoVoltage;
-    double   ego2Voltage;
-    double   mat;
-    int      rpm;
-    double   time;
-    double   egttemp;
-    double   lambda2;
-    double   afr2;
-    int      barometer;
-    double   map;
-    int      throttle;
-    double   advSpark;
-    int      KnockAng;
-    int      KnockDeg;
-    int      CltIatAng;
-    double   fuelvolt;
-    double   fuelpress;
-    int      altDiv1;
-    int      altDiv2;
-    double   cycleTime1;
-    int      nSquirts1;
-    double   dutyCycle1;
-    double   cycleTime2;
-    int      nSquirts2;
-    double   dutyCycle2;
-    int      veCurr;
-    int      pulseWidth;
-    int      iTimefull;
-    double   RpmHitmp;
-    double   RpmHiRes;
-    double   vacuum;
-    double   boostVac;
-    int      floodclear;
-    byte[]   sigCommand      = { 83 };                                                                                                // 'S'
-    byte[]   ochCommand      = { 82 };                                                                                                // 'R'
-    String[] logFieldHeaders = { "Time", "SecL", "RPM/100", "MAP", "TP", "O2", "MAT", "CLT", "Engine", "Gego", "Gair", "Gwarm",
-            "Gbaro", "Gammae", "TPSacc", "Gve", "PW", "Gve2", "PW2", "DutyCycle1", "DutyCycle2", "idleDC", "BCDuty3",
-            "Spark Angle", "EGT", "Fuel Press", "Knock", "RPM", "barometer", "porta", "portb", "portc", "portd", "NOS On", "batt V" };
-    String[] logFields       = {};
+    int    injOpen1;
+    double boost;
+    int    accDecEnrich;
+    double batteryVoltage;
+    double coolant;
+    double egoVoltage;
+    double ego2Voltage;
+    double mat;
+    int    rpm;
+    double time;
+    double egttemp;
+    double lambda2;
+    double afr2;
+    int    barometer;
+    double map;
+    int    throttle;
+    double advSpark;
+    int    KnockAng;
+    int    KnockDeg;
+    int    CltIatAng;
+    double fuelvolt;
+    double fuelpress;
+    int    altDiv1;
+    int    altDiv2;
+    double cycleTime1;
+    int    nSquirts1;
+    double dutyCycle1;
+    double cycleTime2;
+    int    nSquirts2;
+    double dutyCycle2;
+    int    veCurr;
+    int    pulseWidth;
+    int    iTimefull;
+    double RpmHitmp;
+    double RpmHiRes;
+    double vacuum;
+    double boostVac;
+    int    floodclear;
+    byte[] sigCommand = { 83 }; // 'S'
+    byte[] ochCommand = { 82 }; // 'R'
 
     @Override
     public int getInterWriteDelay()
     {
-        return 1;
+        return 10;
     }
 
     @Override
@@ -125,7 +121,7 @@ public class MS1Extra29y extends Megasquirt
     }
 
     @Override
-    public void calculate(byte[] ochBuffer) throws LostCommsException 
+    public void calculate(byte[] ochBuffer) throws IOException
     {
         setupRuntime(ochBuffer);
 
@@ -134,10 +130,10 @@ public class MS1Extra29y extends Megasquirt
             accDecEnrich = ((engine & 32) == 0) ? 100
                     : ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
             batteryVoltage = batADC / 255.0 * 30.0;
-            coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40);
+            coolant = MSUtils.tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40);
             egoVoltage = (egoADC / 255.0 * 5.0); // EGO sensor voltage.
             ego2Voltage = (fuelADC / 255.0 * 5.0); // EGO sensor voltage 2.
-            mat = (tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40));
+            mat = (MSUtils.tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40));
             rpm = (rpm100 * 100); // True RPM.
             time = (timeNow()); // "timeNow" is a parameterless built-in
                                 // function.
@@ -219,54 +215,54 @@ public class MS1Extra29y extends Megasquirt
         }
         catch (Exception e)
         {
-            Log.e(ApplicationSettings.TAG,"MS1Extra29y.calculate()",e);
+            Log.e(ApplicationSettings.TAG, "MS1Extra29y.calculate()", e);
 
-            //If we've got an arithmetic error, we've probably got duff constants.
-            throw new LostCommsException(e);
+            // If we've got an arithmetic error, we've probably got duff constants.
+            throw new IOException(e.getLocalizedMessage());
         }
 
     }
 
     private void setupRuntime(byte[] ochBuffer)
     {
-        secl = getByte(ochBuffer, 0);
-        squirt = getByte(ochBuffer, 1);
-        engine = getByte(ochBuffer, 2);
-        baroADC = getByte(ochBuffer, 3);
-        mapADC = getByte(ochBuffer, 4);
-        matADC = getByte(ochBuffer, 5);
-        cltADC = getByte(ochBuffer, 6);
-        tpsADC = getByte(ochBuffer, 7);
-        batADC = getByte(ochBuffer, 8);
-        egoADC = getByte(ochBuffer, 9);
-        egoCorrection = getByte(ochBuffer, 10);
-        airCorrection = getByte(ochBuffer, 11);
-        warmupEnrich = getByte(ochBuffer, 12);
-        rpm100 = getByte(ochBuffer, 13);
-        pulseWidth1 = getByte(ochBuffer, 14);
-        accelEnrich = getByte(ochBuffer, 15);
-        baroCorrection = getByte(ochBuffer, 16);
-        gammaEnrich = getByte(ochBuffer, 17);
-        veCurr1 = getByte(ochBuffer, 18);
-        pulseWidth2 = getByte(ochBuffer, 19);
-        veCurr2 = getByte(ochBuffer, 20);
-        idleDC = getByte(ochBuffer, 21);
-        iTime = getWord(ochBuffer, 22);
-        advance = getByte(ochBuffer, 24);
-        afrtarget = getByte(ochBuffer, 25);
-        fuelADC = getByte(ochBuffer, 26);
-        egtADC = getByte(ochBuffer, 27);
-        CltIatAngle = getByte(ochBuffer, 28);
-        KnockAngle = getByte(ochBuffer, 29);
-        egoCorrection2 = getByte(ochBuffer, 30);
-        porta = getByte(ochBuffer, 31);
-        portb = getByte(ochBuffer, 32);
-        portc = getByte(ochBuffer, 33);
-        portd = getByte(ochBuffer, 34);
-        stackL = getByte(ochBuffer, 35);
-        tpsLast = getByte(ochBuffer, 36);
-        iTimeX = getByte(ochBuffer, 37);
-        bcDC = getByte(ochBuffer, 38);
+        secl = MSUtils.getByte(ochBuffer, 0);
+        squirt = MSUtils.getByte(ochBuffer, 1);
+        engine = MSUtils.getByte(ochBuffer, 2);
+        baroADC = MSUtils.getByte(ochBuffer, 3);
+        mapADC = MSUtils.getByte(ochBuffer, 4);
+        matADC = MSUtils.getByte(ochBuffer, 5);
+        cltADC = MSUtils.getByte(ochBuffer, 6);
+        tpsADC = MSUtils.getByte(ochBuffer, 7);
+        batADC = MSUtils.getByte(ochBuffer, 8);
+        egoADC = MSUtils.getByte(ochBuffer, 9);
+        egoCorrection = MSUtils.getByte(ochBuffer, 10);
+        airCorrection = MSUtils.getByte(ochBuffer, 11);
+        warmupEnrich = MSUtils.getByte(ochBuffer, 12);
+        rpm100 = MSUtils.getByte(ochBuffer, 13);
+        pulseWidth1 = MSUtils.getByte(ochBuffer, 14);
+        accelEnrich = MSUtils.getByte(ochBuffer, 15);
+        baroCorrection = MSUtils.getByte(ochBuffer, 16);
+        gammaEnrich = MSUtils.getByte(ochBuffer, 17);
+        veCurr1 = MSUtils.getByte(ochBuffer, 18);
+        pulseWidth2 = MSUtils.getByte(ochBuffer, 19);
+        veCurr2 = MSUtils.getByte(ochBuffer, 20);
+        idleDC = MSUtils.getByte(ochBuffer, 21);
+        iTime = MSUtils.getWord(ochBuffer, 22);
+        advance = MSUtils.getByte(ochBuffer, 24);
+        afrtarget = MSUtils.getByte(ochBuffer, 25);
+        fuelADC = MSUtils.getByte(ochBuffer, 26);
+        egtADC = MSUtils.getByte(ochBuffer, 27);
+        CltIatAngle = MSUtils.getByte(ochBuffer, 28);
+        KnockAngle = MSUtils.getByte(ochBuffer, 29);
+        egoCorrection2 = MSUtils.getByte(ochBuffer, 30);
+        porta = MSUtils.getByte(ochBuffer, 31);
+        portb = MSUtils.getByte(ochBuffer, 32);
+        portc = MSUtils.getByte(ochBuffer, 33);
+        portd = MSUtils.getByte(ochBuffer, 34);
+        stackL = MSUtils.getByte(ochBuffer, 35);
+        tpsLast = MSUtils.getByte(ochBuffer, 36);
+        iTimeX = MSUtils.getByte(ochBuffer, 37);
+        bcDC = MSUtils.getByte(ochBuffer, 38);
 
     }
 
@@ -286,7 +282,7 @@ public class MS1Extra29y extends Megasquirt
     public String getLogHeader()
     {
 
-        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V";
+        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V\tiTime\tiTimeX\ttwoStroke1\tnCylinders1";
     }
 
     @Override
@@ -297,7 +293,9 @@ public class MS1Extra29y extends Megasquirt
                 + gammaEnrich + "\t" + accDecEnrich + "\t" + veCurr1 + "\t" + pulseWidth1 + "\t" + veCurr2 + "\t" + pulseWidth2
                 + "\t" + dutyCycle1 + "\t" + dutyCycle2 + "\t" + idleDC + "\t" + bcDC + "\t" + advSpark + "\t" + egttemp + "\t"
                 + fuelpress + "\t" + KnockDeg + "\t" + RpmHiRes + "\t" + barometer + "\t" + porta + "\t" + portb + "\t" + portc
-                + "\t" + portd + "\t" + 0 + "\t" + batteryVoltage;
+                + "\t" + portd + "\t" + 0 + "\t" + batteryVoltage + "\t" + iTime + "\t" + iTimeX + "\t" + twoStroke1 + "\t"
+                + nCylinders1;
+
     }
 
     @Override
@@ -313,7 +311,7 @@ public class MS1Extra29y extends Megasquirt
     }
 
     @Override
-    public void loadConstants(boolean simulated) throws LostCommsException
+    public void loadConstants(boolean simulated) throws IOException
     {
         if (simulated)
         {
@@ -336,15 +334,15 @@ public class MS1Extra29y extends Megasquirt
             byte[] readPage = { 86 };
             getPage(pageBuffer1, selectPage1, readPage);
             getPage(pageBuffer2, selectPage2, readPage);
-            
-            alternate1 = getBits(pageBuffer1, 150, 0, 0);
-            twoStroke1 = getBits(pageBuffer1, 182, 2, 2);
-            nCylinders1 = getBits(pageBuffer1, 182, 4, 7) + 1;
+
+            alternate1 = MSUtils.getBits(pageBuffer1, 150, 0, 0);
+            twoStroke1 = MSUtils.getBits(pageBuffer1, 182, 2, 2);
+            nCylinders1 = MSUtils.getBits(pageBuffer1, 182, 4, 7) + 1;
             divider1 = pageBuffer1[149];
 
-            alternate2 = getBits(pageBuffer2, 150, 0, 0);
-            twoStroke2 = getBits(pageBuffer2, 182, 2, 2);
-            nCylinders2 = getBits(pageBuffer2, 182, 4, 7) + 1;
+            alternate2 = MSUtils.getBits(pageBuffer2, 150, 0, 0);
+            twoStroke2 = MSUtils.getBits(pageBuffer2, 182, 2, 2);
+            nCylinders2 = MSUtils.getBits(pageBuffer2, 182, 4, 7) + 1;
             divider2 = pageBuffer2[149];
         }
     }

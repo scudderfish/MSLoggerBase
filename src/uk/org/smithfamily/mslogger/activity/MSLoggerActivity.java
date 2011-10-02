@@ -118,7 +118,15 @@ public class MSLoggerActivity extends Activity
             {
                 indicatorManager.setDisabled(false);
             }
-
+            if (intent.getAction().equals(Megasquirt.DISCONNECTED))
+            {
+                indicatorManager.setDisabled(true);
+                logButton.setChecked(false);
+                logButton.setEnabled(false);
+                connectButton.setChecked(false);
+                connectButton.setEnabled(true);
+            }
+            
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
             {
                 logButton.setEnabled(connected);
@@ -161,6 +169,8 @@ public class MSLoggerActivity extends Activity
 
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
+        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
+        registerReceiver(updateReceiver, disconnectedFilter);
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);

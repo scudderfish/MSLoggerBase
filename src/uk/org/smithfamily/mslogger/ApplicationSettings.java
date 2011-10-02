@@ -69,7 +69,7 @@ public enum ApplicationSettings
         String ecuName = prefs.getString("mstype", "MS1Extra");
         if (ecuName.equals("MS1Extra"))
         {
-            ecuDefinition = new MS1Extra29y(context, handler);
+            ecuDefinition = new MS1Extra29y(context);
         }
         return ecuDefinition;
     }
