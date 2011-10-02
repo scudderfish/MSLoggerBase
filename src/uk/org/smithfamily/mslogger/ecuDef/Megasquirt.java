@@ -1,27 +1,49 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.comms.LostCommsException;
-import uk.org.smithfamily.mslogger.comms.MsComm;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.util.Log;
 
-public abstract class Megasquirt implements Runnable
+public abstract class Megasquirt
 {
-    private boolean            simulated = false;
-    private boolean initialised = false;
+    private boolean simulated = false;
 
-    public static final String NEW_DATA  = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
+    enum ConnectionState
+    {
+        STATE_NONE, STATE_LISTEN, STATE_CONNECTING, STATE_CONNECTED
+    };
 
-    public static final String CONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
+    private ConnectionState    currentState = ConnectionState.STATE_NONE;
+
+    private UUID               RFCOMM_UUID  = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    protected BluetoothSocket  sock;
+
+    private BluetoothAdapter   mAdapter;
+    private ConnectThread      mConnectThread;
+    private ConnectedThread    mConnectedThread;
+
+    public static final String NEW_DATA     = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
+
+    public static final String CONNECTED    = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
+    public static final String DISCONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
+    public static final String TAG          = ApplicationSettings.TAG;
 
     protected Context          context;
 
@@ -31,9 +53,9 @@ public abstract class Megasquirt implements Runnable
 
     public abstract byte[] getSigCommand();
 
-    public abstract void loadConstants(boolean simulated) throws LostCommsException;
+    public abstract void loadConstants(boolean simulated) throws IOException;
 
-    public abstract void calculate(byte[] ochBuffer) throws LostCommsException;
+    public abstract void calculate(byte[] ochBuffer) throws IOException;
 
     public abstract String getLogHeader();
 
@@ -47,168 +69,48 @@ public abstract class Megasquirt implements Runnable
 
     public abstract int getCurrentTPS();
 
-    private long             lastTime = System.currentTimeMillis();
+    private long    lastTime = System.currentTimeMillis();
 
-    private long             logStart = lastTime;
-    private volatile boolean running  = false;
-    private MsComm           comm;
-    private byte[]           ochBuffer;
+    private long    logStart = lastTime;
+    private byte[]  ochBuffer;
 
-    private boolean          logging;
-    private int              counter  = 0;
-    private Handler handler;
-    
-    private void start()
+    private boolean logging;
+
+    public void start()
     {
-        try
+        ochBuffer = new byte[this.getBlockSize()];
+        // Cancel any thread attempting to make a connection
+        if (mConnectThread != null)
         {
-            initialiseConnection();
-            verifySignature();
-            loadConstantsWithTimeout();
-            logStart = System.currentTimeMillis();
-            initialised = true;
-            running = true;
+            mConnectThread.cancel();
+            mConnectThread = null;
         }
-        catch (LostCommsException e)
+
+        // Cancel any thread currently running a connection
+        if (mConnectedThread != null)
         {
-            handleLostConnection(e);
+            mConnectedThread.cancelConnection();
+            mConnectedThread = null;
         }
-        
+        setState(ConnectionState.STATE_LISTEN);
+        initialiseConnection();
+
     }
 
     public void stop()
     {
-        handler.removeCallbacks(this);
-        running = false;
         disconnect();
-        initialised = false;
         sendMessage("");
-    }
-
-    public void setRunning(boolean r)
-    {
-        running = r;
-    }
-
-    public void run()
-    {
-
-        try
-        {
-            if(!initialised)
-            {
-                start();
-            }
-//            Log.d(ApplicationSettings.TAG,"run 1");
-
-            flushComms();
-//            Log.d(ApplicationSettings.TAG,"run 2");
-            getRuntimeVars();
-//            Log.d(ApplicationSettings.TAG,"run 3");
-            calculateValues();
-//            Log.d(ApplicationSettings.TAG,"run 4");
-            logValues();
- //           Log.d(ApplicationSettings.TAG,"run 5");
-            broadcastNewData();
-//            Log.d(ApplicationSettings.TAG,"run 6");
-            if(running)
-                handler.postDelayed(this, 1000/ApplicationSettings.INSTANCE.getHertz());
-//            Log.d(ApplicationSettings.TAG,"run 7");
-            sendMessage("Data " + (counter++));
-//            Log.d(ApplicationSettings.TAG,"run 8");
-        }
-        catch (LostCommsException e)
-        {
-            handleLostConnection(e);
-        }
-    }
-
-    private void flushComms() throws LostCommsException
-    {
-        if (simulated)
-            return;
-
-        comm.flush();
-    }
-
-    private void handleLostConnection(LostCommsException e)
-    {
-        sendMessage("Lost connection to Megasquirt : " + e.getLocalizedMessage());
-        initialised = false;
-        if(running)
-        {
-            handler.postDelayed(this, 5000);
-        }
-            
-    }
-
-    private void verifySignature() throws LostCommsException
-    {
-        boolean connected = false;
-        String msSig = null;
-        if (simulated)
-        {
-            connected = true;
-        }
-        else
-        {
-            byte[] sigCommand = this.getSigCommand();
-            sendMessage("Verifying MS");
-            msSig = comm.getSignature(sigCommand);
-            String signature = getSignature();
-            connected = signature.equals(msSig);
-        }
-        if (connected)
-        {
-            broadcastConnected();
-        }
-        else
-        {
-            sendMessage("Signature error! " + msSig);
-        }
     }
 
     private void initialiseConnection()
     {
-        comm = ApplicationSettings.INSTANCE.getComms();
-        comm.setInterWriteDelay(getInterWriteDelay());
-        ochBuffer = new byte[this.getBlockSize()];
+        String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
+        mAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if (!simulated)
-        {
-            comm.close();
-            comm.openConnection();
-        }
+        BluetoothDevice remote = mAdapter.getRemoteDevice(btAddr);
 
-    }
-
-    private void loadConstantsWithTimeout() throws LostCommsException
-    {
-        sendMessage("Loading constants...");
-
-        boolean constantsLoaded = false;
-        int counter = 0;
-        do
-        {
-            try
-            {
-                loadConstants(simulated);
-                sendMessage("Constants loaded");
-                constantsLoaded = true;
-            }
-
-            catch (Exception e)
-            {
-                counter++;
-                sendMessage("Failed to load constants : " + counter);
-                constantsLoaded = false;
-                comm.close();
-                comm.openConnection();
-                comm.flush();
-            }
-
-        }
-        while (!constantsLoaded);
+        connect(remote);
     }
 
     private void logValues()
@@ -226,7 +128,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (IOException e)
         {
-            Log.e(ApplicationSettings.TAG,"Megasquirt.logValues()",e);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.logValues()", e);
         }
     }
 
@@ -234,19 +136,12 @@ public abstract class Megasquirt implements Runnable
     {
         if (simulated)
             return;
-        try
+        if (mConnectedThread != null)
         {
-            comm.flush();
-            comm.close();
-
-            FRDLogManager.INSTANCE.close();
-            DatalogManager.INSTANCE.close();
-
+            mConnectedThread.cancelConnection();
         }
-        catch (LostCommsException e)
-        {
-            Log.e(ApplicationSettings.TAG,"Megasquirt.disconnect()",e);
-        }
+        FRDLogManager.INSTANCE.close();
+        DatalogManager.INSTANCE.close();
 
     }
 
@@ -267,113 +162,23 @@ public abstract class Megasquirt implements Runnable
         }
         catch (InterruptedException e)
         {
-            Log.e(ApplicationSettings.TAG,"Megasquirt.delay()",e);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.delay()", e);
         }
 
     }
 
-    private void broadcastConnected()
+    private void broadcast(String action)
     {
         Intent broadcast = new Intent();
-        broadcast.setAction(CONNECTED);
-        // broadcast.putExtra(LOCATION, location);
-        context.sendBroadcast(broadcast);
-        sendMessage("Connected to " + this.getSignature());
-
-    }
-
-    private void broadcastNewData()
-    {
-        Intent broadcast = new Intent();
-        broadcast.setAction(NEW_DATA);
+        broadcast.setAction(action);
         // broadcast.putExtra(LOCATION, location);
         context.sendBroadcast(broadcast);
 
     }
 
-    private void getRuntimeVars() throws LostCommsException
-    {
-//        Debug.startMethodTracing("getRuntimeVars");
-        if (simulated)
-        {
-            MSSimulator.INSTANCE.getNextRTV(ochBuffer);
-            return;
-        }
-//        DebugLogManager.INSTANCE.log("1", context,false);
-        comm.write(this.getOchCommand());//
-//        DebugLogManager.INSTANCE.log("2", context,false);
-        comm.readWithTimeout(ochBuffer, 1, TimeUnit.SECONDS);
-//        DebugLogManager.INSTANCE.log("3", context,true);
-//        Debug.stopMethodTracing();
-    }
-
-    private void calculateValues() throws LostCommsException
-    {
-        calculate(ochBuffer);
-    }
-
-    public Megasquirt(Context c, Handler handler)
+    public Megasquirt(Context c)
     {
         this.context = c;
-        this.handler = handler;
-
-    }
-
-    protected int getLong(byte[] ochBuffer, int i)
-    {
-        return getWord(ochBuffer, i) * 65536 + getWord(ochBuffer, i + 2);
-    }
-
-    protected int getWord(byte[] ochBuffer, int i)
-    {
-
-        return (ochBuffer[i] & 0xFF) * 256 + ochBuffer[i + 1] & 0xFF;
-    }
-
-    protected int getByte(byte[] ochBuffer, int i)
-    {
-        return (int) ochBuffer[i] & 0xFF;
-    }
-
-    protected int getSignedLong(byte[] ochBuffer, int i)
-    {
-        int x = getLong(ochBuffer, i);
-        if (x > 2 << 32 - 1)
-        {
-            x = 2 << 32 - x;
-        }
-        return x;
-    }
-
-    protected int getSignedByte(byte[] ochBuffer, int i)
-    {
-
-        int x = getByte(ochBuffer, i);
-        if (x > 127)
-        {
-            x = 256 - x;
-        }
-        return x;
-    }
-
-    protected int getSignedWord(byte[] ochBuffer, int i)
-    {
-        int x = getWord(ochBuffer, i);
-        if (x > 32767)
-        {
-            x = 32768 - x;
-        }
-        return x;
-    }
-
-    protected double timeNow()
-    {
-        return (System.currentTimeMillis() - logStart) / 1000.0;
-    }
-
-    protected double tempCvt(int t)
-    {
-        return (t - 32.0) * 5.0 / 9.0;
     }
 
     public boolean initialised()
@@ -382,6 +187,11 @@ public abstract class Megasquirt implements Runnable
         boolean connected = false;
         return connected;
 
+    }
+
+    protected double timeNow()
+    {
+        return (System.currentTimeMillis() - logStart) / 1000.0;
     }
 
     public double getValue(String channel)
@@ -395,7 +205,7 @@ public abstract class Megasquirt implements Runnable
         }
         catch (Exception e)
         {
-            Log.e(ApplicationSettings.TAG,"Megasquirt.geetValue()",e);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
         }
         return value;
     }
@@ -403,6 +213,7 @@ public abstract class Megasquirt implements Runnable
     public void startLogging()
     {
         logging = true;
+        logStart = System.currentTimeMillis();
 
     }
 
@@ -413,30 +224,6 @@ public abstract class Megasquirt implements Runnable
         FRDLogManager.INSTANCE.close();
     }
 
-    protected int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
-    {
-        int val = 0;
-        byte b = pageBuffer[i];
-
-        long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
-        val = (int) ((b & mask) >> _bitLo);
-
-        return val;
-    }
-
-    protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws LostCommsException
-    {
-        comm.flush();
-        comm.write(pageSelectCommand);
-        delay(getPageActivationDelay());
-        if (pageReadCommand != null)
-        {
-            comm.write(pageReadCommand);
-        }
-        delay(getPageActivationDelay());
-        comm.readWithTimeout(pageBuffer, 1, TimeUnit.SECONDS);
-    }
-
     protected double round(double v)
     {
         return Math.floor(v * 100 + .5) / 100;
@@ -445,5 +232,396 @@ public abstract class Megasquirt implements Runnable
     protected boolean isSet(String name)
     {
         return ApplicationSettings.INSTANCE.isSet(name);
+    }
+
+    /**
+     * This thread runs while attempting to make an outgoing connection with a device. It runs straight through; the connection either succeeds or fails.
+     */
+    private class ConnectThread extends Thread
+    {
+        private final BluetoothSocket mmSocket;
+        private final BluetoothDevice mmDevice;
+
+        public ConnectThread(BluetoothDevice device)
+        {
+            mmDevice = device;
+            BluetoothSocket tmp = null;
+            // Get a BluetoothSocket for a connection with the
+            // given BluetoothDevice
+            try
+            {
+                tmp = device.createRfcommSocketToServiceRecord(RFCOMM_UUID);
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "create() failed", e);
+            }
+            mmSocket = tmp;
+        }
+
+        public void run()
+        {
+            Log.i(TAG, "BEGIN mConnectThread");
+            setName("ConnectThread");
+            sendMessage("Starting connection");
+            
+            // Always cancel discovery because it will slow down a connection
+            mAdapter.cancelDiscovery();
+
+            // Make a connection to the BluetoothSocket
+            try
+            {
+                // This is a blocking call and will only return on a
+                // successful connection or an exception
+                mmSocket.connect();
+            }
+            catch (IOException e)
+            {
+                connectionFailed();
+                // Close the socket
+                try
+                {
+                    mmSocket.close();
+                }
+                catch (IOException e2)
+                {
+                    Log.e(TAG, "unable to close() socket during connection failure", e2);
+                }
+                // Start the service over to restart listening mode
+                return;
+            }
+
+            // Reset the ConnectThread because we're done
+            synchronized (Megasquirt.this)
+            {
+                mConnectThread = null;
+            }
+
+            // Start the connected thread
+            connected(mmSocket, mmDevice);
+        }
+
+        public void cancel()
+        {
+            try
+            {
+                mmSocket.close();
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "close() of connect socket failed", e);
+            }
+        }
+    }
+
+    private void setState(ConnectionState state)
+    {
+        this.currentState = state;
+    }
+
+    synchronized boolean connect(BluetoothDevice device)
+    {
+        // Cancel any thread attempting to make a connection
+        if (currentState == ConnectionState.STATE_CONNECTING)
+        {
+            if (mConnectThread != null)
+            {
+                mConnectThread.cancel();
+                mConnectThread = null;
+            }
+        }
+
+        // Start the thread to connect with the given device
+        mConnectThread = new ConnectThread(device);
+        mConnectThread.start();
+        setState(ConnectionState.STATE_CONNECTING);
+        return true;
+    }
+
+    private void connected(BluetoothSocket socket, BluetoothDevice device)
+    {
+
+        // Cancel the thread that completed the connection
+        if (mConnectThread != null)
+        {
+            mConnectThread.cancel();
+            mConnectThread = null;
+        }
+
+        // Cancel any thread currently running a connection
+
+        if (mConnectedThread != null)
+        {
+            mConnectedThread.cancelConnection();
+            mConnectedThread = null;
+        }
+
+        // Start the thread to manage the connection and perform transmissions
+        mConnectedThread = new ConnectedThread(socket);
+        mConnectedThread.start();
+
+        // Send the name of the connected device back to the UI Activity
+        sendMessage("Connected to " + device.getName());
+
+        setState(ConnectionState.STATE_CONNECTED);
+    }
+
+    /**
+     * Indicate that the connection attempt failed and notify the UI Activity.
+     */
+    private void connectionFailed()
+    {
+        setState(ConnectionState.STATE_LISTEN);
+
+        // Send a failure message back to the Activity
+        sendMessage("Unable to connect device");
+        broadcast(DISCONNECTED);
+    }
+
+    /**
+     * Indicate that the connection was lost and notify the UI Activity.
+     */
+    private void connectionLost()
+    {
+        setState(ConnectionState.STATE_LISTEN);
+
+        // Send a failure message back to the Activity
+
+        sendMessage("Device connection was lost");
+        broadcast(DISCONNECTED);
+    }
+
+    /**
+     * This thread runs during a connection with a remote device. It handles all incoming and outgoing transmissions.
+     */
+    private class ConnectedThread extends Thread
+    {
+        private final BluetoothSocket mmSocket;
+        private final InputStream     mmInStream;
+        private final OutputStream    mmOutStream;
+        Timer                         t = new Timer("IOTimer", true);
+
+        public ConnectedThread(BluetoothSocket socket)
+        {
+            Log.d(TAG, "create ConnectedThread");
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+            sendMessage("Establishing connection");
+            
+            // Get the BluetoothSocket input and output streams
+            try
+            {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "temp sockets not created", e);
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run()
+        {
+            Log.i(TAG, "BEGIN mConnectedThread");
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch (InterruptedException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try
+            {
+                flush();
+
+                if (!verifySignature())
+                {
+                    connectionLost();
+                    return;
+                }
+                loadConstants(simulated);
+
+                while (true)
+                {
+                    getRuntimeVars();
+                    calculateValues();
+                    logValues();
+                    broadcast(NEW_DATA);
+                }
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "disconnected", e);
+                connectionLost();
+            }
+
+        }
+
+        private void flush() throws IOException
+        {
+            mmOutStream.flush();
+            try
+            {
+                Thread.sleep(getPageActivationDelay());
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            while (mmInStream.available() > 0)
+            {
+                mmInStream.read();
+            }
+        }
+
+        private boolean verifySignature() throws IOException
+        {
+            boolean verified = false;
+            String msSig = null;
+            if (simulated)
+            {
+                verified = true;
+            }
+            else
+            {
+                byte[] sigCommand = getSigCommand();
+                sendMessage("Verifying MS");
+                msSig = getSignature(sigCommand);
+                String signature = Megasquirt.this.getSignature();
+                verified = signature.equals(msSig);
+            }
+            if (verified)
+            {
+                sendMessage("Connected to "+msSig);
+                
+                broadcast(CONNECTED);
+            }
+            else
+            {
+                sendMessage("Signature error! " + msSig);
+            }
+            return verified;
+        }
+
+        private void getRuntimeVars() throws IOException
+        {
+            // Debug.startMethodTracing("getRuntimeVars");
+            if (simulated)
+            {
+                MSSimulator.INSTANCE.getNextRTV(ochBuffer);
+                return;
+            }
+            // DebugLogManager.INSTANCE.log("1", context,false);
+            write(getOchCommand());//
+            // DebugLogManager.INSTANCE.log("2", context,false);
+            read(ochBuffer);
+            // DebugLogManager.INSTANCE.log("3", context,true);
+            // Debug.stopMethodTracing();
+        }
+
+        private void calculateValues() throws IOException
+        {
+            calculate(ochBuffer);
+        }
+
+        private void write(byte[] command) throws IOException
+        {
+            this.mmOutStream.write(command);
+            try
+            {
+                Thread.sleep(getInterWriteDelay());
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        private void read(byte[] bytes) throws IOException
+        {
+            TimerTask cancelTask = new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    cancelConnection();
+                }
+            };
+
+            t.schedule(cancelTask, 1000);
+
+            int nBytes = bytes.length;
+            int bytesRead = 0;
+            byte[] buffer = new byte[bytes.length];
+            while (bytesRead < nBytes)
+            {
+
+                int result = mmInStream.read(buffer, bytesRead, nBytes - bytesRead);
+                if (result == -1)
+                    break;
+
+                bytesRead += result;
+            }
+
+            synchronized (bytes)
+            {
+                System.arraycopy(buffer, 0, bytes, 0, bytes.length);
+            }
+            cancelTask.cancel();
+            t.purge();
+        }
+
+        private String getSignature(byte[] sigCommand) throws IOException
+        {
+            String sig1 = "NoSigReadYet";
+            String sig2 = "Not here";
+            byte[] buf = new byte[32];
+            do
+            {
+                write(sigCommand);
+
+                sig1 = sig2;
+                read(buf);
+                sig2 = new String(buf);
+                flush();
+            }
+            while (!sig1.equals(sig2));
+            return sig1;
+        }
+
+        public void cancelConnection()
+        {
+            try
+            {
+                mmSocket.close();
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "close() of connect socket failed", e);
+            }
+        }
+    }
+
+    protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
+    {
+        if (mConnectedThread == null)
+        {
+            throw new IOException("Not connected!");
+        }
+
+        mConnectedThread.write(pageSelectCommand);
+        delay(getPageActivationDelay());
+        if (pageReadCommand != null)
+        {
+            mConnectedThread.write(pageReadCommand);
+        }
+        delay(getPageActivationDelay());
+        mConnectedThread.read(pageBuffer);
     }
 }
