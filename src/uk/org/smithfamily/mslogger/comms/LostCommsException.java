@@ -11,10 +11,15 @@ public class LostCommsException extends Exception
 
 	public LostCommsException()
 	{
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
-	/**
+	public LostCommsException(String msg)
+    {
+	    super(msg);
+    }
+
+    /**
 	 * 
 	 */
 	private static final long	serialVersionUID	= 7348822989257405034L;

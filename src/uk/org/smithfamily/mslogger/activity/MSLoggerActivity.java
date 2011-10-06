@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ public class MSLoggerActivity extends Activity
     private IndicatorManager  indicatorManager;
     private ToggleButton      connectButton;
     public boolean            connected;
+    private boolean           receivedData      = false;
 
     private final class MSServiceConnection implements ServiceConnection
     {
@@ -98,13 +100,7 @@ public class MSLoggerActivity extends Activity
             }
             else
             {
-                connected = false;
-                service.stopLogging();
-                logButton.setChecked(false);
-                logButton.setEnabled(false);
-                unbindService(mConnection);
-
-                stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
+                resetConnection();
             }
         }
     }
@@ -114,21 +110,41 @@ public class MSLoggerActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent)
         {
+            Log.i(ApplicationSettings.TAG, "Received :"+intent.getAction());
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
                 indicatorManager.setDisabled(false);
+                connectButton.setEnabled(true);
+            }
+            if (intent.getAction().equals(Megasquirt.DISCONNECTED))
+            {
+                if (receivedData && connectButton.isChecked())
+                {
+                    // We've been unfortunately disconnected so re-establish comms as if nothing happened
+                    service.reconnect();
+                    //connectButton.setEnabled(false);
+                    //logButton.setEnabled(false);
+                }
+                else
+                {
+                    resetConnection();
+                    TextView v = (TextView) findViewById(R.id.messages);
+                    v.setText("Disconnected");
+                    }
             }
 
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
             {
                 logButton.setEnabled(connected);
                 processData();
+                receivedData = true;
             }
             if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
                 TextView v = (TextView) findViewById(R.id.messages);
                 v.setText(msg);
+                Log.i(ApplicationSettings.TAG,"Message : "+msg);
             }
         }
     }
@@ -136,8 +152,9 @@ public class MSLoggerActivity extends Activity
     private ServiceConnection mConnection = new MSServiceConnection();
     private ToggleButton      logButton;
 
-    void doBindService()
+    synchronized void doBindService()
     {
+        
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -161,6 +178,8 @@ public class MSLoggerActivity extends Activity
 
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
+        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
+        registerReceiver(updateReceiver, disconnectedFilter);
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
@@ -261,4 +280,25 @@ public class MSLoggerActivity extends Activity
         }
     }
 
+    synchronized private void resetConnection()
+    {
+        connected = false;
+        receivedData = false;
+        service.stopLogging();
+        logButton.setChecked(false);
+        logButton.setEnabled(false);
+        indicatorManager.setDisabled(true);
+        connectButton.setChecked(false);
+        connectButton.setEnabled(true);
+
+        try
+        {
+            unbindService(mConnection);
+            stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
+        }
+        catch(Exception e)
+        {
+            
+        }
+    }
 }
