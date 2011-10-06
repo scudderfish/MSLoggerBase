@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -109,6 +110,7 @@ public class MSLoggerActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent)
         {
+            Log.i(ApplicationSettings.TAG, "Received :"+intent.getAction());
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
                 indicatorManager.setDisabled(false);
@@ -116,7 +118,7 @@ public class MSLoggerActivity extends Activity
             }
             if (intent.getAction().equals(Megasquirt.DISCONNECTED))
             {
-                if (receivedData)
+                if (receivedData && connectButton.isChecked())
                 {
                     // We've been unfortunately disconnected so re-establish comms as if nothing happened
                     service.reconnect();
@@ -126,7 +128,9 @@ public class MSLoggerActivity extends Activity
                 else
                 {
                     resetConnection();
-                }
+                    TextView v = (TextView) findViewById(R.id.messages);
+                    v.setText("Disconnected");
+                    }
             }
 
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
@@ -140,6 +144,7 @@ public class MSLoggerActivity extends Activity
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
                 TextView v = (TextView) findViewById(R.id.messages);
                 v.setText(msg);
+                Log.i(ApplicationSettings.TAG,"Message : "+msg);
             }
         }
     }
@@ -147,8 +152,9 @@ public class MSLoggerActivity extends Activity
     private ServiceConnection mConnection = new MSServiceConnection();
     private ToggleButton      logButton;
 
-    void doBindService()
+    synchronized void doBindService()
     {
+        
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -274,7 +280,7 @@ public class MSLoggerActivity extends Activity
         }
     }
 
-    private void resetConnection()
+    synchronized private void resetConnection()
     {
         connected = false;
         receivedData = false;
@@ -285,9 +291,14 @@ public class MSLoggerActivity extends Activity
         connectButton.setChecked(false);
         connectButton.setEnabled(true);
 
-        unbindService(mConnection);
-
-        stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
+        try
+        {
+            unbindService(mConnection);
+            stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
+        }
+        catch(Exception e)
+        {
+            
+        }
     }
-
 }
