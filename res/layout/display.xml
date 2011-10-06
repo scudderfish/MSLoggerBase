@@ -17,7 +17,7 @@
 			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/RPMInd" style="@style/Indicator" dgs:numValue="0"
 				dgs:scaleMinValue="0" dgs:scaleMaxValue="7000"
-				dgs:rangeWarningMinValue="4000" dgs:channel="rpm"/>
+				dgs:rangeWarningMinValue="4000" dgs:channel="RpmHiRes"/>
 
 			<TextView android:id="@+id/CLTLabel" style="@style/Label"
 				android:text="CLT"></TextView>
@@ -33,7 +33,7 @@
 			<uk.org.smithfamily.mslogger.widgets.NumericIndicator
 				android:id="@+id/MAPInd" style="@style/Indicator" dgs:numValue="0"
 				dgs:scaleMinValue="00" dgs:scaleMaxValue="100"
-				dgs:rangeWarningMinValue="100" dgsLchannel="map"></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
+				dgs:rangeWarningMinValue="100" dgs:channel="map"></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 
 			<TextView android:id="@+id/IATLabel" style="@style/Label"
 				android:text="IAT"></TextView>
@@ -57,7 +57,7 @@
 				android:id="@+id/SPKInd" style="@style/Indicator" dgs:numValue="0"
 				dgs:scaleMinValue="0" dgs:scaleMaxValue="50"
 				dgs:rangeWarningMinValue="100" dgs:rangeErrorMinValue="100"
-				dgs:channel="advance"></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
+				dgs:channel="advSpark"></uk.org.smithfamily.mslogger.widgets.NumericIndicator>
 
 		</TableRow>
 		<View android:layout_height="2dip" android:background="#FF909090" />

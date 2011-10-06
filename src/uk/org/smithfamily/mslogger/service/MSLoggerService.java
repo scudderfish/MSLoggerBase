@@ -78,9 +78,7 @@ public class MSLoggerService extends Service
     {
         //Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
         showNotification();
-        
-        mHandler.removeCallbacks(ecuDefinition);
-        mHandler.postDelayed(ecuDefinition, 100);
+        ecuDefinition.start();
         
     }
 
@@ -127,5 +125,10 @@ public class MSLoggerService extends Service
     public void startLogging()
     {
         ecuDefinition.startLogging();
+    }
+
+    public void reconnect()
+    {
+        ecuDefinition.initialiseConnection();
     }
 }
