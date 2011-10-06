@@ -5,6 +5,7 @@ import java.io.File;
 import uk.org.smithfamily.mslogger.comms.MsComm;
 import uk.org.smithfamily.mslogger.comms.SerialComm;
 import uk.org.smithfamily.mslogger.ecuDef.MS1Extra29y;
+import uk.org.smithfamily.mslogger.ecuDef.MS2Extra210q;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,7 +14,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-public enum ApplicationSettings
+public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     INSTANCE;
 
@@ -28,14 +29,12 @@ public enum ApplicationSettings
     private Megasquirt          ecuDefinition;
     private MsComm              comms;
     private String              bluetoothMac;
-    private Handler             handler;
 
     public void initialise(Context context, Handler handler)
     {
         this.context = context;
-        this.handler = handler;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
+        prefs.registerOnSharedPreferenceChangeListener(this);
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
                 context.getString(R.string.app_name)));
         dataDir.mkdirs();
@@ -71,6 +70,11 @@ public enum ApplicationSettings
         {
             ecuDefinition = new MS1Extra29y(context);
         }
+        else
+        {
+            ecuDefinition = new MS2Extra210q(context);
+        }
+
         return ecuDefinition;
     }
 
@@ -106,5 +110,17 @@ public enum ApplicationSettings
             return true;
 
         return false;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        bluetoothMac = null;
+        if (ecuDefinition != null)
+        {
+            ecuDefinition.stop();
+            ecuDefinition = null;
+        }
+
     }
 }

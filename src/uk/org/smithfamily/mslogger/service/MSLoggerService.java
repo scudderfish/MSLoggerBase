@@ -126,4 +126,9 @@ public class MSLoggerService extends Service
     {
         ecuDefinition.startLogging();
     }
+
+    public void reconnect()
+    {
+        ecuDefinition.initialiseConnection();
+    }
 }

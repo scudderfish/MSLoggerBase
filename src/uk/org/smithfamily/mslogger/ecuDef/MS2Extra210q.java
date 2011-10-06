@@ -2,9 +2,7 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 
-import uk.org.smithfamily.mslogger.comms.LostCommsException;
 import android.content.Context;
-import android.os.Handler;
 
 public class MS2Extra210q extends Megasquirt
 {
@@ -151,9 +149,19 @@ public class MS2Extra210q extends Megasquirt
     int            nCylinders;
     int            divider;
 
+    //flags
+    boolean NARROW_BAND_EGO;
+    boolean LAMBDA;
+    boolean EGTFULL;
+    boolean CELSIUS;
+    
     public MS2Extra210q(Context c)
     {
         super(c);
+        NARROW_BAND_EGO=isSet("NARROW_BAND_EGO");
+        LAMBDA=isSet("LAMBDA");
+        EGTFULL=isSet("EGTFULL");
+        CELSIUS=isSet("CELSIUS");
     }
 
     @Override
@@ -230,12 +238,12 @@ public class MS2Extra210q extends Megasquirt
         dutyCycle2 = 100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2;// ,
                                                                             // "%"
 
-        if (isSet("NARROW_BAND_EGO"))
+        if (NARROW_BAND_EGO)
         {
             egoVoltage = 1.0 - (afr1 * 0.04883);// , "V" ; For LED bars...
 
         }
-        else if (isSet("LAMBDA"))
+        else if (LAMBDA)
         {
             egoVoltage = lambda1;// , "Lambda" ; For LED bars...
         }
@@ -244,9 +252,9 @@ public class MS2Extra210q extends Megasquirt
             egoVoltage = afr1;// , "AFR" ; For LED bars...
 
         }
-        if (isSet("EGTFULL"))
+        if (EGTFULL)
         {
-            if (isSet("CELSIUS"))
+            if (CELSIUS)
             {
                 egt6temp = adc6 * 1.222;// ; Setup for converting 0-5.01V = 0 -
                                         // 1250C
@@ -267,7 +275,7 @@ public class MS2Extra210q extends Megasquirt
         // With the 10K/10K circuit. 1000degC would apply 5.10V to the adc and
         // result in '1044ADC counts' if that was possible
         {
-            if (isSet("CELSIUS"))
+            if (CELSIUS)
             {
                 egt6temp = adc6 * 0.956;// ; Setup for converting 0-5.10V = 0 -
                                         // 1000C
@@ -422,11 +430,11 @@ public class MS2Extra210q extends Megasquirt
         b.append(rpm).append('\t');// , "RPM", int, "%d"
         b.append(map).append('\t');// , "MAP", float, "%.1f"
         b.append(throttle).append('\t');// , "TP", int, "%d"
-        if (isSet("NARROW_BAND_EGO"))
+        if (NARROW_BAND_EGO)
         {
             b.append(egoVoltage).append('\t');// , "O2", float, "%.3f"
         }
-        else if (isSet("LAMBDA"))
+        else if (LAMBDA)
         {
             b.append(lambda1).append('\t');// , "Lambda", float, "%.3f"
         }

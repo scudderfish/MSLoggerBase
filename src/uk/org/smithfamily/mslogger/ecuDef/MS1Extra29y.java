@@ -9,104 +9,120 @@ import android.util.Log;
 public class MS1Extra29y extends Megasquirt
 {
 
-    public MS1Extra29y(Context c)
-    {
-        super(c);
-    }
-
     // Page constants START
-    int    alternate1;
-    int    alternate2;
-    int    twoStroke1;
-    int    nCylinders1;
-    int    divider1;
-    int    twoStroke2;
-    int    nCylinders2;
-    int    divider2;
+    int     alternate1;
+    int     alternate2;
+    int     twoStroke1;
+    int     nCylinders1;
+    int     divider1;
+    int     twoStroke2;
+    int     nCylinders2;
+    int     divider2;
     // Page constants END
 
     // Runtime vars START
-    int    secl;
-    int    squirt;
-    int    engine;
-    int    baroADC;
-    int    mapADC;
-    int    matADC;
-    int    cltADC;
-    int    tpsADC;
-    int    batADC;
-    int    egoADC;
-    int    egoCorrection;
-    int    airCorrection;
-    int    warmupEnrich;
-    int    rpm100;
-    int    pulseWidth1;
-    int    accelEnrich;
-    int    baroCorrection;
-    int    gammaEnrich;
-    int    veCurr1;
-    int    pulseWidth2;
-    int    veCurr2;
-    int    idleDC;
-    int    iTime;
-    int    advance;
-    int    afrtarget;
-    int    fuelADC;
-    int    egtADC;
-    int    CltIatAngle;
-    int    KnockAngle;
-    int    egoCorrection2;
-    int    porta;
-    int    portb;
-    int    portc;
-    int    portd;
-    int    stackL;
-    int    tpsLast;
-    int    iTimeX;
-    int    bcDC;
+    int     secl;
+    int     squirt;
+    int     engine;
+    int     baroADC;
+    int     mapADC;
+    int     matADC;
+    int     cltADC;
+    int     tpsADC;
+    int     batADC;
+    int     egoADC;
+    int     egoCorrection;
+    int     airCorrection;
+    int     warmupEnrich;
+    int     rpm100;
+    int     pulseWidth1;
+    int     accelEnrich;
+    int     baroCorrection;
+    int     gammaEnrich;
+    int     veCurr1;
+    int     pulseWidth2;
+    int     veCurr2;
+    int     idleDC;
+    int     iTime;
+    int     advance;
+    int     afrtarget;
+    int     fuelADC;
+    int     egtADC;
+    int     CltIatAngle;
+    int     KnockAngle;
+    int     egoCorrection2;
+    int     porta;
+    int     portb;
+    int     portc;
+    int     portd;
+    int     stackL;
+    int     tpsLast;
+    int     iTimeX;
+    int     bcDC;
     // Runtime vars END
 
     // Eqns store START
-    int    injOpen1;
-    double boost;
-    int    accDecEnrich;
-    double batteryVoltage;
-    double coolant;
-    double egoVoltage;
-    double ego2Voltage;
-    double mat;
-    int    rpm;
-    double time;
-    double egttemp;
-    double lambda2;
-    double afr2;
-    int    barometer;
-    double map;
-    int    throttle;
-    double advSpark;
-    int    KnockAng;
-    int    KnockDeg;
-    int    CltIatAng;
-    double fuelvolt;
-    double fuelpress;
-    int    altDiv1;
-    int    altDiv2;
-    double cycleTime1;
-    int    nSquirts1;
-    double dutyCycle1;
-    double cycleTime2;
-    int    nSquirts2;
-    double dutyCycle2;
-    int    veCurr;
-    int    pulseWidth;
-    int    iTimefull;
-    double RpmHitmp;
-    double RpmHiRes;
-    double vacuum;
-    double boostVac;
-    int    floodclear;
-    byte[] sigCommand = { 83 }; // 'S'
-    byte[] ochCommand = { 82 }; // 'R'
+    int     injOpen1;
+    double  boost;
+    int     accDecEnrich;
+    double  batteryVoltage;
+    double  coolant;
+    double  egoVoltage;
+    double  ego2Voltage;
+    double  mat;
+    int     rpm;
+    double  time;
+    double  egttemp;
+    double  lambda2;
+    double  afr2;
+    int     barometer;
+    double  map;
+    int     throttle;
+    double  advSpark;
+    int     KnockAng;
+    int     KnockDeg;
+    int     CltIatAng;
+    double  fuelvolt;
+    double  fuelpress;
+    int     altDiv1;
+    int     altDiv2;
+    double  cycleTime1;
+    int     nSquirts1;
+    double  dutyCycle1;
+    double  cycleTime2;
+    int     nSquirts2;
+    double  dutyCycle2;
+    int     veCurr;
+    int     pulseWidth;
+    int     iTimefull;
+    double  RpmHitmp;
+    double  RpmHiRes;
+    double  vacuum;
+    double  boostVac;
+    int     floodclear;
+    byte[]  sigCommand = { 83 }; // 'S'
+    byte[]  ochCommand = { 82 }; // 'R'
+
+    boolean CELSIUS;
+    boolean NARROW_BAND_EGO;
+    boolean ZEITRONIX_NON_LINEAR;
+    boolean INNOVATE_LC1_DEFAULT;
+    boolean MPXH6300A;
+    boolean MPXH6400A;
+    boolean MPX4250;
+
+    public MS1Extra29y(Context c)
+    {
+        super(c);
+        CELSIUS = isSet("CELSIUS");
+        NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
+        ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");
+        INNOVATE_LC1_DEFAULT = isSet("INNOVATE_LC1_DEFAULT");
+        MPXH6300A = isSet("MPXH6300A");
+        MPXH6400A = isSet("MPXH6400A");
+        MPX4250 = isSet("MPX4250");
+
+    }
 
     @Override
     public int getInterWriteDelay()
@@ -137,19 +153,63 @@ public class MS1Extra29y extends Megasquirt
             rpm = (rpm100 * 100); // True RPM.
             time = (timeNow()); // "timeNow" is a parameterless built-in
                                 // function.
-            egttemp = (egtADC * 3.90625); // Setup for converting 0-5V = 0 -
-                                          // 1000C
 
+            if (CELSIUS)
+            {
+                egttemp = (egtADC * 3.90625); // Setup for converting 0-5V = 0 -
+                                              // 1000C
+            }
+            else
+            {
+                egttemp = (egtADC * 7.15625);
+            }
             // ; Added for second O2 sensor
-            lambda2 = (fuelADC / 255.0 + 0.5);
-            afr2 = (lambda2 * 14.7);
+            if (NARROW_BAND_EGO)
+            {
+                afr2 = (TableManager.INSTANCE.table(fuelADC, "NBafr100.inc") / 100.0);
+                lambda2 = (afr2 / 14.7);
 
-            barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4250.inc"));
-            map = (TableManager.INSTANCE.table(mapADC, "kpafactor4250.inc")); // Manifold
-                                                                              // pressure
-                                                                              // in
-            // kPa.
+            }
+            else if (ZEITRONIX_NON_LINEAR)
+            {
+                lambda2 = (TableManager.INSTANCE.table(fuelADC, "WBafr100Zeit.inc") / 100.0);
+                afr2 = (lambda2 * 14.7);
+            }
+            else if (INNOVATE_LC1_DEFAULT)
+            {
+                lambda2 = (fuelADC / 255.0 + 0.5);
+                afr2 = (lambda2 * 14.7);
+            }
+            else
+            {
+                lambda2 = (TableManager.INSTANCE.table(fuelADC, "WBlambda100MOT.inc") / 100.0);
+                afr2 = (lambda2 * 14.7);
+            }
 
+            if (MPXH6300A)
+            {
+                barometer = (int) ((baroADC + 1.53) * 1.213675);
+                map = ((mapADC + 1.53) * 1.213675);
+            }
+            else if (MPXH6400A)
+            {
+                barometer = (int) ((baroADC + 2.147) * 1.6197783);
+                map = ((mapADC + 2.147) * 1.6197783);
+
+            }
+            else if (MPX4250)
+            {
+                barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4250.inc"));
+                map = (TableManager.INSTANCE.table(mapADC, "kpafactor4250.inc")); // Manifold
+                                                                                  // pressure
+                                                                                  // in kPa.
+            }
+            else
+            {
+                barometer = (TableManager.INSTANCE.table(baroADC, "kpafactor4115.inc"));
+                map = (TableManager.INSTANCE.table(mapADC, "kpafactor4115.inc"));
+
+            }
             throttle = (TableManager.INSTANCE.table(tpsADC, "throttlefactor.inc"));
             advSpark = ((advance * 0.352) - 10);
             // ; Enhanced Stuff

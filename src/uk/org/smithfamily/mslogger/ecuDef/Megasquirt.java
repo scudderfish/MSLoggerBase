@@ -7,8 +7,6 @@ import java.lang.reflect.Field;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
@@ -75,10 +73,26 @@ public abstract class Megasquirt
     private byte[]  ochBuffer;
 
     private boolean logging;
+    private boolean constantsLoaded;
+    private boolean signatureChecked;
 
     public void start()
     {
         ochBuffer = new byte[this.getBlockSize()];
+        constantsLoaded = false;
+        signatureChecked = false;
+        initialiseConnection();
+
+    }
+
+    public void stop()
+    {
+        disconnect();
+        sendMessage("");
+    }
+
+    public void initialiseConnection()
+    {
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null)
         {
@@ -93,18 +107,7 @@ public abstract class Megasquirt
             mConnectedThread = null;
         }
         setState(ConnectionState.STATE_LISTEN);
-        initialiseConnection();
 
-    }
-
-    public void stop()
-    {
-        disconnect();
-        sendMessage("");
-    }
-
-    private void initialiseConnection()
-    {
         String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
         mAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -264,7 +267,7 @@ public abstract class Megasquirt
             Log.i(TAG, "BEGIN mConnectThread");
             setName("ConnectThread");
             sendMessage("Starting connection");
-            
+
             // Always cancel discovery because it will slow down a connection
             mAdapter.cancelDiscovery();
 
@@ -408,7 +411,7 @@ public abstract class Megasquirt
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
             sendMessage("Establishing connection");
-            
+
             // Get the BluetoothSocket input and output streams
             try
             {
@@ -445,8 +448,11 @@ public abstract class Megasquirt
                     connectionLost();
                     return;
                 }
-                loadConstants(simulated);
-
+                if (!constantsLoaded)
+                {
+                    loadConstants(simulated);
+                    constantsLoaded = true;
+                }
                 while (true)
                 {
                     getRuntimeVars();
@@ -460,7 +466,11 @@ public abstract class Megasquirt
                 Log.e(TAG, "disconnected", e);
                 connectionLost();
             }
-
+            if (t != null)
+            {
+                t.cancel();
+                t = null;
+            }
         }
 
         private void flush() throws IOException
@@ -498,8 +508,8 @@ public abstract class Megasquirt
             }
             if (verified)
             {
-                sendMessage("Connected to "+msSig);
-                
+                sendMessage("Connected to " + msSig);
+
                 broadcast(CONNECTED);
             }
             else
