@@ -2,11 +2,7 @@ package uk.org.smithfamily.mslogger;
 
 import java.io.File;
 
-import uk.org.smithfamily.mslogger.comms.MsComm;
-import uk.org.smithfamily.mslogger.comms.SerialComm;
-import uk.org.smithfamily.mslogger.ecuDef.MS1Extra29y;
-import uk.org.smithfamily.mslogger.ecuDef.MS2Extra210q;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -27,7 +23,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private int                 hertz;
     private SharedPreferences   prefs;
     private Megasquirt          ecuDefinition;
-    private MsComm              comms;
     private String              bluetoothMac;
 
     public void initialise(Context context, Handler handler)
@@ -40,7 +35,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
 
-        comms = new SerialComm();
 
     }
 
@@ -70,9 +64,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             ecuDefinition = new MS1Extra29y(context);
         }
-        else
+        else if(ecuName.equals("MS2Extra21q"))
         {
             ecuDefinition = new MS2Extra210q(context);
+        }
+        else
+        {
+        	ecuDefinition=new MS2Extra310(context);
         }
 
         return ecuDefinition;
@@ -92,10 +90,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return bluetoothMac;
     }
 
-    public MsComm getComms()
-    {
-        return comms;
-    }
 
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
