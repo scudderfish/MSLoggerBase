@@ -2,7 +2,8 @@
 <resources>
 	<string-array name="MSNames">
 		<item>MS1Extra</item>
-		<item>MS2Extra</item>
+		<item>MS2Extra21q</item>
+		<item>MS2Extra310</item>
 	</string-array>
 	<string-array name="egotypes">
 		<item>NARROW_BAND_EGO</item>
