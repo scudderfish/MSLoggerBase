@@ -342,7 +342,8 @@ public class MS1Extra29y extends Megasquirt
     public String getLogHeader()
     {
 
-        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V\tiTime\tiTimeX\ttwoStroke1\tnCylinders1";
+        return "Time\tSecL\tRPM/100\tMAP\tTP\tO2\tMAT\tCLT\tEngine\tGego\tGair\tGwarm\tGbaro\tGammae\tTPSacc\tGve\tPW\tGve2\tPW2\tDutyCycle1\tDutyCycle2\tidleDC\tBCDuty3\tSpark Angle\tEGT\tFuel Press\tKnock\tRPM\tbarometer\tporta\tportb\tportc\tportd\tNOS On\tbatt V\tiTime\tiTimeX\ttwoStroke1\tnCylinders1" 
+        +MSUtils.getLocationLogHeader();
     }
 
     @Override
@@ -354,7 +355,7 @@ public class MS1Extra29y extends Megasquirt
                 + "\t" + dutyCycle1 + "\t" + dutyCycle2 + "\t" + idleDC + "\t" + bcDC + "\t" + advSpark + "\t" + egttemp + "\t"
                 + fuelpress + "\t" + KnockDeg + "\t" + RpmHiRes + "\t" + barometer + "\t" + porta + "\t" + portb + "\t" + portc
                 + "\t" + portd + "\t" + 0 + "\t" + batteryVoltage + "\t" + iTime + "\t" + iTimeX + "\t" + twoStroke1 + "\t"
-                + nCylinders1;
+                + nCylinders1 + MSUtils.getLocationLogRow();
 
     }
 

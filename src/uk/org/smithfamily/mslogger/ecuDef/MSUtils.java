@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import uk.org.smithfamily.mslogger.GPSLocationManager;
+
 public class MSUtils
 {
     public static int getLong(byte[] ochBuffer, int i)
@@ -64,5 +66,39 @@ public class MSUtils
 
         return val;
     }
+    public static double getLatitude()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getLatitude();
+    }
+    public static double getLongitude()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getLongitude();
+    }
+    public static double getSpeed()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getSpeed();
+    }
+    public static double getBearing()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getBearing();
+    }
+    
+    public static double getAccuracy()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getAccuracy();
+    }
+    
+    public static double getTime()
+    {
+        return GPSLocationManager.INSTANCE.getLastKnownLocation().getTime();
+    }
 
+    public static String getLocationLogHeader()
+    {
+        return "\tLat\tLong\tSpeed\tBearing\tAccuracy\tEpocMilli";
+    }
+    public static String getLocationLogRow()
+    {
+        return "\t"+getLatitude() +"\t"+getLongitude()+"\t"+getSpeed()+"\t"+getBearing()+"\t"+getAccuracy()+"\t"+(float)getTime();
+    }
 }

@@ -1,11 +1,15 @@
 package uk.org.smithfamily.mslogger.service;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
-import android.app.*;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
@@ -13,7 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
-public class MSLoggerService extends Service
+public class MSLoggerService extends Service 
 {
     private static final int MSLOGGERSERVICE_ID = 0;
     private static boolean   created            = false;
@@ -47,7 +51,7 @@ public class MSLoggerService extends Service
     @Override
     public void onCreate()
     {
-        ApplicationSettings.INSTANCE.initialise(this,mHandler);
+        ApplicationSettings.INSTANCE.initialise(this, mHandler);
 
         created = true;
         super.onCreate();
@@ -73,19 +77,20 @@ public class MSLoggerService extends Service
     {
         return ecuDefinition.getValue(channelName);
     }
-
+ 
     private void initialiseConnection()
     {
-        //Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, R.string.connecting_to_ms, Toast.LENGTH_SHORT).show();
         showNotification();
+        GPSLocationManager.INSTANCE.start();
         ecuDefinition.start();
-        
     }
 
     private void disconnect()
     {
         Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
         ecuDefinition.stop();
+        GPSLocationManager.INSTANCE.stop();
         removeNotification();
     }
 
