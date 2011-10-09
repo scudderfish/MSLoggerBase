@@ -26,4 +26,59 @@
 	<string name="CalibrateTPS">Calibrate TPS</string>
 	<string name="connect">Connect</string>
 	<string name="disconnect">Disconnect</string>
+
+    <string name="autoemail_title">Auto Email Setup</string>
+    <string name="autoemail_summary">Automatically emails the log file to an address of your choice</string>
+    <string name="autoemail_btn_register">Save settings</string>
+    
+    
+    <string name="autoemail_registering">Registering...</string>
+    <string name="please_wait">Please wait.</string>
+    <string name="autoemail_invalid_title">Invalid email</string>
+    <string name="autoemail_invalid_summary">Please use a valid email address.</string>
+    <string name="autoemail_success">Target email address saved.</string>
+    <string name="autoemail_autosend">Enable auto send</string>
+    <string name="autoemail_autosend_summary">Enables sending the log file to an email address of your choosing.</string>
+    <string name="autoemail_frequency">How often?</string>
+    <string name="autoemail_frequency_summary">How frequently log files should be emailed in a day</string>
+    <string name="autoemail_sendto">An email address</string>
+    <string name="autoemail_frequency_format">After %d hours</string>
+    <string name="autoemail_target">Target email address</string>
+    <string name="autoemail_target_summary">Where to email the log file</string>
+    <string name="autoemail_sending">Auto sending emails</string>
+    <string name="autoemail_frequency_whenistop">When I press stop</string>
+    <string name="autoemail_frequency_24">After 24 hours</string>
+    <string name="autoemail_frequency_12">After 12 hours</string>
+    <string name="autoemail_frequency_8">After 8 hours</string>
+    <string name="autoemail_frequency_6">After 6 hours</string>
+    <string name="autoemail_frequency_5">After 5 hours</string>
+    <string name="autoemail_frequency_4">After 4 hours</string>
+    <string name="autoemail_frequency_3">After 3 hours</string>
+    <string name="autoemail_frequency_2">After 2 hours</string>
+    <string name="autoemail_frequency_1">After 1 hour</string>
+    <string name="autoemail_frequency_05">After 0.5 hour</string>
+    <string name="autoemail_frequency_10">After 1 hour</string>
+    <string name="autoemail_frequency_008">After 5 minutes</string>
+    <string name="autoemail_smtp_category">Email Settings</string> 
+    <string name="autoemail_username">Username</string>
+    <string name="autoemail_username_summary">Username with your email provider</string>
+    <string name="autoemail_password">Password</string>
+    <string name="autoemail_password_summary">Password with your email provider</string>
+    <string name="autoemail_port">Port</string>
+    <string name="autoemail_port_summary">SMTP Port</string>
+    <string name="autoemail_ssl">Use SSL?</string>
+    <string name="autoemail_ssl_summary">Try toggling this if you cannot connect</string>
+    <string name="autoemail_server">SMTP Server</string>
+    <string name="autoemail_server_summary">Hostname of the SMTP server to use</string>
+    <string name="autoemail_choosepreset">Mail Provider</string>
+    <string name="autoemail_choosepreset_summary">Pick a provider or choose manual</string>
+    <string name="autoemail_smtp_testemail">Test email</string>
+    <string name="autoemail_test">Send a test email using the above settings</string>
+    <string name="autoemail_sendingtest">Sending a test email</string>
+    <string name="autoemail_testresult_title">Result</string>
+    <string name="autoemail_testresult_success">Email was sent</string>
+    <string name="autoemail_testresult_fail">Email not sent - please check connection settings and email settings</string>
+    <string name="autoemail_invalid_form">Invalid values</string>
+    <string name="autoemail_invalid_form_message">Please ensure that all of the fields have been filled in properly</string>
+   
 </resources>
