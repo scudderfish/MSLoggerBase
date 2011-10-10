@@ -12,9 +12,10 @@ public class Normaliser
 	private static Pattern		scalar		= Pattern.compile("(\\w*)\\s*=\\s*scalar,\\s*([U|S]\\d+),\\s*(\\d+),\\s*.*,.*");
 	private static Pattern		expr		= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
 	private static Pattern		ternary		= Pattern.compile("(.*)\\((.*)\\?(.*)");
-	private static List<String>	runtimeVars	= new ArrayList<String>();
-	private static List<String>	expressions	= new ArrayList<String>();
-	private static List<String>	logEntries	= new ArrayList<String>();
+	private static Pattern		log			= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
+	private static List<String>	runtime		= new ArrayList<String>();
+	private static List<String>	logHeader	= new ArrayList<String>();
+	private static List<String>	logRecord	= new ArrayList<String>();
 
 	/**
 	 * @param args
@@ -30,11 +31,12 @@ public class Normaliser
 
 	private static void process(String filename) throws IOException
 	{
-		runtimeVars = new ArrayList<String>();
-		expressions = new ArrayList<String>();
-		logEntries = new ArrayList<String>();
+		runtime = new ArrayList<String>();
+		logHeader = new ArrayList<String>();
+		logRecord = new ArrayList<String>();
 
-		boolean processing = false;
+		boolean processingExpr = false;
+		boolean processingLogs = false;
 		BufferedReader br = new BufferedReader(new FileReader(filename));
 
 		String line;
@@ -43,36 +45,76 @@ public class Normaliser
 		{
 			if (line.trim().equals("[OutputChannels]"))
 			{
-				processing = true;
+				processingExpr = true;
 				continue;
 			}
 			if (line.trim().equals("[Datalog]"))
 			{
-				processing = false;
+				processingExpr = false;
+				processingLogs = true;
 				continue;
 			}
-			if (processing)
+			if (processingExpr)
 			{
-				processText(line);
-
+				processExpr(line);
+			}
+			if (processingLogs)
+			{
+				processLogEntry(line);
 			}
 		}
 		PrintWriter writer = new PrintWriter(new FileWriter(filename + ".jd"));
 
-		for (String defn : runtimeVars)
+		writer.println("public class ECUNAME extends Megasquirt\n{");
+		writer.println("	@Override");
+		writer.println("	public void calculate(byte[] ochBuffer) throws IOException");
+		writer.println("{");
+		for (String defn : runtime)
 		{
 			writer.println(defn);
-			// System.out.println(defn);
+			//System.out.println(defn);
 		}
-		for (String defn : expressions)
+		writer.println("}");
+		writer.println("@Override");
+		writer.println("public String getLogHeader()");
+		writer.println("{");
+		writer.println("	StringBuffer b = new StringBuffer();");
+		for (String header : logHeader)
 		{
-			writer.println(defn);
-			// System.out.println(defn);
+			writer.println(header);
 		}
+		writer.println("    return b.toString();\n}\n");
+		writer.println("@Override");
+		writer.println("public String getLogRow()");
+		writer.println("{");
+		writer.println("	StringBuffer b = new StringBuffer();");
+		
+		for (String record : logRecord)
+		{
+			writer.println(record);
+		}
+		writer.println("    return b.toString();\n}\n");
+		writer.println("\n}");
 		writer.close();
 	}
 
-	private static void processText(String line)
+	private static void processLogEntry(String line)
+	{
+		Matcher logM = log.matcher(line);
+		if (logM.matches())
+		{
+			logHeader.add("b.append(\"" + logM.group(2) + "\").append(\"\\t\");");
+			logRecord.add("b.append(" + logM.group(1) + ").append(\"\\t\");");
+		}
+		else if (line.startsWith("#"))
+		{
+			String directive = processPreprocessor(line);
+			logHeader.add(directive);
+			logRecord.add(directive);
+		}
+	}
+
+	private static void processExpr(String line)
 	{
 		String definition = null;
 		line = StringUtils.trim(line).split(";")[0];
@@ -90,7 +132,7 @@ public class Normaliser
 			String start = bitsM.group(4);
 			String end = bitsM.group(5);
 			definition = (name + " = getBits(ochBuffer," + offset + "," + start + "," + end + ");");
-			runtimeVars.add(definition);
+			runtime.add(definition);
 		}
 		else if (scalarM.matches())
 		{
@@ -98,7 +140,7 @@ public class Normaliser
 			String dataType = scalarM.group(2);
 			String offset = scalarM.group(3);
 			definition = getScalar(name, dataType, offset);
-			runtimeVars.add(definition);
+			runtime.add(definition);
 		}
 		else if (exprM.matches())
 		{
@@ -109,13 +151,35 @@ public class Normaliser
 			{
 				expression = "((" + ternaryM.group(2) + " != 0 ) ? " + ternaryM.group(3);
 			}
-			definition = name + " = (" + expression + ")";
-			expressions.add(definition);
+			definition = name + " = (" + expression + ");";
+			runtime.add(definition);
 		}
-		else
+		else if (line.startsWith("#"))
 		{
-			// System.out.println("// " + line);
+			runtime.add(processPreprocessor(line));
 		}
+	}
+
+	private static String processPreprocessor(String line)
+	{
+		String[] components = line.split(" ");
+		if (components[0].equals("#if"))
+		{
+			return ("if (" + components[1] + ")\n{");
+		}
+		if (components[0].equals("#elif"))
+		{
+			return ("\n}\nelse if (" + components[1] + ")\n{");
+		}
+		if (components[0].equals("#else"))
+		{
+			return ("\n}\nelse\n{");
+		}
+		if (components[0].equals("#endif"))
+		{
+			return ("\n}\n");
+		}
+		return line;
 	}
 
 	private static String getScalar(String name, String dataType, String offset)
@@ -140,7 +204,6 @@ public class Normaliser
 		default:
 			definition += dataType;
 			break;
-
 		}
 		definition += "(ochBuffer," + offset + ");";
 		return definition;
