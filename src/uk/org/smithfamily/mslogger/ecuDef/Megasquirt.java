@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -81,6 +82,8 @@ public abstract class Megasquirt
 
     public void start()
     {
+        DebugLogManager.INSTANCE.log("Megasquirt.start()");
+        
         ochBuffer = new byte[this.getBlockSize()];
         constantsLoaded = false;
         signatureChecked = false;
@@ -90,6 +93,7 @@ public abstract class Megasquirt
 
     public void stop()
     {
+        DebugLogManager.INSTANCE.log("Megasquirt.stop()");
         disconnect();
         sendMessage("");
     }
@@ -134,6 +138,8 @@ public abstract class Megasquirt
         }
         catch (IOException e)
         {
+            DebugLogManager.INSTANCE.logException(e);
+
             Log.e(ApplicationSettings.TAG, "Megasquirt.logValues()", e);
         }
     }
@@ -168,6 +174,7 @@ public abstract class Megasquirt
         }
         catch (InterruptedException e)
         {
+            DebugLogManager.INSTANCE.logException(e);
             Log.e(ApplicationSettings.TAG, "Megasquirt.delay()", e);
         }
 
@@ -211,6 +218,7 @@ public abstract class Megasquirt
         }
         catch (Exception e)
         {
+            DebugLogManager.INSTANCE.log("Failed to get value for "+channel);
             Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
         }
         return value;
@@ -220,11 +228,13 @@ public abstract class Megasquirt
     {
         logging = true;
         logStart = System.currentTimeMillis();
+        DebugLogManager.INSTANCE.log("startLogging()");
 
     }
 
     public void stopLogging()
     {
+        DebugLogManager.INSTANCE.log("stopLogging()");
         logging = false;
         DatalogManager.INSTANCE.close();
         FRDLogManager.INSTANCE.close();
@@ -260,6 +270,8 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
+
                 Log.e(TAG, "create() failed", e);
             }
             mmSocket = tmp;
@@ -283,6 +295,7 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
                 connectionFailed();
                 // Close the socket
                 try
@@ -315,6 +328,7 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
                 Log.e(TAG, "close() of connect socket failed", e);
             }
         }
@@ -423,6 +437,7 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
                 Log.e(TAG, "temp sockets not created", e);
             }
 
@@ -439,7 +454,6 @@ public abstract class Megasquirt
             }
             catch (InterruptedException e1)
             {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
             try
@@ -466,6 +480,7 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
                 Log.e(TAG, "disconnected", e);
                 connectionLost();
             }
@@ -616,6 +631,7 @@ public abstract class Megasquirt
             }
             catch (IOException e)
             {
+                DebugLogManager.INSTANCE.logException(e);
                 Log.e(TAG, "close() of connect socket failed", e);
             }
         }
