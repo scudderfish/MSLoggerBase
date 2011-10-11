@@ -1,6 +1,9 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.content.Context;
@@ -111,6 +114,15 @@ public class MS1Extra29y extends Megasquirt
     boolean MPXH6400A;
     boolean MPX4250;
 
+    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{"MS1/Extra format 029y3 *********"}));
+
+    @Override
+    public Set<String> getSignature()
+    {
+        return sigs ;
+    }
+
+
     public MS1Extra29y(Context c)
     {
         super(c);
@@ -121,7 +133,6 @@ public class MS1Extra29y extends Megasquirt
         MPXH6300A = isSet("MPXH6300A");
         MPXH6400A = isSet("MPXH6400A");
         MPX4250 = isSet("MPX4250");
-
     }
 
     @Override
@@ -324,12 +335,6 @@ public class MS1Extra29y extends Megasquirt
         iTimeX = MSUtils.getByte(ochBuffer, 37);
         bcDC = MSUtils.getByte(ochBuffer, 38);
 
-    }
-
-    @Override
-    public String getSignature()
-    {
-        return "MS1/Extra format 029y3 *********";
     }
 
     @Override

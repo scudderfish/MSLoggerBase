@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
 import android.content.Context;
@@ -64,9 +66,9 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             ecuDefinition = new MS1Extra29y(context);
         }
-        else if(ecuName.equals("MS2Extra21q"))
+        else if(ecuName.equals("MS2Extra21"))
         {
-            ecuDefinition = new MS2Extra210q(context);
+            ecuDefinition = new MS2Extra210(context);
         }
         else
         {
@@ -90,20 +92,25 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return bluetoothMac;
     }
 
-
+    private Map<String,Boolean> settings = new HashMap<String,Boolean>();
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
     {
+        Boolean result = settings.get(name);
+        if(result != null)
+            return result;
+        boolean val = false;
         if (prefs.getString("mstype", "NotThisOne").equals(name))
-            return true;
+            val = true;
 
-        if (prefs.getString("maptype", "NotThisOne").equals(name))
-            return true;
+        if (!val && prefs.getString("maptype", "NotThisOne").equals(name))
+            val = true;
 
-        if (prefs.getString("egotype", "NotThisOne").equals(name))
-            return true;
+        if (!val && prefs.getString("egotype", "NotThisOne").equals(name))
+            val = true;
 
-        return false;
+        settings.put(name, val);
+        return val;
     }
 
     @Override

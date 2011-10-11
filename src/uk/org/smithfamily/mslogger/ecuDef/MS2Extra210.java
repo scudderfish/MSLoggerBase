@@ -1,10 +1,13 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.content.Context;
 
-public class MS2Extra210p extends Megasquirt
+public class MS2Extra210 extends Megasquirt
 {
 
 	private byte[]	ochCommand	= { 65 };
@@ -155,19 +158,22 @@ public class MS2Extra210p extends Megasquirt
 	boolean			EGTFULL;
 	boolean			CELSIUS;
 
-	public MS2Extra210p(Context c)
+    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{"MS2Extra Rel 2.1.0p","MS2Extra Rel 2.1.0q"}));
+
+    @Override
+    public Set<String> getSignature()
+    {
+        return sigs ;
+    }
+
+
+	public MS2Extra210(Context c)
 	{
 		super(c);
 		NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
 		LAMBDA = isSet("LAMBDA");
 		EGTFULL = isSet("EGTFULL");
 		CELSIUS = isSet("CELSIUS");
-	}
-
-	@Override
-	public String getSignature()
-	{
-		return "MS2Extra Rel 2.1.0p";
 	}
 
 	@Override
