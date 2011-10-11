@@ -5,6 +5,7 @@ import java.util.List;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
@@ -34,6 +35,7 @@ public class MSLoggerActivity extends Activity
     private BroadcastReceiver updateReceiver    = new Reciever();
     private IndicatorManager  indicatorManager;
     private ToggleButton      connectButton;
+    private TextView          messages;
     public boolean            connected;
     private boolean           receivedData      = false;
 
@@ -63,15 +65,24 @@ public class MSLoggerActivity extends Activity
         @Override
         public void onClick(View arg0)
         {
-            if (service != null)
+            DebugLogManager.INSTANCE.log("LogButton:"+button.isChecked());
+            if (System.currentTimeMillis() > 1322697601000L)
             {
-                if (button.isChecked())
+                messages.setText("This beta version has expired");
+                button.setChecked(false);
+            }
+            else
+            {
+                if (service != null)
                 {
-                    service.startLogging();
-                }
-                else
-                {
-                    service.stopLogging();
+                    if (button.isChecked())
+                    {
+                        service.startLogging();
+                    }
+                    else
+                    {
+                        service.stopLogging();
+                    }
                 }
             }
         }
@@ -90,6 +101,7 @@ public class MSLoggerActivity extends Activity
         @Override
         public void onClick(View arg0)
         {
+            DebugLogManager.INSTANCE.log("ConnectButton:"+button.isChecked());
             logButton.setChecked(false);
 
             if (button.isChecked())
@@ -110,7 +122,7 @@ public class MSLoggerActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            Log.i(ApplicationSettings.TAG, "Received :"+intent.getAction());
+            Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
                 indicatorManager.setDisabled(false);
@@ -122,15 +134,14 @@ public class MSLoggerActivity extends Activity
                 {
                     // We've been unfortunately disconnected so re-establish comms as if nothing happened
                     service.reconnect();
-                    //connectButton.setEnabled(false);
-                    //logButton.setEnabled(false);
+                    // connectButton.setEnabled(false);
+                    // logButton.setEnabled(false);
                 }
                 else
                 {
                     resetConnection();
-                    TextView v = (TextView) findViewById(R.id.messages);
-                    v.setText("Disconnected");
-                    }
+                    messages.setText("Disconnected");
+                }
             }
 
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
@@ -142,9 +153,11 @@ public class MSLoggerActivity extends Activity
             if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
-                TextView v = (TextView) findViewById(R.id.messages);
-                v.setText(msg);
-                Log.i(ApplicationSettings.TAG,"Message : "+msg);
+
+                messages.setText(msg);
+                Log.i(ApplicationSettings.TAG, "Message : " + msg);
+                DebugLogManager.INSTANCE.log("Message : "+msg);
+
             }
         }
     }
@@ -154,7 +167,7 @@ public class MSLoggerActivity extends Activity
 
     synchronized void doBindService()
     {
-        
+
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -168,6 +181,8 @@ public class MSLoggerActivity extends Activity
 
         setContentView(R.layout.display);
         indicatorManager.setDisabled(true);
+
+        messages = (TextView) findViewById(R.id.messages);
         connectButton = (ToggleButton) findViewById(R.id.connectButton);
         connectButton.setEnabled(MSLoggerService.isCreated());
         connectButton.setOnClickListener(new ConnectButtonListener(connectButton));
@@ -282,6 +297,8 @@ public class MSLoggerActivity extends Activity
 
     synchronized private void resetConnection()
     {
+        DebugLogManager.INSTANCE.log("resetConnection()");
+        
         connected = false;
         receivedData = false;
         service.stopLogging();
@@ -296,9 +313,9 @@ public class MSLoggerActivity extends Activity
             unbindService(mConnection);
             stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            
+
         }
     }
 }
