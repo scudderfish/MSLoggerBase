@@ -1,4 +1,6 @@
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +22,7 @@ public class Normaliser
 	private static Map<String, String>	runtimeVars;
 	private static Map<String, String>	evalVars;
 	private static Set<String>			flags;
+	private static String				fingerprintSource;
 
 	/**
 	 * @param args
@@ -41,6 +44,7 @@ public class Normaliser
 		runtimeVars = new HashMap<String, String>();
 		evalVars = new HashMap<String, String>();
 		flags = new HashSet<String>();
+		fingerprintSource = "";
 
 		boolean processingExpr = false;
 		boolean processingLogs = false;
@@ -79,9 +83,9 @@ public class Normaliser
 
 		writer.println("public class ECU extends Megasquirt\n{");
 		writer.println("//Flags");
-		for(String name : flags)
+		for (String name : flags)
 		{
-			writer.println("boolean "+name+";");
+			writer.println("boolean " + name + ";");
 		}
 		writer.println("//Runtime vars");
 		for (String name : runtimeVars.keySet())
@@ -124,8 +128,30 @@ public class Normaliser
 		writer.println("    return b.toString();\n}\n");
 		writer.println("\n}");
 		writer.close();
+		System.out.println(getFingerprint()+" : "+filename);
 	}
-
+	private static String getFingerprint()
+	{
+		StringBuffer b = new StringBuffer();
+		try
+		{
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] array = md.digest(fingerprintSource.getBytes());
+			for(int i = 0; i < array.length;i++)
+			{
+				b.append(Integer.toHexString((array[i]&0xFF) | 0x100).substring(1, 3));
+			}
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return b.toString();
+	}
 	private static void processLogEntry(String line)
 	{
 		Matcher logM = log.matcher(line);
@@ -179,9 +205,18 @@ public class Normaliser
 			Matcher ternaryM = ternary.matcher(expression);
 			if (ternaryM.matches())
 			{
-				System.out.println("BEFORE : " + expression);
-				expression = "((" + ternaryM.group(1) + ") != 0 ) ? " + ternaryM.group(2);
-				System.out.println("AFTER  : " + expression + "\n");
+				//System.out.println("BEFORE : " + expression);
+				String test = ternaryM.group(1);
+				String values = ternaryM.group(2);
+				if(StringUtils.containsAny(test, "<>!="))
+				{
+					expression = "(" + test + ") ? " + values;
+				}
+				else
+				{	
+				expression = "((" + test + ") != 0 ) ? " + values;
+				}
+				//System.out.println("AFTER  : " + expression + "\n");
 			}
 			definition = name + " = (" + expression + ");";
 			runtime.add(definition);
@@ -231,6 +266,7 @@ public class Normaliser
 		}
 		if (components[0].equals("#elif"))
 		{
+			flags.add(components[1]);
 			return ("\n}\nelse if (" + components[1] + ")\n{");
 		}
 		if (components[0].equals("#else"))
@@ -241,7 +277,8 @@ public class Normaliser
 		{
 			return ("\n}\n");
 		}
-		return line;
+		
+		return "";
 	}
 
 	private static String getScalar(String name, String dataType, String offset)
@@ -268,6 +305,7 @@ public class Normaliser
 			break;
 		}
 		definition += "(ochBuffer," + offset + ");";
+		fingerprintSource += definition;
 		return definition;
 	}
 
