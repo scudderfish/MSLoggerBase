@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public abstract class Megasquirt
 
     protected Context          context;
 
-    public abstract String getSignature();
+    public abstract Set<String> getSignature();
 
     public abstract byte[] getOchCommand();
 
@@ -75,6 +76,8 @@ public abstract class Megasquirt
     private boolean logging;
     private boolean constantsLoaded;
     private boolean signatureChecked;
+
+    private String trueSignature="Unknown";
 
     public void start()
     {
@@ -503,13 +506,13 @@ public abstract class Megasquirt
                 byte[] sigCommand = getSigCommand();
                 sendMessage("Verifying MS");
                 msSig = getSignature(sigCommand);
-                String signature = Megasquirt.this.getSignature();
-                verified = signature.equals(msSig);
+                Set<String> signatures = Megasquirt.this.getSignature();
+                verified = signatures.contains(msSig);
             }
             if (verified)
             {
                 sendMessage("Connected to " + msSig);
-
+                trueSignature = msSig;
                 broadcast(CONNECTED);
             }
             else
@@ -633,5 +636,10 @@ public abstract class Megasquirt
         }
         delay(getPageActivationDelay());
         mConnectedThread.read(pageBuffer);
+    }
+
+    public String getTrueSignature()
+    {
+        return trueSignature;
     }
 }

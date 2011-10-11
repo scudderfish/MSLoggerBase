@@ -26,7 +26,7 @@ public class FRDLogFileHeader
 	{
 	    this.parent = frdLogFile;
 		Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-		String sig = ecu.getSignature();
+		String sig = ecu.getTrueSignature();
 		System.arraycopy(sig.getBytes(), 0, firmware, 0, sig.length());
 
 		int now = (int) (System.currentTimeMillis() / 1000l);

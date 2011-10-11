@@ -1,6 +1,9 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.content.Context;
 
@@ -158,11 +161,12 @@ public class MS2Extra310 extends Megasquirt
 	private double	twoStroke;
 	private int		nCylinders;
 	private int		divider;
+    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{"MS2Extra Serial310 "}));
 
 	@Override
-	public String getSignature()
+	public Set<String> getSignature()
 	{
-		return "MS2Extra Serial310 ";
+		return sigs ;
 	}
 
 	@Override

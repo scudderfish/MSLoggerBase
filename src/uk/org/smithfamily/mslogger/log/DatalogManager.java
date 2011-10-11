@@ -35,7 +35,7 @@ public enum DatalogManager
             {
                 writer = new PrintWriter(logFile);
                 Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-                String signature = ecuDefinition.getSignature();
+                String signature = ecuDefinition.getTrueSignature();
                 writer.println("\"" + signature + "\"");
                 writer.println(ecuDefinition.getLogHeader());
             }
