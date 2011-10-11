@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,14 +7,19 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Normaliser
 {
-	private static Pattern		bits		= Pattern.compile("(\\w*)\\s*=\\s*bits,\\s*(.*),\\s*(.*),\\s*\\[(\\d):(\\d)\\].*");
-	private static Pattern		scalar		= Pattern.compile("(\\w*)\\s*=\\s*scalar,\\s*([U|S]\\d+),\\s*(\\d+),\\s*.*,.*");
-	private static Pattern		expr		= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
-	private static Pattern		ternary		= Pattern.compile("(.*)\\((.*)\\?(.*)");
-	private static Pattern		log			= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
-	private static List<String>	runtime		= new ArrayList<String>();
-	private static List<String>	logHeader	= new ArrayList<String>();
-	private static List<String>	logRecord	= new ArrayList<String>();
+	private static Pattern				bits		= Pattern
+															.compile("(\\w*)\\s*=\\s*bits,\\s*(.*),\\s*(.*),\\s*\\[(\\d):(\\d)\\].*");
+	private static Pattern				scalar		= Pattern.compile("(\\w*)\\s*=\\s*scalar,\\s*([U|S]\\d+),\\s*(\\d+),\\s*.*,.*");
+	private static Pattern				expr		= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
+	private static Pattern				ternary		= Pattern.compile("(.*)\\?(.*)");
+	private static Pattern				log			= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
+	private static Pattern				binary		= Pattern.compile("(.*)0b([01]{8})(.*)");
+	private static List<String>			runtime		= new ArrayList<String>();
+	private static List<String>			logHeader	= new ArrayList<String>();
+	private static List<String>			logRecord	= new ArrayList<String>();
+	private static Map<String, String>	runtimeVars;
+	private static Map<String, String>	evalVars;
+	private static Set<String>			flags;
 
 	/**
 	 * @param args
@@ -34,6 +38,9 @@ public class Normaliser
 		runtime = new ArrayList<String>();
 		logHeader = new ArrayList<String>();
 		logRecord = new ArrayList<String>();
+		runtimeVars = new HashMap<String, String>();
+		evalVars = new HashMap<String, String>();
+		flags = new HashSet<String>();
 
 		boolean processingExpr = false;
 		boolean processingLogs = false;
@@ -63,16 +70,37 @@ public class Normaliser
 				processLogEntry(line);
 			}
 		}
+		writeFile(filename);
+	}
+
+	private static void writeFile(String filename) throws IOException
+	{
 		PrintWriter writer = new PrintWriter(new FileWriter(filename + ".jd"));
 
-		writer.println("public class ECUNAME extends Megasquirt\n{");
+		writer.println("public class ECU extends Megasquirt\n{");
+		writer.println("//Flags");
+		for(String name : flags)
+		{
+			writer.println("boolean "+name+";");
+		}
+		writer.println("//Runtime vars");
+		for (String name : runtimeVars.keySet())
+		{
+			writer.println(runtimeVars.get(name) + " " + name + ";");
+		}
+		writer.println("\n//eval vars");
+		for (String name : evalVars.keySet())
+		{
+			writer.println(evalVars.get(name) + " " + name + ";");
+		}
+		writer.println("\n");
 		writer.println("	@Override");
 		writer.println("	public void calculate(byte[] ochBuffer) throws IOException");
 		writer.println("{");
 		for (String defn : runtime)
 		{
 			writer.println(defn);
-			//System.out.println(defn);
+			// System.out.println(defn);
 		}
 		writer.println("}");
 		writer.println("@Override");
@@ -88,7 +116,7 @@ public class Normaliser
 		writer.println("public String getLogRow()");
 		writer.println("{");
 		writer.println("	StringBuffer b = new StringBuffer();");
-		
+
 		for (String record : logRecord)
 		{
 			writer.println(record);
@@ -133,6 +161,7 @@ public class Normaliser
 			String end = bitsM.group(5);
 			definition = (name + " = getBits(ochBuffer," + offset + "," + start + "," + end + ");");
 			runtime.add(definition);
+			runtimeVars.put(name, "int");
 		}
 		else if (scalarM.matches())
 		{
@@ -141,18 +170,29 @@ public class Normaliser
 			String offset = scalarM.group(3);
 			definition = getScalar(name, dataType, offset);
 			runtime.add(definition);
+			runtimeVars.put(name, "int");
 		}
 		else if (exprM.matches())
 		{
 			String name = exprM.group(1);
-			String expression = exprM.group(2).trim();
+			String expression = deBinary(exprM.group(2).trim());
 			Matcher ternaryM = ternary.matcher(expression);
 			if (ternaryM.matches())
 			{
-				expression = "((" + ternaryM.group(2) + " != 0 ) ? " + ternaryM.group(3);
+				System.out.println("BEFORE : " + expression);
+				expression = "((" + ternaryM.group(1) + ") != 0 ) ? " + ternaryM.group(2);
+				System.out.println("AFTER  : " + expression + "\n");
 			}
 			definition = name + " = (" + expression + ");";
 			runtime.add(definition);
+			if (isFloatingExpression(expression))
+			{
+				evalVars.put(name, "double");
+			}
+			else
+			{
+				evalVars.put(name, "int");
+			}
 		}
 		else if (line.startsWith("#"))
 		{
@@ -160,11 +200,33 @@ public class Normaliser
 		}
 	}
 
+	private static String deBinary(String group)
+	{
+		Matcher binNumber = binary.matcher(group);
+		if (!binNumber.matches())
+		{
+			return group;
+		}
+		else
+		{
+			String binNum = binNumber.group(2);
+			int num = Integer.parseInt(binNum, 2);
+			String expr = binNumber.group(1) + num + binNumber.group(3);
+			return deBinary(expr);
+		}
+	}
+
+	private static boolean isFloatingExpression(String expression)
+	{
+		return expression.contains(".");
+	}
+
 	private static String processPreprocessor(String line)
 	{
 		String[] components = line.split(" ");
 		if (components[0].equals("#if"))
 		{
+			flags.add(components[1]);
 			return ("if (" + components[1] + ")\n{");
 		}
 		if (components[0].equals("#elif"))
@@ -184,7 +246,7 @@ public class Normaliser
 
 	private static String getScalar(String name, String dataType, String offset)
 	{
-		String definition = name + " = get";
+		String definition = name + " = MSUtils.get";
 		if (dataType.startsWith("S"))
 		{
 			definition += "Signed";
