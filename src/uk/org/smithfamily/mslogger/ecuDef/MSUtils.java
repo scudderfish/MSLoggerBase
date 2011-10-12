@@ -50,12 +50,6 @@ public class MSUtils
         }
         return x;
     }
-
-    public static double tempCvt(int t)
-    {
-        return (t - 32.0) * 5.0 / 9.0;
-    }
-
     public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
     {
         int val = 0;

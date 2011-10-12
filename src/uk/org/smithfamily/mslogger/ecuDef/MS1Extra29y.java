@@ -156,10 +156,10 @@ public class MS1Extra29y extends Megasquirt
 			accDecEnrich = ((engine & 32) == 0) ? 100
 					: ((pulseWidth1 - injOpen1) / (pulseWidth1 - (accelEnrich / 10) - injOpen1) * 100);
 			batteryVoltage = batADC / 255.0 * 30.0;
-			coolant = MSUtils.tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40);
+			coolant = tempCvt(TableManager.INSTANCE.table(cltADC, "thermfactor.inc") - 40);
 			egoVoltage = (egoADC / 255.0 * 5.0); // EGO sensor voltage.
 			ego2Voltage = (fuelADC / 255.0 * 5.0); // EGO sensor voltage 2.
-			mat = (MSUtils.tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40));
+			mat = (tempCvt(TableManager.INSTANCE.table(matADC, "matfactor.inc") - 40));
 			rpm = (rpm100 * 100); // True RPM.
 			time = (timeNow()); // "timeNow" is a parameterless built-in
 								// function.
