@@ -15,7 +15,7 @@ public enum DatalogManager
 
     PrintWriter    writer   = null;
     private String fileName = null;
-
+    private int markCounter = 0;
     public synchronized String getFilename()
     {
         if (fileName == null)
@@ -38,6 +38,7 @@ public enum DatalogManager
                 String signature = ecuDefinition.getTrueSignature();
                 writer.println("\"" + signature + "\"");
                 writer.println(ecuDefinition.getLogHeader());
+                markCounter = 1;
             }
             catch (FileNotFoundException e)
             {
@@ -62,6 +63,18 @@ public enum DatalogManager
     public void close()
     {
         stopLog();
+    }
+
+    public void mark()
+    {
+        if(writer != null)
+        {
+            write(String.format("MARK  %03d - Manual - %tc",markCounter++,System.currentTimeMillis()));
+            if(markCounter > 999)
+            {
+                markCounter = 1;
+            }
+        }
     }
 
 }

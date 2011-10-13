@@ -76,6 +76,7 @@
 				android:text="" 
 				android:layout_height="wrap_content" 
 				android:id="@+id/messages" />
+			<Button android:text="Mark" android:id="@+id/Mark" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom"></Button>
 		</TableRow>
 	</TableLayout>
 

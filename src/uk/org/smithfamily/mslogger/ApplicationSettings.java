@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.ecuDef.MS1Extra29y;
+import uk.org.smithfamily.mslogger.ecuDef.MS2Extra210;
+import uk.org.smithfamily.mslogger.ecuDef.MS2Extra310;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -16,7 +18,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    private static final String NONE_SELECTED   = "NONE_SELECTED";
+    public static final String NONE_SELECTED   = "NONE_SELECTED";
     public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
     public static final String  TAG             = "uk.org.smithfamily.mslogger";
@@ -27,7 +29,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Megasquirt          ecuDefinition;
     private String              bluetoothMac;
 
-    public void initialise(Context context, Handler handler)
+    public void initialise(Context context)
     {
         this.context = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -127,5 +129,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             ecuDefinition = null;
         }
         settings = new HashMap<String,Boolean>();
+    }
+
+    public boolean btDeviceSelected()
+    {
+        return !NONE_SELECTED.equals(getBluetoothMac());
     }
 }
