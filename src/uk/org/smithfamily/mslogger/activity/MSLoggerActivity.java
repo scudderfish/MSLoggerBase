@@ -5,6 +5,7 @@ import java.util.List;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
@@ -25,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -36,6 +38,7 @@ public class MSLoggerActivity extends Activity
     private IndicatorManager  indicatorManager;
     private ToggleButton      connectButton;
     private TextView          messages;
+    private Button            markButton;
     public boolean            connected;
     private boolean           receivedData      = false;
 
@@ -73,6 +76,8 @@ public class MSLoggerActivity extends Activity
             }
             else
             {
+                markButton.setEnabled(logButton.isChecked());
+
                 if (service != null)
                 {
                     if (button.isChecked())
@@ -175,6 +180,8 @@ public class MSLoggerActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        ApplicationSettings.INSTANCE.initialise(this);
+
         super.onCreate(savedInstanceState);
 
         indicatorManager = IndicatorManager.INSTANCE;
@@ -191,6 +198,15 @@ public class MSLoggerActivity extends Activity
         logButton.setEnabled(MSLoggerService.isCreated());
         logButton.setOnClickListener(new LogButtonListener(logButton));
 
+        markButton = (Button)findViewById(R.id.Mark);
+        markButton.setEnabled(logButton.isChecked());
+        markButton.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View arg0)
+            {
+                DatalogManager.INSTANCE.mark();
+            }});
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
         IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
@@ -211,7 +227,9 @@ public class MSLoggerActivity extends Activity
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        else
+        
+        
+        if(ApplicationSettings.INSTANCE.btDeviceSelected())
         {
             connectButton.setEnabled(true);
         }
@@ -302,6 +320,7 @@ public class MSLoggerActivity extends Activity
         connected = false;
         receivedData = false;
         service.stopLogging();
+        markButton.setEnabled(false);
         logButton.setChecked(false);
         logButton.setEnabled(false);
         indicatorManager.setDisabled(true);
