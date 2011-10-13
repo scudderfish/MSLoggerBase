@@ -10,162 +10,162 @@ import android.content.Context;
 public class MS2Extra210 extends Megasquirt
 {
 
-	private byte[]	ochCommand	= { 65 };
-	private byte[]	sigCommand	= { 81 };
+	private byte[]		ochCommand	= { 65 };
+	private byte[]		sigCommand	= { 81 };
 
 	// Runtime vars
-	int				seconds;
-	int				pulseWidth1;
-	int				pulseWidth2;
-	int				rpm;
-	int				advance;
-	int				squirt;
-	int				firing1;
-	int				firing2;
-	int				sched1;
-	int				inj1;
-	int				sched2;
-	int				inj2;
-	int				engine;
-	int				ready;
-	int				crank;
-	int				startw;
-	int				warmup;
-	int				tpsaccaen;
-	int				tpsaccden;
-	int				mapaccaen;
-	int				mapaccden;
-	int				afrtgt1;
-	int				afrtgt2;
-	int				wbo2_en1;
-	int				wbo2_en2;
-	int				barometer;
-	int				map;
-	int				mat;
-	int				coolant;
-	int				tps;
-	int				batteryVoltage;
-	int				afr1;
-	int				afr2;
-	int				knock;
-	int				egoCorrection1;
-	int				egoCorrection2;
-	int				airCorrection;
-	int				warmupEnrich;
-	int				accelEnrich;
-	int				tpsfuelcut;
-	int				baroCorrection;
-	int				gammaEnrich;
-	int				veCurr1;
-	int				veCurr2;
-	int				iacstep;
-	int				idleDC;
-	int				coldAdvDeg;
-	int				tpsDOT;
-	int				mapDOT;
-	int				dwell;
-	int				maf;
-	int				fuelload;
-	int				fuelCorrection;
-	int				portStatus;
-	int				port0;
-	int				port1;
-	int				port2;
-	int				port3;
-	int				port4;
-	int				port5;
-	int				port6;
-	int				knockRetard;
-	int				EAEFuelCorr1;
-	int				egoV;
-	int				egoV2;
-	int				status1;
-	int				status2;
-	int				status3;
-	int				status4;
-	int				looptime;
-	int				status5;
-	int				tpsADC;
-	int				fuelload2;
-	int				ignload;
-	int				ignload2;
-	int				synccnt;
-	int				timing_err;
-	int				deltaT;
-	int				wallfuel1;
-	int				gpioadc0;
-	int				gpioadc1;
-	int				gpioadc2;
-	int				gpioadc3;
-	int				gpioadc4;
-	int				gpioadc5;
-	int				gpioadc6;
-	int				gpioadc7;
-	int				gpiopwmin0;
-	int				gpiopwmin1;
-	int				gpiopwmin2;
-	int				gpiopwmin3;
-	int				adc6;
-	int				adc7;
-	int				wallfuel2;
-	int				EAEFuelCorr2;
-	int				boostduty;
-	int				syncreason;
-	int				user0;
-	int				gpioport0;
-	int				gpioport1;
-	int				gpioport2;
-	int				psaccaen;
-	int				psaccden;
-	int				ps;
-	int				psfuelcut;
-	int				psDOT;
-	int				psADC;
-	int				iming_err;
+	int					seconds;
+	int					pulseWidth1;
+	int					pulseWidth2;
+	int					rpm;
+	int					advance;
+	int					squirt;
+	int					firing1;
+	int					firing2;
+	int					sched1;
+	int					inj1;
+	int					sched2;
+	int					inj2;
+	int					engine;
+	int					ready;
+	int					crank;
+	int					startw;
+	int					warmup;
+	int					tpsaccaen;
+	int					tpsaccden;
+	int					mapaccaen;
+	int					mapaccden;
+	int					afrtgt1;
+	int					afrtgt2;
+	int					wbo2_en1;
+	int					wbo2_en2;
+	int					barometer;
+	int					map;
+	int					mat;
+	int					coolant;
+	int					tps;
+	int					batteryVoltage;
+	int					afr1;
+	int					afr2;
+	int					knock;
+	int					egoCorrection1;
+	int					egoCorrection2;
+	int					airCorrection;
+	int					warmupEnrich;
+	int					accelEnrich;
+	int					tpsfuelcut;
+	int					baroCorrection;
+	int					gammaEnrich;
+	int					veCurr1;
+	int					veCurr2;
+	int					iacstep;
+	int					idleDC;
+	int					coldAdvDeg;
+	int					tpsDOT;
+	int					mapDOT;
+	int					dwell;
+	int					maf;
+	int					fuelload;
+	int					fuelCorrection;
+	int					portStatus;
+	int					port0;
+	int					port1;
+	int					port2;
+	int					port3;
+	int					port4;
+	int					port5;
+	int					port6;
+	int					knockRetard;
+	int					EAEFuelCorr1;
+	int					egoV;
+	int					egoV2;
+	int					status1;
+	int					status2;
+	int					status3;
+	int					status4;
+	int					looptime;
+	int					status5;
+	int					tpsADC;
+	int					fuelload2;
+	int					ignload;
+	int					ignload2;
+	int					synccnt;
+	int					timing_err;
+	int					deltaT;
+	int					wallfuel1;
+	int					gpioadc0;
+	int					gpioadc1;
+	int					gpioadc2;
+	int					gpioadc3;
+	int					gpioadc4;
+	int					gpioadc5;
+	int					gpioadc6;
+	int					gpioadc7;
+	int					gpiopwmin0;
+	int					gpiopwmin1;
+	int					gpiopwmin2;
+	int					gpiopwmin3;
+	int					adc6;
+	int					adc7;
+	int					wallfuel2;
+	int					EAEFuelCorr2;
+	int					boostduty;
+	int					syncreason;
+	int					user0;
+	int					gpioport0;
+	int					gpioport1;
+	int					gpioport2;
+	int					psaccaen;
+	int					psaccden;
+	int					ps;
+	int					psfuelcut;
+	int					psDOT;
+	int					psADC;
+	int					iming_err;
 
 	// Expressions
-	int				secl;
-	int				throttle;
-	int				pulseWidth;
-	double			lambda1;
-	double			lambda2;
-	int				egoCorrection;
-	int				veCurr;
-	int				accDecEnrich;
-	long			time;
-	double			rpm100;
-	double			altDiv1;
-	double			cycleTime1;
-	double			nSquirts1;
-	double			dutyCycle1;
-	double			cycleTime2;
-	double			nSquirts2;
-	double			dutyCycle2;
-	double			egoVoltage;
-	double			egt6temp;
-	double			egt7temp;
-	double			altDiv2;
+	int					secl;
+	int					throttle;
+	int					pulseWidth;
+	double				lambda1;
+	double				lambda2;
+	int					egoCorrection;
+	int					veCurr;
+	int					accDecEnrich;
+	long				time;
+	double				rpm100;
+	double				altDiv1;
+	double				cycleTime1;
+	double				nSquirts1;
+	double				dutyCycle1;
+	double				cycleTime2;
+	double				nSquirts2;
+	double				dutyCycle2;
+	double				egoVoltage;
+	double				egt6temp;
+	double				egt7temp;
+	double				altDiv2;
 
 	// Constants
-	int				alternate;
-	int				twoStroke;
-	int				nCylinders;
-	int				divider;
+	int					alternate;
+	int					twoStroke;
+	int					nCylinders;
+	int					divider;
 
 	// flags
-	boolean			NARROW_BAND_EGO;
-	boolean			LAMBDA;
-	boolean			EGTFULL;
-	boolean			CELSIUS;
+	boolean				NARROW_BAND_EGO;
+	boolean				LAMBDA;
+	boolean				EGTFULL;
+	boolean				CELSIUS;
 
-    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{"MS2Extra Rel 2.1.0p","MS2Extra Rel 2.1.0q"}));
+	private Set<String>	sigs		= new HashSet<String>(
+											Arrays.asList(new String[] { "MS2Extra Rel 2.1.0p", "MS2Extra Rel 2.1.0q" }));
 
-    @Override
-    public Set<String> getSignature()
-    {
-        return sigs ;
-    }
-
+	@Override
+	public Set<String> getSignature()
+	{
+		return sigs;
+	}
 
 	public MS2Extra210(Context c)
 	{
@@ -217,85 +217,106 @@ public class MS2Extra210 extends Megasquirt
 	public void calculate(byte[] ochBuffer) throws IOException
 	{
 		setupRuntime(ochBuffer);
-		throttle = tps;
-		secl = seconds % 256;// , "s" ; For runtime screen.
-		pulseWidth = pulseWidth1;// , "s" ; For runtime screen.
-		lambda1 = afr1 / 14.7;// , "Lambda"
-		lambda2 = afr2 / 14.7;// , "Lambda"
-		egoCorrection = (egoCorrection1 + egoCorrection2) / 2;// , "%" ; Alias
-																// for old
-																// gauges.
-		veCurr = veCurr1;// , "%" ; For runtime display.
-		accDecEnrich = accelEnrich + ((tpsaccden != 0) ? tpsfuelcut : 100);// ,
-																			// "%"
-		time = System.currentTimeMillis();// , "s"
-		rpm100 = rpm / 100.0;//
-
-		altDiv1 = (alternate != 0) ? 2 : 1;//
-		altDiv2 = (alternate != 0) ? 2 : 1;//
-
-		cycleTime1 = 60000.0 / rpm * (2.0 - twoStroke);// , "ms"
-		nSquirts1 = nCylinders / divider;//
-		dutyCycle1 = 100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1;// ,
-																			// "%"
-
-		cycleTime2 = 60000.0 / rpm * (2.0 - twoStroke);// , "ms"
-		nSquirts2 = nCylinders / divider;//
-		dutyCycle2 = 100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2;// ,
-																			// "%"
-
-		if (NARROW_BAND_EGO)
+		try
 		{
-			egoVoltage = 1.0 - (afr1 * 0.04883);// , "V" ; For LED bars...
+			throttle = tps;
+			secl = seconds % 256;// , "s" ; For runtime screen.
+			pulseWidth = pulseWidth1;// , "s" ; For runtime screen.
+			lambda1 = afr1 / 14.7;// , "Lambda"
+			lambda2 = afr2 / 14.7;// , "Lambda"
+			egoCorrection = (egoCorrection1 + egoCorrection2) / 2;// , "%" ;
+																	// Alias
+																	// for old
+																	// gauges.
+			veCurr = veCurr1;// , "%" ; For runtime display.
+			accDecEnrich = accelEnrich + ((tpsaccden != 0) ? tpsfuelcut : 100);// ,
+																				// "%"
+			time = System.currentTimeMillis();// , "s"
+			rpm100 = rpm / 100.0;//
 
-		}
-		else if (LAMBDA)
-		{
-			egoVoltage = lambda1;// , "Lambda" ; For LED bars...
-		}
-		else
-		{
-			egoVoltage = afr1;// , "AFR" ; For LED bars...
+			altDiv1 = (alternate != 0) ? 2 : 1;//
+			altDiv2 = (alternate != 0) ? 2 : 1;//
 
-		}
-		if (EGTFULL)
-		{
-			if (CELSIUS)
+			cycleTime1 = 60000.0 / rpm * (2.0 - twoStroke);// , "ms"
+			nSquirts1 = nCylinders / divider;//
+			dutyCycle1 = 100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1;// ,
+																				// "%"
+
+			cycleTime2 = 60000.0 / rpm * (2.0 - twoStroke);// , "ms"
+			nSquirts2 = nCylinders / divider;//
+			dutyCycle2 = 100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2;// ,
+																				// "%"
+
+			if (NARROW_BAND_EGO)
 			{
-				egt6temp = adc6 * 1.222;// ; Setup for converting 0-5.01V = 0 -
-										// 1250C
+				egoVoltage = 1.0 - (afr1 * 0.04883);// , "V" ; For LED bars...
 
-				egt7temp = adc7 * 1.222;// ; Setup for converting 0-5.01V = 0 -
-										// 1250C
+			}
+			else if (LAMBDA)
+			{
+				egoVoltage = lambda1;// , "Lambda" ; For LED bars...
 			}
 			else
 			{
-				egt6temp = (adc6 * 2.200) + 32;// ; Setup for converting 0-5.01V
-												// = 32 - 2282F
-				egt7temp = (adc7 * 2.200) + 32;// ; Setup for converting 0-5.01V
-												// = 32 - 2282F
+				egoVoltage = afr1;// , "AFR" ; For LED bars...
+
 			}
-		}
-		else
-		// normal 0-1000 range
-		// With the 10K/10K circuit. 1000degC would apply 5.10V to the adc and
-		// result in '1044ADC counts' if that was possible
-		{
-			if (CELSIUS)
+			if (EGTFULL)
 			{
-				egt6temp = adc6 * 0.956;// ; Setup for converting 0-5.10V = 0 -
-										// 1000C
-				egt7temp = adc7 * 0.956;// ; Setup for converting 0-5.10V = 0 -
-										// 1000C
+				if (CELSIUS)
+				{
+					egt6temp = adc6 * 1.222;// ; Setup for converting 0-5.01V =
+											// 0 -
+											// 1250C
+
+					egt7temp = adc7 * 1.222;// ; Setup for converting 0-5.01V =
+											// 0 -
+											// 1250C
+				}
+				else
+				{
+					egt6temp = (adc6 * 2.200) + 32;// ; Setup for converting
+													// 0-5.01V
+													// = 32 - 2282F
+					egt7temp = (adc7 * 2.200) + 32;// ; Setup for converting
+													// 0-5.01V
+													// = 32 - 2282F
+				}
 			}
 			else
+			// normal 0-1000 range
+			// With the 10K/10K circuit. 1000degC would apply 5.10V to the adc
+			// and
+			// result in '1044ADC counts' if that was possible
 			{
-				egt6temp = (adc6 * 1.721) + 32;// ; Setup for converting 0-5.10V
-												// = 32 - 1832F
+				if (CELSIUS)
+				{
+					egt6temp = adc6 * 0.956;// ; Setup for converting 0-5.10V =
+											// 0 -
+											// 1000C
+					egt7temp = adc7 * 0.956;// ; Setup for converting 0-5.10V =
+											// 0 -
+											// 1000C
+				}
+				else
+				{
+					egt6temp = (adc6 * 1.721) + 32;// ; Setup for converting
+													// 0-5.10V
+													// = 32 - 1832F
 
-				egt7temp = (adc7 * 1.721) + 32;// ; Setup for converting 0-5.10V
-												// = 32 - 1832F
+					egt7temp = (adc7 * 1.721) + 32;// ; Setup for converting
+													// 0-5.10V
+													// = 32 - 1832F
+				}
 			}
+		}
+		catch (Exception e)
+		{
+
+			// If we've got an arithmetic error, we've probably got duff
+			// constants.
+			throw new IOException(e.getLocalizedMessage());
+
 		}
 
 	}
@@ -579,7 +600,9 @@ public class MS2Extra210 extends Megasquirt
 		b.append(boostduty).append('\t');// , "Boost Duty", int, "%d"
 		b.append(idleDC).append('\t');// , "PWM Idle Duty", float, "%.1f"
 		b.append(synccnt).append('\t');// , "Lost sync count", int, "%d"
-		b.append(syncreason).append(MSUtils.getLocationLogRow());// , "Lost sync reason", int, "%d"
+		b.append(syncreason).append(MSUtils.getLocationLogRow());// ,
+																	// "Lost sync reason",
+																	// int, "%d"
 
 		return b.toString();
 	}
