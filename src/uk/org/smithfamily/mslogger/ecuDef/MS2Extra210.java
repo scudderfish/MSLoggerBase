@@ -131,7 +131,7 @@ public class MS2Extra210 extends Megasquirt
 	double			lambda2;
 	int				egoCorrection;
 	int				veCurr;
-	Object			accDecEnrich;
+	int				accDecEnrich;
 	long			time;
 	double			rpm100;
 	double			altDiv1;
@@ -148,7 +148,7 @@ public class MS2Extra210 extends Megasquirt
 
 	// Constants
 	int				alternate;
-	double			twoStroke;
+	int				twoStroke;
 	int				nCylinders;
 	int				divider;
 
