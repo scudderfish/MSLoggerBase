@@ -100,13 +100,17 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         if(result != null)
             return result;
         boolean val = false;
-        if (prefs.getString("mstype", "NotThisOne").equals(name))
+        String NOT_FOUND = "NotThisOne";
+        if(!val && prefs.getString("temptype", NOT_FOUND).equals(name))
+        	val = true;
+        
+        if (!val && prefs.getString("mstype", NOT_FOUND).equals(name))
             val = true;
 
-        if (!val && prefs.getString("maptype", "NotThisOne").equals(name))
+        if (!val && prefs.getString("maptype", NOT_FOUND).equals(name))
             val = true;
 
-        if (!val && prefs.getString("egotype", "NotThisOne").equals(name))
+        if (!val && prefs.getString("egotype", NOT_FOUND).equals(name))
             val = true;
 
         settings.put(name, val);
@@ -122,6 +126,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             ecuDefinition.stop();
             ecuDefinition = null;
         }
-
+        settings = new HashMap<String,Boolean>();
     }
 }
