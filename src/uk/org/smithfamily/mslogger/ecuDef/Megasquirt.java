@@ -9,6 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import org.acra.ErrorReporter;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -155,6 +157,7 @@ public abstract class Megasquirt
 		}
 		catch (IOException e)
 		{
+			ErrorReporter.getInstance().handleException(e);
             DebugLogManager.INSTANCE.logException(e);
 
 			Log.e(ApplicationSettings.TAG, "Megasquirt.logValues()", e);
@@ -287,6 +290,7 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
 
 				Log.e(TAG, "create() failed", e);
@@ -312,6 +316,7 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
 				connectionFailed();
 				// Close the socket
@@ -321,6 +326,7 @@ public abstract class Megasquirt
 				}
 				catch (IOException e2)
 				{
+					ErrorReporter.getInstance().handleException(e2);
 					Log.e(TAG, "unable to close() socket during connection failure", e2);
 				}
 				// Start the service over to restart listening mode
@@ -345,6 +351,8 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
+
                 DebugLogManager.INSTANCE.logException(e);
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
@@ -454,6 +462,7 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
 				Log.e(TAG, "temp sockets not created", e);
 			}
@@ -497,6 +506,7 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
 				Log.e(TAG, "disconnected", e);
 				connectionLost();
@@ -648,6 +658,7 @@ public abstract class Megasquirt
 			}
 			catch (IOException e)
 			{
+				ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
