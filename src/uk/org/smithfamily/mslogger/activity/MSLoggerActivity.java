@@ -180,6 +180,7 @@ public class MSLoggerActivity extends Activity
         indicatorManager = IndicatorManager.INSTANCE;
 
         setContentView(R.layout.display);
+
         indicatorManager.setDisabled(true);
 
         messages = (TextView) findViewById(R.id.messages);
