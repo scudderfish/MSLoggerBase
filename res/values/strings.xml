@@ -80,5 +80,6 @@
     <string name="autoemail_testresult_fail">Email not sent - please check connection settings and email settings</string>
     <string name="autoemail_invalid_form">Invalid values</string>
     <string name="autoemail_invalid_form_message">Please ensure that all of the fields have been filled in properly</string>
-   
+
+	<string name="crash_toast_text">MSLogger has suffered an unexpected problem.  Submitting crash report.</string>   
 </resources>
