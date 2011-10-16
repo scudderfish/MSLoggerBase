@@ -79,7 +79,6 @@ public abstract class Megasquirt
     private boolean logging;
     private boolean constantsLoaded;
     private boolean signatureChecked;
-
     private String  trueSignature = "Unknown";
 
     protected int table(int i1, String name)
@@ -300,10 +299,16 @@ public abstract class Megasquirt
 
         public void run()
         {
+            if(mmSocket == null)
+            {
+                sendMessage("No connection!");
+                return;
+            }
             Log.i(TAG, "BEGIN mConnectThread");
             setName("ConnectThread");
             sendMessage("Starting connection");
 
+            
             // Always cancel discovery because it will slow down a connection
             mAdapter.cancelDiscovery();
 
