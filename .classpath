@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/additionnal.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/acra-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/acra-4.2.3.jar" sourcepath="/Users/dgs/Downloads/acra-4.2.3/src/acra-4.2.3-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
