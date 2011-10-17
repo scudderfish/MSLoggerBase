@@ -636,7 +636,7 @@ public class MS2Extra210 extends Megasquirt
     @Override
     public int getSigSize()
     {
-        return MS2_EXTRA_REL_2_1_0Q.length();
+        return MS2_EXTRA_REL_2_1_0Q.length()+1;//To allow for null terminator
     }
 
 }
