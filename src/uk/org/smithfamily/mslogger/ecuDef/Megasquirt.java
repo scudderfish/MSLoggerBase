@@ -65,6 +65,8 @@ public abstract class Megasquirt
 
     public abstract int getBlockSize();
 
+    public abstract int getSigSize();
+    
     public abstract int getPageActivationDelay();
 
     public abstract int getInterWriteDelay();
@@ -557,8 +559,9 @@ public abstract class Megasquirt
             {
                 byte[] sigCommand = getSigCommand();
                 sendMessage("Verifying MS");
-                msSig = getSignature(sigCommand);
                 Set<String> signatures = Megasquirt.this.getSignature();
+                
+                msSig = getSignature(sigCommand,Megasquirt.this.getSigSize());
                 verified = signatures.contains(msSig);
             }
             if (verified)
@@ -642,11 +645,11 @@ public abstract class Megasquirt
             t.purge();
         }
 
-        private String getSignature(byte[] sigCommand) throws IOException
+        private String getSignature(byte[] sigCommand, int i) throws IOException
         {
             String sig1 = "NoSigReadYet";
             String sig2 = "Not here";
-            byte[] buf = new byte[32];
+            byte[] buf = new byte[i];
             do
             {
                 write(sigCommand);
