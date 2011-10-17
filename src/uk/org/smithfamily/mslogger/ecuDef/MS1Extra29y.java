@@ -12,8 +12,7 @@ import android.util.Log;
 public class MS1Extra29y extends Megasquirt
 {
 
-	private static final String MS1_EXTRA_FORMAT_029Y3 = "MS1/Extra format 029y3 *********";
-    // Page constants START
+	// Page constants START
 	int					alternate1;
 	int					alternate2;
 	int					twoStroke1;
@@ -115,7 +114,7 @@ public class MS1Extra29y extends Megasquirt
 	boolean				MPXH6400A;
 	boolean				MPX4250;
 
-	private Set<String>	sigs		= new HashSet<String>(Arrays.asList(new String[] { MS1_EXTRA_FORMAT_029Y3 }));
+	private Set<String>	sigs		= new HashSet<String>(Arrays.asList(new String[] { "MS1/Extra format 029y3 *********" }));
 
 	@Override
 	public Set<String> getSignature()
@@ -418,10 +417,4 @@ public class MS1Extra29y extends Megasquirt
 	{
 		return tpsADC;
 	}
-
-    @Override
-    public int getSigSize()
-    {
-        return MS1_EXTRA_FORMAT_029Y3.length();
-    }
 }
