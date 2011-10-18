@@ -19,6 +19,7 @@ public enum FRDLogManager
     private FRDLogFileBody       body   = frdLog.getBody();
     private BufferedOutputStream os;
     private File                 logFile;
+    private String absolutePath;
     private long                 startTime;
 
     public long getStartTime()
@@ -52,7 +53,7 @@ public enum FRDLogManager
         String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".frd";
 
         logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
-
+        absolutePath = logFile.getAbsolutePath();
         os = new BufferedOutputStream(new FileOutputStream(logFile));
     }
 
@@ -86,4 +87,9 @@ public enum FRDLogManager
     {
         close();
     }
+
+	public String getAbsolutePath()
+	{
+		return absolutePath;
+	}
 }

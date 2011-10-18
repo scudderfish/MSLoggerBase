@@ -79,7 +79,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
         return ecuDefinition;
     }
-
     public synchronized String getBluetoothMac()
     {
         if (bluetoothMac != null)
@@ -135,4 +134,14 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         return !NONE_SELECTED.equals(getBluetoothMac());
     }
+
+    public boolean emailEnabled()
+    {
+    	return prefs.getBoolean("autoemail_enabled", false);
+    }
+    public String getEmailDestination()
+    {
+    	return prefs.getString("autoemail_target", "");
+    }
+
 }
