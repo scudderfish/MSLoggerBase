@@ -9,7 +9,8 @@ import android.content.Context;
 
 public class MS2Extra310 extends Megasquirt
 {
-	private byte[]	ochCommand	= { 65 };
+	private static final String MS2_EXTRA_SERIAL310 = "MS2Extra Serial310 ";
+    private byte[]	ochCommand	= { 65 };
 	private byte[]	sigCommand	= { 81 };
 
 	public MS2Extra310(Context c)
@@ -161,7 +162,7 @@ public class MS2Extra310 extends Megasquirt
 	private double	twoStroke;
 	private int		nCylinders;
 	private int		divider;
-    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{"MS2Extra Serial310 "}));
+    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[]{MS2_EXTRA_SERIAL310}));
 
 	@Override
 	public Set<String> getSignature()
@@ -629,5 +630,11 @@ public class MS2Extra310 extends Megasquirt
 	{
 		return tpsADC;
 	}
+
+    @Override
+    public int getSigSize()
+    {
+        return MS2_EXTRA_SERIAL310.length();
+    }
 
 }
