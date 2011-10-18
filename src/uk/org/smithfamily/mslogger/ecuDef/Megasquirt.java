@@ -24,6 +24,13 @@ import android.util.Log;
 
 public abstract class Megasquirt
 {
+    public int      dispRPM;
+    public int      dispMAP;
+    public double   dispAFR;
+    public double   dispCLT;
+    public double   dispIAT;
+    public double   dispADV;
+
     private boolean simulated = false;
 
     enum ConnectionState
@@ -66,12 +73,14 @@ public abstract class Megasquirt
     public abstract int getBlockSize();
 
     public abstract int getSigSize();
-    
+
     public abstract int getPageActivationDelay();
 
     public abstract int getInterWriteDelay();
 
     public abstract int getCurrentTPS();
+
+    public abstract void mapDispValues();
 
     private long    lastTime      = System.currentTimeMillis();
 
@@ -230,6 +239,33 @@ public abstract class Megasquirt
 
     public double getValue(String channel)
     {
+        // Short circuit the obvious ones
+        if ("dispRPM".equals(channel))
+        {
+            return dispRPM;
+        }
+
+        if ("dispMAP".equals(channel))
+        {
+            return dispMAP;
+        }
+        if ("dispAFR".equals(channel))
+        {
+            return dispAFR;
+        }
+        if ("dispCLT".equals(channel))
+        {
+            return dispCLT;
+        }
+        if ("dispIAT".equals(channel))
+        {
+            return dispIAT;
+        }
+        if ("dispADV".equals(channel))
+        {
+            return dispADV;
+        }
+
         double value = 0;
         Class<?> c = this.getClass();
         try
@@ -301,7 +337,7 @@ public abstract class Megasquirt
 
         public void run()
         {
-            if(mmSocket == null)
+            if (mmSocket == null)
             {
                 sendMessage("No connection!");
                 return;
@@ -310,7 +346,6 @@ public abstract class Megasquirt
             setName("ConnectThread");
             sendMessage("Starting connection");
 
-            
             // Always cancel discovery because it will slow down a connection
             mAdapter.cancelDiscovery();
 
@@ -453,7 +488,7 @@ public abstract class Megasquirt
         private final OutputStream    mmOutStream;
         Timer                         t = new Timer("IOTimer", true);
         private boolean               running;
-		private boolean	timerTriggered;
+        private boolean               timerTriggered;
 
         public ConnectedThread(BluetoothSocket socket)
         {
@@ -561,8 +596,8 @@ public abstract class Megasquirt
                 byte[] sigCommand = getSigCommand();
                 sendMessage("Verifying MS");
                 Set<String> signatures = Megasquirt.this.getSignature();
-                
-                msSig = getSignature(sigCommand,Megasquirt.this.getSigSize());
+
+                msSig = getSignature(sigCommand, Megasquirt.this.getSigSize());
                 verified = signatures.contains(msSig);
             }
             if (verified)
@@ -611,13 +646,13 @@ public abstract class Megasquirt
 
         private void read(byte[] bytes) throws IOException
         {
-        	timerTriggered = false;
-        	TimerTask cancelTask = new TimerTask()
+            timerTriggered = false;
+            TimerTask cancelTask = new TimerTask()
             {
                 @Override
                 public void run()
                 {
-                	timerTriggered = true;
+                    timerTriggered = true;
                     cancelConnection();
                 }
             };
@@ -630,22 +665,22 @@ public abstract class Megasquirt
             while (bytesRead < nBytes)
             {
 
-            	try
-            	{
-	                int result = mmInStream.read(buffer, bytesRead, nBytes - bytesRead);
-	                if (result == -1)
-	                    break;
-	
-	                bytesRead += result;
-            	}
-            	catch(IOException e)
-            	{
-            		if(timerTriggered)
-            		{
-            			DebugLogManager.INSTANCE.log("read timeout occured : read "+bytesRead+" : expected "+nBytes);
-            		}
-            		throw e;
-            	}
+                try
+                {
+                    int result = mmInStream.read(buffer, bytesRead, nBytes - bytesRead);
+                    if (result == -1)
+                        break;
+
+                    bytesRead += result;
+                }
+                catch (IOException e)
+                {
+                    if (timerTriggered)
+                    {
+                        DebugLogManager.INSTANCE.log("read timeout occured : read " + bytesRead + " : expected " + nBytes);
+                    }
+                    throw e;
+                }
             }
 
             synchronized (bytes)
