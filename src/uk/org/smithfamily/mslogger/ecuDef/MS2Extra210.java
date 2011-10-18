@@ -10,8 +10,8 @@ import android.content.Context;
 public class MS2Extra210 extends Megasquirt
 {
 
-	private static final String MS2_EXTRA_REL_2_1_0Q = "MS2Extra Rel 2.1.0q";
-    private static final String MS2_EXTRA_REL_2_1_0P = "MS2Extra Rel 2.1.0p";
+	private static final String MS2_EXTRA_REL_2_1_0Q = "MS2Extra Rel 2.1.0q\0";
+    private static final String MS2_EXTRA_REL_2_1_0P = "MS2Extra Rel 2.1.0p\0";
     private byte[]		ochCommand	= { 65 };
 	private byte[]		sigCommand	= { 81 };
 
@@ -636,7 +636,7 @@ public class MS2Extra210 extends Megasquirt
     @Override
     public int getSigSize()
     {
-        return MS2_EXTRA_REL_2_1_0Q.length()+1;//To allow for null terminator
+        return MS2_EXTRA_REL_2_1_0Q.length();
     }
 
 }
