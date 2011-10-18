@@ -453,6 +453,7 @@ public abstract class Megasquirt
         private final OutputStream    mmOutStream;
         Timer                         t = new Timer("IOTimer", true);
         private boolean               running;
+		private boolean	timerTriggered;
 
         public ConnectedThread(BluetoothSocket socket)
         {
@@ -585,11 +586,8 @@ public abstract class Megasquirt
                 MSSimulator.INSTANCE.getNextRTV(ochBuffer);
                 return;
             }
-            // DebugLogManager.INSTANCE.log("1", context,false);
-            write(getOchCommand());//
-            // DebugLogManager.INSTANCE.log("2", context,false);
+            write(getOchCommand());
             read(ochBuffer);
-            // DebugLogManager.INSTANCE.log("3", context,true);
             // Debug.stopMethodTracing();
         }
 
@@ -613,11 +611,13 @@ public abstract class Megasquirt
 
         private void read(byte[] bytes) throws IOException
         {
-            TimerTask cancelTask = new TimerTask()
+        	timerTriggered = false;
+        	TimerTask cancelTask = new TimerTask()
             {
                 @Override
                 public void run()
                 {
+                	timerTriggered = true;
                     cancelConnection();
                 }
             };
@@ -630,11 +630,22 @@ public abstract class Megasquirt
             while (bytesRead < nBytes)
             {
 
-                int result = mmInStream.read(buffer, bytesRead, nBytes - bytesRead);
-                if (result == -1)
-                    break;
-
-                bytesRead += result;
+            	try
+            	{
+	                int result = mmInStream.read(buffer, bytesRead, nBytes - bytesRead);
+	                if (result == -1)
+	                    break;
+	
+	                bytesRead += result;
+            	}
+            	catch(IOException e)
+            	{
+            		if(timerTriggered)
+            		{
+            			DebugLogManager.INSTANCE.log("read timeout occured : read "+bytesRead+" : expected "+nBytes);
+            		}
+            		throw e;
+            	}
             }
 
             synchronized (bytes)
