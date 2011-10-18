@@ -80,7 +80,7 @@ public abstract class Megasquirt
 
     private boolean logging;
     private boolean constantsLoaded;
-    private boolean signatureChecked;
+    
     private String  trueSignature = "Unknown";
 
     protected int table(int i1, String name)
@@ -106,7 +106,6 @@ public abstract class Megasquirt
 
         ochBuffer = new byte[this.getBlockSize()];
         constantsLoaded = false;
-        signatureChecked = false;
         initialiseConnection();
 
     }
