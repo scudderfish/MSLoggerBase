@@ -630,7 +630,7 @@ public class MS2Extra210 extends Megasquirt
 	@Override
 	public int getCurrentTPS()
 	{
-		return tpsADC;
+		return throttle;
 	}
 
     @Override
