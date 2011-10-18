@@ -180,8 +180,6 @@ public class MSLoggerActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        ApplicationSettings.INSTANCE.initialise(this);
-
         super.onCreate(savedInstanceState);
 
         indicatorManager = IndicatorManager.INSTANCE;

@@ -10,7 +10,9 @@ import android.content.Context;
 public class MS2Extra210 extends Megasquirt
 {
 
-	private byte[]		ochCommand	= { 65 };
+	private static final String MS2_EXTRA_REL_2_1_0Q = "MS2Extra Rel 2.1.0q\0";
+    private static final String MS2_EXTRA_REL_2_1_0P = "MS2Extra Rel 2.1.0p\0";
+    private byte[]		ochCommand	= { 65 };
 	private byte[]		sigCommand	= { 81 };
 
 	// Runtime vars
@@ -159,7 +161,7 @@ public class MS2Extra210 extends Megasquirt
 	boolean				CELSIUS;
 
 	private Set<String>	sigs		= new HashSet<String>(
-											Arrays.asList(new String[] { "MS2Extra Rel 2.1.0p", "MS2Extra Rel 2.1.0q" }));
+											Arrays.asList(new String[] { MS2_EXTRA_REL_2_1_0P, MS2_EXTRA_REL_2_1_0Q }));
 
 	@Override
 	public Set<String> getSignature()
@@ -630,5 +632,11 @@ public class MS2Extra210 extends Megasquirt
 	{
 		return tpsADC;
 	}
+
+    @Override
+    public int getSigSize()
+    {
+        return MS2_EXTRA_REL_2_1_0Q.length();
+    }
 
 }
