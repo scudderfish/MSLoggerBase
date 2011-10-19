@@ -4,4 +4,5 @@
 		android:title="@string/Preferences" />
 	<item android:id="@+id/calibrate"
 		android:title="@string/CalibrateTPS" />
+		<item android:id="@+id/about" android:title="@string/about"/>
 </menu>
