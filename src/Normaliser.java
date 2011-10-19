@@ -11,7 +11,8 @@ public class Normaliser
 {
 	private static Pattern				bits		= Pattern
 															.compile("(\\w*)\\s*=\\s*bits,\\s*(.*),\\s*(.*),\\s*\\[(\\d):(\\d)\\].*");
-	private static Pattern				scalar		= Pattern.compile("(\\w*)\\s*=\\s*scalar,\\s*([U|S]\\d+),\\s*(\\d+),\\s*.*,.*");
+	private static Pattern				scalar		= Pattern
+															.compile("(\\w*)\\s*=\\s*scalar\\s*,\\s*([U|S]\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(.*,.*)");
 	private static Pattern				expr		= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
 	private static Pattern				ternary		= Pattern.compile("(.*)\\?(.*)");
 	private static Pattern				log			= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
@@ -128,8 +129,9 @@ public class Normaliser
 		writer.println("    return b.toString();\n}\n");
 		writer.println("\n}");
 		writer.close();
-		System.out.println(getFingerprint()+" : "+filename);
+		System.out.println(getFingerprint() + " : " + filename);
 	}
+
 	private static String getFingerprint()
 	{
 		StringBuffer b = new StringBuffer();
@@ -137,9 +139,9 @@ public class Normaliser
 		{
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] array = md.digest(fingerprintSource.getBytes());
-			for(int i = 0; i < array.length;i++)
+			for (int i = 0; i < array.length; i++)
 			{
-				b.append(Integer.toHexString((array[i]&0xFF) | 0x100).substring(1, 3));
+				b.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
 			}
 		}
 		catch (NoSuchAlgorithmException e)
@@ -147,18 +149,23 @@ public class Normaliser
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
 		return b.toString();
 	}
+
 	private static void processLogEntry(String line)
 	{
 		Matcher logM = log.matcher(line);
 		if (logM.matches())
 		{
-			logHeader.add("b.append(\"" + logM.group(2) + "\").append(\"\\t\");");
-			logRecord.add("b.append(" + logM.group(1) + ").append(\"\\t\");");
+			String header = logM.group(2);
+			String variable = logM.group(1);
+			if ("double".equals(runtimeVars.get(variable)))
+			{
+				variable = "round(" + variable + ")";
+			}
+			logHeader.add("b.append(\"" + header + "\").append(\"\\t\");");
+			logRecord.add("b.append(" + variable + ").append(\"\\t\");");
 		}
 		else if (line.startsWith("#"))
 		{
@@ -185,7 +192,7 @@ public class Normaliser
 			String offset = bitsM.group(3);
 			String start = bitsM.group(4);
 			String end = bitsM.group(5);
-			definition = (name + " = getBits(ochBuffer," + offset + "," + start + "," + end + ");");
+			definition = (name + " = MSUtils.getBits(ochBuffer," + offset + "," + start + "," + end + ");");
 			runtime.add(definition);
 			runtimeVars.put(name, "int");
 		}
@@ -194,9 +201,20 @@ public class Normaliser
 			String name = scalarM.group(1);
 			String dataType = scalarM.group(2);
 			String offset = scalarM.group(3);
-			definition = getScalar(name, dataType, offset);
+			String scalingRaw = scalarM.group(4);
+			String[] scaling = scalingRaw.split(",");
+			String scale = scaling[1].trim();
+			String numOffset = scaling[2].trim();
+			if (Double.parseDouble(scale) != 1)
+			{
+				runtimeVars.put(name, "double");
+			}
+			else
+			{
+				runtimeVars.put(name, "int");
+			}
+			definition = getScalar(name, dataType, offset, scale, numOffset);
 			runtime.add(definition);
-			runtimeVars.put(name, "int");
 		}
 		else if (exprM.matches())
 		{
@@ -205,18 +223,18 @@ public class Normaliser
 			Matcher ternaryM = ternary.matcher(expression);
 			if (ternaryM.matches())
 			{
-				//System.out.println("BEFORE : " + expression);
+				// System.out.println("BEFORE : " + expression);
 				String test = ternaryM.group(1);
 				String values = ternaryM.group(2);
-				if(StringUtils.containsAny(test, "<>!="))
+				if (StringUtils.containsAny(test, "<>!="))
 				{
 					expression = "(" + test + ") ? " + values;
 				}
 				else
-				{	
-				expression = "((" + test + ") != 0 ) ? " + values;
+				{
+					expression = "((" + test + ") != 0 ) ? " + values;
 				}
-				//System.out.println("AFTER  : " + expression + "\n");
+				// System.out.println("AFTER  : " + expression + "\n");
 			}
 			definition = name + " = (" + expression + ");";
 			runtime.add(definition);
@@ -232,6 +250,10 @@ public class Normaliser
 		else if (line.startsWith("#"))
 		{
 			runtime.add(processPreprocessor(line));
+		}
+		else
+		{
+			System.out.println(line);
 		}
 	}
 
@@ -258,6 +280,17 @@ public class Normaliser
 
 	private static String processPreprocessor(String line)
 	{
+		String filtered;
+		boolean stripped = false;
+
+		filtered = line.replace("  ", " ");
+		stripped = filtered.equals(line);
+		while (!stripped)
+		{
+			line = filtered;
+			filtered = line.replace("  ", " ");
+			stripped = filtered.equals(line);
+		}
 		String[] components = line.split(" ");
 		if (components[0].equals("#if"))
 		{
@@ -267,23 +300,23 @@ public class Normaliser
 		if (components[0].equals("#elif"))
 		{
 			flags.add(components[1]);
-			return ("\n}\nelse if (" + components[1] + ")\n{");
+			return ("}\nelse if (" + components[1] + ")\n{");
 		}
 		if (components[0].equals("#else"))
 		{
-			return ("\n}\nelse\n{");
+			return ("}\nelse\n{");
 		}
 		if (components[0].equals("#endif"))
 		{
-			return ("\n}\n");
+			return ("}");
 		}
-		
+
 		return "";
 	}
 
-	private static String getScalar(String name, String dataType, String offset)
+	private static String getScalar(String name, String dataType, String offset, String scale, String numOffset)
 	{
-		String definition = name + " = MSUtils.get";
+		String definition = name + " = (" + runtimeVars.get(name) + ")((MSUtils.get";
 		if (dataType.startsWith("S"))
 		{
 			definition += "Signed";
@@ -304,7 +337,7 @@ public class Normaliser
 			definition += dataType;
 			break;
 		}
-		definition += "(ochBuffer," + offset + ");";
+		definition += "(ochBuffer," + offset + ") + " + numOffset + ") * " + scale + ");";
 		fingerprintSource += definition;
 		return definition;
 	}
