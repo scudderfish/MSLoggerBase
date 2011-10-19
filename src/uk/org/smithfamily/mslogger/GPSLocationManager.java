@@ -26,18 +26,18 @@ public enum GPSLocationManager implements LocationListener
 
     synchronized public void start()
     {
-        /*
+        
         locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-        */
+        
     }
 
     synchronized public void stop()
     {
-        /*
+        
         locationManager.removeUpdates(this);
         locationManager = null;
-        */
+        
     }
 
     protected void sendMessage(String msg)
