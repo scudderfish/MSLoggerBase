@@ -24,6 +24,13 @@ import android.util.Log;
 
 public abstract class Megasquirt
 {
+    public int      dispRPM;
+    public double   dispMAP;
+    public double   dispAFR;
+    public double   dispCLT;
+    public double   dispIAT;
+    public double   dispADV;
+
     private boolean simulated = false;
 
     enum ConnectionState
@@ -72,6 +79,8 @@ public abstract class Megasquirt
     public abstract int getInterWriteDelay();
 
     public abstract int getCurrentTPS();
+
+    public abstract void mapDispValues();
 
     private long    lastTime      = System.currentTimeMillis();
 
@@ -229,6 +238,33 @@ public abstract class Megasquirt
 
     public double getValue(String channel)
     {
+        // Short circuit the obvious ones
+        if ("dispRPM".equals(channel))
+        {
+            return dispRPM;
+        }
+
+        if ("dispMAP".equals(channel))
+        {
+            return dispMAP;
+        }
+        if ("dispAFR".equals(channel))
+        {
+            return dispAFR;
+        }
+        if ("dispCLT".equals(channel))
+        {
+            return dispCLT;
+        }
+        if ("dispIAT".equals(channel))
+        {
+            return dispIAT;
+        }
+        if ("dispADV".equals(channel))
+        {
+            return dispADV;
+        }
+
         double value = 0;
         Class<?> c = this.getClass();
         try
