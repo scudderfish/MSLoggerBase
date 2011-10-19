@@ -25,7 +25,7 @@ import android.util.Log;
 public abstract class Megasquirt
 {
     public int      dispRPM;
-    public int      dispMAP;
+    public double   dispMAP;
     public double   dispAFR;
     public double   dispCLT;
     public double   dispIAT;
