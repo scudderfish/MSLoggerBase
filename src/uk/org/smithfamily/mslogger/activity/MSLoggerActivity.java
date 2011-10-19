@@ -11,6 +11,7 @@ import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -18,6 +19,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.*;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -225,9 +228,7 @@ public class MSLoggerActivity extends Activity
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        
-        
-        if(ApplicationSettings.INSTANCE.btDeviceSelected())
+		else
         {
             connectButton.setEnabled(true);
         }
@@ -275,10 +276,43 @@ public class MSLoggerActivity extends Activity
         case R.id.calibrate:
             openCalibrateTPS();
             return true;
+		case R.id.about:
+			showAbout();
+			return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
+
+	private void showAbout()
+	{
+		Dialog dialog = new Dialog(this);
+
+		dialog.setContentView(R.layout.about);
+
+		TextView text = (TextView) dialog.findViewById(R.id.text);
+		String title = "";
+		try
+		{
+			PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+			ApplicationInfo ai;
+			ai = pInfo.applicationInfo;
+			final String applicationName = (String) (ai != null ? getPackageManager().getApplicationLabel(ai) : "(unknown)");
+			title = applicationName + " " + pInfo.versionName;
+		}
+		catch (NameNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dialog.setTitle(title);
+
+		text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nPhil Tobin");
+		ImageView image = (ImageView) dialog.findViewById(R.id.image);
+		image.setImageResource(R.drawable.injector);
+
+		dialog.show();
+	}
 
     private void openCalibrateTPS()
     {
