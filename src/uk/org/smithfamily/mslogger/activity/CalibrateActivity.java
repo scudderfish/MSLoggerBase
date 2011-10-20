@@ -86,8 +86,8 @@ public class CalibrateActivity extends Activity
 		minValView.setText(Integer.toString(minTPS));
 		curValView.setText(Integer.toString(raw));
 		maxValView.setText(Integer.toString(maxTPS));
-		tpsDisplay.setMax(maxTPS - minTPS);
-		tpsDisplay.setProgress(raw - minTPS);
+		tpsDisplay.setMax(Math.abs(maxTPS - minTPS));
+		tpsDisplay.setProgress(Math.abs(raw - minTPS));
 	}
 
 	private void saveValues()

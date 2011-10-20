@@ -4,10 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.org.smithfamily.mslogger.ecuDef.MS1Extra29y;
-import uk.org.smithfamily.mslogger.ecuDef.MS2Extra210;
-import uk.org.smithfamily.mslogger.ecuDef.MS2Extra310;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -18,7 +15,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    public static final String NONE_SELECTED   = "NONE_SELECTED";
+    private static final String NONE_SELECTED   = "NONE_SELECTED";
     public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
     public static final String  TAG             = "uk.org.smithfamily.mslogger";
