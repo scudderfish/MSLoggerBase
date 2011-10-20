@@ -27,7 +27,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Megasquirt          ecuDefinition;
     private String              bluetoothMac;
 
-    public void initialise(Context context, Handler handler)
+    public void initialise(Context context)
     {
         this.context = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
