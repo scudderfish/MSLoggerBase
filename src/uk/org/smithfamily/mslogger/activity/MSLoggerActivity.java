@@ -230,7 +230,7 @@ public class MSLoggerActivity extends Activity
 			for (Indicator i : indicators)
 			{
 				String channelName = i.getChannel();
-				if (channelName != null)
+				if (channelName != null && service != null)
 				{
 					double value = service.getValue(channelName);
 					i.setCurrentValue(value);
@@ -294,7 +294,7 @@ public class MSLoggerActivity extends Activity
 		}
 		dialog.setTitle(title);
 
-		text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nPhil Tobin");
+		text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nMartin Walton");
 		ImageView image = (ImageView) dialog.findViewById(R.id.image);
 		image.setImageResource(R.drawable.injector);
 
