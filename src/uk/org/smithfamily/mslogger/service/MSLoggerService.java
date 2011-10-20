@@ -51,8 +51,6 @@ public class MSLoggerService extends Service
     @Override
     public void onCreate()
     {
-        ApplicationSettings.INSTANCE.initialise(this, mHandler);
-
         created = true;
         super.onCreate();
         ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
