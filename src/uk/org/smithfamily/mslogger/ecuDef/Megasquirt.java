@@ -546,6 +546,7 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
+                    mapDispValues();
                     broadcast(NEW_DATA);
                 }
             }
