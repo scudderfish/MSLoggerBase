@@ -31,7 +31,9 @@ public abstract class Megasquirt
     public double   dispIAT;
     public double   dispADV;
 
-    private boolean simulated = false;
+    private boolean simulated  = false;
+
+    private int     errorCount = 0;
 
     enum ConnectionState
     {
@@ -87,6 +89,7 @@ public abstract class Megasquirt
     private long    logStart      = lastTime;
     private byte[]  ochBuffer;
 
+    private boolean running;
     private boolean logging;
     private boolean constantsLoaded;
     private boolean signatureChecked;
@@ -476,6 +479,14 @@ public abstract class Megasquirt
 
         sendMessage("Device connection was lost");
         broadcast(DISCONNECTED);
+        if (++errorCount < 3 && running)
+        {
+            initialiseConnection();
+        }
+        else
+        {
+            errorCount = 0;
+        }
     }
 
     /**
@@ -487,7 +498,6 @@ public abstract class Megasquirt
         private final InputStream     mmInStream;
         private final OutputStream    mmOutStream;
         Timer                         t = new Timer("IOTimer", true);
-        private boolean               running;
         private boolean               timerTriggered;
 
         public ConnectedThread(BluetoothSocket socket)
@@ -548,6 +558,8 @@ public abstract class Megasquirt
                     logValues();
                     mapDispValues();
                     broadcast(NEW_DATA);
+                    // If we've got this far, reset the error counter
+                    errorCount = 0;
                 }
             }
             catch (IOException e)
@@ -588,7 +600,7 @@ public abstract class Megasquirt
         {
             boolean verified = false;
             String msSig = null;
-            if (simulated)
+            if (simulated || signatureChecked)
             {
                 verified = true;
             }
@@ -605,6 +617,7 @@ public abstract class Megasquirt
             {
                 sendMessage("Connected to " + msSig);
                 trueSignature = msSig;
+                signatureChecked = true;
                 broadcast(CONNECTED);
             }
             else
