@@ -29,10 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.*;
 
 public class MSLoggerActivity extends Activity
 {
@@ -141,7 +138,8 @@ public class MSLoggerActivity extends Activity
             {
                 if (receivedData && connectButton.isChecked())
                 {
-                    // We've been unfortunately disconnected so re-establish comms as if nothing happened
+					// We've been unfortunately disconnected so re-establish
+					// comms as if nothing happened
                     service.reconnect();
                     // connectButton.setEnabled(false);
                     // logButton.setEnabled(false);
@@ -244,7 +242,7 @@ public class MSLoggerActivity extends Activity
             for (Indicator i : indicators)
             {
                 String channelName = i.getChannel();
-                if (channelName != null)
+				if (channelName != null && service != null)
                 {
                     double value = service.getValue(channelName);
                     i.setCurrentValue(value);
@@ -308,7 +306,7 @@ public class MSLoggerActivity extends Activity
 		}
 		dialog.setTitle(title);
 
-		text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nPhil Tobin");
+		text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nMartin Walton");
 		ImageView image = (ImageView) dialog.findViewById(R.id.image);
 		image.setImageResource(R.drawable.injector);
 

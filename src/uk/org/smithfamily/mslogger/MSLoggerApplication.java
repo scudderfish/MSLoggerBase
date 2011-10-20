@@ -21,5 +21,6 @@ public class MSLoggerApplication extends Application
         ACRA.init(this);
         super.onCreate();
         ApplicationSettings.INSTANCE.initialise(this);
+
     }
 }
