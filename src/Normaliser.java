@@ -16,9 +16,12 @@ public class Normaliser
     private static Pattern             ternary   = Pattern.compile("(.*)\\?(.*)");
     private static Pattern             log       = Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
     private static Pattern             binary    = Pattern.compile("(.*)0b([01]{8})(.*)");
+    private static Pattern             gauge     = Pattern
+                                                         .compile("\\s*(.*?)\\s*=\\s*(.*?)\\s*,\\s*\"(.*?)\"\\s*,\\s*\"(.*?)\"\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)");
     private static List<String>        runtime   = new ArrayList<String>();
     private static List<String>        logHeader = new ArrayList<String>();
     private static List<String>        logRecord = new ArrayList<String>();
+    private static List<String>        gaugeDef  = new ArrayList<String>();
     private static Map<String, String> runtimeVars;
     private static Map<String, String> evalVars;
     private static Set<String>         flags;
@@ -44,10 +47,12 @@ public class Normaliser
         runtimeVars = new HashMap<String, String>();
         evalVars = new HashMap<String, String>();
         flags = new HashSet<String>();
+        gaugeDef = new ArrayList<String>();
         fingerprintSource = "";
 
         boolean processingExpr = false;
         boolean processingLogs = false;
+        boolean processingGauges = false;
         BufferedReader br = new BufferedReader(new FileReader(filename));
 
         String line;
@@ -57,12 +62,30 @@ public class Normaliser
             if (line.trim().equals("[OutputChannels]"))
             {
                 processingExpr = true;
+                processingLogs = false;
+                processingGauges = false;
                 continue;
             }
-            if (line.trim().equals("[Datalog]"))
+            else if (line.trim().equals("[Datalog]"))
             {
                 processingExpr = false;
                 processingLogs = true;
+                processingGauges = false;
+                continue;
+            }
+            else if (line.trim().equals("[GaugeConfigurations]"))
+            {
+                processingExpr = false;
+                processingLogs = false;
+                processingGauges = true;
+                continue;
+
+            }
+            else if (line.trim().startsWith("["))
+            {
+                processingExpr = false;
+                processingLogs = false;
+                processingGauges = false;
                 continue;
             }
             if (processingExpr)
@@ -73,8 +96,44 @@ public class Normaliser
             {
                 processLogEntry(line);
             }
+            if (processingGauges)
+            {
+                processGaugeEntry(line);
+            }
         }
         writeFile(filename);
+    }
+
+    private static void processGaugeEntry(String line)
+    {
+        System.out.println("Converting " + line);
+        Matcher m = gauge.matcher(line);
+        if (m.matches())
+        {
+            String name = m.group(1);
+            String channel = m.group(2);
+            String title = m.group(3);
+            String units = m.group(4);
+            String lo = m.group(5);
+            String hi = m.group(6);
+            String loD = m.group(7);
+            String loW = m.group(8);
+            String hiW = m.group(9);
+            String hiD = m.group(10);
+            String vd = m.group(11);
+            String ld = m.group(12);
+
+            String g = String.format(
+                    "GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s));", name,
+                    channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
+            gaugeDef.add(g);
+
+        }
+        else if (line.startsWith("#"))
+        {
+            gaugeDef.add(processPreprocessor(line));
+        }
+
     }
 
     private static void writeFile(String filename) throws IOException
@@ -128,7 +187,17 @@ public class Normaliser
         }
         writer.println("b.append(MSUtils.getLocationLogRow());");
         writer.println("    return b.toString();\n}\n");
-        writer.println("\n}");
+        writer.println("\n}\n");
+        writer.println("@Override");
+        writer.println("public void initGauges()");
+        writer.println("{");
+        for(String gauge : gaugeDef)
+        {
+            writer.println(gauge);
+        }
+        
+        writer.println("\n}\n");
+        
         writer.close();
         System.out.println(getFingerprint() + " : " + filename);
     }
