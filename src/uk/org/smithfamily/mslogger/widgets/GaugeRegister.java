@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.widgets;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public enum GaugeRegister
 {
@@ -18,7 +19,10 @@ public enum GaugeRegister
 
         return details.get(nme);
     }
-
+    public Set<String> getGaugeNames()
+    {
+        return details.keySet();
+    }
     public void flush()
     {
         details = new HashMap<String, GaugeDetails>();

@@ -33,4 +33,14 @@
 			android:dialogTitle="@string/autoemail_target" android:hint="@string/autoemail_sendto" />
 	</PreferenceCategory>
 
+	<PreferenceCategory android:title="Gauges">
+	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 1" android:key="gauge1" android:dialogTitle="Choose Gauge 1"/>
+	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 2" android:key="gauge2" android:dialogTitle="Choose Gauge 2"/>
+	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 3" android:key="gauge3" android:dialogTitle="Choose Gauge 3"/>
+	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 4" android:key="gauge4" android:dialogTitle="Choose Gauge 4"/>
+	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 5" android:key="gauge5" android:dialogTitle="Choose Gauge 5"/>
+	
+	
+	
+	</PreferenceCategory>
 </PreferenceScreen>

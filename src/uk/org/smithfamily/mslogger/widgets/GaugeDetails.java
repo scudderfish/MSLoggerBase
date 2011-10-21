@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+
 public class GaugeDetails
 {
 
@@ -23,14 +25,14 @@ public class GaugeDetails
         this.channel = channel;
         this.title = title;
         this.units = units;
-        this.min = min;
-        this.max = max;
-        this.loD = loD;
-        this.loW = loW;
-        this.hiW = hiW;
-        this.hiD = hiD;
-        this.vd = vd;
-        this.ld = ld;
+        this.min = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"min",min);
+        this.max = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"max",max);
+        this.loD = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"loD",loD);
+        this.loW = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"loW",loW);
+        this.hiW =ApplicationSettings.INSTANCE.getGaugeSetting(name,title, "hiW",hiW);
+        this.hiD = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"hiD",hiD);
+        this.vd = (int) ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"vd",vd);
+        this.ld = (int) ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"ld",ld);
     }
 
     public String getName()
