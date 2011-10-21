@@ -83,6 +83,9 @@ public abstract class Megasquirt
     public abstract int getCurrentTPS();
 
     public abstract void mapDispValues();
+    
+    public abstract void initGauges();
+    public abstract String[] defaultGauges();
 
     private long    lastTime      = System.currentTimeMillis();
 

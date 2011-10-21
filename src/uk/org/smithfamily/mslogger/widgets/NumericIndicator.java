@@ -115,16 +115,6 @@ public class NumericIndicator extends TextView implements Indicator
 		// No Op
 	}
 
-	public void setWarningPoint(float warn)
-	{
-		this.warningPoint = warn;
-	}
-
-	public void setErrorPoint(float err)
-	{
-		this.errorPoint = err;
-	}
-
 	public void setCurrentValue(double value)
 	{
 		this.value = (float) value;
@@ -186,4 +176,60 @@ public class NumericIndicator extends TextView implements Indicator
 		this.disabled = disabled;
 		this.postInvalidate();
 	}
+
+    @Override
+    public void setName(String name)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setUnits(String units)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setLowD(float lowD)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setLowW(float lowW)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setHiW(float hiW)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setHiD(float hiD)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setVD(int vd)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setLD(int ld)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

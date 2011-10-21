@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
+import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+
 import android.content.Context;
 
 public class MS1Extra29y extends Megasquirt
@@ -26,7 +29,6 @@ public class MS1Extra29y extends Megasquirt
     byte[]                      sigCommand             = { 83 };                                                                     // 'S'
     byte[]                      ochCommand             = { 82 };                                                                     // 'R'
     private Set<String>         sigs                   = new HashSet<String>(Arrays.asList(new String[] { MS1_EXTRA_FORMAT_029Y3 }));
-
     // Flags
     boolean                     NARROW_BAND_EGO;
     boolean                     FAST_WIDEBAND_O2;
@@ -572,6 +574,75 @@ public class MS1Extra29y extends Megasquirt
         }
         b.append(MSUtils.getLocationLogRow());
         return b.toString();
+    }
+    private String[]    defaultGauges={"mapGauge","tachometer","afrGauge","cltGauge","matGauge"};
+    
+    @Override
+    public void initGauges()
+    {
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge","deadValue","---","",0,1,-1,-1,2,2,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("baroADCGauge","baroADC","Barometer ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapADCGauge","mapADC","MAP ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matADCGauge","matADC","MAT ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltADCGauge","cltADC","CLT ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tpsADCGauge","tpsADC","TPS ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("batADCGauge","batADC","BAT ADC","",0,255,-1,-1,256,256,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoGauge","egoVoltage","Rear Bank O2 Voltage","volts",0,1.0,0.2,0.3,0.6,0.8,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoGauge","egoVoltage","Rear Bank O2 Voltage","volts",0.5,4.5,0.0,0.0,5.0,5.0,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ego2Gauge","ego2Voltage","Front Bank O2 Voltage","volts",0,1.0,0.2,0.3,0.6,0.8,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ego2Gauge","ego2Voltage","Front Bank O2 Voltage","volts",0.5,4.5,0.0,0.0,5.0,5.0,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambdaGauge","lambda","Lambda","",0.5,1.5,0.5,0.7,2,1.1,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge","accDecEnrich","AE Driven Fuel Pct","Pct",100,200,0,0,999,999,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrGauge","afr","Air:Fuel Ratio","",10,19.4,12,13,15,16,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge","secl","Clock","Seconds",0,255,10,10,245,245,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge","dutyCycle1","Duty Cycle 1","%",0,100,-1,-1,85,90,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge","dutyCycle2","Duty Cycle 2","%",0,100,-1,-1,85,90,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge","egoCorrection","O2 Driven Correction (GEGO)","%",80,120,90,99,101,110,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge","gammaEnrich","Gamma Enrichment","%",50,150,-1,-1,151,151,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge","map","Engine MAP","kPa",0,304,0,20,250,275,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge","map","Engine MAP","kPa",0,400,0,20,250,275,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge","map","Engine MAP","kPa",0,255,0,20,200,245,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("baroGauge","barometer","Barometer","kPa",60,110,0,20,200,245,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barocorrGauge","baroCorrection","baro correction","%",0,120,-1,-1,999,999,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge","pulseWidth1","Pulse Width 1","mSec",0,25.5,1.0,1.2,20,25,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge","pulseWidth2","Pulse Width 2","mSec",0,25.5,1.0,1.2,20,25,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm","Engine Speed","RPM",0,8000,300,600,3000,5000,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge","throttle","Throttle Position","%TPS",0,100,-1,1,90,100,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veBucketGauge","veTuneValue","VE Bucket","%",0,150,-1,-1,999,999,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge","veCurr","VE Current","%",0,120,-1,-1,999,999,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter","batteryVoltage","Battery Voltage","volts",7,21,8,9,15,16,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge","warmupEnrich","Warmup Enrichment","%",100,150,-1,-1,101,105,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant","Coolant Temp","%TEMP",-40,120,-15,0,95,105,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat","Manifold Air Temp","%TEMP",-40,110,-15,0,95,100,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant","Coolant Temp","%TEMP",-40,250,0,0,200,220,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat","Manifold Air Temp","%TEMP",-40,215,0,0,200,210,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advanceGauge","advSpark","Spark Advance","deg BTDC",50,-10,0,0,35,45,1,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("stackGauge","stackL","CPU stack","bytes",240,200,0,0,254,254,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails(";   T2XGauge","T2X","T2 X byte","byte",0,255,0,0,254,254,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelGauge","fuelpress","Fuel Pressure","lb/in",0,80,30,40,60,65,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge","egttemp","EGT","C",0,1000,0,0,1450,1480,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge","egttemp","EGT","F",0,2200,0,0,1450,1480,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2","egoCorrection2","EGO Correction2","%",50,150,90,99,101,110,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("testGauge","test","TEST","",0,255,255,255,0,0,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("test2Gauge","test2","TEST2","",0,255,255,255,0,0,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD6Gauge","fuelADC","AD6 raw","",0,255,255,255,0,0,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD7Gauge","egtADC","AD7 raw","",0,255,255,255,0,0,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambdaGauge2","lambda2","Lambda2","",0.5,1.5,0.5,0.7,2,1.1,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrGauge2","afr2","Air:Fuel Ratio2","",10,19.4,12,13,15,16,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vacuumGauge","vacuum","Engine Vacuum","in-HG",0,30,0,0,30,30,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostgauge","boost","Engine Boost","PSIG",0,20,0,0,15,20,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("VacBooGauge","boostVac","Engine Vac Boost","in-HG/PSIG",-30,30,-30,-30,30,30,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("TargetAFRGauge","TargetAFR","Target AFR","AFR",10,19.4,0,0,20,20,2,2));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("RealDutyGauge1","dutyCy1Real","Fuel Delivery 1","Flow",0,75,-1,-1,75,75,1,1));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("RealDutyGauge2","dutyCy2Real","Fuel Delivery 2","Flow",0,75,-1,-1,75,75,1,1));
+
+        
+    }
+
+    @Override
+    public String[] defaultGauges()
+    {
+        return defaultGauges;
     }
 
 }

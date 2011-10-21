@@ -658,4 +658,18 @@ public class MS2Extra310 extends Megasquirt
         dispIAT = mat;
         dispADV = advance;
     }
+
+    @Override
+    public void initGauges()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String[] defaultGauges()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

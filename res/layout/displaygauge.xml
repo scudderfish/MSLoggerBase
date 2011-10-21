@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:dgs="http://schemas.android.com/apk/res/uk.org.smithfamily.mslogger"
+	android:orientation="vertical" android:layout_gravity="center"
+	android:layout_margin="1px" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:weightSum="100"
+	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+	android:background="#ff123456">
+
+	<LinearLayout android:orientation="horizontal" android:layout_weight="80" android:layout_height="0px" android:background="#fff0f0f0" android:layout_width="fill_parent">
+	<LinearLayout android:background="#ffff0000"
+			android:orientation="vertical" android:layout_height="fill_parent"
+			android:layout_width="0px" android:layout_weight="25">
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g1" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g2" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+
+
+		</LinearLayout>
+		<LinearLayout android:background="#ff00ff00"
+			android:layout_height="fill_parent" android:layout_width="0px"
+			android:layout_weight="50">
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g3" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+
+		</LinearLayout>
+		<LinearLayout android:background="#ff0000ff"
+			android:orientation="vertical" android:layout_height="fill_parent"
+			android:layout_width="0px" android:layout_weight="25">
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g4" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g5" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+		</LinearLayout>
+	
+			</LinearLayout>
+			<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
+<LinearLayout android:orientation="horizontal" android:layout_weight="20" android:layout_height="0px" android:background="#ffafafaf" android:layout_width="fill_parent">
+<ToggleButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/connectButton"
+				android:textOff="@string/connect"
+				android:textOn="@string/disconnect" />
+			<ToggleButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/logButton"
+				android:textOff="@string/start_logging"
+				android:textOn="@string/stop_logging" />
+			<TextView android:layout_weight="1" 
+				android:layout_width="match_parent" 
+				android:layout_span="2"
+				android:text="" 
+				android:layout_height="wrap_content" 
+				android:id="@+id/messages" />
+			<Button android:text="Mark" android:id="@+id/Mark" android:layout_width="wrap_content" android:layout_height="wrap_content" ></Button></LinearLayout>
+	
+</LinearLayout>

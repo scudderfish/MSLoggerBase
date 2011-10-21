@@ -611,4 +611,18 @@ public class MS2Extra210 extends Megasquirt
 		b.append(syncreason).append("\t");
 		return b.toString();
 	}
+
+    @Override
+    public void initGauges()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String[] defaultGauges()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
