@@ -606,7 +606,7 @@ public class MS1Extra29y extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barocorrGauge","baroCorrection","baro correction","%",0,120,-1,-1,999,999,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge","pulseWidth1","Pulse Width 1","mSec",0,25.5,1.0,1.2,20,25,1,1));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge","pulseWidth2","Pulse Width 2","mSec",0,25.5,1.0,1.2,20,25,1,1));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm","Engine Speed","RPM",0,8000,300,600,3000,5000,0,0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm","Engine Speed","RPM",0,8000,0,0,3000,5000,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge","throttle","Throttle Position","%TPS",0,100,-1,1,90,100,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veBucketGauge","veTuneValue","VE Bucket","%",0,150,-1,-1,999,999,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge","veCurr","VE Current","%",0,120,-1,-1,999,999,0,0));

@@ -8,6 +8,7 @@ import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
+    private static final String MISSING_VALUE = "f741d5b0-fbee-11e0-be50-0800200c9a66";
     private static final String NONE_SELECTED   = "NONE_SELECTED";
     public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
@@ -100,17 +102,17 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         if(result != null)
             return result;
         boolean val = false;
-        String NOT_FOUND = "NotThisOne";
-        if(!val && prefs.getString("temptype", NOT_FOUND).equals(name))
+        
+        if(!val && prefs.getString("temptype", MISSING_VALUE).equals(name))
         	val = true;
         
-        if (!val && prefs.getString("mstype", NOT_FOUND).equals(name))
+        if (!val && prefs.getString("mstype", MISSING_VALUE).equals(name))
             val = true;
 
-        if (!val && prefs.getString("maptype", NOT_FOUND).equals(name))
+        if (!val && prefs.getString("maptype", MISSING_VALUE).equals(name))
             val = true;
 
-        if (!val && prefs.getString("egotype", NOT_FOUND).equals(name))
+        if (!val && prefs.getString("egotype", MISSING_VALUE).equals(name))
             val = true;
 
         settings.put(name, val);
@@ -143,9 +145,23 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     	return prefs.getString("autoemail_target", "");
     }
 
+    
     public String getOrSetPref(String name, String def)
     {
-        return prefs.getString(name, def);
+        String value=prefs.getString(name, MISSING_VALUE);
+        if(value.equals(MISSING_VALUE))
+        {
+            Editor editor = prefs.edit();
+            editor.putString(name, def);
+            editor.commit();
+            value = def;
+        }
+        return value;
+    }
+
+    public double getGaugeSetting(String gaugeName, String title, String var, double def)
+    {
+        return def;
     }
 
 }

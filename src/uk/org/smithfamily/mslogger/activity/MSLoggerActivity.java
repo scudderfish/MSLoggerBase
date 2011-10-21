@@ -23,10 +23,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +38,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
 
-public class MSLoggerActivity extends Activity
+public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     private MSGauge gauge1;
     private MSGauge gauge2;
@@ -163,6 +166,7 @@ public class MSLoggerActivity extends Activity
             else
             {
                 resetConnection();
+                saveGauges();
             }
         }
     }
@@ -221,6 +225,25 @@ public class MSLoggerActivity extends Activity
 
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
+    
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        saveGauges();
+    }
+
+    private void saveGauges()
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Editor editor = prefs.edit();
+        editor.putString("gauge1", gauge1.getName());
+        editor.putString("gauge2", gauge2.getName());
+        editor.putString("gauge3", gauge3.getName());
+        editor.putString("gauge4", gauge4.getName());
+        editor.putString("gauge5", gauge5.getName());
+        editor.commit();
+    }
 
     /** Called when the activity is first created. */
     @Override
@@ -228,6 +251,8 @@ public class MSLoggerActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        
         indicatorManager = IndicatorManager.INSTANCE;
 
         setContentView(R.layout.displaygauge);
@@ -251,16 +276,22 @@ public class MSLoggerActivity extends Activity
         gauge5 = (MSGauge)findViewById(R.id.g5);
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         String[] defaultGauges = ecu.defaultGauges();
-        gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge1",defaultGauges[0]));
-        gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge2",defaultGauges[1]));
-        gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge3",defaultGauges[2]));
-        gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge4",defaultGauges[3]));
-        gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge5",defaultGauges[4]));
+        gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1",defaultGauges[0]));
+        gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2",defaultGauges[1]));
+        gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3",defaultGauges[2]));
+        gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4",defaultGauges[3]));
+        gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5",defaultGauges[4]));
         
         gauge1.setOnClickListener(new GaugeClickListener(gauge1));
         gauge2.setOnClickListener(new GaugeClickListener(gauge2));
         gauge4.setOnClickListener(new GaugeClickListener(gauge4));
         gauge5.setOnClickListener(new GaugeClickListener(gauge5));
+        
+        gauge1.invalidate();
+        gauge2.invalidate();
+        gauge3.invalidate();
+        gauge4.invalidate();
+        gauge5.invalidate();
         
     }
 
@@ -384,7 +415,6 @@ public class MSLoggerActivity extends Activity
 		}
 		catch (NameNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dialog.setTitle(title);
@@ -450,5 +480,15 @@ public class MSLoggerActivity extends Activity
         {
 
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    {
+        if(key.startsWith("gauge"))
+        {
+            initGauges();
+        }
+        
     }
 }
