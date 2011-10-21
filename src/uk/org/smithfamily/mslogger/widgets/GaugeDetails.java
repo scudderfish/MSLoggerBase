@@ -1,10 +1,12 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import java.io.Serializable;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 
-public class GaugeDetails
+public class GaugeDetails implements Serializable
 {
-
+    private static final long serialVersionUID = 5603843897470844381L;
     private String name;
     private String channel;
     private String title;
