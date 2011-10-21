@@ -13,6 +13,7 @@ import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
+import uk.org.smithfamily.mslogger.widgets.MSGauge;
 import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
@@ -36,6 +37,34 @@ import android.widget.*;
 
 public class MSLoggerActivity extends Activity
 {
+    private MSGauge gauge1;
+    private MSGauge gauge2;
+    private MSGauge gauge3;
+    private MSGauge gauge4;
+    private MSGauge gauge5;
+
+    public class GaugeClickListener implements OnClickListener
+    {
+
+        private MSGauge gauge;
+
+        public GaugeClickListener(MSGauge gauge)
+        {
+            this.gauge = gauge;
+        }
+
+        @Override
+        public void onClick(View arg0)
+        {
+            String g3name = gauge3.getName();
+            gauge3.initFromName(gauge.getName());
+            gauge.initFromName(g3name);
+            gauge.invalidate();
+            gauge3.invalidate();
+        }
+
+    }
+
     private MSLoggerService   service;
     private static final int  REQUEST_ENABLE_BT = 0;
     private BroadcastReceiver updateReceiver    = new Reciever();
@@ -201,10 +230,73 @@ public class MSLoggerActivity extends Activity
 
         indicatorManager = IndicatorManager.INSTANCE;
 
-        setContentView(R.layout.display);
+        setContentView(R.layout.displaygauge);
         indicatorManager.setDisabled(true);
 
         messages = (TextView) findViewById(R.id.messages);
+        initGauges();
+        initButtons();
+        
+        registerMessages();
+
+        testBluetooth();
+    }
+
+    private void initGauges()
+    {
+        gauge1 = (MSGauge)findViewById(R.id.g1);
+        gauge2 = (MSGauge)findViewById(R.id.g2);
+        gauge3 = (MSGauge)findViewById(R.id.g3);
+        gauge4 = (MSGauge)findViewById(R.id.g4);
+        gauge5 = (MSGauge)findViewById(R.id.g5);
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        String[] defaultGauges = ecu.defaultGauges();
+        gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge1",defaultGauges[0]));
+        gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge2",defaultGauges[1]));
+        gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge3",defaultGauges[2]));
+        gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge4",defaultGauges[3]));
+        gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("Gauge5",defaultGauges[4]));
+        
+        gauge1.setOnClickListener(new GaugeClickListener(gauge1));
+        gauge2.setOnClickListener(new GaugeClickListener(gauge2));
+        gauge4.setOnClickListener(new GaugeClickListener(gauge4));
+        gauge5.setOnClickListener(new GaugeClickListener(gauge5));
+        
+    }
+
+    private void testBluetooth()
+    {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null)
+        {
+            return;
+        }
+        boolean bluetoothOK = mBluetoothAdapter.isEnabled();
+        if (!bluetoothOK)
+        {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+		else
+        {
+            connectButton.setEnabled(true);
+        }
+    }
+
+    private void registerMessages()
+    {
+        IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
+        registerReceiver(updateReceiver, connectedFilter);
+        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
+        registerReceiver(updateReceiver, disconnectedFilter);
+        IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
+        registerReceiver(updateReceiver, dataFilter);
+        IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
+        registerReceiver(updateReceiver, msgFilter);
+    }
+
+    private void initButtons()
+    {
         connectButton = (ToggleButton) findViewById(R.id.connectButton);
         connectButton.setEnabled(MSLoggerService.isCreated());
         connectButton.setOnClickListener(new ConnectButtonListener(connectButton));
@@ -222,30 +314,6 @@ public class MSLoggerActivity extends Activity
             {
                 DatalogManager.INSTANCE.mark();
             }});
-        IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
-        registerReceiver(updateReceiver, connectedFilter);
-        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
-        registerReceiver(updateReceiver, disconnectedFilter);
-        IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
-        registerReceiver(updateReceiver, dataFilter);
-        IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
-        registerReceiver(updateReceiver, msgFilter);
-
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null)
-        {
-            return;
-        }
-        boolean bluetoothOK = mBluetoothAdapter.isEnabled();
-        if (!bluetoothOK)
-        {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-		else
-        {
-            connectButton.setEnabled(true);
-        }
     }
 
     protected void processData()

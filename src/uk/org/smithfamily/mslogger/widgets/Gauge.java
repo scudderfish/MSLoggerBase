@@ -394,8 +394,8 @@ public final class Gauge extends View implements Indicator
         lowerTitlePaint = new Paint();
         lowerTitlePaint.setColor(0xaf000000);
         lowerTitlePaint.setAntiAlias(true);
-        Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/ziska.ttf");
-        lowerTitlePaint.setTypeface(font);
+        //Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/ziska.ttf");
+        //lowerTitlePaint.setTypeface(font);
         lowerTitlePaint.setTextAlign(Paint.Align.CENTER);
         lowerTitlePaint.setTextSize(0.1f);
         lowerTitlePaint.setTextScaleX(0.8f);
@@ -433,12 +433,12 @@ public final class Gauge extends View implements Indicator
         {
             handPath = new Path(); // X Y
 
-            handPath.moveTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
-            handPath.lineTo(0.5f - 0.010f, 0.5f + 0.2f - 0.007f); // 0.490, 0.630
-            handPath.lineTo(0.5f - 0.002f, 0.5f - 0.40f); // 0.498, 0.100
-            handPath.lineTo(0.5f + 0.002f, 0.5f - 0.40f); // 0.502, 0.100
-            handPath.lineTo(0.5f + 0.010f, 0.5f + 0.2f - 0.007f); // 0.510, 0.630
-            handPath.lineTo(0.5f, 0.5f + 0.2f); // 0.500, 0.700
+            handPath.moveTo(0.5f, 0.5f + 0.05f); // 0.500, 0.700
+            handPath.lineTo(0.5f - 0.010f, 0.5f + 0.05f - 0.007f); // 0.490, 0.630
+            handPath.lineTo(0.5f - 0.010f, 0.5f - 0.40f); // 0.498, 0.100
+            handPath.lineTo(0.5f + 0.010f, 0.5f - 0.40f); // 0.502, 0.100
+            handPath.lineTo(0.5f + 0.010f, 0.5f + 0.05f - 0.007f); // 0.510, 0.630
+            handPath.lineTo(0.5f, 0.5f + 0.05f); // 0.500, 0.700
             handPath.addCircle(0.5f, 0.5f, 0.025f, Path.Direction.CW);
         }
     }
@@ -903,4 +903,68 @@ public final class Gauge extends View implements Indicator
 		// TODO Auto-generated method stub
 		
 	}
+
+
+    @Override
+    public void setName(String name)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setUnits(String units)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setLowD(float lowD)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setLowW(float lowW)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setHiW(float hiW)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setHiD(float hiD)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setVD(int vd)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void setLD(int ld)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

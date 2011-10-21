@@ -3,19 +3,22 @@ package uk.org.smithfamily.mslogger.widgets;
 
 public interface Indicator
 {
-    public void setMin(float min);
-
-    public void setMax(float max);
-
+    public void setName(String name);
+    public void setChannel(String channelName);
     public void setTitle(String title);
-
-    public void setWarningPoint(float warn);
-
-    public void setErrorPoint(float err);
+    public void setUnits(String units);
+    public void setMin(float min);
+    public void setMax(float max);
+    public void setLowD(float lowD);
+    public void setLowW(float lowW);
+    public void setHiW(float hiW);
+    public void setHiD(float hiD);
+    public void setVD(int vd);
+    public void setLD(int ld);
     
+     
     public void setCurrentValue(double value);
     
-    public void setChannel(String channelName);
     
     public String getChannel();
     

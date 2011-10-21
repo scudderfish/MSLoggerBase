@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -73,7 +74,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
         	ecuDefinition=new MS2Extra310(context);
         }
-
+        GaugeRegister.INSTANCE.flush();
+        ecuDefinition.initGauges();
         return ecuDefinition;
     }
     public synchronized String getBluetoothMac()
@@ -139,6 +141,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public String getEmailDestination()
     {
     	return prefs.getString("autoemail_target", "");
+    }
+
+    public String getOrSetPref(String name, String def)
+    {
+        return prefs.getString(name, def);
     }
 
 }
