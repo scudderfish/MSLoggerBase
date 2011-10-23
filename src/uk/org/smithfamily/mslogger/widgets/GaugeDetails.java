@@ -97,4 +97,72 @@ public class GaugeDetails implements Serializable
         return ld;
     }
 
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public void setChannel(String channel)
+	{
+		this.channel = channel;
+	}
+
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+	public void setUnits(String units)
+	{
+		this.units = units;
+	}
+
+	public void setMin(double min)
+	{
+		this.min = min;
+	}
+
+	public void setMax(double max)
+	{
+		this.max = max;
+	}
+
+	public void setLoD(double loD)
+	{
+		this.loD = loD;
+	}
+
+	public void setLoW(double loW)
+	{
+		this.loW = loW;
+	}
+
+	public void setHiW(double hiW)
+	{
+		this.hiW = hiW;
+	}
+
+	public void setHiD(double hiD)
+	{
+		this.hiD = hiD;
+	}
+
+	public void setVd(int vd)
+	{
+		this.vd = vd;
+	}
+
+	public void setLd(int ld)
+	{
+		this.ld = ld;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "GaugeDetails [name=" + name + ", channel=" + channel + ", title=" + title + ", units=" + units + ", min=" + min
+				+ ", max=" + max + ", loD=" + loD + ", loW=" + loW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
+				+ "]";
+	}
+
 }

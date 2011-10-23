@@ -105,12 +105,6 @@ public class MSGauge extends View implements Indicator
 
         int width = getMeasuredWidth();
 
-        // Find the center
-
-        int px = width / 2;
-
-        int py = height / 2;
-
         float scale = (float) getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
@@ -126,7 +120,6 @@ public class MSGauge extends View implements Indicator
         }
         canvas.translate(dx, dy);
 
-        // Draw the string in the center of the control
         drawFace(canvas);
 
         drawScale(canvas);
@@ -261,10 +254,11 @@ public class MSGauge extends View implements Indicator
         {
             return (Color.YELLOW);
         }
-        else 
+        else if (value <= lowD || value >= hiD)
         {
             return(Color.RED);
         }
+        return Color.GRAY;
         
     }
     private void drawFace(Canvas canvas)
