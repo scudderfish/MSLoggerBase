@@ -28,14 +28,13 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.*;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener
@@ -66,6 +65,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             gauge3.invalidate();
         }
 
+    }
+    public class GaugeLongClickListener implements OnLongClickListener
+    {
+        @Override
+        public boolean onLongClick(View arg0)
+        {
+        	Debug.startMethodTracing("longClickPrep");
+            Dialog dialog = new EditGaugeDialog(MSLoggerActivity.this,gauge3.getName());
+            dialog.show();
+            Debug.stopMethodTracing();
+            gauge3.initFromName(gauge3.getName());
+            gauge3.invalidate();
+            return true;
+        }
     }
 
     private MSLoggerService   service;
@@ -286,7 +299,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge2.setOnClickListener(new GaugeClickListener(gauge2));
         gauge4.setOnClickListener(new GaugeClickListener(gauge4));
         gauge5.setOnClickListener(new GaugeClickListener(gauge5));
-        
+        gauge3.setOnLongClickListener(new GaugeLongClickListener());
         gauge1.invalidate();
         gauge2.invalidate();
         gauge3.invalidate();

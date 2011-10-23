@@ -14,92 +14,117 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 
 public enum GaugeRegister
 {
-    INSTANCE;
-    private Map<String, GaugeDetails> details       = new HashMap<String, GaugeDetails>();
-    private static final String       GAUGE_DETAILS = "gaugedetails";
+	INSTANCE;
+	private Map<String, GaugeDetails>	details			= new HashMap<String, GaugeDetails>();
+	private static final String			GAUGE_DETAILS	= "gaugedetails";
 
-    public void addGauge(GaugeDetails gaugeDetails)
-    {
-        GaugeDetails tmp = loadDetails(gaugeDetails);
-        if (tmp != null)
-        {
-            gaugeDetails = tmp;
-        }
-        else
-        {
-            persistDetails(gaugeDetails);
-        }
-        details.put(gaugeDetails.getName(), gaugeDetails);
-    }
+	public void addGauge(GaugeDetails gaugeDetails)
+	{
+		if (details.containsKey(gaugeDetails.getName()))
+			return;
 
-    public GaugeDetails getGaugeDetails(String nme)
-    {
-        return details.get(nme);
-    }
+		GaugeDetails tmp = loadDetails(gaugeDetails);
+		if (tmp != null)
+		{
+			gaugeDetails = tmp;
+		}
+		else
+		{
+			persistDetails(gaugeDetails);
+		}
+		details.put(gaugeDetails.getName(), gaugeDetails);
+	}
 
-    public Set<String> getGaugeNames()
-    {
-        return details.keySet();
-    }
+	public void reset(String nme)
+	{
+		GaugeDetails gd = details.get(nme);
+		if (gd != null)
+		{
+			File store = getFileStore(gd);
+			if (store != null)
+			{
+				store.delete();
+			}
+			details.remove(nme);
 
-    public void flush()
-    {
-        details = new HashMap<String, GaugeDetails>();
-    }
+			ApplicationSettings.INSTANCE.getEcuDefinition().initGauges();
+		}
+	}
 
-    private GaugeDetails loadDetails(GaugeDetails gd)
-    {
-        try
-        {
-            String name = gd.getName();
-            File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
-            dir.mkdirs();
-            File input = new File(dir, name);
+	public GaugeDetails getGaugeDetails(String nme)
+	{
+		return details.get(nme);
+	}
 
-            // Read from disk using FileInputStream.
-            FileInputStream f_in = new FileInputStream(input);
+	public Set<String> getGaugeNames()
+	{
+		return details.keySet();
+	}
 
-            // Read object using ObjectInputStream.
-            ObjectInputStream obj_in = new ObjectInputStream(f_in);
+	public void flush()
+	{
+		details = new HashMap<String, GaugeDetails>();
+	}
 
-            // Read an object.
-            Object obj = obj_in.readObject();
-            if (obj instanceof GaugeDetails)
-            {
+	private GaugeDetails loadDetails(GaugeDetails gd)
+	{
+		try
+		{
+			File input = getFileStore(gd);
 
-                return (GaugeDetails) obj;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        catch (IOException e)
-        {
-        }
-        catch (ClassNotFoundException e)
-        {
+			// Read from disk using FileInputStream.
+			FileInputStream f_in = new FileInputStream(input);
 
-        }
-        return null;
+			// Read object using ObjectInputStream.
+			ObjectInputStream obj_in = new ObjectInputStream(f_in);
 
-    }
+			// Read an object.
+			Object obj = obj_in.readObject();
+			if (obj instanceof GaugeDetails)
+			{
 
-    public void persistDetails(GaugeDetails gd)
-    {
-        try
-        {
-            File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
-            dir.mkdirs();
-            File output = new File(dir, gd.getName());
-            FileOutputStream f_out = new FileOutputStream(output);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+				return (GaugeDetails) obj;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (IOException e)
+		{
+		}
+		catch (ClassNotFoundException e)
+		{
 
-            obj_out.writeObject(gd);
-        }
-        catch (IOException e)
-        {
+		}
+		return null;
 
-        }
-    }
+	}
+
+	private File getFileStore(GaugeDetails gd)
+	{
+		String name = gd.getName();
+		File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
+		dir.mkdirs();
+		File input = new File(dir, name);
+		return input;
+	}
+
+	public void persistDetails(GaugeDetails gd)
+	{
+		try
+		{
+			File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
+			dir.mkdirs();
+			File output = new File(dir, gd.getName());
+			FileOutputStream f_out = new FileOutputStream(output);
+			ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+
+			obj_out.writeObject(gd);
+		}
+		catch (IOException e)
+		{
+
+		}
+	}
 }
