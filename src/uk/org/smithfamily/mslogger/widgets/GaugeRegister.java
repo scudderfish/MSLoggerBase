@@ -103,7 +103,7 @@ public enum GaugeRegister
 
 	private File getFileStore(GaugeDetails gd)
 	{
-		String name = gd.getName();
+		String name = ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName()+"."+gd.getName();
 		File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
 		dir.mkdirs();
 		File input = new File(dir, name);
