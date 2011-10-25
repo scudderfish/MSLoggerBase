@@ -618,7 +618,6 @@ public class MS1Extra29y extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat","Manifold Air Temp","%TEMP",-40,215,0,0,200,210,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advanceGauge","advSpark","Spark Advance","deg BTDC",50,-10,0,0,35,45,1,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("stackGauge","stackL","CPU stack","bytes",240,200,0,0,254,254,0,0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails(";   T2XGauge","T2X","T2 X byte","byte",0,255,0,0,254,254,0,0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelGauge","fuelpress","Fuel Pressure","lb/in",0,80,30,40,60,65,1,1));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge","egttemp","EGT","C",0,1000,0,0,1450,1480,1,1));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge","egttemp","EGT","F",0,2200,0,0,1450,1480,1,1));
