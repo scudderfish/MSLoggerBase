@@ -17,11 +17,12 @@ public class GaugeDetails implements Serializable
     private double loW;
     private double hiW;
     private double hiD;
+    private double offsetAngle;
     private int    vd;
     private int    ld;
 
     public GaugeDetails(String name, String channel, String title, String units, double min, double max, double loD, double loW,
-            double hiW, double hiD, int vd, int ld)
+            double hiW, double hiD, int vd, int ld,double offsetAngle)
     {
         this.name = name;
         this.channel = channel;
@@ -35,6 +36,7 @@ public class GaugeDetails implements Serializable
         this.hiD = ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"hiD",hiD);
         this.vd = (int) ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"vd",vd);
         this.ld = (int) ApplicationSettings.INSTANCE.getGaugeSetting(name,title,"ld",ld);
+        this.offsetAngle=ApplicationSettings.INSTANCE.getGaugeSetting(name, title, "offsetAngle", offsetAngle);
     }
 
     public String getName()
@@ -163,6 +165,16 @@ public class GaugeDetails implements Serializable
 		return "GaugeDetails [name=" + name + ", channel=" + channel + ", title=" + title + ", units=" + units + ", min=" + min
 				+ ", max=" + max + ", loD=" + loD + ", loW=" + loW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
 				+ "]";
+	}
+
+	public double getOffsetAngle()
+	{
+		return offsetAngle;
+	}
+
+	public void setOffsetAngle(double offsetAngle)
+	{
+		this.offsetAngle = offsetAngle;
 	}
 
 }
