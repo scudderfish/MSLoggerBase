@@ -124,7 +124,7 @@ public class Normaliser
             String ld = m.group(12);
 
             String g = String.format(
-                    "GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s));", name,
+                    "GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,0));", name,
                     channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
             gaugeDef.add(g);
 
@@ -187,7 +187,6 @@ public class Normaliser
         }
         writer.println("b.append(MSUtils.getLocationLogRow());");
         writer.println("    return b.toString();\n}\n");
-        writer.println("\n}\n");
         writer.println("@Override");
         writer.println("public void initGauges()");
         writer.println("{");
