@@ -4,26 +4,28 @@ import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class MSGauge extends View implements Indicator
 {
 	private int					diameter;
-	private String				name	= "RPM";
-	private String				title	= "RPM";
-	private String				channel	= "rpm";
-	private String				units	= "";
-	private double				min		= 0;
-	private double				max		= 7000;
-	private double				lowD	= 0;
-	private double				lowW	= 0;
-	private double				hiW		= 5000;
-	private double				hiD		= 7000;
-	private int					vd		= 0;
-	private int					ld		= 0;
-	private double				value	= 2500;
-	private double				pi		= Math.PI;
-	final float					scale	= getResources().getDisplayMetrics().density;
+	private String				name		= "RPM";
+	private String				title		= "RPM";
+	private String				channel		= "rpm";
+	private String				units		= "";
+	private double				min			= 0;
+	private double				max			= 7000;
+	private double				lowD		= 0;
+	private double				lowW		= 0;
+	private double				hiW			= 5000;
+	private double				hiD			= 7000;
+	private int					vd			= 0;
+	private int					ld			= 0;
+	private double				value		= 2500;
+	private double				pi			= Math.PI;
+	private double				offsetAngle	= 0;
+	final float					scale		= getResources().getDisplayMetrics().density;
 	private Paint				titlePaint;
 	private Paint				valuePaint;
 	private Paint				pointerPaint;
@@ -33,7 +35,7 @@ public class MSGauge extends View implements Indicator
 	private Paint				rimCirclePaint;
 	private RectF				faceRect;
 	private Paint				facePaint;
-	private static final float	rimSize	= 0.02f;
+	private static final float	rimSize		= 0.02f;
 
 	public MSGauge(Context context)
 	{
@@ -54,9 +56,44 @@ public class MSGauge extends View implements Indicator
 		init(context);
 	}
 
+	class TouchListener implements OnTouchListener
+	{
+		float	lastX, lastY;
+
+		@Override
+		public boolean onTouch(View arg0, MotionEvent evt)
+		{
+			double r = Math.atan2(evt.getX() - getWidth() / 2, getHeight() / 2 - evt.getY())
+					- Math.atan2(lastX - getWidth() / 2, lastY - getHeight() / 2);
+			int rotation = (int) Math.toDegrees(r);
+			System.out.println(rotation);
+			if (evt.getAction() == MotionEvent.ACTION_DOWN)
+			{
+				lastX = evt.getX();
+				lastY = evt.getY();
+			}
+
+			if (evt.getAction() == MotionEvent.ACTION_MOVE)
+			{
+				offsetAngle = rotation;
+				invalidate();
+				lastX = evt.getX();
+				lastY = evt.getY();
+			}
+
+			if (evt.getAction() == MotionEvent.ACTION_UP)
+			{
+			}
+
+			return true;
+		}
+
+	}
+
 	private void init(Context c)
 	{
 		initDrawingTools(c);
+		this.setOnTouchListener(new TouchListener());
 	}
 
 	@Override
@@ -135,35 +172,35 @@ public class MSGauge extends View implements Indicator
 	private void initDrawingTools(Context context)
 	{
 		int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
-		if(this.isInEditMode())
+		if (this.isInEditMode())
 		{
 			anti_alias_flag = 0;
 		}
 		rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
 
 		faceRect = new RectF();
-		if(!isInEditMode())
+		if (!isInEditMode())
 		{
 			faceRect.set(rimRect.left + rimSize, rimRect.top + rimSize, rimRect.right - rimSize, rimRect.bottom - rimSize);
 		}
 		else
-			faceRect=rimRect;
+			faceRect = rimRect;
 
 		// the linear gradient is a bit skewed for realism
 		rimPaint = new Paint();
-		if(!this.isInEditMode())
+		if (!this.isInEditMode())
 		{
 			rimPaint.setFlags(anti_alias_flag);
-			rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color.rgb(0x30, 0x31, 0x30),
-				Shader.TileMode.CLAMP));
+			rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color
+					.rgb(0x30, 0x31, 0x30), Shader.TileMode.CLAMP));
 		}
 		rimCirclePaint = new Paint();
-		if(!this.isInEditMode())
+		if (!this.isInEditMode())
 		{
-		rimCirclePaint.setAntiAlias(true);
-		rimCirclePaint.setStyle(Paint.Style.STROKE);
-		rimCirclePaint.setColor(Color.argb(0x4f, 0x33, 0x36, 0x33));
-		rimCirclePaint.setStrokeWidth(0.005f);
+			rimCirclePaint.setAntiAlias(true);
+			rimCirclePaint.setStyle(Paint.Style.STROKE);
+			rimCirclePaint.setColor(Color.argb(0x4f, 0x33, 0x36, 0x33));
+			rimCirclePaint.setStrokeWidth(0.005f);
 		}
 		facePaint = new Paint();
 		facePaint.setFilterBitmap(true);
@@ -224,7 +261,7 @@ public class MSGauge extends View implements Indicator
 		float radius = 0.42f;
 
 		double range = 270.0 / (max - min);
-		double angle = value * range;
+		double angle = value * range + offsetAngle;
 		double rads = angle * pi / 180.0;
 		float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
 		float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
@@ -247,19 +284,20 @@ public class MSGauge extends View implements Indicator
 
 		double minprimarydigit = Math.ceil(min / scalefactor);
 		double gaugeMin = minprimarydigit * scalefactor;
-		//gaugeMin = Math.min(0, gaugeMin);
+		// gaugeMin = Math.min(0, gaugeMin);
 
 		double gaugeRange = gaugeMax - gaugeMin;
-		
+
 		double step = scalefactor;
-		
-		while((gaugeRange/step)<10) step=step/2;
+
+		while ((gaugeRange / step) < 10)
+			step = step / 2;
 		for (double val = gaugeMin; val <= gaugeMax; val += step)
 		{
 			String text = Integer.toString((int) val);
-			//text = text.substring(0, (text.length() - ld)-1);
+			// text = text.substring(0, (text.length() - ld)-1);
 			double anglerange = 270.0 / gaugeRange;
-			double angle = (val-gaugeMin) * anglerange;
+			double angle = (val - gaugeMin) * anglerange + offsetAngle;
 			double rads = angle * pi / 180.0;
 			float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
 			float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
@@ -299,7 +337,8 @@ public class MSGauge extends View implements Indicator
 
 	private void drawFace(Canvas canvas)
 	{
-		if(!this.isInEditMode()){
+		if (!this.isInEditMode())
+		{
 			canvas.drawOval(rimRect, rimPaint);
 			// now the outer rim circle
 			canvas.drawOval(rimRect, rimCirclePaint);
@@ -430,6 +469,7 @@ public class MSGauge extends View implements Indicator
 		hiD = gd.getHiD();
 		vd = gd.getVd();
 		ld = gd.getLd();
+		offsetAngle = gd.getOffsetAngle();
 		value = (max - min) / 2.0;
 	}
 
