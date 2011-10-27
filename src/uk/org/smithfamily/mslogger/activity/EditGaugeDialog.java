@@ -43,6 +43,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 		setValue(R.id.editLoW, Double.toString(gd.getLoW()));
 		setValue(R.id.editVD, Integer.toString(gd.getVd()));
 		setValue(R.id.editLD, Integer.toString(gd.getLd()));
+		setValue(R.id.editoffsetAngle,Double.toString(gd.getOffsetAngle()));
 		Button buttonOK = (Button) findViewById(R.id.editOK);
 		Button buttonReset = (Button) findViewById(R.id.editReset);
 		Button buttonCancel = (Button) findViewById(R.id.editCancel);
@@ -74,7 +75,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 		gd.setLoW(getValueD(R.id.editLoW));
 		gd.setVd(getValueI(R.id.editVD));
 		gd.setLd(getValueI(R.id.editLD));
-
+		gd.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 		GaugeRegister.INSTANCE.persistDetails(gd);
 
 		dismiss();

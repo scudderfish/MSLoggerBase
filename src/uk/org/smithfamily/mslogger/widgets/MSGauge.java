@@ -1,11 +1,15 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.activity.EditGaugeDialog;
 import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.*;
+import android.view.View.OnTouchListener;
 
 public class MSGauge extends View implements Indicator
 {
@@ -51,49 +55,13 @@ public class MSGauge extends View implements Indicator
 
 	public MSGauge(Context context, AttributeSet attr, int defaultStyles)
 	{
-
 		super(context, attr, defaultStyles);
 		init(context);
-	}
-
-	class TouchListener implements OnTouchListener
-	{
-		float	lastX, lastY;
-
-		@Override
-		public boolean onTouch(View arg0, MotionEvent evt)
-		{
-			double r = Math.atan2(evt.getX() - getWidth() / 2, getHeight() / 2 - evt.getY())
-					- Math.atan2(lastX - getWidth() / 2, lastY - getHeight() / 2);
-			int rotation = (int) Math.toDegrees(r);
-			System.out.println(rotation);
-			if (evt.getAction() == MotionEvent.ACTION_DOWN)
-			{
-				lastX = evt.getX();
-				lastY = evt.getY();
-			}
-
-			if (evt.getAction() == MotionEvent.ACTION_MOVE)
-			{
-				offsetAngle = rotation;
-				invalidate();
-				lastX = evt.getX();
-				lastY = evt.getY();
-			}
-
-			if (evt.getAction() == MotionEvent.ACTION_UP)
-			{
-			}
-
-			return true;
-		}
-
 	}
 
 	private void init(Context c)
 	{
 		initDrawingTools(c);
-		this.setOnTouchListener(new TouchListener());
 	}
 
 	@Override
@@ -451,6 +419,13 @@ public class MSGauge extends View implements Indicator
 
 	}
 
+	public GaugeDetails getDetails()
+	{
+		GaugeDetails gd = new GaugeDetails(name,title,channel,units,min,max,lowD,lowW,hiW,hiD,vd,ld,offsetAngle);
+		
+		return gd;
+	}
+
 	public void initFromName(String nme)
 	{
 		GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
@@ -485,5 +460,15 @@ public class MSGauge extends View implements Indicator
 
 		IndicatorManager.INSTANCE.registerIndicator(this);
 
+	}
+
+	public double getOffsetAngle()
+	{
+		return offsetAngle;
+	}
+
+	public void setOffsetAngle(double offsetAngle)
+	{
+		this.offsetAngle = offsetAngle;
 	}
 }
