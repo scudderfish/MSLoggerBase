@@ -96,6 +96,12 @@
 						android:numeric="integer" />
 				</TableRow>
 
+				<TableRow>
+					<TextView android:text="Offset Angle" style="@style/gaugeLabel" />
+					<EditText android:id="@+id/editoffsetAngle" style="@style/gaugeEdit"
+						android:numeric="integer|decimal" />
+				</TableRow>
+
 			</TableLayout>
 
 			<LinearLayout android:orientation="horizontal"

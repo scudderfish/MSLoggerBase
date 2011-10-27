@@ -103,7 +103,7 @@ public enum GaugeRegister
 
 	private File getFileStore(GaugeDetails gd)
 	{
-		String name = ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName()+"."+gd.getName();
+		String name = getStoreName(gd);
 		File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
 		dir.mkdirs();
 		File input = new File(dir, name);
@@ -116,15 +116,21 @@ public enum GaugeRegister
 		{
 			File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
 			dir.mkdirs();
-			File output = new File(dir, gd.getName());
+			File output = new File(dir, getStoreName(gd));
 			FileOutputStream f_out = new FileOutputStream(output);
 			ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
 
 			obj_out.writeObject(gd);
+			details.put(gd.getName(), gd);
 		}
 		catch (IOException e)
 		{
 
 		}
+	}
+
+	private String getStoreName(GaugeDetails gd)
+	{
+		return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName()+"."+gd.getName();
 	}
 }
