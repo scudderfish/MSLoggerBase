@@ -102,10 +102,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         @Override
         public boolean onDoubleTap(MotionEvent e)
         {
-            EditGaugeDialog dialog = new EditGaugeDialog(MSLoggerActivity.this, gauge.getName());
+            EditGaugeDialog dialog = new EditGaugeDialog(MSLoggerActivity.this, gauge);
             dialog.show();
-            gauge.initFromName(gauge.getName());
-            gauge.invalidate();
+            
             return true;
         }
 
@@ -406,7 +405,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         else
         {
-            connectButton.setEnabled(true);
+            connectButton.setEnabled(connectButtonEnabled());
         }
     }
 
@@ -425,7 +424,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void initButtons()
     {
         connectButton = (ToggleButton) findViewById(R.id.connectButton);
-        connectButton.setEnabled(MSLoggerService.isCreated());
+        connectButton.setEnabled(connectButtonEnabled());
         connectButton.setOnClickListener(new ConnectButtonListener(connectButton));
 
         logButton = (ToggleButton) findViewById(R.id.logButton);
@@ -443,6 +442,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DatalogManager.INSTANCE.mark();
             }
         });
+        if(!ApplicationSettings.INSTANCE.btDeviceSelected())
+        {
+            Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
+        }
     }
 
     protected void processData()
@@ -550,7 +553,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (connectButton != null)
             {
-                connectButton.setEnabled(true);
+                connectButton.setEnabled(connectButtonEnabled());
             }
         }
     }
@@ -567,7 +570,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         logButton.setEnabled(false);
         indicatorManager.setDisabled(true);
         connectButton.setChecked(false);
-        connectButton.setEnabled(true);
+        connectButton.setEnabled(connectButtonEnabled());
 
         try
         {
@@ -579,13 +582,24 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         }
     }
-
+    private boolean connectButtonEnabled()
+    {
+        return ApplicationSettings.INSTANCE.btDeviceSelected();
+    }
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
         if (key.startsWith("gauge"))
         {
             initGauges();
+        }
+        if(!ApplicationSettings.INSTANCE.btDeviceSelected())
+        {
+            Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
+        }
+        else
+        {
+            connectButton.setEnabled(connectButtonEnabled());
         }
 
     }

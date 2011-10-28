@@ -28,6 +28,7 @@
 	<string name="CalibrateTPS">Calibrate TPS</string>
 	<string name="connect">Connect</string>
 	<string name="disconnect">Disconnect</string>
+	<string name="please_select">Please select your Bluetooth device in Preferences</string>
 
     <string name="autoemail_title">Auto Email Setup</string>
     <string name="autoemail_summary">Automatically emails the log file to an address of your choice</string>
