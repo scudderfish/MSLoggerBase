@@ -623,7 +623,7 @@ public class MS1Extra29y extends Megasquirt
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge", "accDecEnrich", "AE Driven Fuel Pct", "Pct", 100, 200,
 				0, 0, 999, 999, 0, 0, 0));
 		GaugeRegister.INSTANCE
-				.addGauge(new GaugeDetails("afrGauge", "afr", "Air:Fuel Ratio", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
+				.addGauge(new GaugeDetails("afrGauge", "afr2", "Air:Fuel Ratio", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge", "secl", "Clock", "Seconds", 0, 255, 10, 10, 245, 245, 0, 0,
 				0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge", "dutyCycle1", "Duty Cycle 1", "%", 0, 100, -1, -1, 85,
