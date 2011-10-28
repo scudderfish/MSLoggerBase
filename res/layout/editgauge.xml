@@ -51,49 +51,49 @@
 				<TableRow>
 					<TextView android:text="Min Value" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editLo" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="Max Value" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editHi" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="Low Danger" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editLoD" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="Low Warning" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editLoW" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="High Danger" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editHiD" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="High Warning" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editHiW" style="@style/gaugeEdit"
-						android:numeric="integer|decimal" />
+						android:numeric="integer|decimal|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="Value Decimal Places" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editVD" style="@style/gaugeEdit"
-						android:numeric="integer" />
+						android:numeric="integer|signed" />
 				</TableRow>
 
 				<TableRow>
 					<TextView android:text="Label Decimal Places" style="@style/gaugeLabel" />
 					<EditText android:id="@+id/editLD" style="@style/gaugeEdit"
-						android:numeric="integer" />
+						android:numeric="integer|signed" />
 				</TableRow>
 
 				<TableRow>
