@@ -17,8 +17,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    private static final String MISSING_VALUE = "f741d5b0-fbee-11e0-be50-0800200c9a66";
-    private static final String NONE_SELECTED   = "NONE_SELECTED";
+    public static final String MISSING_VALUE = "f741d5b0-fbee-11e0-be50-0800200c9a66";
     public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
     public static final String  TAG             = "uk.org.smithfamily.mslogger";
@@ -86,8 +85,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             return bluetoothMac;
         }
-        bluetoothMac = prefs.getString("bluetooth_mac", NONE_SELECTED);
-        if (NONE_SELECTED.equals(bluetoothMac))
+        bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
+        if (MISSING_VALUE.equals(bluetoothMac))
         {
             Toast.makeText(context, "Please select your serial Bluetooth dongle", Toast.LENGTH_LONG).show();
         }
@@ -133,7 +132,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     public boolean btDeviceSelected()
     {
-        return !NONE_SELECTED.equals(getBluetoothMac());
+        return !MISSING_VALUE.equals(getBluetoothMac());
     }
 
     public boolean emailEnabled()
