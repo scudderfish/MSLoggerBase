@@ -1,15 +1,10 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.activity.EditGaugeDialog;
 import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.*;
-import android.view.View.OnTouchListener;
+import android.view.View;
 
 public class MSGauge extends View implements Indicator
 {
@@ -354,9 +349,7 @@ public class MSGauge extends View implements Indicator
     @Override
     public void setChannel(String channelName)
     {
-        testChannel();
         this.channel = channelName;
-        testChannel();
     }
 
     @Override
@@ -458,9 +451,7 @@ public class MSGauge extends View implements Indicator
     {
         name = gd.getName();
         title = gd.getTitle();
-        testChannel();
         channel = gd.getChannel();
-        testChannel();
         units = gd.getUnits();
         min = gd.getMin();
         max = gd.getMax();
@@ -479,20 +470,13 @@ public class MSGauge extends View implements Indicator
 
     public void initFromName(String nme)
     {
-        testChannel();
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        testChannel();
-        initFromGD(gd);
-        testChannel();
-    }
-
-    private void testChannel()
-    {
-        if ("Engine MAP".equals(channel))
-        {
-            int x = 0;
-            x++;
+        if(gd == null)
+        {//Panic!
+        	gd = GaugeRegister.INSTANCE.getGaugeDetails("deadGauge");
+        	
         }
+        initFromGD(gd);
     }
 
     public String getName()
@@ -504,9 +488,7 @@ public class MSGauge extends View implements Indicator
     protected void onAttachedToWindow()
     {
         super.onAttachedToWindow();
-        testChannel();
         IndicatorManager.INSTANCE.registerIndicator(this);
-        testChannel();
     }
 
     public double getOffsetAngle()
