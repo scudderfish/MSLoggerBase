@@ -59,7 +59,10 @@ public class GaugeDetails implements Externalizable
         oo.writeInt(vd);
         oo.writeInt(ld);
     }
-
+    public GaugeDetails()
+    {
+        
+    }
     public GaugeDetails(String name, String channel, String title, String units, double min, double max, double loD, double loW,
             double hiW, double hiD, int vd, int ld, double offsetAngle)
     {

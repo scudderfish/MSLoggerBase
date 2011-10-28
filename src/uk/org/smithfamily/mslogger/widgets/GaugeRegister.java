@@ -92,6 +92,7 @@ public enum GaugeRegister
 		}
 		catch (IOException e)
 		{
+		    e.printStackTrace();
 		}
 		catch (ClassNotFoundException e)
 		{
