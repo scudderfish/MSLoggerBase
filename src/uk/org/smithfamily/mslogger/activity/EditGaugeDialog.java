@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.activity;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.MSGauge;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,11 +15,13 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 {
 
 	private GaugeDetails	gd;
+	private MSGauge gauge;
 
-	public EditGaugeDialog(Context context, String name)
+	public EditGaugeDialog(Context context, MSGauge gauge)
 	{
 		super(context);
-		this.gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
+		this.gauge= gauge;
+		this.gd = gauge.getDetails();
 	}
 
 	@Override
@@ -65,6 +68,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
 	public void saveDetails()
 	{
+	    gd.setName(getValue(R.id.editName));
+	    gd.setChannel(getValue(R.id.editChannel));
 		gd.setTitle(getValue(R.id.editTitle));
 		gd.setUnits(getValue(R.id.editUnits));
 		gd.setMax(getValueD(R.id.editHi));
@@ -77,7 +82,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 		gd.setLd(getValueI(R.id.editLD));
 		gd.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 		GaugeRegister.INSTANCE.persistDetails(gd);
-
+		gauge.initFromGD(gd);
+		gauge.invalidate();
 		dismiss();
 
 	}
@@ -85,6 +91,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 	public void resetDetails()
 	{
 		GaugeRegister.INSTANCE.reset(gd.getName());
+		gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
+		gauge.initFromGD(gd);
+		gauge.invalidate();
 		dismiss();
 	}
 
