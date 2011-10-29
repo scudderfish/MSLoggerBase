@@ -1,36 +1,20 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 
 import org.acra.ErrorReporter;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import uk.org.smithfamily.mslogger.log.*;
+import android.bluetooth.*;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 public abstract class Megasquirt
 {
-    public int      dispRPM;
-    public double   dispMAP;
-    public double   dispAFR;
-    public double   dispCLT;
-    public double   dispIAT;
-    public double   dispADV;
-
     private boolean simulated = false;
 
     private int     errorCount = 0;
@@ -82,8 +66,6 @@ public abstract class Megasquirt
 
     public abstract int getCurrentTPS();
 
-    public abstract void mapDispValues();
-    
     public abstract void initGauges();
     public abstract String[] defaultGauges();
 
@@ -245,32 +227,6 @@ public abstract class Megasquirt
 
     public double getValue(String channel)
     {
-        // Short circuit the obvious ones
-        if ("dispRPM".equals(channel))
-        {
-            return dispRPM;
-        }
-
-        if ("dispMAP".equals(channel))
-        {
-            return dispMAP;
-        }
-        if ("dispAFR".equals(channel))
-        {
-            return dispAFR;
-        }
-        if ("dispCLT".equals(channel))
-        {
-            return dispCLT;
-        }
-        if ("dispIAT".equals(channel))
-        {
-            return dispIAT;
-        }
-        if ("dispADV".equals(channel))
-        {
-            return dispADV;
-        }
 
         double value = 0;
         Class<?> c = this.getClass();
@@ -560,7 +516,6 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
-                    mapDispValues();
                     broadcast(NEW_DATA);
                     // If we've got this far, reset the error counter
                     errorCount = 0;
