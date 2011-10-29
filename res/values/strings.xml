@@ -29,6 +29,8 @@
 	<string name="connect">Connect</string>
 	<string name="disconnect">Disconnect</string>
 	<string name="please_select">Please select your Bluetooth device in Preferences</string>
+	<string name="EnableGaugeEdit">Enable Gauge Editing</string>
+	<string name="DisableGaugeEdit">Disable Gauge Editing</string>
 
     <string name="autoemail_title">Auto Email Setup</string>
     <string name="autoemail_summary">Automatically emails the log file to an address of your choice</string>

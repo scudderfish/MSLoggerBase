@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/preferences" android:icon="@android:drawable/ic_menu_preferences"
 		android:title="@string/Preferences" />
-	<item android:id="@+id/calibrate"
-		android:title="@string/CalibrateTPS" />
-		<item android:id="@+id/about" android:title="@string/about"/>
+	<item android:id="@+id/gaugeEditing" android:title="@string/EnableGaugeEdit" />
+	<item android:id="@+id/calibrate" android:title="@string/CalibrateTPS" />
+	<item android:id="@+id/about" android:title="@string/about" />
 </menu>
