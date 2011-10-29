@@ -104,28 +104,6 @@ public class MS2Extra310 extends Megasquirt
         return MS2_EXTRA_SERIAL310.length();
     }
 
-    @Override
-    public void mapDispValues()
-    {
-        dispRPM = rpm;
-        dispMAP = map;
-        if (NARROW_BAND_EGO)
-        {
-            dispAFR = egoVoltage;
-        }
-        else if (LAMBDA)
-        {
-            dispAFR = lambda1;
-        }
-        else
-        {
-            dispAFR = afr1;
-        }
-        dispCLT = coolant;
-        dispIAT = mat;
-        dispADV = advance;
-    }
-
     private String[] defaultGauges = { "mapGauge", "tachometer", "afr1Gauge", "cltGauge", "matGauge" };
 
     @Override

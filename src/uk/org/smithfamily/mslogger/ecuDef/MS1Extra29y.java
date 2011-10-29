@@ -130,17 +130,6 @@ public class MS1Extra29y extends Megasquirt
 		return MS1_EXTRA_FORMAT_029Y3.length();
 	}
 
-	@Override
-	public void mapDispValues()
-	{
-		dispRPM = (int) RpmHiRes;
-		dispMAP = (int) map;
-		dispAFR = afr2;
-		dispCLT = coolant;
-		dispIAT = mat;
-		dispADV = advSpark;
-	}
-
 	private String[]	defaultGauges	= { "mapGauge", "tachometer", "afrGauge", "cltGauge", "matGauge" };
 
 	@Override
