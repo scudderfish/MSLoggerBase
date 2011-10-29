@@ -1,6 +1,5 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -8,43 +7,41 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.EmailManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.*;
 import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.PointF;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.*;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
-    private MSGauge gauge1;
-    private MSGauge gauge2;
-    private MSGauge gauge3;
-    private MSGauge gauge4;
-    private MSGauge gauge5;
+    MSLoggerService           service;
+    private static final int  REQUEST_ENABLE_BT = 0;
+    private BroadcastReceiver updateReceiver    = new Reciever();
+    private IndicatorManager  indicatorManager;
+    private ToggleButton      connectButton;
+    TextView                  messages;
+    Button                    markButton;
+    public boolean            connected;
+    private boolean           receivedData      = false;
+
+    private MSGauge           gauge1;
+    private MSGauge           gauge2;
+    private MSGauge           gauge3;
+    private MSGauge           gauge4;
+    private MSGauge           gauge5;
 
     public class GaugeClickListener implements OnClickListener
     {
@@ -68,83 +65,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
-    private boolean scrolling;
-
-    class RotationDetector extends SimpleOnGestureListener
-    {
-        private MSGauge gauge;
-        private float dragStartDeg;
-
-        public RotationDetector(MSGauge gauge)
-        {
-            this.gauge = gauge;
-        }
-
-        private float positionToAngle(float x, float y)
-        {
-            float radius = PointF.length((x - 0.5f), (y - 0.5f));
-            if (radius < 0.1f || radius > 0.5f)
-            { // ignore center and out of bounds events
-                return Float.NaN;
-            }
-            else
-            {
-                return (float) Math.toDegrees(Math.atan2(x - 0.5f, y - 0.5f));
-            }
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-        {
-            return false;
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e)
-        {
-            EditGaugeDialog dialog = new EditGaugeDialog(MSLoggerActivity.this, gauge);
-            dialog.show();
-            
-            return true;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-        {
-
-            if (!scrolling)
-            {
-                float x = e1.getX() / ((float) gauge.getWidth());
-                float y = e1.getY() / ((float) gauge.getHeight());
-                
-                dragStartDeg = positionToAngle(x, y);
-                
-                scrolling = !Float.isNaN(dragStartDeg);
-                return scrolling;
-            }
-            float currentDeg = positionToAngle(e2.getX() / gauge.getWidth(), 
-                    e2.getY() / gauge.getHeight());
- 
-            
-            gauge.setOffsetAngle(dragStartDeg-currentDeg);
-            gauge.invalidate();
-            
-            scrolling = true;
-            return true;
-
-        }
-
-    }
-
-    private MSLoggerService   service;
-    private static final int  REQUEST_ENABLE_BT = 0;
-    private BroadcastReceiver updateReceiver    = new Reciever();
-    private IndicatorManager  indicatorManager;
-    private ToggleButton      connectButton;
-    private TextView          messages;
-    private Button            markButton;
-    public boolean            connected;
-    private boolean           receivedData      = false;
+    boolean scrolling;
 
     private final class MSServiceConnection implements ServiceConnection
     {
@@ -158,57 +79,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             service = null;
         }
-    }
-
-    private final class LogButtonListener implements OnClickListener
-    {
-        private ToggleButton button;
-
-        private LogButtonListener(ToggleButton button)
-        {
-            this.button = button;
-        }
-
-        @Override
-        public void onClick(View arg0)
-        {
-            DebugLogManager.INSTANCE.log("LogButton:" + button.isChecked());
-            if (System.currentTimeMillis() > 1322697601000L)
-            {
-                messages.setText("This beta version has expired");
-                button.setChecked(false);
-            }
-            else
-            {
-                markButton.setEnabled(logButton.isChecked());
-
-                if (service != null)
-                {
-                    if (button.isChecked())
-                    {
-                        service.startLogging();
-                    }
-                    else
-                    {
-                        service.stopLogging();
-                        if (ApplicationSettings.INSTANCE.emailEnabled())
-                        {
-                            List<String> paths = new ArrayList<String>();
-                            paths.add(DatalogManager.INSTANCE.getAbsolutePath());
-                            paths.add(FRDLogManager.INSTANCE.getAbsolutePath());
-                            paths.add(DebugLogManager.INSTANCE.getAbsolutePath());
-                            String emailText = "Logfiles generated by MSLogger.\n\n\nhttps://bitbucket.org/scudderfish/mslogger";
-
-                            String subject = String.format("MSLogger files %tc", System.currentTimeMillis());
-                            EmailManager.email(MSLoggerActivity.this, ApplicationSettings.INSTANCE.getEmailDestination(), null,
-                                    subject, emailText, paths);
-                        }
-
-                    }
-                }
-            }
-        }
-
     }
 
     private final class ConnectButtonListener implements OnClickListener
@@ -287,8 +157,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     private ServiceConnection mConnection = new MSServiceConnection();
-    private ToggleButton      logButton;
+    ToggleButton              logButton;
     private GestureDetector   gestureDetector;
+    private boolean           gaugeEditEnabled;
 
     synchronized void doBindService()
     {
@@ -351,37 +222,48 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
         gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
 
-        gauge1.setOnClickListener(new GaugeClickListener(gauge1));
-        gauge2.setOnClickListener(new GaugeClickListener(gauge2));
-        gauge4.setOnClickListener(new GaugeClickListener(gauge4));
-        gauge5.setOnClickListener(new GaugeClickListener(gauge5));
-
-        gestureDetector = new GestureDetector(new RotationDetector(gauge3));
-        OnTouchListener gestureListener = new View.OnTouchListener()
+        if (gaugeEditEnabled)
         {
-            public boolean onTouch(View v, MotionEvent event)
+            gauge1.setOnClickListener(new GaugeClickListener(gauge1));
+            gauge2.setOnClickListener(new GaugeClickListener(gauge2));
+            gauge4.setOnClickListener(new GaugeClickListener(gauge4));
+            gauge5.setOnClickListener(new GaugeClickListener(gauge5));
+
+            gestureDetector = new GestureDetector(new RotationDetector(this, gauge3));
+            OnTouchListener gestureListener = new View.OnTouchListener()
             {
-                if (gestureDetector.onTouchEvent(event))
+                public boolean onTouch(View v, MotionEvent event)
                 {
-                    return true;
-                }
-
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                {
-                    if (scrolling)
+                    if (gestureDetector.onTouchEvent(event))
                     {
-                        scrolling = false;
-                        GaugeDetails gd = gauge3.getDetails();
-                        GaugeRegister.INSTANCE.persistDetails(gd);
+                        return true;
                     }
+
+                    if (event.getAction() == MotionEvent.ACTION_UP)
+                    {
+                        if (scrolling)
+                        {
+                            scrolling = false;
+                            GaugeDetails gd = gauge3.getDetails();
+                            GaugeRegister.INSTANCE.persistDetails(gd);
+                        }
+                    }
+
+                    return false;
                 }
-
-                return false;
-            }
-        };
-        gauge3.setOnClickListener(MSLoggerActivity.this);
-        gauge3.setOnTouchListener(gestureListener);
-
+            };
+            gauge3.setOnClickListener(MSLoggerActivity.this);
+            gauge3.setOnTouchListener(gestureListener);
+        }
+        else
+        {
+            gauge1.setOnClickListener(null);
+            gauge2.setOnClickListener(null);
+            gauge3.setOnClickListener(null);
+            gauge4.setOnClickListener(null);
+            gauge5.setOnClickListener(null);
+            gauge3.setOnTouchListener(null);
+        }
         gauge1.invalidate();
         gauge2.invalidate();
         gauge3.invalidate();
@@ -429,7 +311,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         logButton = (ToggleButton) findViewById(R.id.logButton);
         logButton.setEnabled(MSLoggerService.isCreated());
-        logButton.setOnClickListener(new LogButtonListener(logButton));
+        logButton.setOnClickListener(new LogButtonListener(this, logButton));
 
         markButton = (Button) findViewById(R.id.Mark);
         markButton.setEnabled(logButton.isChecked());
@@ -442,7 +324,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DatalogManager.INSTANCE.mark();
             }
         });
-        if(!ApplicationSettings.INSTANCE.btDeviceSelected())
+        if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
             Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
         }
@@ -479,6 +361,22 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        MenuItem m = menu.findItem(R.id.gaugeEditing);
+        if(gaugeEditEnabled)
+        {
+            m.setTitle(R.string.DisableGaugeEdit);
+        }
+        else
+        {
+            m.setTitle(R.string.EnableGaugeEdit);
+        }
+ 
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // Handle item selection
@@ -493,6 +391,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         case R.id.about:
             showAbout();
             return true;
+        case R.id.gaugeEditing:
+            gaugeEditEnabled = !gaugeEditEnabled;
+            initGauges();
+            return true;
+       
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -582,10 +485,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         }
     }
+
     private boolean connectButtonEnabled()
     {
         return ApplicationSettings.INSTANCE.btDeviceSelected();
     }
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
@@ -593,7 +498,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             initGauges();
         }
-        if(!ApplicationSettings.INSTANCE.btDeviceSelected())
+        if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
             Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
         }
