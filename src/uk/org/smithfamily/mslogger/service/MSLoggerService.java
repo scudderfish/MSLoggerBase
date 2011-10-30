@@ -18,7 +18,12 @@ import android.widget.Toast;
 
 public class MSLoggerService extends Service
 {
-    private static final int MSLOGGERSERVICE_ID = 0;
+    public boolean isLogging()
+	{
+		return logging;
+	}
+
+	private static final int MSLOGGERSERVICE_ID = 0;
     private static boolean   created            = false;
 
     public class MSLoggerBinder extends Binder
@@ -31,6 +36,7 @@ public class MSLoggerService extends Service
 
     private final IBinder mBinder = new MSLoggerBinder();
     private Megasquirt    ecuDefinition;
+	private boolean	logging;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
@@ -116,12 +122,14 @@ public class MSLoggerService extends Service
 
     public void stopLogging()
     {
+        logging = false;
         ecuDefinition.stopLogging();
     }
 
     public void startLogging()
     {
         ecuDefinition.startLogging();
+        logging = true;
     }
 
     public void connectToECU()

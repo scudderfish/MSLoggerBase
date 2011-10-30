@@ -5,6 +5,7 @@
 	android:layout_margin="1px" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="100"
 	android:keepScreenOn="true"
+	android:id="@+id/layout"
 	>
 
 	<LinearLayout android:orientation="horizontal" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent">
@@ -58,6 +59,5 @@
 				android:text="" 
 				android:layout_height="wrap_content" 
 				android:id="@+id/messages" />
-			<Button android:text="Mark" android:id="@+id/Mark" android:layout_width="wrap_content" android:layout_height="wrap_content" ></Button></LinearLayout>
-	
+			</LinearLayout>
 </LinearLayout>

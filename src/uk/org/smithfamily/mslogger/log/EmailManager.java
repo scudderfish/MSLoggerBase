@@ -16,15 +16,18 @@ public class EmailManager
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 		emailIntent.setType("application/zip");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { emailTo });
-		emailIntent.putExtra(android.content.Intent.EXTRA_CC, new String[] { emailCC });
+		if (emailCC != null)
+		{
+			emailIntent.putExtra(android.content.Intent.EXTRA_CC, new String[] { emailCC });
+		}
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
 		emailIntent.putExtra(Intent.EXTRA_TEXT, emailText);
-        
-		File zipFile = new File(filePaths.get(0)+".zip");
-		Compress c = new Compress(filePaths,zipFile.getAbsolutePath());
-		
+
+		File zipFile = new File(filePaths.get(0) + ".zip");
+		Compress c = new Compress(filePaths, zipFile.getAbsolutePath());
+
 		c.zip();
-	
+
 		emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(zipFile));
 		context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 	}
