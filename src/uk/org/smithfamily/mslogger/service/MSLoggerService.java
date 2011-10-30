@@ -18,118 +18,114 @@ import android.widget.Toast;
 
 public class MSLoggerService extends Service
 {
-	private static final int	MSLOGGERSERVICE_ID	= 0;
-	private static boolean		created				= false;
+    private static final int MSLOGGERSERVICE_ID = 0;
+    private static boolean   created            = false;
 
-	public class MSLoggerBinder extends Binder
-	{
-		public MSLoggerService getService()
-		{
-			return MSLoggerService.this;
-		}
-	}
+    public class MSLoggerBinder extends Binder
+    {
+        public MSLoggerService getService()
+        {
+            return MSLoggerService.this;
+        }
+    }
 
-	private final IBinder	mBinder	= new MSLoggerBinder();
-	private Megasquirt		ecuDefinition;
+    private final IBinder mBinder = new MSLoggerBinder();
+    private Megasquirt    ecuDefinition;
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
-	{
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		return START_STICKY;
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return START_STICKY;
+    }
 
-	@Override
-	public IBinder onBind(Intent arg0)
-	{
-		return mBinder;
-	}
+    @Override
+    public IBinder onBind(Intent arg0)
+    {
+        return mBinder;
+    }
 
-	@Override
-	public void onCreate()
-	{
+    @Override
+    public void onCreate()
+    {
 
-		created = true;
-		super.onCreate();
-		ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        created = true;
+        super.onCreate();
+        ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-		initialiseConnection();
-	}
+        ecuDefinition.start();
+        showNotification();
+        GPSLocationManager.INSTANCE.start();
 
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		disconnect();
-		created = false;
-	}
+    }
 
-	public static boolean isCreated()
-	{
-		return created;
-	}
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        disconnect();
+        created = false;
+    }
 
-	public double getValue(String channelName)
-	{
-		return ecuDefinition.getValue(channelName);
-	}
+    public static boolean isCreated()
+    {
+        return created;
+    }
 
-	private void initialiseConnection()
-	{
-		showNotification();
-		GPSLocationManager.INSTANCE.start();
-		ecuDefinition.start();
-	}
+    public double getValue(String channelName)
+    {
+        return ecuDefinition.getValue(channelName);
+    }
 
-	private void disconnect()
-	{
-		Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
-		ecuDefinition.stop();
-		GPSLocationManager.INSTANCE.stop();
-		removeNotification();
-	}
+    private void disconnect()
+    {
+        Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
+        ecuDefinition.stop();
+        GPSLocationManager.INSTANCE.stop();
+        removeNotification();
+    }
 
-	private void showNotification()
-	{
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    private void showNotification()
+    {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 
-		int icon = R.drawable.injector;
-		long when = System.currentTimeMillis();
+        int icon = R.drawable.injector;
+        long when = System.currentTimeMillis();
 
-		Notification notification = new Notification(icon, getString(R.string.mslogger_is_running), when);
+        Notification notification = new Notification(icon, getString(R.string.mslogger_is_running), when);
 
-		Context context = getApplicationContext();
+        Context context = getApplicationContext();
 
-		Intent notificationIntent = new Intent(this, MSLoggerActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        Intent notificationIntent = new Intent(this, MSLoggerActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		notification.setLatestEventInfo(context, getString(R.string.mslogger_is_running),
-				getString(R.string.logging_to, DatalogManager.INSTANCE.getFilename()), contentIntent);
+        notification.setLatestEventInfo(context, getString(R.string.mslogger_is_running),
+                getString(R.string.logging_to, DatalogManager.INSTANCE.getFilename()), contentIntent);
 
-		mNotificationManager.notify(MSLOGGERSERVICE_ID, notification);
-	}
+        mNotificationManager.notify(MSLOGGERSERVICE_ID, notification);
+    }
 
-	private void removeNotification()
-	{
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		mNotificationManager.cancelAll();
-	}
+    private void removeNotification()
+    {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+        mNotificationManager.cancelAll();
+    }
 
-	public void stopLogging()
-	{
-		ecuDefinition.stopLogging();
-	}
+    public void stopLogging()
+    {
+        ecuDefinition.stopLogging();
+    }
 
-	public void startLogging()
-	{
-		ecuDefinition.startLogging();
-	}
+    public void startLogging()
+    {
+        ecuDefinition.startLogging();
+    }
 
-	public void reconnect()
-	{
-		ecuDefinition.initialiseConnection();
-	}
+    public void connectToECU()
+    {
+        ecuDefinition.initialiseConnection();
+    }
 }

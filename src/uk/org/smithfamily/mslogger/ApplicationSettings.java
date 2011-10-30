@@ -17,16 +17,17 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    public static final String MISSING_VALUE = "f741d5b0-fbee-11e0-be50-0800200c9a66";
-    public static final String  GENERAL_MESSAGE = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
-    public static final String  MESSAGE         = "uk.org.smithfamily.mslogger.MESSAGE";
-    public static final String  TAG             = "uk.org.smithfamily.mslogger";
-    private Context             context;
-    private File                dataDir;
-    private int                 hertz;
-    private SharedPreferences   prefs;
-    private Megasquirt          ecuDefinition;
-    private String              bluetoothMac;
+    public static final String MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
+    public static final String GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
+    public static final String MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
+    public static final String TAG                 = "uk.org.smithfamily.mslogger";
+    private Context            context;
+    private File               dataDir;
+    private int                hertz;
+    private SharedPreferences  prefs;
+    private Megasquirt         ecuDefinition;
+    private String             bluetoothMac;
+    private boolean            autoConnectOverride = false;
 
     public void initialise(Context context)
     {
@@ -37,7 +38,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
                 context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
-
 
     }
 
@@ -67,44 +67,38 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             ecuDefinition = new MS1Extra29y(context);
         }
-        else if(ecuName.equals("MS2Extra21"))
+        else if (ecuName.equals("MS2Extra21"))
         {
             ecuDefinition = new MS2Extra210(context);
         }
         else
         {
-        	ecuDefinition=new MS2Extra310(context);
+            ecuDefinition = new MS2Extra310(context);
         }
         GaugeRegister.INSTANCE.flush();
         ecuDefinition.initGauges();
         return ecuDefinition;
     }
+
     public synchronized String getBluetoothMac()
     {
-        if (bluetoothMac != null)
-        {
-            return bluetoothMac;
-        }
         bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
-        if (MISSING_VALUE.equals(bluetoothMac))
-        {
-            Toast.makeText(context, "Please select your serial Bluetooth dongle", Toast.LENGTH_LONG).show();
-        }
         return bluetoothMac;
     }
 
-    private Map<String,Boolean> settings = new HashMap<String,Boolean>();
+    private Map<String, Boolean> settings = new HashMap<String, Boolean>();
+
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
     {
         Boolean result = settings.get(name);
-        if(result != null)
+        if (result != null)
             return result;
         boolean val = false;
-        
-        if(!val && prefs.getString("temptype", MISSING_VALUE).equals(name))
-        	val = true;
-        
+
+        if (!val && prefs.getString("temptype", MISSING_VALUE).equals(name))
+            val = true;
+
         if (!val && prefs.getString("mstype", MISSING_VALUE).equals(name))
             val = true;
 
@@ -127,7 +121,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             ecuDefinition.stop();
             ecuDefinition = null;
         }
-        settings = new HashMap<String,Boolean>();
+        settings = new HashMap<String, Boolean>();
     }
 
     public boolean btDeviceSelected()
@@ -137,18 +131,25 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     public boolean emailEnabled()
     {
-    	return prefs.getBoolean("autoemail_enabled", false);
-    }
-    public String getEmailDestination()
-    {
-    	return prefs.getString("autoemail_target", "");
+        return prefs.getBoolean("autoemail_enabled", false);
     }
 
-    
+    public String getEmailDestination()
+    {
+        return prefs.getString("autoemail_target", "");
+    }
+
+    public boolean autoConnectable()
+    {
+        boolean autoconnectpref = prefs.getBoolean("autoconnect", true);
+        boolean btDeviceSelected = btDeviceSelected();
+        return !autoConnectOverride && btDeviceSelected && autoconnectpref;
+    }
+
     public String getOrSetPref(String name, String def)
     {
-        String value=prefs.getString(name, MISSING_VALUE);
-        if(value.equals(MISSING_VALUE))
+        String value = prefs.getString(name, MISSING_VALUE);
+        if (value.equals(MISSING_VALUE))
         {
             Editor editor = prefs.edit();
             editor.putString(name, def);
@@ -161,6 +162,16 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public double getGaugeSetting(String gaugeName, String title, String var, double def)
     {
         return def;
+    }
+
+    public boolean isAutoConnectOverride()
+    {
+        return autoConnectOverride;
+    }
+
+    public void setAutoConnectOverride(boolean autoConnectOverride)
+    {
+        this.autoConnectOverride = autoConnectOverride;
     }
 
 }

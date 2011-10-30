@@ -34,6 +34,7 @@ public class MSGauge extends View implements Indicator
     private Paint              rimCirclePaint;
     private RectF              faceRect;
     private Paint              facePaint;
+    private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
     public MSGauge(Context context)
@@ -118,9 +119,12 @@ public class MSGauge extends View implements Indicator
 
         drawScale(canvas);
 
-        drawPointer(canvas);
+        if (!disabled)
+        {
+            drawPointer(canvas);
+            drawValue(canvas);
+        }
 
-        drawValue(canvas);
         drawTitle(canvas);
         canvas.restore();
     }
@@ -205,13 +209,11 @@ public class MSGauge extends View implements Indicator
     {
         valuePaint.setColor(getFgColour());
 
-       
         float displayValue = (float) (Math.floor(value / Math.pow(10, -vd) + 0.5) * Math.pow(10, -vd));
 
-        
         String text;
-        
-        if(vd <=0)
+
+        if (vd <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -219,7 +221,7 @@ public class MSGauge extends View implements Indicator
         {
             text = Float.toString(displayValue);
         }
-        
+
         canvas.drawText(text, 0.5f, 0.65f, valuePaint);
     }
 
@@ -229,15 +231,15 @@ public class MSGauge extends View implements Indicator
 
         double range = 270.0 / (max - min);
         double pointerValue = value;
-        if(pointerValue < min)
+        if (pointerValue < min)
         {
             pointerValue = min;
         }
-        if(pointerValue > max)
+        if (pointerValue > max)
         {
             pointerValue = max;
         }
-        double angle = (pointerValue-min) * range + offsetAngle;
+        double angle = (pointerValue - min) * range + offsetAngle;
         double rads = angle * pi / 180.0;
         float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
         float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
@@ -256,10 +258,10 @@ public class MSGauge extends View implements Indicator
         double tenpower = Math.floor(Math.log10(range));
         double scalefactor = Math.pow(10, tenpower);
         double maxprimarydigit = Math.ceil(max / scalefactor);
-        double gaugeMax = max;//maxprimarydigit * scalefactor;
+        double gaugeMax = max;// maxprimarydigit * scalefactor;
 
         double minprimarydigit = Math.ceil(min / scalefactor);
-        double gaugeMin = min;//minprimarydigit * scalefactor;
+        double gaugeMin = min;// minprimarydigit * scalefactor;
         // gaugeMin = Math.min(0, gaugeMin);
 
         double gaugeRange = gaugeMax - gaugeMin;
@@ -270,13 +272,12 @@ public class MSGauge extends View implements Indicator
             step = step / 2;
         for (double val = gaugeMin; val <= gaugeMax; val += step)
         {
-            
+
             float displayValue = (float) (Math.floor(val / Math.pow(10, -ld) + 0.5) * Math.pow(10, -ld));
 
-            
             String text;
-            
-            if(ld <=0)
+
+            if (ld <= 0)
             {
                 text = Integer.toString((int) displayValue);
             }
@@ -296,6 +297,10 @@ public class MSGauge extends View implements Indicator
 
     private int getFgColour()
     {
+        if(disabled)
+        {
+            return Color.DKGRAY;
+        }
         if (value > lowW && value < hiW)
         {
             return Color.WHITE;
@@ -309,6 +314,10 @@ public class MSGauge extends View implements Indicator
     private int getBgColour()
     {
         int c = Color.GRAY;
+        if (this.disabled)
+        {
+            return c;
+        }
         if (value > lowW && value < hiW)
         {
             return Color.BLACK;
@@ -327,15 +336,10 @@ public class MSGauge extends View implements Indicator
 
     private void drawFace(Canvas canvas)
     {
-        if (!this.isInEditMode())
-        {
-            canvas.drawOval(rimRect, rimPaint);
-            // now the outer rim circle
-            canvas.drawOval(rimRect, rimCirclePaint);
-            facePaint.setColor(getBgColour());
-        }
-        else
-            facePaint.setColor(Color.RED);
+        canvas.drawOval(rimRect, rimPaint);
+        // now the outer rim circle
+        canvas.drawOval(rimRect, rimCirclePaint);
+        facePaint.setColor(getBgColour());
         canvas.drawOval(faceRect, facePaint);
 
     }
@@ -437,7 +441,8 @@ public class MSGauge extends View implements Indicator
     @Override
     public void setDisabled(boolean disabled)
     {
-
+        this.disabled = disabled;
+        this.invalidate();
     }
 
     public GaugeDetails getDetails()
@@ -471,10 +476,10 @@ public class MSGauge extends View implements Indicator
     public void initFromName(String nme)
     {
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        if(gd == null)
-        {//Panic!
-        	gd = GaugeRegister.INSTANCE.getGaugeDetails("deadGauge");
-        	
+        if (gd == null)
+        {// Panic!
+            gd = GaugeRegister.INSTANCE.getGaugeDetails("deadGauge");
+
         }
         initFromGD(gd);
     }
