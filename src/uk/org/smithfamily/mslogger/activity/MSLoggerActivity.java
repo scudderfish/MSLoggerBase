@@ -5,6 +5,7 @@ import java.util.List;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ConnectionState;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
@@ -31,11 +32,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private static final int  REQUEST_ENABLE_BT = 0;
     private BroadcastReceiver updateReceiver    = new Reciever();
     private IndicatorManager  indicatorManager;
-    private ToggleButton      connectButton;
     TextView                  messages;
     Button                    markButton;
     public boolean            connected;
     private boolean           receivedData      = false;
+    private boolean           ready             = false;
 
     private MSGauge           gauge1;
     private MSGauge           gauge2;
@@ -98,8 +99,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
             if (button.isChecked())
             {
-                startService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
-                doBindService();
                 connected = true;
             }
             else
@@ -118,24 +117,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
+                DebugLogManager.INSTANCE.log(intent.getAction());
                 indicatorManager.setDisabled(false);
-                connectButton.setEnabled(true);
             }
-            if (intent.getAction().equals(Megasquirt.DISCONNECTED))
+            if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
             {
-                if (receivedData && connectButton.isChecked())
-                {
-                    // We've been unfortunately disconnected so re-establish
-                    // comms as if nothing happened
-                    service.reconnect();
-                    // connectButton.setEnabled(false);
-                    // logButton.setEnabled(false);
-                }
-                else
-                {
-                    resetConnection();
-                    messages.setText("Disconnected");
-                }
+                indicatorManager.setDisabled(true);
+                DebugLogManager.INSTANCE.log(intent.getAction());
             }
 
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
@@ -163,7 +151,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     synchronized void doBindService()
     {
-
+        startService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -172,6 +160,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         super.onStop();
         saveGauges();
+    }
+
+    private void checkBTDeviceSet()
+    {
+        if (!ApplicationSettings.INSTANCE.btDeviceSelected())
+        {
+            Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
+        }
     }
 
     private void saveGauges()
@@ -204,7 +200,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         registerMessages();
 
-        testBluetooth();
+        if (testBluetooth())
+        {
+            doBindService();
+        }
+        checkBTDeviceSet();
+        ready = true;
     }
 
     private void initGauges()
@@ -272,23 +273,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
-    private void testBluetooth()
+    private boolean testBluetooth()
     {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null)
         {
-            return;
+            return false;
         }
         boolean bluetoothOK = mBluetoothAdapter.isEnabled();
         if (!bluetoothOK)
         {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
         }
-        else
-        {
-            connectButton.setEnabled(connectButtonEnabled());
-        }
+        return true;
     }
 
     private void registerMessages()
@@ -297,6 +296,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, connectedFilter);
         IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
         registerReceiver(updateReceiver, disconnectedFilter);
+        IntentFilter connectionLostFilter = new IntentFilter(Megasquirt.CONNECTION_LOST);
+        registerReceiver(updateReceiver, connectionLostFilter);
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
@@ -305,10 +306,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private void initButtons()
     {
-        connectButton = (ToggleButton) findViewById(R.id.connectButton);
-        connectButton.setEnabled(connectButtonEnabled());
-        connectButton.setOnClickListener(new ConnectButtonListener(connectButton));
-
         logButton = (ToggleButton) findViewById(R.id.logButton);
         logButton.setEnabled(MSLoggerService.isCreated());
         logButton.setOnClickListener(new LogButtonListener(this, logButton));
@@ -363,22 +360,31 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        MenuItem m = menu.findItem(R.id.gaugeEditing);
-        if(gaugeEditEnabled)
+        MenuItem editItem = menu.findItem(R.id.gaugeEditing);
+        if (gaugeEditEnabled)
         {
-            m.setTitle(R.string.DisableGaugeEdit);
+            editItem.setTitle(R.string.DisableGaugeEdit);
         }
         else
         {
-            m.setTitle(R.string.EnableGaugeEdit);
+            editItem.setTitle(R.string.EnableGaugeEdit);
         }
- 
+        MenuItem connectionItem = menu.findItem(R.id.forceConnection);
+        if(ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
+        {
+            connectionItem.setTitle(R.string.disconnect);
+        }
+        else
+        {
+            connectionItem.setTitle(R.string.connect);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        checkBTDeviceSet();
         // Handle item selection
         switch (item.getItemId())
         {
@@ -395,9 +401,33 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             gaugeEditEnabled = !gaugeEditEnabled;
             initGauges();
             return true;
-       
+        case R.id.forceConnection:
+            toggleConnection();
+            return true;
+        case R.id.quit:
+            quit();
+            return true;
+           
         default:
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void quit()
+    {
+        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+        resetConnection();
+        this.finish();
+    }
+
+    private void toggleConnection()
+    {
+        boolean currentConnectOverride = ApplicationSettings.INSTANCE.isAutoConnectOverride();
+      
+        ApplicationSettings.INSTANCE.setAutoConnectOverride(!currentConnectOverride);
+        if(!currentConnectOverride)
+        {
+            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
         }
     }
 
@@ -454,10 +484,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK)
         {
-            if (connectButton != null)
-            {
-                connectButton.setEnabled(connectButtonEnabled());
-            }
+            doBindService();
         }
     }
 
@@ -472,8 +499,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         logButton.setChecked(false);
         logButton.setEnabled(false);
         indicatorManager.setDisabled(true);
-        connectButton.setChecked(false);
-        connectButton.setEnabled(connectButtonEnabled());
 
         try
         {
@@ -486,27 +511,28 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    private boolean connectButtonEnabled()
-    {
-        return ApplicationSettings.INSTANCE.btDeviceSelected();
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
+        if (!ready)
+        {
+            return;
+        }
         if (key.startsWith("gauge"))
         {
             initGauges();
         }
-        if (!ApplicationSettings.INSTANCE.btDeviceSelected())
+        if (ApplicationSettings.INSTANCE.btDeviceSelected())
         {
-            Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
+            ConnectionState currentState = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState();
+            if (currentState == Megasquirt.ConnectionState.STATE_NONE)
+            {
+                if (service == null)
+                {
+                    doBindService();
+                }
+            }
         }
-        else
-        {
-            connectButton.setEnabled(connectButtonEnabled());
-        }
-
     }
 
     @Override

@@ -36,7 +36,7 @@ public enum DebugLogManager
 			if (logFile == null)
 				createLogFile();
 
-			os.write(System.currentTimeMillis() + ":" + s + "\n");
+			os.write(String.format("%tc:%s\n",System.currentTimeMillis(), s));
 			os.flush();
 		}
 		catch (IOException e)
