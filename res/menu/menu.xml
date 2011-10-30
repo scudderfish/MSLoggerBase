@@ -5,8 +5,8 @@
 	<item android:id="@+id/gaugeEditing" android:title="@string/EnableGaugeEdit" />
 	<item android:id="@+id/forceConnection" android:title="@string/connect" />
 	<item android:id="@+id/forceLogging" android:title="@string/start_logging" />
+	<item android:id="@+id/quit" android:title="@string/quit" />
 	
 	<item android:id="@+id/calibrate" android:title="@string/CalibrateTPS" />
-	<item android:id="@+id/quit" android:title="@string/quit" />
 	<item android:id="@+id/about" android:title="@string/about" />
 </menu>

@@ -17,10 +17,6 @@ public enum GPSLocationManager implements LocationListener
 
     synchronized public Location getLastKnownLocation()
     {
-        if(locationManager == null)
-        {
-            start();
-        }
         return lastLocation;
     }
 

@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import android.text.format.DateFormat;
+import android.text.format.Formatter;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 
 public class MSUtils
@@ -82,17 +84,18 @@ public class MSUtils
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getAccuracy();
     }
     
-    public static double getTime()
+    public static String getTime()
     {
-        return GPSLocationManager.INSTANCE.getLastKnownLocation().getTime();
+        long time = GPSLocationManager.INSTANCE.getLastKnownLocation().getTime();
+        return DateFormat.format("hh:mm:ss", time).toString();
     }
 
     public static String getLocationLogHeader()
     {
-        return "Lat\tLong\tSpeed\tBearing\tAccuracy\tEpocMilli";
+        return "Lat\tLong\tSpeed\tBearing\tAccuracy\tGPSTime";
     }
     public static String getLocationLogRow()
     {
-        return getLatitude() +"\t"+getLongitude()+"\t"+getSpeed()+"\t"+getBearing()+"\t"+getAccuracy()+"\t"+(float)getTime();
+        return getLatitude() +"\t"+getLongitude()+"\t"+getSpeed()+"\t"+getBearing()+"\t"+getAccuracy()+"\t"+getTime();
     }
 }

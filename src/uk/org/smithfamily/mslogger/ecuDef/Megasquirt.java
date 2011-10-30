@@ -14,7 +14,7 @@ import android.util.Log;
 
 public abstract class Megasquirt
 {
-	Timer	connectionWatcher	= new Timer("ConnectionWatcher", true);
+	static Timer	connectionWatcher	= new Timer("ConnectionWatcher", true);
 
 	public ConnectionState getCurrentState()
 	{
@@ -147,6 +147,11 @@ public abstract class Megasquirt
 		{
 			return;
 		}
+		mAdapter = ApplicationSettings.INSTANCE.getDefaultAdapter();
+		if(mAdapter == null)
+		{
+		    return;
+		}
 		// Cancel any thread attempting to make a connection
 		if (mConnectThread != null)
 		{
@@ -163,7 +168,7 @@ public abstract class Megasquirt
 		setState(ConnectionState.STATE_NONE);
 
 		String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
-		mAdapter = BluetoothAdapter.getDefaultAdapter();
+		
 
 		BluetoothDevice remote = mAdapter.getRemoteDevice(btAddr);
 
