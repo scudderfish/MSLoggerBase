@@ -89,10 +89,10 @@ public class MSUtils
 
     public static String getLocationLogHeader()
     {
-        return "\tLat\tLong\tSpeed\tBearing\tAccuracy\tEpocMilli";
+        return "Lat\tLong\tSpeed\tBearing\tAccuracy\tEpocMilli";
     }
     public static String getLocationLogRow()
     {
-        return "\t"+getLatitude() +"\t"+getLongitude()+"\t"+getSpeed()+"\t"+getBearing()+"\t"+getAccuracy()+"\t"+(float)getTime();
+        return getLatitude() +"\t"+getLongitude()+"\t"+getSpeed()+"\t"+getBearing()+"\t"+getAccuracy()+"\t"+(float)getTime();
     }
 }
