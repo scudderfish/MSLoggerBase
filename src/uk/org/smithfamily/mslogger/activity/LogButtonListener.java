@@ -37,7 +37,7 @@ final class LogButtonListener implements OnClickListener
         }
         else
         {
-            this.msLoggerActivity.markButton.setEnabled(this.msLoggerActivity.logButton.isChecked());
+//            this.msLoggerActivity.markButton.setEnabled(this.msLoggerActivity.logButton.isChecked());
 
             if (this.msLoggerActivity.service != null)
             {

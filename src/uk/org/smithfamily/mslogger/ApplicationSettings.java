@@ -17,17 +17,20 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    public static final String MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
-    public static final String GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
-    public static final String MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
-    public static final String TAG                 = "uk.org.smithfamily.mslogger";
-    private Context            context;
-    private File               dataDir;
-    private int                hertz;
-    private SharedPreferences  prefs;
-    private Megasquirt         ecuDefinition;
-    private String             bluetoothMac;
-    private boolean            autoConnectOverride = false;
+    public static final String   MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
+    public static final String   GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
+    public static final String   MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
+    public static final String   TAG                 = "uk.org.smithfamily.mslogger";
+    private Context              context;
+    private File                 dataDir;
+    private int                  hertz;
+    private SharedPreferences    prefs;
+    private Megasquirt           ecuDefinition;
+    private String               bluetoothMac;
+    private Boolean              autoConnectOverride = null;
+
+    private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
+    private Boolean              loggingOverride     = null;
 
     public void initialise(Context context)
     {
@@ -86,8 +89,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return bluetoothMac;
     }
 
-    private Map<String, Boolean> settings = new HashMap<String, Boolean>();
-
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
     {
@@ -143,7 +144,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         boolean autoconnectpref = prefs.getBoolean("autoconnect", true);
         boolean btDeviceSelected = btDeviceSelected();
-        return !autoConnectOverride && btDeviceSelected && autoconnectpref;
+        return (autoConnectOverride == null || autoConnectOverride == true) && btDeviceSelected && autoconnectpref;
     }
 
     public String getOrSetPref(String name, String def)
@@ -172,6 +173,18 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public void setAutoConnectOverride(boolean autoConnectOverride)
     {
         this.autoConnectOverride = autoConnectOverride;
+    }
+
+    public boolean shouldBeLogging()
+    {
+        boolean shouldBeLogging = prefs.getBoolean("autolog", true);
+        return (loggingOverride == null || loggingOverride == true) && shouldBeLogging;
+    }
+
+    public void setLoggingOverride(boolean b)
+    {
+        this.loggingOverride = b;
+
     }
 
 }
