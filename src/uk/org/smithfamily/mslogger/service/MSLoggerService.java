@@ -1,15 +1,11 @@
 package uk.org.smithfamily.mslogger.service;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
@@ -62,7 +58,6 @@ public class MSLoggerService extends Service
 
         ecuDefinition.start();
         showNotification();
-        GPSLocationManager.INSTANCE.start();
 
     }
 
@@ -88,7 +83,6 @@ public class MSLoggerService extends Service
     {
         Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
         ecuDefinition.stop();
-        GPSLocationManager.INSTANCE.stop();
         removeNotification();
     }
 

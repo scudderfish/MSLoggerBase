@@ -6,6 +6,7 @@ import java.util.Map;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -31,6 +32,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
     private Boolean              loggingOverride     = null;
+    private BluetoothAdapter    defaultAdapter;
 
     public void initialise(Context context)
     {
@@ -170,7 +172,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return autoConnectOverride;
     }
 
-    public void setAutoConnectOverride(boolean autoConnectOverride)
+    public void setAutoConnectOverride(Boolean autoConnectOverride)
     {
         this.autoConnectOverride = autoConnectOverride;
     }
@@ -185,6 +187,16 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         this.loggingOverride = b;
 
+    }
+
+    public BluetoothAdapter getDefaultAdapter()
+    {
+        return defaultAdapter;
+    }
+
+    public void setDefaultAdapter(BluetoothAdapter defaultAdapter)
+    {
+        this.defaultAdapter = defaultAdapter;
     }
 
 }

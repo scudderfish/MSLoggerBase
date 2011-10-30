@@ -3,8 +3,7 @@ package uk.org.smithfamily.mslogger.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ConnectionState;
 import uk.org.smithfamily.mslogger.log.*;
@@ -174,8 +173,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 		super.onCreate(savedInstanceState);
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
+		ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
+		ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 		indicatorManager = IndicatorManager.INSTANCE;
+        GPSLocationManager.INSTANCE.start();
 
 		setContentView(R.layout.displaygauge);
 		indicatorManager.setDisabled(true);
@@ -461,6 +462,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 	{
 		if (ApplicationSettings.INSTANCE.emailEnabled())
 		{
+		    DatalogManager.INSTANCE.close();
+		    FRDLogManager.INSTANCE.close();
 			List<String> paths = new ArrayList<String>();
 			paths.add(DatalogManager.INSTANCE.getAbsolutePath());
 			paths.add(FRDLogManager.INSTANCE.getAbsolutePath());
@@ -475,8 +478,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
 	private void quit()
 	{
+	    ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
 		ApplicationSettings.INSTANCE.getEcuDefinition().stop();
 		resetConnection();
+		sendLogs();
 		this.finish();
 	}
 
@@ -539,6 +544,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 	@Override
 	protected void onDestroy()
 	{
+        GPSLocationManager.INSTANCE.stop();
 		super.onDestroy();
 	}
 
@@ -559,6 +565,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 		connected = false;
 		receivedData = false;
 		service.stopLogging();
+		
 		indicatorManager.setDisabled(true);
 
 		try
