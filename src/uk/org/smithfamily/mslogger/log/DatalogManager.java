@@ -72,17 +72,20 @@ public enum DatalogManager
 	{
 		stopLog();
 	}
-
+	public void mark(String msg)
+	{
+        if (writer != null)
+        {
+            write(String.format("MARK  %03d - %s - %tc", markCounter++, msg, System.currentTimeMillis()));
+            if (markCounter > 999)
+            {
+                markCounter = 1;
+            }
+        }
+	    
+	}
 	public void mark()
 	{
-		if (writer != null)
-		{
-			write(String.format("MARK  %03d - Manual - %tc", markCounter++, System.currentTimeMillis()));
-			if (markCounter > 999)
-			{
-				markCounter = 1;
-			}
-		}
+	    mark("Manual");
 	}
-
 }

@@ -34,6 +34,9 @@
 
 		<CheckBoxPreference android:key="autoconnect" android:defaultValue="true"
 			android:title="@string/autoconnect" android:summary="@string/autoconnect_summary" />
+
+		<CheckBoxPreference android:key="autolog" android:defaultValue="true"
+			android:title="@string/autolog" android:summary="@string/autolog_summary" />
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="Gauges">

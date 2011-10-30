@@ -33,6 +33,8 @@
 	<string name="DisableGaugeEdit">Disable Gauge Editing</string>
 	<string name="autoconnect">Enable autoconnect</string>
 	<string name="autoconnect_summary">Automatically manage the connection to the ECU</string>
+	<string name="autolog">Enable autologging</string>
+	<string name="autolog_summary">Automatically start logging whenever we have a connection to the ECU</string>
 
     <string name="autoemail_title">Auto Email Setup</string>
     <string name="autoemail_summary">Automatically emails the log file to an address of your choice</string>

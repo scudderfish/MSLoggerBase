@@ -84,6 +84,8 @@ public abstract class Megasquirt
     private boolean signatureChecked;
     private String  trueSignature = "Unknown";
 
+    private boolean running;
+
     protected int table(int i1, String name)
     {
         return TableManager.INSTANCE.table(i1, name);
@@ -118,10 +120,12 @@ public abstract class Megasquirt
             }
         };
         connectionWatcher.schedule(connectionTask, 5000, 5000);
+        running = true;
     }
 
     public void stop()
     {
+        running = false;
         DebugLogManager.INSTANCE.log("Megasquirt.stop()");
         connectionWatcher.purge();
         disconnect();
@@ -725,5 +729,10 @@ public abstract class Megasquirt
     public String getTrueSignature()
     {
         return trueSignature;
+    }
+
+    public boolean isRunning()
+    {
+        return running;
     }
 }

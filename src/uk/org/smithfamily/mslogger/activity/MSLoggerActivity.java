@@ -82,33 +82,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    private final class ConnectButtonListener implements OnClickListener
-    {
-        private final ToggleButton button;
-
-        private ConnectButtonListener(ToggleButton button)
-        {
-            this.button = button;
-        }
-
-        @Override
-        public void onClick(View arg0)
-        {
-            DebugLogManager.INSTANCE.log("ConnectButton:" + button.isChecked());
-            logButton.setChecked(false);
-
-            if (button.isChecked())
-            {
-                connected = true;
-            }
-            else
-            {
-                resetConnection();
-                saveGauges();
-            }
-        }
-    }
-
     private final class Reciever extends BroadcastReceiver
     {
         @Override
@@ -119,16 +92,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             {
                 DebugLogManager.INSTANCE.log(intent.getAction());
                 indicatorManager.setDisabled(false);
+                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                {
+                    service.startLogging();
+                }
             }
             if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
             {
                 indicatorManager.setDisabled(true);
+                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                {
+                    DatalogManager.INSTANCE.mark("Connection Lost");
+                }
                 DebugLogManager.INSTANCE.log(intent.getAction());
             }
 
             if (intent.getAction().equals(Megasquirt.NEW_DATA))
             {
-                logButton.setEnabled(connected);
                 processData();
                 receivedData = true;
             }
@@ -145,7 +125,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     private ServiceConnection mConnection = new MSServiceConnection();
-    ToggleButton              logButton;
     private GestureDetector   gestureDetector;
     private boolean           gaugeEditEnabled;
 
@@ -306,12 +285,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private void initButtons()
     {
-        logButton = (ToggleButton) findViewById(R.id.logButton);
-        logButton.setEnabled(MSLoggerService.isCreated());
-        logButton.setOnClickListener(new LogButtonListener(this, logButton));
-
         markButton = (Button) findViewById(R.id.Mark);
-        markButton.setEnabled(logButton.isChecked());
+        markButton.setEnabled(false);
         markButton.setOnClickListener(new OnClickListener()
         {
 
@@ -370,7 +345,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setTitle(R.string.EnableGaugeEdit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        if(ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
+        if (ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
         {
             connectionItem.setTitle(R.string.disconnect);
         }
@@ -378,6 +353,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             connectionItem.setTitle(R.string.connect);
         }
+
+        MenuItem loggingItem = menu.findItem(R.id.forceLogging);
+        if (ApplicationSettings.INSTANCE.shouldBeLogging())
+        {
+            loggingItem.setTitle(R.string.stop_logging);
+        }
+        else
+        {
+            loggingItem.setTitle(R.string.start_logging);
+        }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -407,10 +393,27 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         case R.id.quit:
             quit();
             return true;
-           
+        case R.id.forceLogging:
+            toggleLogging();
+            return true;
+
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void toggleLogging()
+    {
+        boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
+        if (shouldBeLogging)
+        {
+            service.stopLogging();
+        }
+        else
+        {
+            service.startLogging();
+        }
+        ApplicationSettings.INSTANCE.setLoggingOverride(!shouldBeLogging);
     }
 
     private void quit()
@@ -421,13 +424,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     private void toggleConnection()
+
     {
-        boolean currentConnectOverride = ApplicationSettings.INSTANCE.isAutoConnectOverride();
-      
-        ApplicationSettings.INSTANCE.setAutoConnectOverride(!currentConnectOverride);
-        if(!currentConnectOverride)
+        if (ApplicationSettings.INSTANCE.getEcuDefinition().isRunning())
         {
             ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+        }
+        else
+        {
+            ApplicationSettings.INSTANCE.getEcuDefinition().start();
+            ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
         }
     }
 
@@ -496,8 +503,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         receivedData = false;
         service.stopLogging();
         markButton.setEnabled(false);
-        logButton.setChecked(false);
-        logButton.setEnabled(false);
         indicatorManager.setDisabled(true);
 
         try
