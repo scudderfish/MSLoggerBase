@@ -75,9 +75,6 @@ public abstract class Megasquirt
 
 	public abstract String[] defaultGauges();
 
-	private long	lastTime		= System.currentTimeMillis();
-
-	private long	logStart		= lastTime;
 	private byte[]	ochBuffer;
 
 	private boolean	logging;
@@ -249,7 +246,7 @@ public abstract class Megasquirt
 
 	protected double timeNow()
 	{
-		return (System.currentTimeMillis() - logStart) / 1000.0;
+		return (System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0;
 	}
 
 	public double getValue(String channel)
@@ -273,7 +270,6 @@ public abstract class Megasquirt
 	public void startLogging()
 	{
 		logging = true;
-		logStart = System.currentTimeMillis();
 		DebugLogManager.INSTANCE.log("startLogging()");
 
 	}

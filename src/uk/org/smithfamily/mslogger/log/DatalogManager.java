@@ -1,11 +1,7 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.*;
 import java.util.Date;
-import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
@@ -19,6 +15,7 @@ public enum DatalogManager
 	private String	fileName		= null;
 	private String	absolutePath	= null;
 	private int		markCounter		= 0;
+	private long   logStart = System.currentTimeMillis();
 
 	public synchronized String getAbsolutePath()
 	{
@@ -49,6 +46,7 @@ public enum DatalogManager
 				writer.println("\"" + signature + "\"");
 				writer.println(ecuDefinition.getLogHeader());
 				markCounter = 1;
+				logStart = System.currentTimeMillis();
 			}
 			catch (FileNotFoundException e)
 			{
@@ -91,4 +89,9 @@ public enum DatalogManager
 	{
 		mark("Manual");
 	}
+
+    public long getLogStart()
+    {
+        return logStart;
+    }
 }
