@@ -80,8 +80,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             ecuDefinition = new MS2Extra310(context);
         }
-        GaugeRegister.INSTANCE.flush();
-        ecuDefinition.initGauges();
         return ecuDefinition;
     }
 
