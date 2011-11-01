@@ -45,5 +45,10 @@
     <string name="autoemail_target_summary">Where to email the log file</string>
     <string name="autoemail_smtp_category">Email Settings</string> 
 
-	<string name="crash_toast_text">MSLogger has suffered an unexpected problem.  Submitting crash report.</string>   
+    <string name="buy_button">Buy MSLogger</string>
+    <string name="quit_button">Quit</string>
+    <string name="unlicensed_dialog_body">My car has a V8, a thirsy V8.  Please help me keep it sated by purchasing a licensed copy of MSLogger</string>
+	<string name="unlicensed_dialog_title">Unlicensed Install Of MSLogger</string>
+        
+    <string name="crash_toast_text">MSLogger has suffered an unexpected problem.  Submitting crash report.</string>   
 </resources>
