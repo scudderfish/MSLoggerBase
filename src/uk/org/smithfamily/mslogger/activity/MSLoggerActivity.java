@@ -9,14 +9,14 @@ import uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ConnectionState;
 import uk.org.smithfamily.mslogger.log.*;
 import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.*;
-import android.app.Activity;
-import android.app.Dialog;
+import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
@@ -30,66 +30,71 @@ import com.android.vending.licensing.*;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
-    MSLoggerService             service;
-    private static final int    REQUEST_ENABLE_BT = 0;
-    private BroadcastReceiver   updateReceiver    = new Reciever();
-    private IndicatorManager    indicatorManager;
-    TextView                    messages;
-    public boolean              connected;
-    private boolean             receivedData      = false;
-    private boolean             ready             = false;
+    MSLoggerService                service;
+    private static final int       REQUEST_ENABLE_BT = 0;
+    private BroadcastReceiver      updateReceiver    = new Reciever();
+    private IndicatorManager       indicatorManager;
+    TextView                       messages;
+    public boolean                 connected;
+    private boolean                receivedData      = false;
+    private boolean                ready             = false;
 
-    private MSGauge             gauge1;
-    private MSGauge             gauge2;
-    private MSGauge             gauge3;
-    private MSGauge             gauge4;
-    private MSGauge             gauge5;
+    private MSGauge                gauge1;
+    private MSGauge                gauge2;
+    private MSGauge                gauge3;
+    private MSGauge                gauge4;
+    private MSGauge                gauge5;
 
-    private ServiceConnection   mConnection       = new MSServiceConnection();
-    private GestureDetector     gestureDetector;
-    private boolean             gaugeEditEnabled;
-    boolean                     scrolling;
-    private LinearLayout        layout;
-   
-    private Handler mHandler;
-    private static final byte[] SALT              = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255,
+    private ServiceConnection      mConnection       = new MSServiceConnection();
+    private GestureDetector        gestureDetector;
+    private boolean                gaugeEditEnabled;
+    boolean                        scrolling;
+    private LinearLayout           layout;
+    protected Dialog               mSplashDialog;
+    private Handler                mHandler;
+    private static final byte[]    SALT              = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255,
             157 - 255, 200 - 255, 245 - 255, 125, 60, 228 - 255, 80, 81, 45, 184 - 255, 54, 176 - 255, 217 - 255 };
-    private static final String BASE64_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
-                                                          + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
-                                                          + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
-                                                          + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
-                                                          + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
+    private static final String    BASE64_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
+                                                             + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
+                                                             + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
+                                                             + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
+                                                             + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
-    private LicenseChecker mChecker;
-    
-    private class MyLicenseCheckerCallback implements LicenseCheckerCallback {
-        public void allow() {
-            if (isFinishing()) {
+    private LicenseChecker         mChecker;
+
+    private class MSLoggerCheckerCallback implements LicenseCheckerCallback
+    {
+        public void allow()
+        {
+            if (isFinishing())
+            {
                 // Don't update UI if Activity is finishing.
                 return;
             }
             // Should allow user access.
-            System.out.println("Excellent!");
+            displayResult("Excellent!");
         }
 
-        public void dontAllow() {
-            if (isFinishing()) {
+        public void dontAllow()
+        {
+            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+            ApplicationSettings.INSTANCE.setLoggingOverride(false);
+            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+
+            if (isFinishing())
+            {
                 // Don't update UI if Activity is finishing.
                 return;
             }
-            System.out.println("Denied!");
-            // Should not allow access. In most cases, the app should assume
-            // the user has access unless it encounters this. If it does,
-            // the app should inform the user of their unlicensed ways
-            // and then either shut down the app or limit the user to a
-            // restricted set of features.
-            // In this example, we show a dialog that takes the user to Market.
+            displayResult("Denied!");
             showDialog(0);
         }
 
-        public void applicationError(ApplicationErrorCode errorCode) {
-            if (isFinishing()) {
+        public void applicationError(ApplicationErrorCode errorCode)
+        {
+            if (isFinishing())
+            {
                 // Don't update UI if Activity is finishing.
                 return;
             }
@@ -99,6 +104,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             System.out.println("Bork!");
         }
     }
+
     public class GaugeTouchListener implements OnTouchListener
     {
 
@@ -220,24 +226,32 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
+     
+        setContentView(R.layout.displaygauge);
+        messages = (TextView) findViewById(R.id.messages);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        showSplashScreen();
         String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-        
-        mLicenseCheckerCallback = new MyLicenseCheckerCallback();
+
+        mLicenseCheckerCallback = new MSLoggerCheckerCallback();
         mChecker = new LicenseChecker(this, new ServerManagedPolicy(this, new AESObfuscator(SALT, getPackageName(), deviceId)),
                 BASE64_PUBLIC_KEY);
-        
+
         doCheck();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
         indicatorManager = IndicatorManager.INSTANCE;
         GPSLocationManager.INSTANCE.start();
-
-        setContentView(R.layout.displaygauge);
         indicatorManager.setDisabled(true);
-        messages = (TextView) findViewById(R.id.messages);
         initGauges();
         initButtons();
 
@@ -249,11 +263,51 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         checkBTDeviceSet();
         ready = true;
+        removeSplashScreen();
+   
+    }
+    private void showSplashScreen()
+    {
+        mSplashDialog = new Dialog(this, R.style.SplashScreen);
+        mSplashDialog.setContentView(R.layout.splashscreen);
+        mSplashDialog.setCancelable(false);
+        mSplashDialog.show();
+     
+        // Set Runnable to remove splash screen just in case
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            removeSplashScreen();
+          }
+        }, 3000);
+        
+    }
+
+    protected void removeSplashScreen()
+    {
+        if (mSplashDialog != null) {
+            mSplashDialog.dismiss();
+            mSplashDialog = null;
+        }
+        
     }
 
     private void doCheck()
     {
+        setProgressBarIndeterminateVisibility(true);
         mChecker.checkAccess(mLicenseCheckerCallback);
+    }
+
+    private void displayResult(final String result)
+    {
+        mHandler.post(new Runnable()
+        {
+            public void run()
+            {
+                setProgressBarIndeterminateVisibility(false);
+            }
+        });
     }
 
     private class MarkListener implements OnTouchListener
@@ -670,5 +724,26 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         // TODO Auto-generated method stub
 
+    }
+
+    protected Dialog onCreateDialog(int id)
+    {
+        // We have only one dialog.
+        return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title).setMessage(R.string.unlicensed_dialog_body)
+                .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id="
+                                + getPackageName()));
+                        startActivity(marketIntent);
+                    }
+                }).setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        finish();
+                    }
+                }).create();
     }
 }
