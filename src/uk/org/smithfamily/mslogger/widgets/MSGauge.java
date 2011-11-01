@@ -336,6 +336,14 @@ public class MSGauge extends View implements Indicator
 
     private void drawFace(Canvas canvas)
     {
+        if(isInEditMode())
+        {
+            facePaint.setColor(Color.RED);
+            
+            facePaint.setStyle(Style.FILL);
+            canvas.drawOval(rimRect, facePaint);
+            return;
+        }
         canvas.drawOval(rimRect, rimPaint);
         // now the outer rim circle
         canvas.drawOval(rimRect, rimCirclePaint);

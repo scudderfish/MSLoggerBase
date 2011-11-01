@@ -91,7 +91,7 @@ public class MSLoggerService extends Service
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 
-        int icon = R.drawable.injector;
+        int icon = R.drawable.icon;
         long when = System.currentTimeMillis();
 
         Notification notification = new Notification(icon, getString(R.string.mslogger_is_running), when);
