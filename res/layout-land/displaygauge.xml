@@ -8,21 +8,12 @@
 	android:id="@+id/layout"
 	>
 
-	<LinearLayout android:orientation="vertical" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent" >
-
-	   	    <LinearLayout 
-			android:layout_height="0px" android:layout_width="fill_parent"
-			android:layout_weight="75">
+	<LinearLayout android:orientation="horizontal" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent">
+	<LinearLayout 
+			android:orientation="vertical" android:layout_height="fill_parent"
+			android:layout_width="0px" android:layout_weight="25">
 
 			<uk.org.smithfamily.mslogger.widgets.MSGauge
-				android:id="@+id/g3" android:layout_width="fill_parent"
-				android:layout_height="fill_parent" android:focusable="true"
-				android:focusableInTouchMode="true" android:layout_weight="1" />
-		</LinearLayout>
-	        	        
-	    
-	    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="25">
-	        <uk.org.smithfamily.mslogger.widgets.MSGauge
 				android:id="@+id/g1" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
@@ -31,19 +22,37 @@
 				android:id="@+id/g2" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
-			 <uk.org.smithfamily.mslogger.widgets.MSGauge
+
+
+		</LinearLayout>
+		<LinearLayout 
+			android:layout_height="fill_parent" android:layout_width="0px"
+			android:layout_weight="50">
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g3" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+
+		</LinearLayout>
+		<LinearLayout 
+			android:orientation="vertical" android:layout_height="fill_parent"
+			android:layout_width="0px" android:layout_weight="25">
+
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
 				android:id="@+id/g4" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
-			
-	    </LinearLayout>
-	
 
-	        
-	        
-</LinearLayout>
+			<uk.org.smithfamily.mslogger.widgets.MSGauge
+				android:id="@+id/g5" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:focusable="true"
+				android:focusableInTouchMode="true" android:layout_weight="1" />
+		</LinearLayout>
+	
+			</LinearLayout>
 			<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
-<LinearLayout android:orientation="vertical" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
+<LinearLayout android:orientation="horizontal" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
 			<TextView android:layout_weight="1" 
 				android:layout_width="match_parent" 
 				android:layout_span="2"
