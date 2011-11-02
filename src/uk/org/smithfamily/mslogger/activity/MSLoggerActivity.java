@@ -60,6 +60,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
     private LicenseChecker         mChecker;
+	private boolean	registered;
 
     /** Called when the activity is first created. */
     @Override
@@ -292,10 +293,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
+        registered = true;
     }
     private void deRegisterMessages()
     {
-        unregisterReceiver(updateReceiver);
+        if(registered)
+        {
+        	unregisterReceiver(updateReceiver);
+        }
     }
     protected void processData()
     {
