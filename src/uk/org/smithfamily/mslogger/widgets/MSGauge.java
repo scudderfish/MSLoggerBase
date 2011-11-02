@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
@@ -485,7 +486,8 @@ public class MSGauge extends View implements Indicator
     {
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
         if (gd == null)
-        {// Panic!
+        {   
+            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme);
             gd = GaugeRegister.INSTANCE.getGaugeDetails("deadGauge");
 
         }

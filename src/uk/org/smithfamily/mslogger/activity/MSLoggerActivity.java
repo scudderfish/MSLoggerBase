@@ -31,169 +31,99 @@ import com.android.vending.licensing.*;
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
     MSLoggerService                service;
-    private static final int       REQUEST_ENABLE_BT = 0;
-    private BroadcastReceiver      updateReceiver    = new Reciever();
+    private static final int       REQUEST_ENABLE_BT     = 0;
+    private BroadcastReceiver      updateReceiver        = new Reciever();
     private IndicatorManager       indicatorManager;
     TextView                       messages;
     public boolean                 connected;
-    private boolean                receivedData      = false;
-    private boolean                ready             = false;
-
+    static private Boolean         ready                 = null;
+    static private Boolean         licenseCheckCompleted = null;
     private MSGauge                gauge1;
     private MSGauge                gauge2;
     private MSGauge                gauge3;
     private MSGauge                gauge4;
     private MSGauge                gauge5;
 
-    private ServiceConnection      mConnection       = new MSServiceConnection();
+    private ServiceConnection      mConnection           = new MSServiceConnection();
     private GestureDetector        gestureDetector;
     private boolean                gaugeEditEnabled;
     boolean                        scrolling;
     private LinearLayout           layout;
-    protected Dialog               mSplashDialog;
     private Handler                mHandler;
-    private static final byte[]    SALT              = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255,
+    private static final byte[]    SALT                  = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255,
             157 - 255, 200 - 255, 245 - 255, 125, 60, 228 - 255, 80, 81, 45, 184 - 255, 54, 176 - 255, 217 - 255 };
-    private static final String    BASE64_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
-                                                             + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
-                                                             + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
-                                                             + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
-                                                             + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
+    private static final String    BASE64_PUBLIC_KEY     = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
+                                                                 + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
+                                                                 + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
+                                                                 + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
+                                                                 + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
     private LicenseChecker         mChecker;
 
-    private class MSLoggerCheckerCallback implements LicenseCheckerCallback
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
-        public void allow()
+        super.onCreate(savedInstanceState);
+        mHandler = new Handler();
+        setContentView(R.layout.displaygauge);
+        messages = (TextView) findViewById(R.id.messages);
+        findGauges();
+        PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(
+                MSLoggerActivity.this);
+        indicatorManager = IndicatorManager.INSTANCE;
+        indicatorManager.setDisabled(true);
+
+        ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
+        GPSLocationManager.INSTANCE.start();
+        ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
+
+        if (ready == null)
         {
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            // Should allow user access.
-            displayResult("Excellent!");
+            new InitTask().execute((Void) null);
         }
-
-        public void dontAllow()
+        else
         {
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-            ApplicationSettings.INSTANCE.setLoggingOverride(false);
-            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
-
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            displayResult("Denied!");
-            showDialog(0);
-        }
-
-        public void applicationError(ApplicationErrorCode errorCode)
-        {
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            // This is a polite way of saying the developer made a mistake
-            // while setting up or calling the license checker library.
-            // Please examine the error code and fix the error.
-            System.out.println("Bork!");
+            finaliseInit();
         }
     }
-
-    public class GaugeTouchListener implements OnTouchListener
+    
+    private void finaliseInit()
     {
+        initGauges();
+        registerMessages();
 
-        private MSGauge gauge;
-
-        public GaugeTouchListener(MSGauge gauge)
+        if (testBluetooth())
         {
-            this.gauge = gauge;
+            doBindService();
         }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event)
-        {
-            // System.out.println(event);
-            if (event.getAction() == MotionEvent.ACTION_DOWN)
-            {
-                String g3name = gauge3.getName();
-                gauge3.initFromName(gauge.getName());
-                gauge.initFromName(g3name);
-                gauge.invalidate();
-                gauge3.invalidate();
-                return true;
-            }
-            return false;
-        }
-
+        checkBTDeviceSet();
     }
-
-    private final class MSServiceConnection implements ServiceConnection
+    @Override
+    protected void onDestroy()
     {
-
-        public void onServiceConnected(ComponentName className, IBinder binder)
+        deRegisterMessages();
+        GPSLocationManager.INSTANCE.stop();
+        if(service != null)
         {
-            service = ((MSLoggerService.MSLoggerBinder) binder).getService();
-        }
-
-        public void onServiceDisconnected(ComponentName className)
-        {
-            service = null;
-        }
-    }
-
-    private final class Reciever extends BroadcastReceiver
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
-            if (intent.getAction().equals(Megasquirt.CONNECTED))
+            try
             {
-                DebugLogManager.INSTANCE.log(intent.getAction());
-                indicatorManager.setDisabled(false);
-                if (ApplicationSettings.INSTANCE.shouldBeLogging())
-                {
-                    service.startLogging();
-                }
+                unbindService(mConnection);
             }
-            if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
+            catch (Exception e)
             {
-                indicatorManager.setDisabled(true);
-                if (ApplicationSettings.INSTANCE.shouldBeLogging())
-                {
-                    DatalogManager.INSTANCE.mark("Connection Lost");
-                }
-                DebugLogManager.INSTANCE.log(intent.getAction());
-            }
-
-            if (intent.getAction().equals(Megasquirt.NEW_DATA))
-            {
-                processData();
-                receivedData = true;
-            }
-            if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
-            {
-                String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
-
-                messages.setText(msg);
-                Log.i(ApplicationSettings.TAG, "Message : " + msg);
-                DebugLogManager.INSTANCE.log("Message : " + msg);
 
             }
         }
+        super.onDestroy();
     }
 
     synchronized void doBindService()
     {
-        startService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
+    
 
     @Override
     public void onStop()
@@ -212,117 +142,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private void saveGauges()
     {
-		if(!(gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null)
-		)
-		{
-			findGauges();
-		}
-		if (gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null)
-		{
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Editor editor = prefs.edit();
-        editor.putString("gauge1", gauge1.getName());
-        editor.putString("gauge2", gauge2.getName());
-        editor.putString("gauge3", gauge3.getName());
-        editor.putString("gauge4", gauge4.getName());
-        editor.putString("gauge5", gauge5.getName());
-        editor.commit();
-    }
-	}
-
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        super.onCreate(savedInstanceState);
-        mHandler = new Handler();
-     
-
-        showSplashScreen();
-
-		setContentView(R.layout.displaygauge);
-		messages = (TextView) findViewById(R.id.messages);
-
-		PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(
-				MSLoggerActivity.this);
-        ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
-		GPSLocationManager.INSTANCE.start();
-        ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
-        indicatorManager = IndicatorManager.INSTANCE;
-        indicatorManager.setDisabled(true);
-
-		if (!ready)
-			new InitTask().execute((Void) null);
-
-	}
-
-	private class InitTask extends AsyncTask<Void, Void, Void>
-	{
-
-		@Override
-		protected void onPostExecute(Void result)
-		{
-			super.onPostExecute(result);
-			initGauges();
-        registerMessages();
-
-        if (testBluetooth())
+        if (!(gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null))
         {
-            doBindService();
+            findGauges();
         }
-        checkBTDeviceSet();
-        ready = true;
-        removeSplashScreen();
-   
-    }
-
-		@Override
-		protected Void doInBackground(Void... params)
-		{
-
-			String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-
-			mLicenseCheckerCallback = new MSLoggerCheckerCallback();
-			mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator(
-					SALT, getPackageName(), deviceId)), BASE64_PUBLIC_KEY);
-
-			doCheck();
-			loadGauges();
-
-			return null;
-		}
-
-	}
-
-    private void showSplashScreen()
-    {
-        mSplashDialog = new Dialog(this, R.style.SplashScreen);
-        mSplashDialog.setContentView(R.layout.splashscreen);
-        mSplashDialog.setCancelable(false);
-        mSplashDialog.show();
-     
-        // Set Runnable to remove splash screen just in case
-        final Handler handler = new Handler();
-		handler.postDelayed(new Runnable()
-		{
-          @Override
-			public void run()
-			{
-            removeSplashScreen();
-          }
-        }, 3000);
-        
-    }
-
-    protected void removeSplashScreen()
-    {
-		if (mSplashDialog != null)
-		{
-            mSplashDialog.dismiss();
-            mSplashDialog = null;
+        if (gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null)
+        {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            Editor editor = prefs.edit();
+            editor.putString("gauge1", gauge1.getName());
+            editor.putString("gauge2", gauge2.getName());
+            editor.putString("gauge3", gauge3.getName());
+            editor.putString("gauge4", gauge4.getName());
+            editor.putString("gauge5", gauge5.getName());
+            editor.commit();
         }
-        
     }
 
     private void doCheck()
@@ -342,61 +176,33 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         });
     }
 
-    private class MarkListener implements OnTouchListener
+    private void loadGauges()
     {
-        private LinearLayout layout;
-
-        public MarkListener(LinearLayout layout)
-        {
-            this.layout = layout;
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event)
-        {
-            if (service != null && service.isLogging() && event.getAction() == MotionEvent.ACTION_DOWN)
-            {
-                layout.setBackgroundColor(Color.BLUE);
-                layout.invalidate();
-                return true;
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP)
-            {
-                layout.setBackgroundColor(Color.BLACK);
-                layout.invalidate();
-                DatalogManager.INSTANCE.mark("Manual");
-                return true;
-            }
-            return false;
-        }
-
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        GaugeRegister.INSTANCE.flush();
+        ecu.initGauges();
     }
-
-	private void loadGauges()
-	{
-		Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-		GaugeRegister.INSTANCE.flush();
-		ecu.initGauges();
-	}
 
     private void initGauges()
     {
         layout = (LinearLayout) (findViewById(R.id.layout));
-		findGauges();
+        findGauges();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         String[] defaultGauges = ecu.defaultGauges();
         gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
         gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
         gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
         gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
-        if(gauge5 != null) gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
+        if (gauge5 != null)
+            gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
 
         if (gaugeEditEnabled)
         {
             gauge1.setOnTouchListener(new GaugeTouchListener(gauge1));
             gauge2.setOnTouchListener(new GaugeTouchListener(gauge2));
             gauge4.setOnTouchListener(new GaugeTouchListener(gauge4));
-            if(gauge5 != null) gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
+            if (gauge5 != null)
+                gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
 
             gestureDetector = new GestureDetector(new RotationDetector(this, gauge3));
             OnTouchListener gestureListener = new View.OnTouchListener()
@@ -433,18 +239,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge2.invalidate();
         gauge3.invalidate();
         gauge4.invalidate();
-        if(gauge5 != null) gauge5.invalidate();
+        if (gauge5 != null)
+            gauge5.invalidate();
 
     }
 
-	private void findGauges()
-	{
-		gauge1 = (MSGauge) findViewById(R.id.g1);
-		gauge2 = (MSGauge) findViewById(R.id.g2);
-		gauge3 = (MSGauge) findViewById(R.id.g3);
-		gauge4 = (MSGauge) findViewById(R.id.g4);
-		gauge5 = (MSGauge) findViewById(R.id.g5);
-	}
+    private void findGauges()
+    {
+        gauge1 = (MSGauge) findViewById(R.id.g1);
+        gauge2 = (MSGauge) findViewById(R.id.g2);
+        gauge3 = (MSGauge) findViewById(R.id.g3);
+        gauge4 = (MSGauge) findViewById(R.id.g4);
+        gauge5 = (MSGauge) findViewById(R.id.g5);
+    }
 
     private void setTouchListeners(MarkListener l)
     {
@@ -452,7 +259,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge2.setOnTouchListener(l);
         gauge3.setOnTouchListener(l);
         gauge4.setOnTouchListener(l);
-        if(gauge5 != null) gauge5.setOnTouchListener(l);
+        if (gauge5 != null)
+            gauge5.setOnTouchListener(l);
     }
 
     private boolean testBluetooth()
@@ -485,7 +293,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
     }
-
+    private void deRegisterMessages()
+    {
+        unregisterReceiver(updateReceiver);
+    }
     protected void processData()
     {
         List<Indicator> indicators;
@@ -676,7 +487,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nMartin Walton");
         ImageView image = (ImageView) dialog.findViewById(R.id.image);
-		image.setImageResource(R.drawable.icon);
+        image.setImageResource(R.drawable.icon);
 
         dialog.show();
     }
@@ -693,13 +504,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         startActivity(launchPrefs);
     }
 
-    @Override
-    protected void onDestroy()
-    {
-        GPSLocationManager.INSTANCE.stop();
-        super.onDestroy();
-    }
-
+ 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -715,26 +520,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         DebugLogManager.INSTANCE.log("resetConnection()");
 
         connected = false;
-        receivedData = false;
         service.stopLogging();
 
         indicatorManager.setDisabled(true);
 
-        try
-        {
-            unbindService(mConnection);
-            stopService(new Intent(MSLoggerActivity.this, MSLoggerService.class));
-        }
-        catch (Exception e)
-        {
 
-        }
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
-        if (!ready)
+        if (ready == null || !ready)
         {
             return;
         }
@@ -758,8 +554,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public void onClick(View v)
     {
-        // TODO Auto-generated method stub
-
     }
 
     protected Dialog onCreateDialog(int id)
@@ -782,4 +576,231 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     }
                 }).create();
     }
+
+    private class LicenceCheckTask extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            if (licenseCheckCompleted != null)
+            {
+                return null;
+            }
+            licenseCheckCompleted = false;
+
+            String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+
+            mLicenseCheckerCallback = new MSLoggerCheckerCallback();
+            mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator(
+                    SALT, getPackageName(), deviceId)), BASE64_PUBLIC_KEY);
+
+            doCheck();
+
+            return null;
+        }
+
+    }
+
+    // *****************************************************************************
+    private class InitTask extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            super.onPostExecute(result);
+            finaliseInit();
+            new LicenceCheckTask().execute((Void) null);
+            ready = true;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            if (ready != null)
+            {
+                return null;
+            }
+            ready = false;
+
+            loadGauges();
+            /*
+             * String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+             * 
+             * mLicenseCheckerCallback = new MSLoggerCheckerCallback(); mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator( SALT,
+             * getPackageName(), deviceId)), BASE64_PUBLIC_KEY);
+             * 
+             * doCheck();
+             */
+            return null;
+        }
+    }
+
+    // *****************************************************************************
+    private class MSLoggerCheckerCallback implements LicenseCheckerCallback
+    {
+        public void allow()
+        {
+            if (isFinishing())
+            {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+            // Should allow user access.
+            displayResult("Excellent!");
+        }
+
+        public void dontAllow()
+        {
+            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+            ApplicationSettings.INSTANCE.setLoggingOverride(false);
+            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+
+            if (isFinishing())
+            {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+            displayResult("Denied!");
+            showDialog(0);
+        }
+
+        public void applicationError(ApplicationErrorCode errorCode)
+        {
+            if (isFinishing())
+            {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+            // This is a polite way of saying the developer made a mistake
+            // while setting up or calling the license checker library.
+            // Please examine the error code and fix the error.
+            System.out.println("Bork!");
+        }
+    }
+
+    // *****************************************************************************
+
+    public class GaugeTouchListener implements OnTouchListener
+    {
+
+        private MSGauge gauge;
+
+        public GaugeTouchListener(MSGauge gauge)
+        {
+            this.gauge = gauge;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            // System.out.println(event);
+            if (event.getAction() == MotionEvent.ACTION_DOWN)
+            {
+                String g3name = gauge3.getName();
+                gauge3.initFromName(gauge.getName());
+                gauge.initFromName(g3name);
+                gauge.invalidate();
+                gauge3.invalidate();
+                return true;
+            }
+            return false;
+        }
+
+    }
+
+    // *****************************************************************************
+
+    private final class MSServiceConnection implements ServiceConnection
+    {
+
+        public void onServiceConnected(ComponentName className, IBinder binder)
+        {
+            service = ((MSLoggerService.MSLoggerBinder) binder).getService();
+        }
+
+        public void onServiceDisconnected(ComponentName className)
+        {
+            service = null;
+        }
+    }
+
+    // *****************************************************************************
+    private final class Reciever extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
+            if (intent.getAction().equals(Megasquirt.CONNECTED))
+            {
+                DebugLogManager.INSTANCE.log(intent.getAction());
+                indicatorManager.setDisabled(false);
+                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                {
+                    service.startLogging();
+                }
+            }
+            if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
+            {
+                indicatorManager.setDisabled(true);
+                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                {
+                    DatalogManager.INSTANCE.mark("Connection Lost");
+                }
+                DebugLogManager.INSTANCE.log(intent.getAction());
+            }
+
+            if (intent.getAction().equals(Megasquirt.NEW_DATA))
+            {
+                processData();
+            }
+            if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
+            {
+                String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
+
+                messages.setText(msg);
+                Log.i(ApplicationSettings.TAG, "Message : " + msg);
+                DebugLogManager.INSTANCE.log("Message : " + msg);
+
+            }
+        }
+    }
+    
+    // *****************************************************************************
+    
+    private class MarkListener implements OnTouchListener
+    {
+        private LinearLayout layout;
+
+        public MarkListener(LinearLayout layout)
+        {
+            this.layout = layout;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            if (service != null && service.isLogging() && event.getAction() == MotionEvent.ACTION_DOWN)
+            {
+                layout.setBackgroundColor(Color.BLUE);
+                layout.invalidate();
+                return true;
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP)
+            {
+                layout.setBackgroundColor(Color.BLACK);
+                layout.invalidate();
+                DatalogManager.INSTANCE.mark("Manual");
+                return true;
+            }
+            return false;
+        }
+
+    }
+
+
+    
+
 }
