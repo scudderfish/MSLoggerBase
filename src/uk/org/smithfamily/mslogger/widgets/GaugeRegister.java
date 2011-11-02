@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 
 public enum GaugeRegister
 {
@@ -32,6 +33,8 @@ public enum GaugeRegister
 		{
 			persistDetails(gaugeDetails);
 		}
+        DebugLogManager.INSTANCE.log("Adding gauge : " +gaugeDetails);
+
 		details.put(gaugeDetails.getName(), gaugeDetails);
 	}
 

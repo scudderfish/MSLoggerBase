@@ -3,7 +3,9 @@ package uk.org.smithfamily.mslogger;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
+import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import android.app.Application;
+import android.content.Intent;
 
 // "http://www.bugsense.com/api/acra?api_key=fd6951fe"
 // https://docs.google.com/spreadsheet/viewform?formkey=dGFDbHRzU1M1UFJvTTVKNlZDLTlhSGc6MQ
@@ -17,6 +19,16 @@ public class MSLoggerApplication extends Application
         ACRA.init(this);
         super.onCreate();
         ApplicationSettings.INSTANCE.initialise(this);
+        startService(new Intent(this, MSLoggerService.class));
+        
+    }
+
+    @Override
+    public void onTerminate()
+    {
+        // TODO Auto-generated method stub
+        super.onTerminate();
+        stopService(new Intent(this, MSLoggerService.class));
 
     }
 }

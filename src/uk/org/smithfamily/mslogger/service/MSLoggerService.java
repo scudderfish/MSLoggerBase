@@ -57,7 +57,6 @@ public class MSLoggerService extends Service
         ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         ecuDefinition.start();
-        showNotification();
 
     }
 
@@ -118,10 +117,13 @@ public class MSLoggerService extends Service
     {
         logging = false;
         ecuDefinition.stopLogging();
+        removeNotification();
     }
 
     public void startLogging()
     {
+        showNotification();
+
         ecuDefinition.startLogging();
         logging = true;
     }
