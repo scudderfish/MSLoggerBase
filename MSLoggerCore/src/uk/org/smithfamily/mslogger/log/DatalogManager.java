@@ -31,7 +31,7 @@ public enum DatalogManager
 		return fileName;
 	}
 
-	public void write(String logRow)
+	public synchronized void write(String logRow)
 	{
 		if (writer == null)
 		{
@@ -57,7 +57,7 @@ public enum DatalogManager
 		writer.println(logRow);
 	}
 
-	public void stopLog()
+	public synchronized void stopLog()
 	{
 		if (writer != null)
 		{

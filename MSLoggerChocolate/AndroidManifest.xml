@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="uk.org.smithfamily.mslogger.chocolate"
+    android:versionCode="2303"
+    android:versionName="3.3" >
+
+    <uses-sdk android:minSdkVersion="8" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.WAKE_LOCK" >
+    </uses-permission>
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" >
+    </uses-permission>
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:name="uk.org.smithfamily.mslogger.MSLoggerApplication" >
+        <service android:name="uk.org.smithfamily.mslogger.service.MSLoggerService" />
+
+        <activity
+            android:label="@string/app_name"
+            android:name="uk.org.smithfamily.mslogger.activity.MSLoggerActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+
+            <!--
+			 android:launchMode="singleInstance"  
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            -->
+
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.PreferencesActivity" >
+        </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.CalibrateActivity" >
+        </activity>
+    </application>
+
+</manifest>

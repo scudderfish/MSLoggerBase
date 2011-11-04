@@ -52,12 +52,11 @@ public class ServerManagedPolicy implements Policy {
     private static final String PREF_RETRY_UNTIL = "retryUntil";
     private static final String PREF_MAX_RETRIES = "maxRetries";
     private static final String PREF_RETRY_COUNT = "retryCount";
-    private static final String DEFAULT_VALIDITY_TIMESTAMP = "0";
-    private static final String DEFAULT_RETRY_UNTIL = "0";
-    private static final String DEFAULT_MAX_RETRIES = "0";
-    private static final String DEFAULT_RETRY_COUNT = "0";
-
     private static final long MILLIS_PER_MINUTE = 60 * 1000;
+    private static final String DEFAULT_VALIDITY_TIMESTAMP = Long.toString(System.currentTimeMillis() + (MILLIS_PER_MINUTE * 60L * 24L * 7L));
+    private static final String DEFAULT_RETRY_UNTIL = Long.toString(System.currentTimeMillis() + (MILLIS_PER_MINUTE * 60L * 24L * 7L));
+    private static final String DEFAULT_MAX_RETRIES = "10";
+    private static final String DEFAULT_RETRY_COUNT = "0";
 
     private long mValidityTimestamp;
     private long mRetryUntil;
@@ -82,6 +81,13 @@ public class ServerManagedPolicy implements Policy {
         mRetryUntil = Long.parseLong(mPreferences.getString(PREF_RETRY_UNTIL, DEFAULT_RETRY_UNTIL));
         mMaxRetries = Long.parseLong(mPreferences.getString(PREF_MAX_RETRIES, DEFAULT_MAX_RETRIES));
         mRetryCount = Long.parseLong(mPreferences.getString(PREF_RETRY_COUNT, DEFAULT_RETRY_COUNT));
+        
+        Log.i("ServerManagedPolicy", "Last response: "+mLastResponse);
+        Log.i("ServerManagedPolicy", "Validity timestamp: "+mValidityTimestamp);
+        Log.i("ServerManagedPolicy", "Retry until: "+mRetryUntil);
+        Log.i("ServerManagedPolicy", "Max retries: "+mMaxRetries);
+        Log.i("ServerManagedPolicy", "Retry count: "+mRetryCount);
+        
     }
 
     /**
@@ -167,8 +173,8 @@ public class ServerManagedPolicy implements Policy {
             lValidityTimestamp = Long.parseLong(validityTimestamp);
         } catch (NumberFormatException e) {
             // No response or not parsable, expire in one minute.
-            Log.w(TAG, "License validity timestamp (VT) missing, caching for a minute");
-            lValidityTimestamp = System.currentTimeMillis() + MILLIS_PER_MINUTE;
+            Log.w(TAG, "License validity timestamp (VT) missing, caching for a week");
+            lValidityTimestamp = System.currentTimeMillis() + (MILLIS_PER_MINUTE * 60L * 24L * 7L);
             validityTimestamp = Long.toString(lValidityTimestamp);
         }
 
@@ -194,8 +200,8 @@ public class ServerManagedPolicy implements Policy {
         } catch (NumberFormatException e) {
             // No response or not parsable, expire immediately
             Log.w(TAG, "License retry timestamp (GT) missing, grace period disabled");
-            retryUntil = "0";
-            lRetryUntil = 0l;
+            lRetryUntil = System.currentTimeMillis() + (MILLIS_PER_MINUTE * 60L * 24L * 7L);
+            retryUntil = Long.toString(lRetryUntil);
         }
 
         mRetryUntil = lRetryUntil;
@@ -220,8 +226,8 @@ public class ServerManagedPolicy implements Policy {
         } catch (NumberFormatException e) {
             // No response or not parsable, expire immediately
             Log.w(TAG, "Licence retry count (GR) missing, grace period disabled");
-            maxRetries = "0";
-            lMaxRetries = 0l;
+            lMaxRetries = 10L;
+            maxRetries = Long.toString(lMaxRetries);
         }
 
         mMaxRetries = lMaxRetries;
@@ -254,7 +260,9 @@ public class ServerManagedPolicy implements Policy {
                    ts < mLastResponseTime + MILLIS_PER_MINUTE) {
             // Only allow access if we are within the retry period or we haven't used up our
             // max retries.
-            return (ts <= mRetryUntil || mRetryCount <= mMaxRetries);
+            boolean inRetryPeriod = ts <= mRetryUntil;
+            boolean inRetryCount = mRetryCount <= mMaxRetries;
+            return (inRetryPeriod || inRetryCount);
         }
         return false;
     }
