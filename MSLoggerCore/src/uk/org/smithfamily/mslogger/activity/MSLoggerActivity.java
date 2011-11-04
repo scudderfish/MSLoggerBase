@@ -39,6 +39,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     static private Boolean         ready                 = null;
     static private Boolean         licenseCheckCompleted = null;
     private boolean                vanilla               = false;
+    private boolean                testDialogShown;
     private int                    dataCount             = 0;
     private MSGauge                gauge1;
     private MSGauge                gauge2;
@@ -344,8 +345,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.getEcuDefinition().stop();
         resetConnection();
         sendLogs();
-        showDialog(1);
-    }
+        if(!testDialogShown)
+        {
+            testDialogShown = true;
+            showDialog(1);
+        }
+     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -790,7 +795,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
             boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
-            
+
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
                 DebugLogManager.INSTANCE.log(intent.getAction());
@@ -823,7 +828,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DebugLogManager.INSTANCE.log("Message : " + msg);
 
             }
-            if(shouldBeLogging && service == null)
+            if (shouldBeLogging && service == null)
             {
                 doBindService();
             }
