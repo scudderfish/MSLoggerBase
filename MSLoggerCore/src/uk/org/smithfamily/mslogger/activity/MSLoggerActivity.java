@@ -38,6 +38,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public boolean                 connected;
     static private Boolean         ready                 = null;
     static private Boolean         licenseCheckCompleted = null;
+    private boolean                vanilla               = false;
+    private int                    dataCount             = 0;
     private MSGauge                gauge1;
     private MSGauge                gauge2;
     private MSGauge                gauge3;
@@ -60,12 +62,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
     private LicenseChecker         mChecker;
-	private boolean	registered;
+    private boolean                registered;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        vanilla = getPackageName().endsWith("vanilla");
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
         setContentView(R.layout.displaygauge);
@@ -89,7 +92,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             finaliseInit();
         }
     }
-    
+
     private void finaliseInit()
     {
         initGauges();
@@ -101,12 +104,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         checkBTDeviceSet();
     }
+
     @Override
     protected void onDestroy()
     {
         deRegisterMessages();
         GPSLocationManager.INSTANCE.stop();
-        if(service != null)
+        if (service != null)
         {
             try
             {
@@ -124,7 +128,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
-    
 
     @Override
     public void onStop()
@@ -295,13 +298,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, msgFilter);
         registered = true;
     }
+
     private void deRegisterMessages()
     {
-        if(registered)
+        if (registered)
         {
-        	unregisterReceiver(updateReceiver);
+            unregisterReceiver(updateReceiver);
         }
     }
+
     protected void processData()
     {
         List<Indicator> indicators;
@@ -322,6 +327,24 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
+        if (vanilla)
+        {
+            dataCount++;
+            if (dataCount > 100)
+            {
+                terminateTest();
+            }
+        }
+    }
+
+    private void terminateTest()
+    {
+        DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
+        ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+        resetConnection();
+        sendLogs();
+        showDialog(1);
     }
 
     @Override
@@ -371,32 +394,43 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public boolean onOptionsItemSelected(MenuItem item)
     {
         checkBTDeviceSet();
-        // Handle item selection
-        switch (item.getItemId())
+        if (item.getItemId() == R.id.preferences)
         {
-        case R.id.preferences:
             openPreferences();
             return true;
-        case R.id.calibrate:
+        }
+        else if (item.getItemId() == R.id.calibrate)
+        {
             openCalibrateTPS();
             return true;
-        case R.id.about:
+        }
+        else if (item.getItemId() == R.id.about)
+        {
             showAbout();
             return true;
-        case R.id.gaugeEditing:
+        }
+        else if (item.getItemId() == R.id.gaugeEditing)
+        {
             toggleEditing();
             return true;
-        case R.id.forceConnection:
+        }
+        else if (item.getItemId() == R.id.forceConnection)
+        {
             toggleConnection();
             return true;
-        case R.id.quit:
+        }
+        else if (item.getItemId() == R.id.quit)
+        {
             quit();
             return true;
-        case R.id.forceLogging:
+        }
+        else if (item.getItemId() == R.id.forceLogging)
+        {
             toggleLogging();
             return true;
-
-        default:
+        }
+        else
+        {
             return super.onOptionsItemSelected(item);
         }
     }
@@ -436,9 +470,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             paths.add(DatalogManager.INSTANCE.getAbsolutePath());
             paths.add(FRDLogManager.INSTANCE.getAbsolutePath());
             paths.add(DebugLogManager.INSTANCE.getAbsolutePath());
-            String emailText = "Logfiles generated by MSLogger.\n\n\nhttps://bitbucket.org/scudderfish/mslogger";
+            String emailText = getString(R.string.email_body);
 
-            String subject = String.format("MSLogger files %tc", System.currentTimeMillis());
+            String subject = String.format(getString(R.string.email_subject), System.currentTimeMillis());
             EmailManager.email(this, ApplicationSettings.INSTANCE.getEmailDestination(), null, subject, emailText, paths);
         }
 
@@ -490,7 +524,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         dialog.setTitle(title);
 
-        text.setText("An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nMartin Walton");
+        text.setText(R.string.about_text);
         ImageView image = (ImageView) dialog.findViewById(R.id.image);
         image.setImageResource(R.drawable.icon);
 
@@ -509,7 +543,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         startActivity(launchPrefs);
     }
 
- 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -528,7 +561,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         service.stopLogging();
 
         indicatorManager.setDisabled(true);
-
 
     }
 
@@ -563,23 +595,46 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     protected Dialog onCreateDialog(int id)
     {
-        // We have only one dialog.
-        return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title).setMessage(R.string.unlicensed_dialog_body)
-                .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
+        if (id == 0)
+        {
+            return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title)
+                    .setMessage(R.string.unlicensed_dialog_body)
+                    .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
                     {
-                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id="
-                                + getPackageName()));
-                        startActivity(marketIntent);
-                    }
-                }).setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id="
+                                    + getPackageName()));
+                            startActivity(marketIntent);
+                        }
+                    }).setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener()
                     {
-                        finish();
-                    }
-                }).create();
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            finish();
+                        }
+                    }).create();
+        }
+        else
+        {
+            return new AlertDialog.Builder(this).setTitle(R.string.trial_dialog_title).setMessage(R.string.trial_dialog_body)
+                    .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri
+                                    .parse("http://market.android.com/details?id=uk.org.smithfamily.mslogger"));
+                            startActivity(marketIntent);
+                        }
+                    }).setNegativeButton(R.string.cancel_buy_button, new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.cancel();
+                        }
+                    }).create();
+
+        }
     }
 
     private class LicenceCheckTask extends AsyncTask<Void, Void, Void>
@@ -616,7 +671,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             super.onPostExecute(result);
             finaliseInit();
-            new LicenceCheckTask().execute((Void) null);
+            if (!vanilla)
+            {
+                new LicenceCheckTask().execute((Void) null);
+            }
             ready = true;
         }
 
@@ -630,14 +688,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             ready = false;
 
             loadGauges();
-            /*
-             * String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-             * 
-             * mLicenseCheckerCallback = new MSLoggerCheckerCallback(); mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator( SALT,
-             * getPackageName(), deviceId)), BASE64_PUBLIC_KEY);
-             * 
-             * doCheck();
-             */
+
             return null;
         }
     }
@@ -738,11 +789,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         public void onReceive(Context context, Intent intent)
         {
             Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
+            boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
+            
             if (intent.getAction().equals(Megasquirt.CONNECTED))
             {
                 DebugLogManager.INSTANCE.log(intent.getAction());
                 indicatorManager.setDisabled(false);
-                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                if (shouldBeLogging && service != null)
                 {
                     service.startLogging();
                 }
@@ -750,7 +803,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
             {
                 indicatorManager.setDisabled(true);
-                if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                if (shouldBeLogging)
                 {
                     DatalogManager.INSTANCE.mark("Connection Lost");
                 }
@@ -770,11 +823,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DebugLogManager.INSTANCE.log("Message : " + msg);
 
             }
+            if(shouldBeLogging && service == null)
+            {
+                doBindService();
+            }
         }
     }
-    
+
     // *****************************************************************************
-    
+
     private class MarkListener implements OnTouchListener
     {
         private LinearLayout layout;
@@ -804,8 +861,5 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
     }
-
-
-    
 
 }
