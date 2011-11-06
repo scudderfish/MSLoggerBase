@@ -628,7 +628,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         public void onClick(DialogInterface dialog, int which)
                         {
                             Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri
-                                    .parse("http://market.android.com/details?id=uk.org.smithfamily.mslogger"));
+                                    .parse("http://market.android.com/details?id=uk.org.smithfamily.mslogger.chocolate"));
                             startActivity(marketIntent);
                         }
                     }).setNegativeButton(R.string.cancel_buy_button, new DialogInterface.OnClickListener()
