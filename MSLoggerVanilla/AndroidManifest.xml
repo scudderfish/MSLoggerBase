@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.org.smithfamily.mslogger.vanilla"
-    android:versionCode="1303"
+    android:versionCode="1304"
     android:versionName="3.3" >
 
     <uses-sdk android:minSdkVersion="8" />
