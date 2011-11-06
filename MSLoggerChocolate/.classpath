@@ -6,6 +6,5 @@
 	<classpathentry exported="true" kind="lib" path="libs/acra-4.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MSLoggerCore"/>
-	<classpathentry kind="src" path="MSLoggerCore_src"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
