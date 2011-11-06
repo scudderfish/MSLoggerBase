@@ -38,17 +38,26 @@ public enum DatalogManager
 
 			File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFilename());
 			absolutePath = logFile.getAbsolutePath();
+			
 			try
 			{
-				writer = new PrintWriter(logFile);
-				Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-				String signature = ecuDefinition.getTrueSignature();
-				writer.println("\"" + signature + "\"");
-				writer.println(ecuDefinition.getLogHeader());
-				markCounter = 1;
-				logStart = System.currentTimeMillis();
+                
+			    if(!logFile.exists())
+	            { 
+			        writer = new PrintWriter(new FileWriter(logFile));
+	            	Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+    				String signature = ecuDefinition.getTrueSignature();
+    				writer.println("\"" + signature + "\"");
+    				writer.println(ecuDefinition.getLogHeader());
+    				markCounter = 1;
+    				logStart = System.currentTimeMillis();
+			    }
+			    else
+			    {
+			        writer = new PrintWriter(new FileWriter(logFile,true));
+			    }
 			}
-			catch (FileNotFoundException e)
+			catch (IOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
