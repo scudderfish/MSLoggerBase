@@ -38,6 +38,8 @@ public class MSGauge extends View implements Indicator
     private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
+    private GaugeDetails deadGauge = new GaugeDetails("deadGauge", "deadValue", "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
+    
     public MSGauge(Context context)
     {
         super(context);
@@ -488,8 +490,7 @@ public class MSGauge extends View implements Indicator
         if (gd == null)
         {   
             DebugLogManager.INSTANCE.log("Can't find gauge : " + nme);
-            gd = GaugeRegister.INSTANCE.getGaugeDetails("deadGauge");
-
+            gd = deadGauge;
         }
         initFromGD(gd);
     }
