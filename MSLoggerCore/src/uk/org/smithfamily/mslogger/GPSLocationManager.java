@@ -31,7 +31,10 @@ public enum GPSLocationManager implements LocationListener
     synchronized public void stop()
     {
         
-        locationManager.removeUpdates(this);
+        if(locationManager != null)
+        {
+            locationManager.removeUpdates(this);
+        }
         locationManager = null;
         
     }
