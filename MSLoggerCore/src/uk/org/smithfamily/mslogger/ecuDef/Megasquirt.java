@@ -142,16 +142,19 @@ public abstract class Megasquirt
 
 		if (!ApplicationSettings.INSTANCE.btDeviceSelected())
 		{
+			sendMessage("Bluetooth device not selected");
 			return;
 		}
 		mAdapter = ApplicationSettings.INSTANCE.getDefaultAdapter();
 		if(mAdapter == null)
 		{
+			sendMessage("Could not find the default Bluetooth adapter!");
 		    return;
 		}
 		// Cancel any thread attempting to make a connection
 		if (mConnectThread != null)
 		{
+			sendMessage("Cancelling connection thread");
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
@@ -159,6 +162,7 @@ public abstract class Megasquirt
 		// Cancel any thread currently running a connection
 		if (mConnectedThread != null)
 		{
+			sendMessage("Cancelling connected thread");
 			mConnectedThread.cancelConnection();
 			mConnectedThread = null;
 		}
@@ -169,6 +173,7 @@ public abstract class Megasquirt
 
 		BluetoothDevice remote = mAdapter.getRemoteDevice(btAddr);
 
+		sendMessage("Launching connection");
 		connect(remote);
 	}
 
@@ -410,6 +415,7 @@ public abstract class Megasquirt
 		{
 			if (mConnectThread != null)
 			{
+				sendMessage("Cancelling connect thread");
 				mConnectThread.cancel();
 				mConnectThread = null;
 			}
@@ -442,6 +448,7 @@ public abstract class Megasquirt
 
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(socket);
+		sendMessage("Starting connected thread");
 		mConnectedThread.start();
 
 		// Send the name of the connected device back to the UI Activity
@@ -513,6 +520,7 @@ public abstract class Megasquirt
 
 		public void run()
 		{
+			sendMessage("Starting run()");
 			Log.i(TAG, "BEGIN mConnectedThread");
 			try
 			{
