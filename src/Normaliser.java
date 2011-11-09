@@ -26,6 +26,7 @@ public class Normaliser
     private static Map<String, String> evalVars;
     private static Set<String>         flags;
     private static String              fingerprintSource;
+	private static ArrayList<String>	gaugeDoc;
 
     /**
      * @param args
@@ -48,6 +49,7 @@ public class Normaliser
         evalVars = new HashMap<String, String>();
         flags = new HashSet<String>();
         gaugeDef = new ArrayList<String>();
+        gaugeDoc = new ArrayList<String>();
         fingerprintSource = "";
 
         boolean processingExpr = false;
@@ -126,12 +128,17 @@ public class Normaliser
             String g = String.format(
                     "GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,0));", name,
                     channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
+            String gd = String.format(
+                    "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", name,
+                    channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
+            gaugeDoc.add(gd);
             gaugeDef.add(g);
 
         }
         else if (line.startsWith("#"))
         {
             gaugeDef.add(processPreprocessor(line));
+            gaugeDoc.add(String.format("<tr><td colspan=\"12\">%s</td></tr>", line));
         }
 
     }
@@ -194,6 +201,14 @@ public class Normaliser
         {
             writer.println(gauge);
         }
+        writer.println("/*");
+        for(String gauge : gaugeDoc)
+        {
+            writer.println(gauge);
+        }
+        
+        writer.println("*/");
+        
         
         writer.println("\n}\n");
         
