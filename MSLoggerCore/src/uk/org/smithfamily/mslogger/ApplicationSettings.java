@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
 
 public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -76,9 +74,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             ecuDefinition = new MS2Extra210(context);
         }
-        else
+        else if (ecuName.equals("MS2Extra31"))
         {
             ecuDefinition = new MS2Extra310(context);
+        }
+        else
+        {
+        	ecuDefinition =  new MS1ExtraHighRes(context);
         }
         return ecuDefinition;
     }

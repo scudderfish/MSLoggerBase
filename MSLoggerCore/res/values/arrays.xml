@@ -2,6 +2,7 @@
 <resources>
 	<string-array name="MSNames">
 		<item>MS1Extra</item>
+		<item>MS1ExtraHiRes</item>
 		<item>MS2Extra21</item>
 		<item>MS2Extra310</item>
 	</string-array>
