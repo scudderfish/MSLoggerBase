@@ -104,9 +104,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             doBindService();
         }
         checkBTDeviceSet();
+        checkSDCard();
     }
 
-    @Override
+    private void checkSDCard()
+	{
+    	boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+    	ApplicationSettings.INSTANCE.setWritable(cardOK);
+    	if(!cardOK)
+    	{
+    		showDialog(2);
+    	}
+	}
+
+	@Override
     protected void onDestroy()
     {
         deRegisterMessages();
@@ -620,7 +631,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         }
                     }).create();
         }
-        else
+        else if(id ==1)
         {
             return new AlertDialog.Builder(this).setTitle(R.string.trial_dialog_title).setMessage(R.string.trial_dialog_body)
                     .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
@@ -639,6 +650,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         }
                     }).create();
 
+        }
+        else
+        {
+        	return new AlertDialog.Builder(this).setTitle(R.string.sd_card_error).setMessage(R.string.cannot_access_the_sd_card_no_logs_will_be_taken).create();
         }
     }
 

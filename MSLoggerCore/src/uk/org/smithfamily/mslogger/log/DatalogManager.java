@@ -33,6 +33,11 @@ public enum DatalogManager
 
 	public synchronized void write(String logRow)
 	{
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
 		if (writer == null)
 		{
 
@@ -83,6 +88,11 @@ public enum DatalogManager
 
 	public void mark(String msg)
 	{
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
 		if (writer != null)
 		{
 			write(String.format("MARK  %03d - %s - %tc", markCounter++, msg, System.currentTimeMillis()));

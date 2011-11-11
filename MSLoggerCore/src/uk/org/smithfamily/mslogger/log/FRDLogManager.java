@@ -29,6 +29,12 @@ public enum FRDLogManager
 
     public void write(byte[] buffer) throws IOException
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
+
         if (os == null)
         {
             startTime = System.currentTimeMillis();
@@ -41,12 +47,20 @@ public enum FRDLogManager
 
     private void writeHeader() throws IOException
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
 
         os.write(header.getHeaderRecord());
     }
 
     private void createLogFile() throws FileNotFoundException
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
 
         Date now = new Date();
 

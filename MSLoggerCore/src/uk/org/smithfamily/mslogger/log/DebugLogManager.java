@@ -3,6 +3,8 @@ package uk.org.smithfamily.mslogger.log;
 import java.io.*;
 import java.util.Date;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+
 import android.os.Environment;
 import android.text.format.DateFormat;
 
@@ -16,6 +18,12 @@ public enum DebugLogManager
 
     private void createLogFile() throws IOException
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
+
         File dir = new File(Environment.getExternalStorageDirectory(), "MSLogger");
         dir.mkdirs();
 
@@ -33,6 +41,11 @@ public enum DebugLogManager
 
     public void log(String s)
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
         try
         {
             if (logFile == null || os == null)
@@ -49,6 +62,11 @@ public enum DebugLogManager
 
     public void logException(Exception ex)
     {
+		if(!ApplicationSettings.INSTANCE.isWritable())
+		{
+			return;
+		}
+		
         if (os == null)
         {
             try

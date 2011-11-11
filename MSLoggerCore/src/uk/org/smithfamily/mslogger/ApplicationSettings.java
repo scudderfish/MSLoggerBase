@@ -31,6 +31,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
     private Boolean              loggingOverride     = null;
     private BluetoothAdapter    defaultAdapter;
+	private boolean	writable;
 
     public void initialise(Context context)
     {
@@ -198,5 +199,14 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         this.defaultAdapter = defaultAdapter;
     }
+
+	public void setWritable(boolean cardOK)
+	{
+		this.writable = cardOK;	
+	}
+	public boolean isWritable()
+	{
+		return this.writable;
+	}
 
 }
