@@ -108,7 +108,6 @@ public class Normaliser
 
     private static void processGaugeEntry(String line)
     {
-        System.out.println("Converting " + line);
         Matcher m = gauge.matcher(line);
         if (m.matches())
         {
@@ -138,7 +137,7 @@ public class Normaliser
         else if (line.startsWith("#"))
         {
             gaugeDef.add(processPreprocessor(line));
-            gaugeDoc.add(String.format("<tr><td colspan=\"12\">%s</td></tr>", line));
+            gaugeDoc.add(String.format("<tr><td colspan=\"12\" id=\"preprocessor\">%s</td></tr>", line));
         }
 
     }
