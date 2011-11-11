@@ -61,5 +61,9 @@
 	        
     <string name="about_text">An application to log information from Megasquirt ECUs.\n\nThanks to:\nPieter Corts\nMatthew Robson\nMartin Walton</string>
 	        
-    <string name="connection_check_completed">Connection check completed</string>   
+    <string name="connection_check_completed">Connection check completed</string>
+	        
+    <string name="cannot_access_the_sd_card_no_logs_will_be_taken">Cannot access the SD card.  No logs will be taken.</string>
+	        
+    <string name="sd_card_error">SD Card Error</string>   
 </resources>
