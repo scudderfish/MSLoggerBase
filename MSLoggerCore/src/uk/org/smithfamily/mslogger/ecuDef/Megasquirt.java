@@ -112,14 +112,13 @@ public abstract class Megasquirt
 			{
 				ApplicationSettings settings = ApplicationSettings.INSTANCE;
 				boolean autoConnectable = settings.autoConnectable();
-				if (autoConnectable && currentState == ConnectionState.STATE_NONE)
+				if(autoConnectable)
 				{
-					DebugLogManager.INSTANCE.log("Launching connection");
-					initialiseConnection();
-				}
-				else if (!settings.btDeviceSelected())
-				{
-					sendMessage(settings.getContext().getString(R.string.please_select));
+					if (currentState == ConnectionState.STATE_NONE)
+					{
+						DebugLogManager.INSTANCE.log("Launching connection");
+						initialiseConnection();
+					}
 				}
 			}
 		};

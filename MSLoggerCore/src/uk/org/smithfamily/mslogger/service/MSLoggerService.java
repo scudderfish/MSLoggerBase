@@ -20,7 +20,6 @@ public class MSLoggerService extends Service
 	}
 
 	private static final int MSLOGGERSERVICE_ID = 0;
-    private static boolean   created            = false;
 
     public class MSLoggerBinder extends Binder
     {
@@ -51,8 +50,6 @@ public class MSLoggerService extends Service
     @Override
     public void onCreate()
     {
-
-        created = true;
         super.onCreate();
         ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
@@ -65,12 +62,6 @@ public class MSLoggerService extends Service
     {
         super.onDestroy();
         disconnect();
-        created = false;
-    }
-
-    public static boolean isCreated()
-    {
-        return created;
     }
 
     public double getValue(String channelName)

@@ -122,6 +122,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         deRegisterMessages();
         GPSLocationManager.INSTANCE.stop();
+        doUnbindService();
+        super.onDestroy();
+    }
+
+    synchronized private void doUnbindService()
+    {
         if (service != null)
         {
             try
@@ -133,7 +139,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
             }
         }
-        super.onDestroy();
     }
 
     synchronized void doBindService()
@@ -150,9 +155,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private void checkBTDeviceSet()
     {
+
         if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
-            Toast.makeText(this, R.string.please_select, Toast.LENGTH_SHORT);
+			messages.setText(R.string.please_select);
         }
     }
 
@@ -355,6 +361,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
         ApplicationSettings.INSTANCE.getEcuDefinition().stop();
         resetConnection();
+        doUnbindService();
         sendLogs();
         if(!testDialogShown)
         {
@@ -500,6 +507,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.getEcuDefinition().stop();
         resetConnection();
         sendLogs();
+        doUnbindService();
         this.finish();
     }
 
@@ -577,7 +585,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         service.stopLogging();
 
         indicatorManager.setDisabled(true);
-
     }
 
     @Override
