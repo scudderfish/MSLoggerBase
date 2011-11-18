@@ -12,6 +12,11 @@ import android.content.Intent;
 @ReportsCrashes(formKey = "",formUri="http://www.bugsense.com/api/acra?api_key=fd6951fe")
 public class MSLoggerApplication extends Application
 {
+    public static final int GOT_SIG = 1052;
+    public static final int REQUEST_CONNECT_DEVICE = 1053;
+    public static final int MESSAGE_TOAST = 1054;
+    public static final String MSG_ID = "msgId";
+
     @Override
     public void onCreate()
     {

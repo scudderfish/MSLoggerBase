@@ -65,5 +65,17 @@
 	        
     <string name="cannot_access_the_sd_card_no_logs_will_be_taken">Cannot access the SD card.  No logs will be taken.</string>
 	        
-    <string name="sd_card_error">SD Card Error</string>   
+    <string name="sd_card_error">SD Card Error</string>
+    
+    <string name="bt_ok">Ok</string>
+    <string name="no_bt">BT not available.  The application will close.</string>
+    <string name="title_paired_devices">Paired Devices</string>
+	<string name="title_other_devices">Other Devices</string>
+	<string name="button_scan">Scan</string>       
+	<string name="none_paired">No paired devices</string>
+	<string name="scanning">Scanning....</string>
+	<string name="select_device">Select Device</string>
+	<string name="none_found">None found</string>
+	<string name="please_wait">Please Wait</string>
+	<string name="identifying">Identifying your ECU</string>
 </resources>

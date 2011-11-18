@@ -87,7 +87,6 @@ public enum DebugLogManager
         {
         }
         ex.printStackTrace(pw);
-       
         try
         {
             os.flush();

@@ -10,28 +10,25 @@ import android.net.Uri;
 
 public class EmailManager
 {
-    public static void email(Context context, String emailTo, String emailCC, String subject, String emailText,
-            List<String> filePaths)
+    public static void email(Context context, String emailTo, String emailCC, String subject, String emailText, List<String> filePaths)
     {
         List<String> actualFiles = new ArrayList<String>();
 
-        for (String name : filePaths)
+        if (filePaths != null)
         {
-            if (name != null)
+            for (String name : filePaths)
             {
-                File f = new File(name);
+                if (name != null)
+                {
+                    File f = new File(name);
 
-                if (f.exists() && f.canRead())
-                    actualFiles.add(name);
+                    if (f.exists() && f.canRead())
+                        actualFiles.add(name);
+                }
             }
-        }
-        if (actualFiles.size() == 0)
-        {
-            return;
         }
         // need to "send multiple" to get more than one attachment
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("application/zip");
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { emailTo });
         if (emailCC != null)
         {
@@ -40,12 +37,20 @@ public class EmailManager
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, emailText);
 
-        File zipFile = new File(filePaths.get(0) + ".zip");
-        Compress c = new Compress(filePaths, zipFile.getAbsolutePath());
+        if (actualFiles.size() > 0)
+        {
+            emailIntent.setType("application/zip");
+            File zipFile = new File(actualFiles.get(0) + ".zip");
+            Compress c = new Compress(actualFiles, zipFile.getAbsolutePath());
 
-        c.zip();
+            c.zip();
 
-        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(zipFile));
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(zipFile));
+        }
+        else
+        {
+            emailIntent.setType("plain/text");
+        }
         context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
 }

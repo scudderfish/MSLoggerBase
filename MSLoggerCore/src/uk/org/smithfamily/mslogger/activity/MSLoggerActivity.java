@@ -82,8 +82,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
         GPSLocationManager.INSTANCE.start();
-        ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
+        ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
 
+        
         if (ready == null)
         {
             new InitTask().execute((Void) null);
