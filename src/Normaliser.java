@@ -9,25 +9,40 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Normaliser
 {
-	private static Pattern				bits		= Pattern
-															.compile("(\\w*)\\s*=\\s*bits,\\s*(.*),\\s*(.*),\\s*\\[(\\d):(\\d)\\].*");
-	private static Pattern				scalar		= Pattern
-															.compile("(\\w*)\\s*=\\s*scalar\\s*,\\s*([U|S]\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(.*,.*)");
-	private static Pattern				expr		= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
-	private static Pattern				ternary		= Pattern.compile("(.*)\\?(.*)");
-	private static Pattern				log			= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
-	private static Pattern				binary		= Pattern.compile("(.*)0b([01]{8})(.*)");
-	private static Pattern				gauge		= Pattern
-															.compile("\\s*(.*?)\\s*=\\s*(.*?)\\s*,\\s*\"(.*?)\"\\s*,\\s*\"(.*?)\"\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)");
-	private static List<String>			runtime		= new ArrayList<String>();
-	private static List<String>			logHeader	= new ArrayList<String>();
-	private static List<String>			logRecord	= new ArrayList<String>();
-	private static List<String>			gaugeDef	= new ArrayList<String>();
+	enum Section
+	{
+		None, Header, Expressions, Gauges, Logs
+	};
+
+	private static Pattern				bits			= Pattern
+																.compile("(\\w*)\\s*=\\s*bits,\\s*(.*),\\s*(.*),\\s*\\[(\\d):(\\d)\\].*");
+	private static Pattern				scalar			= Pattern
+																.compile("(\\w*)\\s*=\\s*scalar\\s*,\\s*([U|S]\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(.*,.*)");
+	private static Pattern				expr			= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
+	private static Pattern				ternary			= Pattern.compile("(.*?)\\?(.*)");
+	private static Pattern				log				= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
+	private static Pattern				binary			= Pattern.compile("(.*)0b([01]{8})(.*)");
+	private static Pattern				gauge			= Pattern
+																.compile("\\s*(.*?)\\s*=\\s*(.*?)\\s*,\\s*\"(.*?)\"\\s*,\\s*\"(.*?)\"\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)");
+
+	private static Pattern				queryCommand	= Pattern.compile("\\s*queryCommand\\s*=\\s*\"(.*)\".*");
+	private static Pattern				signature		= Pattern.compile("\\s*signature\\s*=\\s*\"(.*)\".*");
+	private static Pattern				ochGetCommand	= Pattern.compile("\\s*ochGetCommand\\s*=\\s*\"(.*)\".*");
+	private static Pattern				ochBlockSize	= Pattern.compile("\\s*ochBlockSize\\s*=\\s*(\\d*).*");
+
+	private static List<String>			runtime			= new ArrayList<String>();
+	private static List<String>			logHeader		= new ArrayList<String>();
+	private static List<String>			logRecord		= new ArrayList<String>();
+	private static List<String>			gaugeDef		= new ArrayList<String>();
 	private static Map<String, String>	runtimeVars;
 	private static Map<String, String>	evalVars;
 	private static Set<String>			flags;
 	private static String				fingerprintSource;
 	private static ArrayList<String>	gaugeDoc;
+	private static String				signatureStr;
+	private static String				queryCommandStr;
+	private static String				ochGetCommandStr;
+	private static String				ochBlockSizeStr;
 
 	/**
 	 * @param args
@@ -43,6 +58,8 @@ public class Normaliser
 
 	private static void process(String filename) throws IOException
 	{
+		signatureStr = "";
+		queryCommandStr = "";
 		runtime = new ArrayList<String>();
 		logHeader = new ArrayList<String>();
 		logRecord = new ArrayList<String>();
@@ -53,62 +70,84 @@ public class Normaliser
 		gaugeDoc = new ArrayList<String>();
 		fingerprintSource = "";
 		File f = new File(filename);
-		if(f.isDirectory())
+		if (f.isDirectory())
 			return;
 		String className = f.getName();
-		boolean processingExpr = false;
-		boolean processingLogs = false;
-		boolean processingGauges = false;
-		System.out.println("Processing "+filename);
+		Section currentSection = Section.None;
+
 		BufferedReader br = new BufferedReader(new FileReader(f));
 
 		String line;
 
 		while ((line = br.readLine()) != null)
 		{
-			if (line.trim().equals("[OutputChannels]"))
+			if (line.trim().equals("[MegaTune]"))
 			{
-				processingExpr = true;
-				processingLogs = false;
-				processingGauges = false;
+				currentSection = Section.Header;
+				continue;
+			}
+			else if (line.trim().equals("[OutputChannels]"))
+			{
+				currentSection = Section.Expressions;
 				continue;
 			}
 			else if (line.trim().equals("[Datalog]"))
 			{
-				processingExpr = false;
-				processingLogs = true;
-				processingGauges = false;
+				currentSection = Section.Logs;
 				continue;
+
 			}
 			else if (line.trim().equals("[GaugeConfigurations]"))
 			{
-				processingExpr = false;
-				processingLogs = false;
-				processingGauges = true;
+				currentSection = Section.Gauges;
 				continue;
 
 			}
 			else if (line.trim().startsWith("["))
 			{
-				processingExpr = false;
-				processingLogs = false;
-				processingGauges = false;
+				currentSection = Section.None;
 				continue;
+
 			}
-			if (processingExpr)
+			switch (currentSection)
 			{
+			case Expressions:
 				processExpr(line);
-			}
-			if (processingLogs)
-			{
+				break;
+			case Logs:
 				processLogEntry(line);
-			}
-			if (processingGauges)
-			{
+				break;
+			case Gauges:
 				processGaugeEntry(line);
+				break;
+			case Header:
+				processHeader(line);
+				break;
 			}
+
 		}
 		writeFile(f.getParent(), className);
+	}
+
+	private static void processHeader(String line)
+	{
+		Matcher queryM = queryCommand.matcher(line);
+		if (queryM.matches())
+		{
+			queryCommandStr = "byte[] queryCommand=new byte[]{'" + queryM.group(1) + "'};";
+			return;
+		}
+
+		Matcher sigM = signature.matcher(line);
+		if (sigM.matches())
+		{
+			String tmpsig = sigM.group(1);
+			if (line.contains("null"))
+			{
+				tmpsig += "\\0";
+			}
+			signatureStr = "String signature=\"" + tmpsig + "\";";
+		}
 	}
 
 	private static void processGaugeEntry(String line)
@@ -149,16 +188,22 @@ public class Normaliser
 
 	private static void writeFile(String path, String className) throws IOException
 	{
-		className=StringUtils.capitalize(className);
-		className=StringUtils.remove(className, ".");
-		className=StringUtils.remove(className, "ini");
-		className=StringUtils.replace(className," ","_");
-		className=StringUtils.replace(className,"-","_");
-		className="ZZ"+className;
-		String classFile = path+"/gen_src/"+className + ".java";
+		className = StringUtils.capitalize(className);
+		className = StringUtils.remove(className, ".");
+		className = StringUtils.remove(className, "ini");
+		className = StringUtils.replace(className, " ", "_");
+		className = StringUtils.replace(className, "-", "_");
+		className = "ZZ" + className;
+		String classFile = path + "/gen_src/" + className + ".java";
+		System.out.println("Writing to "+classFile);
 		PrintWriter writer = new PrintWriter(new FileWriter(classFile));
 
 		writer.println("public class " + className + " extends Megasquirt\n{");
+		writer.println(queryCommandStr);
+		writer.println(signatureStr);
+		writer.println(ochGetCommandStr);
+		writer.println(ochBlockSizeStr);
+		
 		writer.println("//Flags");
 		for (String name : flags)
 		{
@@ -213,7 +258,7 @@ public class Normaliser
 			writer.println(gauge);
 		}
 		writer.println("\n}\n");
-		
+
 		writer.println("/*");
 		for (String gauge : gaugeDoc)
 		{
@@ -279,9 +324,12 @@ public class Normaliser
 		{
 			return;
 		}
+		line=StringUtils.replace(line, "timeNow", "timeNow()");
 		Matcher bitsM = bits.matcher(line);
 		Matcher scalarM = scalar.matcher(line);
 		Matcher exprM = expr.matcher(line);
+		Matcher ochGetCommandM = ochGetCommand.matcher(line);
+		Matcher ochBlockSizeM = ochBlockSize.matcher(line);
 		if (bitsM.matches())
 		{
 			String name = bitsM.group(1);
@@ -342,6 +390,14 @@ public class Normaliser
 			{
 				evalVars.put(name, "int");
 			}
+		}
+		else if(ochGetCommandM.matches())
+		{
+			ochGetCommandStr="byte [] ochGetCommand = new byte[]{'"+ochGetCommandM.group(1)+"'};";
+		}
+		else if (ochBlockSizeM.matches())
+		{
+			ochBlockSizeStr="int ochBlockSize = "+ochBlockSizeM.group(1)+";";
 		}
 		else if (line.startsWith("#"))
 		{
