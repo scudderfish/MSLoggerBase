@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
 import android.bluetooth.BluetoothAdapter;
@@ -32,6 +33,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Boolean              loggingOverride     = null;
     private BluetoothAdapter    defaultAdapter;
 	private boolean	writable;
+	private Map<String,Megasquirt> sigMap;
 
     public void initialise(Context context)
     {
@@ -42,7 +44,20 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
                 context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
+        sigMap = new HashMap<String,Megasquirt>();
+  
+        registerEcu(new MS1Extra29y(context));
+        registerEcu(new MS2Extra210(context));
+        registerEcu(new MS2Extra310(context));
+    }
 
+    private void registerEcu(Megasquirt ecu)
+    {
+        Set<String> sigs = ecu.getSignature();
+        for(String sig : sigs)
+        {
+            sigMap.put(sig, ecu);
+        }
     }
 
     public File getDataDir()
@@ -62,27 +77,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     public synchronized Megasquirt getEcuDefinition()
     {
-        if (ecuDefinition != null)
-        {
-            return ecuDefinition;
-        }
-        String ecuName = prefs.getString("mstype", "MS1Extra");
-        if (ecuName.equals("MS1Extra"))
-        {
-            ecuDefinition = new MS1Extra29y(context);
-        }
-        else if (ecuName.equals("MS2Extra21"))
-        {
-            ecuDefinition = new MS2Extra210(context);
-        }
-        else if (ecuName.equals("MS2Extra31"))
-        {
-            ecuDefinition = new MS2Extra310(context);
-        }
-        else
-        {
-        	ecuDefinition =  new MS1ExtraHighRes(context);
-        }
         return ecuDefinition;
     }
 
@@ -91,7 +85,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
         return bluetoothMac;
     }
-
+    public synchronized void setBluetoothMac(String m)
+    {
+        Editor editor = prefs.edit();
+        editor.putString("bluetooth_mac", m);
+        editor.commit();
+    }
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
     {
@@ -208,5 +207,15 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 	{
 		return this.writable;
 	}
+
+    public Megasquirt getEcuForSig(String sig)
+    {
+        return sigMap.get(sig);
+    }
+
+    public void setEcu(Megasquirt ecu)
+    {
+        ecuDefinition = ecu;
+    }
 
 }
