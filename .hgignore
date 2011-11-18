@@ -4,3 +4,7 @@ bin
 
 syntax: regexp
 \.jd$
+syntax: regexp
+ZZ*.java
+syntax: glob
+ZZ*.java
