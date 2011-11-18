@@ -20,3 +20,8 @@ ucdetector_reports/
 
 .DS_Store
 
+
+syntax: regexp
+^MSLoggerChocolate/ant\.properties$
+syntax: regexp
+^MSLoggerVanilla/ant\.properties$
