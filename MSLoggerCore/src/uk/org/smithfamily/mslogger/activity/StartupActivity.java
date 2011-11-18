@@ -1,8 +1,6 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.MSLoggerApplication;
-import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.ecuDef.ECUFingerprint;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.EmailManager;
@@ -11,12 +9,7 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.os.*;
 import android.widget.TextView;
 
 public class StartupActivity extends Activity
@@ -43,8 +36,7 @@ public class StartupActivity extends Activity
 
     private Handler          mHandler = null;
     private BluetoothAdapter mBluetoothAdapter;
-    private TextView msgBox;
-    private Button quitButton;
+    private TextView         msgBox;
 
     /** Called when the activity is first created. */
     @Override
@@ -53,17 +45,8 @@ public class StartupActivity extends Activity
         super.onCreate(savedInstanceState);
         mHandler = new StartupHandler();
         setContentView(R.layout.startup);
-        msgBox = (TextView)findViewById(R.id.identify_progress_msg);
-        quitButton = (Button)findViewById(R.id.startup_quit_button);
-        
-        quitButton.setOnClickListener(new OnClickListener(){
+        msgBox = (TextView) findViewById(R.id.identify_progress_msg);
 
-            @Override
-            public void onClick(View v)
-            {
-                finish();
-            }});
-        
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null)
@@ -80,9 +63,9 @@ public class StartupActivity extends Activity
             Intent serverIntent = new Intent(this, DeviceListActivity.class);
             startActivityForResult(serverIntent, MSLoggerApplication.REQUEST_CONNECT_DEVICE);
         }
-        
     }
 
+    
     public void showMessage(Message msg)
     {
         String text = msg.getData().getString(MSLoggerApplication.MSG_ID);
@@ -127,8 +110,12 @@ public class StartupActivity extends Activity
         {
             ApplicationSettings.INSTANCE.setEcu(ecu);
 
-            Intent loggerIntent = new Intent(this, MSLoggerActivity.class);
-            startActivity(loggerIntent);
+            // Create the result Intent and include the MAC address
+            Intent intent = new Intent();
+
+            // Set result and finish this Activity
+            setResult(Activity.RESULT_OK, intent);
+            finish();
 
         }
     }
@@ -158,8 +145,8 @@ public class StartupActivity extends Activity
 
     private void constructEmail(String sig)
     {
-        EmailManager.email(this, "dave@mslogger.co.uk", null, "Unrecognised firmware signature",
-                "An unknown firmware was detected with a signature of '" + sig + "'.\n\nPlease consider this for the next release.", null);
+        EmailManager.email(this, "dave@mslogger.co.uk", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + sig
+                + "'.\n\nPlease consider this for the next release.", null);
 
     }
 

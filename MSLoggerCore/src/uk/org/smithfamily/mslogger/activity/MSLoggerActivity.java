@@ -53,8 +53,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     boolean                        scrolling;
     private LinearLayout           layout;
     private Handler                mHandler;
-    private static final byte[]    SALT                  = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255,
-            157 - 255, 200 - 255, 245 - 255, 125, 60, 228 - 255, 80, 81, 45, 184 - 255, 54, 176 - 255, 217 - 255 };
+    private static final byte[]    SALT                  = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255, 157 - 255, 200 - 255,
+            245 - 255, 125, 60, 228 - 255, 80, 81, 45, 184 - 255, 54, 176 - 255, 217 - 255 };
     private static final String    BASE64_PUBLIC_KEY     = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
                                                                  + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
                                                                  + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
@@ -71,20 +71,33 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         vanilla = getPackageName().endsWith("vanilla");
         super.onCreate(savedInstanceState);
+
         mHandler = new Handler();
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
+
         findGauges();
-        PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(
-                MSLoggerActivity.this);
+        PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
         indicatorManager = IndicatorManager.INSTANCE;
         indicatorManager.setDisabled(true);
 
         ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
         GPSLocationManager.INSTANCE.start();
-        ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+        ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
-        
+        if (ApplicationSettings.INSTANCE.getEcuDefinition() == null)
+        {
+            Intent serverIntent = new Intent(this, StartupActivity.class);
+            startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
+        }
+        else
+        {
+            completeCreate();
+        }
+    }
+
+    private void completeCreate()
+    {
         if (ready == null)
         {
             new InitTask().execute((Void) null);
@@ -109,16 +122,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     private void checkSDCard()
-	{
-    	boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-    	ApplicationSettings.INSTANCE.setWritable(cardOK);
-    	if(!cardOK)
-    	{
-    		showDialog(2);
-    	}
-	}
+    {
+        boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        ApplicationSettings.INSTANCE.setWritable(cardOK);
+        if (!cardOK)
+        {
+            showDialog(2);
+        }
+    }
 
-	@Override
+    @Override
     protected void onDestroy()
     {
         deRegisterMessages();
@@ -159,7 +172,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
-			messages.setText(R.string.please_select);
+            messages.setText(R.string.please_select);
         }
     }
 
@@ -364,12 +377,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         resetConnection();
         doUnbindService();
         sendLogs();
-        if(!testDialogShown)
+        if (!testDialogShown)
         {
             testDialogShown = true;
             showDialog(1);
         }
-     }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -576,6 +589,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             doBindService();
         }
+        if(requestCode == MSLoggerApplication.PROBE_ECU && resultCode==RESULT_OK)
+        {
+            completeCreate();
+        }
     }
 
     synchronized private void resetConnection()
@@ -599,7 +616,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             initGauges();
         }
-        if (ApplicationSettings.INSTANCE.btDeviceSelected())
+        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ApplicationSettings.INSTANCE.getEcuDefinition() != null)
         {
             ConnectionState currentState = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState();
             if (currentState == Megasquirt.ConnectionState.STATE_NONE)
@@ -621,14 +638,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         if (id == 0)
         {
-            return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title)
-                    .setMessage(R.string.unlicensed_dialog_body)
+            return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title).setMessage(R.string.unlicensed_dialog_body)
                     .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
                     {
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id="
-                                    + getPackageName()));
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=" + getPackageName()));
                             startActivity(marketIntent);
                         }
                     }).setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener()
@@ -639,7 +654,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         }
                     }).create();
         }
-        else if(id ==1)
+        else if (id == 1)
         {
             return new AlertDialog.Builder(this).setTitle(R.string.trial_dialog_title).setMessage(R.string.trial_dialog_body)
                     .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
@@ -661,7 +676,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         else
         {
-        	return new AlertDialog.Builder(this).setTitle(R.string.sd_card_error).setMessage(R.string.cannot_access_the_sd_card_no_logs_will_be_taken).create();
+            return new AlertDialog.Builder(this).setTitle(R.string.sd_card_error).setMessage(R.string.cannot_access_the_sd_card_no_logs_will_be_taken).create();
         }
     }
 
@@ -680,8 +695,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
 
             mLicenseCheckerCallback = new MSLoggerCheckerCallback();
-            mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator(
-                    SALT, getPackageName(), deviceId)), BASE64_PUBLIC_KEY);
+            mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator(SALT, getPackageName(),
+                    deviceId)), BASE64_PUBLIC_KEY);
 
             doCheck();
 

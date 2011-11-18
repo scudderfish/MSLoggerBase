@@ -75,7 +75,7 @@ public class ECUFingerprint implements Runnable
             catch (IOException e)
             {
                 sendStatus("Connection failed");
-                
+
                 // ErrorReporter.getInstance().handleException(e);
                 DebugLogManager.INSTANCE.logException(e);
                 delay(1000);
@@ -178,6 +178,7 @@ public class ECUFingerprint implements Runnable
         sendStatus("Probing the ECU");
         byte[] probeCommand1 = { 'Q' };
         byte[] probeCommand2 = { 'S' };
+        byte[] bootCommand = { 'X' };
         int i = 0;
         String sig = UNKNOWN;
 
@@ -185,17 +186,27 @@ public class ECUFingerprint implements Runnable
         {
             byte[] response = writeAndRead(probeCommand1, 500);
 
-            if (response != null && response.length > 1)
+            try
             {
-                sig = processResponse(response);
+                if (response != null && response.length > 1)
+                {
+                    sig = processResponse(response);
+                }
+                else
+                {
+                    response = writeAndRead(probeCommand2, 500);
+                    if (response != null && response.length > 1)
+                    {
+                        sig = processResponse(response);
+                    }
+                }
+                if (!UNKNOWN.equals(sig))
+                    break;
             }
-            else
+            catch (BootException e)
             {
-                response = writeAndRead(probeCommand2, 500);
-                sig = processResponse(response);
+                response = writeAndRead(bootCommand, 500);
             }
-            if (!UNKNOWN.equals(sig))
-                break;
         }
         sendStatus(sig);
         return sig;
@@ -242,13 +253,28 @@ public class ECUFingerprint implements Runnable
         }
     }
 
-    private String processResponse(byte[] response)
+    private String processResponse(byte[] response) throws BootException
     {
-        if (response == null || response.length < 2 || response[0] != 'M' || (response[1] != 'S' && response[1] != 'o'))
+        String result = new String(response);
+        if (result.contains("Boot>"))
         {
-            return UNKNOWN;
+            throw new BootException();
         }
-        return new String(response);
+        if (response == null)
+            return UNKNOWN;
+        
+        if(response.length == 1 && response[0] != 20 )
+            return UNKNOWN;
+        
+        if((response[0] != 'M' && response[0] != 'J')  || (response[1] != 'S' && response[1] != 'o' && response[1] != 'i'))
+            return UNKNOWN;
+        
+        return result;
     }
 
+    @SuppressWarnings("serial")
+    private class BootException extends Exception
+    {
+
+    }
 }

@@ -30,7 +30,6 @@ public class MSLoggerService extends Service
     }
 
     private final IBinder mBinder = new MSLoggerBinder();
-    private Megasquirt    ecuDefinition;
 	private boolean	logging;
 
     @Override
@@ -51,9 +50,6 @@ public class MSLoggerService extends Service
     public void onCreate()
     {
         super.onCreate();
-        ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-        ecuDefinition.start();
 
     }
 
@@ -66,13 +62,13 @@ public class MSLoggerService extends Service
 
     public double getValue(String channelName)
     {
-        return ecuDefinition.getValue(channelName);
+        return ApplicationSettings.INSTANCE.getEcuDefinition().getValue(channelName);
     }
 
     private void disconnect()
     {
         Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
-        ecuDefinition.stop();
+        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
         removeNotification();
     }
 
@@ -107,7 +103,7 @@ public class MSLoggerService extends Service
     public void stopLogging()
     {
         logging = false;
-        ecuDefinition.stopLogging();
+        ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
         removeNotification();
     }
 
@@ -115,12 +111,12 @@ public class MSLoggerService extends Service
     {
         showNotification();
 
-        ecuDefinition.startLogging();
+        ApplicationSettings.INSTANCE.getEcuDefinition().startLogging();
         logging = true;
     }
 
     public void connectToECU()
     {
-        ecuDefinition.initialiseConnection();
+        ApplicationSettings.INSTANCE.getEcuDefinition().initialiseConnection();
     }
 }

@@ -16,7 +16,8 @@ public class MSLoggerApplication extends Application
     public static final int REQUEST_CONNECT_DEVICE = 1053;
     public static final int MESSAGE_TOAST = 1054;
     public static final String MSG_ID = "msgId";
-
+    public static final int PROBE_ECU = 1055;
+    
     @Override
     public void onCreate()
     {
@@ -34,6 +35,5 @@ public class MSLoggerApplication extends Application
         // TODO Auto-generated method stub
         super.onTerminate();
         stopService(new Intent(this, MSLoggerService.class));
-
     }
 }

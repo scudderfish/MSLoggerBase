@@ -123,7 +123,7 @@ public abstract class Megasquirt
                 }
             }
         };
-        connectionWatcher.schedule(connectionTask, 5000, 5000);
+        connectionWatcher.schedule(connectionTask, 1000, 5000);
         running = true;
     }
 
