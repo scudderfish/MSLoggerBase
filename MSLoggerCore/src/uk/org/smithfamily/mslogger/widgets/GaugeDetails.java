@@ -63,7 +63,7 @@ public class GaugeDetails implements Externalizable
     {
         
     }
-    public GaugeDetails(String name, String channel, String title, String units, double min, double max, double loD, double loW,
+    public GaugeDetails(String name, String channel, double iniCheck, String title, String units, double min, double max, double loD, double loW,
             double hiW, double hiD, int vd, int ld, double offsetAngle)
     {
         this.name = name;

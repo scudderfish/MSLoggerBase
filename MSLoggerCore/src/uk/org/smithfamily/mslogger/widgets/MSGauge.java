@@ -38,7 +38,7 @@ public class MSGauge extends View implements Indicator
     private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
-    private GaugeDetails deadGauge = new GaugeDetails("deadGauge", "deadValue", "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
+    private GaugeDetails deadGauge = new GaugeDetails("deadGauge", "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
     
     public MSGauge(Context context)
     {
@@ -458,7 +458,7 @@ public class MSGauge extends View implements Indicator
 
     public GaugeDetails getDetails()
     {
-        GaugeDetails gd = new GaugeDetails(name, channel, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
+        GaugeDetails gd = new GaugeDetails(name, channel,value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
 
         return gd;
     }

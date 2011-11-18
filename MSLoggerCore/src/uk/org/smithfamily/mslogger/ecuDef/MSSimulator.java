@@ -31,7 +31,7 @@ public enum MSSimulator
 		InputStream input = null;
 		try
 		{
-			input = assetManager.open("test/20110710095409.frd");
+			input = assetManager.open("test/20111115184701.MS1HR.frd");
 			input.read(fileFormat);
 			input.read(formatVersion);
 			input.read(timeStamp);
