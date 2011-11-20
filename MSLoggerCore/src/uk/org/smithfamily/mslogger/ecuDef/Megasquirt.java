@@ -750,4 +750,8 @@ public abstract class Megasquirt
     {
         return running;
     }
+    protected byte[] loadPage(int PageNo,int size)
+    {
+        return new byte[size];
+    }
 }

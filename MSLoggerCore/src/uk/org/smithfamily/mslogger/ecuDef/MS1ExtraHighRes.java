@@ -76,15 +76,15 @@ public class MS1ExtraHighRes extends Megasquirt
             getPage(pageBuffer1, selectPage1, readPage);
             getPage(pageBuffer2, selectPage2, readPage);
 
-            alternate1 = MSUtils.getBits(pageBuffer1, 150, 0, 0);
+            alternate1 = MSUtils.getBits(pageBuffer1, 150, 0, 0,0);
             injOpen1 = MSUtils.getByte(pageBuffer1, 151);
-            twoStroke1 = MSUtils.getBits(pageBuffer1, 182, 2, 2);
-            nCylinders1 = MSUtils.getBits(pageBuffer1, 182, 4, 7) + 1;
+            twoStroke1 = MSUtils.getBits(pageBuffer1, 182, 2, 2,0);
+            nCylinders1 = MSUtils.getBits(pageBuffer1, 182, 4, 7,1);
             divider1 = pageBuffer1[149];
 
-            alternate2 = MSUtils.getBits(pageBuffer2, 150, 0, 0);
-            twoStroke2 = MSUtils.getBits(pageBuffer2, 182, 2, 2);
-            nCylinders2 = MSUtils.getBits(pageBuffer2, 182, 4, 7) + 1;
+            alternate2 = MSUtils.getBits(pageBuffer2, 150, 0, 0,0);
+            twoStroke2 = MSUtils.getBits(pageBuffer2, 182, 2, 2,0);
+            nCylinders2 = MSUtils.getBits(pageBuffer2, 182, 4, 7,1);
             divider2 = pageBuffer2[149];
         }
 

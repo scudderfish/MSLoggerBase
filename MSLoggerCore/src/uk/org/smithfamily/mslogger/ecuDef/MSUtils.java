@@ -52,13 +52,13 @@ public class MSUtils
         }
         return x;
     }
-    public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
+    public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi,int bitOffset)
     {
         int val = 0;
         byte b = pageBuffer[i];
 
         long mask = ((1 << (_bitHi - _bitLo + 1)) - 1) << _bitLo;
-        val = (int) ((b & mask) >> _bitLo);
+        val = (int) ((b & mask) >> _bitLo)+bitOffset;
 
         return val;
     }

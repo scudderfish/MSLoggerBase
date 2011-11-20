@@ -119,11 +119,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         bluetoothMac = null;
-        if (ecuDefinition != null)
-        {
-            ecuDefinition.stop();
-            ecuDefinition = null;
-        }
         settings = new HashMap<String, Boolean>();
     }
 
