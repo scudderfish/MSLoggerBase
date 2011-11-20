@@ -1,7 +1,14 @@
 public class Constant
 {
 
-	private int		digits;
+	@Override
+    public String toString()
+    {
+        return "Constant [page=" + page + ", classType=" + classType + ", type=" + type + ", offset=" + offset + ", shape=" + shape + ", units=" + units
+                + ", name=" + name + "]";
+    }
+
+    private int		digits;
 	private double	high;
 	private int		page;
 	private String	classType;
