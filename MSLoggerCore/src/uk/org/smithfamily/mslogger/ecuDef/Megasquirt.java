@@ -750,8 +750,18 @@ public abstract class Megasquirt
     {
         return running;
     }
-    protected byte[] loadPage(int PageNo,int size)
+    protected byte[] loadPage(int PageNo,int pageOffset, int pageSize, byte[] select, byte[] read)
     {
-        return new byte[size];
+    	byte[] buffer = new byte[pageSize];
+    	try
+		{
+			getPage(buffer,select,read);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return buffer;
     }
 }
