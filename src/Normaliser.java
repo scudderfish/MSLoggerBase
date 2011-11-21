@@ -72,8 +72,14 @@ public class Normaliser
 	{
 		for (String filename : args)
 		{
+			String tmpName = preProcess(filename);
 			process(filename);
 		}
+	}
+
+	private static String preProcess(String filename)
+	{
+		return filename;
 	}
 
 	private static void process(String filename) throws IOException
@@ -368,17 +374,23 @@ public class Normaliser
 		writer.println(ochGetCommandStr);
 		writer.println(ochBlockSizeStr);
 		writer.println("private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));");
-		writer.println("private String[] defaultGauges = {");
-		boolean first = true;
-		for (String dg : defaultGauges)
-		{
-			if (!first)
-				writer.print(",");
-			first = false;
-			writer.println("\"" + dg + "\"");
-		}
-		writer.println("};");
+		outputGlobalVars(writer);
+		outputRTCalcs(writer);
+		outputLogInfo(writer);
+		outputGauges(writer);
 
+//		outputGaugeDoc(writer);
+
+		outputOverrides(writer);
+		outputLoadConstants(writer);
+		writer.println("\n}\n");
+
+		writer.close();
+		System.out.println(getFingerprint() + " : " + className);
+	}
+
+	private static void outputGlobalVars(PrintWriter writer)
+	{
 		writer.println("//Flags");
 		for (String name : flags)
 		{
@@ -400,6 +412,22 @@ public class Normaliser
 			writer.println(constantVars.get(name) + " " + name + ";");
 		}
 		writer.println("\n");
+		writer.println("private String[] defaultGauges = {");
+		boolean first = true;
+		for (String dg : defaultGauges)
+		{
+			if (!first)
+				writer.print(",");
+			first = false;
+			writer.println("\"" + dg + "\"");
+		}
+		writer.println("};");
+
+
+	}
+
+	private static void outputRTCalcs(PrintWriter writer)
+	{
 		writer.println("	@Override");
 		writer.println("	public void calculate(byte[] ochBuffer) throws IOException");
 		writer.println("{");
@@ -409,6 +437,10 @@ public class Normaliser
 			// System.out.println(defn);
 		}
 		writer.println("}");
+	}
+
+	private static void outputLogInfo(PrintWriter writer)
+	{
 		writer.println("@Override");
 		writer.println("public String getLogHeader()");
 		writer.println("{");
@@ -430,6 +462,10 @@ public class Normaliser
 		}
 		writer.println("b.append(MSUtils.getLocationLogRow());");
 		writer.println("    return b.toString();\n}\n");
+	}
+
+	private static void outputGauges(PrintWriter writer)
+	{
 		writer.println("@Override");
 		writer.println("public void initGauges()");
 		writer.println("{");
@@ -438,7 +474,10 @@ public class Normaliser
 			writer.println(gauge);
 		}
 		writer.println("\n}\n");
+	}
 
+	private static void outputGaugeDoc(PrintWriter writer)
+	{
 		writer.println("/*");
 		for (String gauge : gaugeDoc)
 		{
@@ -446,13 +485,6 @@ public class Normaliser
 		}
 
 		writer.println("*/");
-
-		outputOverrides(writer);
-		outputLoadConstants(writer);
-		writer.println("\n}\n");
-
-		writer.close();
-		System.out.println(getFingerprint() + " : " + className);
 	}
 
 	private static void outputConstructor(PrintWriter writer, String className)
@@ -555,13 +587,65 @@ public class Normaliser
 	{
 		if (activate != null)
 		{
-			activate = "\"" + activate + "\"";
+			
+			activate = processStringToBytes(activate,pageOffset,pageSize);
 		}
 		if (read != null)
 		{
-			read = "\"" + read + "\"";
+			read = processStringToBytes(read,pageOffset,pageSize);
 		}
 		writer.println(String.format("pageBuffer = loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
+	}
+
+	private static String processStringToBytes(String s,int offset,int count)
+	{
+		String ret = "new byte[]{";
+		boolean first=true;
+		for(int p=0;p < s.length();p++)
+		{
+			if(!first)
+				ret +=",";
+			char c = s.charAt(p);
+			switch(c)
+			{
+			case '\\':
+				p++;
+				assert s.charAt(p) == 'x';
+				p++;
+				int val = 0;
+				val = (s.charAt(p)-'0') * 16;
+				p++;
+				val = val +(s.charAt(p)-'0');
+				ret += val;
+			break;
+			
+			case '%':
+				p++;
+				assert s.charAt(p) == '2';
+				p++;
+				if(s.charAt(p)=='o')
+				{
+					ret += bytes(offset);
+				}
+				else
+				{
+					ret += bytes(count);
+				}
+				break;
+				
+			default:
+				ret += Byte.toString((byte) c);
+				break;
+			}
+			first = false;
+		}
+		
+		ret +="}";
+		return ret;
+	}
+	private static String bytes(int val)
+	{
+		return ""+ val/256+","+val % 256;
 	}
 
 	private static void outputOverrides(PrintWriter writer)
