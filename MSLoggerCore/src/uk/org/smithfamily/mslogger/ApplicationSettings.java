@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.gen.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -46,9 +47,28 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
         sigMap = new HashMap<String,Megasquirt>();
   
-        registerEcu(new MS1Extra29y(context));
-        registerEcu(new MS2Extra210(context));
-        registerEcu(new MS2Extra310(context));
+        registerEcu(new ZZGPIO_MShift_2110(context));
+        registerEcu(new ZZJimstim21(context));
+        registerEcu(new ZZMegasquirt_I_BG_20_30(context));
+        registerEcu(new ZZMegasquirt_II_3760(context));
+        registerEcu(new ZZMegasquirt_II_v2905(context));
+        registerEcu(new ZZMegasquirt_II286(context));
+        registerEcu(new ZZMS2Extra_Rel_201(context));
+        registerEcu(new ZZMS2Extra_Rev_102(context));
+        registerEcu(new ZZMS2Extra210(context));
+        registerEcu(new ZZMS2Extra310(context));
+        registerEcu(new ZZMS2Extra311mb_v12(context));
+        registerEcu(new ZZMS2ExtraSerial312a(context));
+        registerEcu(new ZZMS3_Format_0221002  (context));
+        registerEcu(new ZZMS3_Format_0095002_102(context));
+        registerEcu(new ZZMS3_Pre11_alpha15(context));
+        registerEcu(new ZZMSExtra_format_hr_10(context));
+        registerEcu(new ZZMSExtra_format_hr_11(context));
+        registerEcu(new ZZMSExtra_format_hr_11d(context));
+        registerEcu(new ZZMS1Extra29y(context));
+//        registerEcu(new MS1Extra29y(context));
+//        registerEcu(new MS2Extra210(context));
+//        registerEcu(new MS2Extra310(context));
     }
 
     private void registerEcu(Megasquirt ecu)
