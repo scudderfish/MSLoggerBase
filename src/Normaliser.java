@@ -72,7 +72,7 @@ public class Normaliser
 	private static Set<String>			alwaysInt			= new HashSet<String>(Arrays.asList(new String[] {}));
 	private static Set<String>			alwaysDouble		= new HashSet<String>(Arrays.asList(new String[] { "pulseWidth",
 			"throttle", "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
-			"egoVoltage", "egoVoltage2"					}));
+			"egoVoltage", "egoVoltage2","egoCorrection","veCurr"					}));
 
 	/**
 	 * @param args
