@@ -83,7 +83,10 @@ public abstract class Megasquirt
 	protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
 	{
 	}
-
+    protected byte[] loadPage(int PageNo,int pageOffset, int pageSize, byte[] select, byte[] read)
+    {
+		return read;
+    }
 	public String getTrueSignature()
 	{
 		return trueSignature;

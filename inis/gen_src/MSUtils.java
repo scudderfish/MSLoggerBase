@@ -47,7 +47,7 @@ public class MSUtils
         }
         return x;
     }
-    public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi)
+    public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi, int j)
     {
         int val = 0;
         byte b = pageBuffer[i];
