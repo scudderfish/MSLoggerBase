@@ -1,41 +1,45 @@
-package uk.org.smithfamily.mslogger.ecuDef;
+package uk.org.smithfamily.mslogger.ecuDef.old;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
 import android.content.Context;
 
-public class MS2Extra310 extends Megasquirt
+public class MS2Extra210 extends Megasquirt
 {
-    private static final String MS2_EXTRA_SERIAL310 = "MS2Extra Serial310 ";
-    private byte[]              ochCommand          = { 65 };
-    private byte[]              sigCommand          = { 81 };
+    private static final String MS2_EXTRA_REL_2_1_0Q = "MS2Extra Rel 2.1.0q\0";
+    private static final String MS2_EXTRA_REL_2_1_0P = "MS2Extra Rel 2.1.0p\0";
+    private byte[]              ochCommand           = { 65 };
+    private byte[]              sigCommand           = { 81 };
 
-    public MS2Extra310(Context c)
+    // Constants
+    int                         alternate;
+    int                         twoStroke;
+    int                         nCylinders;
+    int                         divider;
+
+    private Set<String>         sigs                 = new HashSet<String>(Arrays.asList(new String[] { MS2_EXTRA_REL_2_1_0P, MS2_EXTRA_REL_2_1_0Q }));
+
+    @Override
+    public Set<String> getSignature()
+    {
+        return sigs;
+    }
+
+    public MS2Extra210(Context c)
     {
         super(c);
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         LAMBDA = isSet("LAMBDA");
         EGTFULL = isSet("EGTFULL");
         CELSIUS = isSet("CELSIUS");
-    }
-
-    // Runtime constants
-    int                 alternate;
-    private double      twoStroke;
-    private int         nCylinders;
-    private int         divider;
-    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { MS2_EXTRA_SERIAL310 }));
-
-    @Override
-    public Set<String> getSignature()
-    {
-        return sigs;
     }
 
     @Override
@@ -53,6 +57,7 @@ public class MS2Extra310 extends Megasquirt
     @Override
     public void loadConstants(boolean simulated) throws IOException
     {
+
         if (simulated)
         {
             alternate = 1;
@@ -69,7 +74,7 @@ public class MS2Extra310 extends Megasquirt
             getPage(pageBuffer, selectPage1, null);
             alternate = MSUtils.getBits(pageBuffer, 611, 0, 0,0);
             twoStroke = MSUtils.getBits(pageBuffer, 617, 0, 0,0);
-            nCylinders = MSUtils.getBits(pageBuffer, 0, 0, 4,0);
+            nCylinders = MSUtils.getBits(pageBuffer, 0, 0, 3,0);
             divider = MSUtils.getByte(pageBuffer, 610);
         }
     }
@@ -77,7 +82,7 @@ public class MS2Extra310 extends Megasquirt
     @Override
     public int getBlockSize()
     {
-        return 169;
+        return 145;
     }
 
     @Override
@@ -101,7 +106,7 @@ public class MS2Extra310 extends Megasquirt
     @Override
     public int getSigSize()
     {
-        return MS2_EXTRA_SERIAL310.length();
+        return MS2_EXTRA_REL_2_1_0Q.length();
     }
 
     private String[] defaultGauges = { "mapGauge", "tachometer", "afr1Gauge", "cltGauge", "matGauge" };
@@ -152,18 +157,15 @@ public class MS2Extra310 extends Megasquirt
     int     port2;
     int     port1;
     int     gpioadc0;
-    double  maf;
+    int     maf;
     int     port6;
     int     port5;
-    double  eaeload1;
     double  map;
     double  egoV;
-    double  vetrim3curr;
     int     warmup;
     int     firing1;
     double  mat;
     int     firing2;
-    double  vetrim1curr;
     double  timing_err;
     int     gpioadc1;
     int     gpioadc2;
@@ -182,17 +184,14 @@ public class MS2Extra310 extends Megasquirt
     double  egoCorrection1;
     double  egoCorrection2;
     int     mapaccden;
-    double  vetrim2curr;
     double  fuelload;
     int     mapDOT;
     double  barometer;
-    double  vetrim4curr;
     int     wbo2_en2;
     double  coldAdvDeg;
     int     gpioport2;
     int     gpioport1;
     int     gpioport0;
-    double  rpmdot;
     int     wbo2_en1;
     int     status5;
     int     status4;
@@ -200,9 +199,6 @@ public class MS2Extra310 extends Megasquirt
     int     status2;
     int     baroCorrection;
     int     tpsfuelcut;
-    int     mafmap;
-    double  pulseWidth4;
-    double  pulseWidth3;
     double  pulseWidth2;
     double  pulseWidth1;
     double  veCurr1;
@@ -215,8 +211,6 @@ public class MS2Extra310 extends Megasquirt
     int     gpiopwmin1;
     int     gpiopwmin2;
     int     gpiopwmin3;
-    double  inj_adv2;
-    double  inj_adv1;
     int     iacstep;
     double  accelEnrich;
     double  knockRetard;
@@ -229,7 +223,6 @@ public class MS2Extra310 extends Megasquirt
     double  idleDC;
     int     sched1;
     int     fuelCorrection;
-    double  afrload1;
     double  advance;
     double  tps;
     int     mapaccaen;
@@ -237,26 +230,30 @@ public class MS2Extra310 extends Megasquirt
     // eval vars
     int     accDecEnrich;
     double  egt6temp;
-    int     nSquirts2;
-    int     nSquirts1;
-    double  dutyCycle2;
     double  throttle;
-    double  dutyCycle1;
+    double  dutyCycle2;
+    int     dbg_cam_filt;
     int     deadValue;
-    double  lambda2;
-    double  lambda1;
-    int     secl;
+    double  dutyCycle1;
     double  pulseWidth;
-    double  egt7temp;
+    int     dbg_crk_mask;
     double  cycleTime1;
+    double  egt7temp;
     double  cycleTime2;
     int     altDiv1;
     double  time;
-    double  egoCorrection;
-    double  veCurr;
     int     altDiv2;
-    double  egoVoltage;
+    double  veCurr;
+    double  egoCorrection;
     double  rpm100;
+    int     nSquirts2;
+    int     dbg_cam_mask;
+    int     nSquirts1;
+    double  lambda2;
+    double  lambda1;
+    int     secl;
+    double  egoVoltage;
+    int     dbg_crk_filt;
 
     @Override
     public void calculate(byte[] ochBuffer) throws IOException
@@ -291,8 +288,8 @@ public class MS2Extra310 extends Megasquirt
         tpsaccden = MSUtils.getBits(ochBuffer, 11, 5, 5,0);
         mapaccaen = MSUtils.getBits(ochBuffer, 11, 6, 6,0);
         mapaccden = MSUtils.getBits(ochBuffer, 11, 7, 7,0);
-        afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
-        afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
+        afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 10.00);
+        afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 10.00);
         wbo2_en1 = (int) ((MSUtils.getByte(ochBuffer, 14) + 0.0) * 1.000);
         wbo2_en2 = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.0) * 1.000);
         barometer = (double) ((MSUtils.getSignedWord(ochBuffer, 16) + 0.0) * 0.100);
@@ -333,7 +330,7 @@ public class MS2Extra310 extends Megasquirt
         tpsDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 0.100);
         mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
         dwell = (double) ((MSUtils.getWord(ochBuffer, 62) + 0.0) * 0.0666);
-        mafmap = (int) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 1.000);
+        maf = (int) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 1.000);
         fuelload = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
         fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
         portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
@@ -355,9 +352,9 @@ public class MS2Extra310 extends Megasquirt
         looptime = (double) ((MSUtils.getWord(ochBuffer, 82) + 0.0) * 0.6667);
         status5 = (int) ((MSUtils.getWord(ochBuffer, 84) + 0) * 1);
         tpsADC = (int) ((MSUtils.getWord(ochBuffer, 86) + 0) * 1);
-        fuelload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 88) + 0.0) * 0.100);
-        ignload = (double) ((MSUtils.getSignedWord(ochBuffer, 90) + 0.0) * 0.100);
-        ignload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 92) + 0.0) * 0.100);
+        fuelload2 = (double) ((MSUtils.getWord(ochBuffer, 88) + 0.0) * 0.100);
+        ignload = (double) ((MSUtils.getWord(ochBuffer, 90) + 0.0) * 0.100);
+        ignload2 = (double) ((MSUtils.getWord(ochBuffer, 92) + 0.0) * 0.100);
         synccnt = (int) ((MSUtils.getByte(ochBuffer, 94) + 0) * 1);
         timing_err = (double) ((MSUtils.getSignedByte(ochBuffer, 95) + 0) * 0.1);
         deltaT = (int) ((MSUtils.getSignedLong(ochBuffer, 96) + 0.0) * 1.000);
@@ -381,21 +378,9 @@ public class MS2Extra310 extends Megasquirt
         boostduty = (int) ((MSUtils.getByte(ochBuffer, 138) + 0.0) * 1.0);
         syncreason = (int) ((MSUtils.getByte(ochBuffer, 139) + 0.0) * 1.0);
         user0 = (int) ((MSUtils.getWord(ochBuffer, 140) + 0.0) * 1.0);
-        inj_adv1 = (double) ((MSUtils.getSignedWord(ochBuffer, 142) + 0.0) * 0.100);
-        inj_adv2 = (double) ((MSUtils.getSignedWord(ochBuffer, 144) + 0.0) * 0.100);
-        pulseWidth3 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0.0) * 0.000666);
-        pulseWidth4 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0.0) * 0.000666);
-        vetrim1curr = (double) ((MSUtils.getSignedWord(ochBuffer, 150) + 10240.0) * 0.00976562500);
-        vetrim2curr = (double) ((MSUtils.getSignedWord(ochBuffer, 152) + 10240.0) * 0.00976562500);
-        vetrim3curr = (double) ((MSUtils.getSignedWord(ochBuffer, 154) + 10240.0) * 0.00976562500);
-        vetrim4curr = (double) ((MSUtils.getSignedWord(ochBuffer, 156) + 10240.0) * 0.00976562500);
-        maf = (double) ((MSUtils.getWord(ochBuffer, 158) + 0.0) * 0.010);
-        eaeload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 160) + 0.0) * 0.1);
-        afrload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 162) + 0.0) * 0.1);
-        rpmdot = (double) ((MSUtils.getSignedWord(ochBuffer, 164) + 0.0) * 10);
-        gpioport0 = (int) ((MSUtils.getByte(ochBuffer, 166) + 0.0) * 1.000);
-        gpioport1 = (int) ((MSUtils.getByte(ochBuffer, 167) + 0.0) * 1.000);
-        gpioport2 = (int) ((MSUtils.getByte(ochBuffer, 168) + 0.0) * 1.000);
+        gpioport0 = (int) ((MSUtils.getByte(ochBuffer, 142) + 0.0) * 1.000);
+        gpioport1 = (int) ((MSUtils.getByte(ochBuffer, 143) + 0.0) * 1.000);
+        gpioport2 = (int) ((MSUtils.getByte(ochBuffer, 144) + 0.0) * 1.000);
         accDecEnrich = (((accelEnrich + (tpsaccden) != 0) ? tpsfuelcut : 100));
         time = (timeNow());
         rpm100 = (rpm / 100.0);
@@ -409,7 +394,7 @@ public class MS2Extra310 extends Megasquirt
         dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
         if (NARROW_BAND_EGO)
         {
-            egoVoltage = (egoV);
+            egoVoltage = (1.0 - (afr1 * 0.04883));
         }
         else if (LAMBDA)
         {
@@ -445,6 +430,10 @@ public class MS2Extra310 extends Megasquirt
                 egt7temp = ((adc7 * 1.721) + 32);
             }
         }
+        dbg_crk_mask = (gpioadc6 & 0xff);
+        dbg_crk_filt = (gpioadc6 >> 8);
+        dbg_cam_mask = (gpioadc7 & 0xff);
+        dbg_cam_filt = (gpioadc7 >> 8);
     }
 
     @Override
@@ -500,18 +489,12 @@ public class MS2Extra310 extends Megasquirt
         b.append("Secondary Load").append("\t");
         b.append("Ign load").append("\t");
         b.append("Secondary Ign Load").append("\t");
-        b.append("EAE Load").append("\t");
-        b.append("AFR Load").append("\t");
         b.append("EGT 6 temp").append("\t");
         b.append("EGT 7 temp").append("\t");
         b.append("gpioadc0").append("\t");
         b.append("gpioadc1").append("\t");
         b.append("gpioadc2").append("\t");
         b.append("gpioadc3").append("\t");
-        b.append("gpioadc4").append("\t");
-        b.append("gpioadc5").append("\t");
-        b.append("gpioadc6").append("\t");
-        b.append("gpioadc7").append("\t");
         b.append("status1").append("\t");
         b.append("status2").append("\t");
         b.append("status3").append("\t");
@@ -523,15 +506,6 @@ public class MS2Extra310 extends Megasquirt
         b.append("PWM Idle Duty").append("\t");
         b.append("Lost sync count").append("\t");
         b.append("Lost sync reason").append("\t");
-        b.append("InjTiming1").append("\t");
-        b.append("InjTiming2").append("\t");
-        b.append("PW3").append("\t");
-        b.append("PW4").append("\t");
-        b.append("VE Trim 1").append("\t");
-        b.append("VE Trim 2").append("\t");
-        b.append("VE Trim 3").append("\t");
-        b.append("VE Trim 4").append("\t");
-        b.append("RPMdot").append("\t");
         b.append(MSUtils.getLocationLogHeader());
         return b.toString();
     }
@@ -589,18 +563,12 @@ public class MS2Extra310 extends Megasquirt
         b.append(round(fuelload2)).append("\t");
         b.append(round(ignload)).append("\t");
         b.append(round(ignload2)).append("\t");
-        b.append(round(eaeload1)).append("\t");
-        b.append(round(afrload1)).append("\t");
         b.append(egt6temp).append("\t");
         b.append(egt7temp).append("\t");
         b.append(gpioadc0).append("\t");
         b.append(gpioadc1).append("\t");
         b.append(gpioadc2).append("\t");
         b.append(gpioadc3).append("\t");
-        b.append(gpioadc4).append("\t");
-        b.append(gpioadc5).append("\t");
-        b.append(gpioadc6).append("\t");
-        b.append(gpioadc7).append("\t");
         b.append(status1).append("\t");
         b.append(status2).append("\t");
         b.append(status3).append("\t");
@@ -612,15 +580,6 @@ public class MS2Extra310 extends Megasquirt
         b.append(round(idleDC)).append("\t");
         b.append(synccnt).append("\t");
         b.append(syncreason).append("\t");
-        b.append(round(inj_adv1)).append("\t");
-        b.append(round(inj_adv2)).append("\t");
-        b.append(round(pulseWidth3)).append("\t");
-        b.append(round(pulseWidth4)).append("\t");
-        b.append(round(vetrim1curr)).append("\t");
-        b.append(round(vetrim2curr)).append("\t");
-        b.append(round(vetrim3curr)).append("\t");
-        b.append(round(vetrim4curr)).append("\t");
-        b.append(round(rpmdot)).append("\t");
         b.append(MSUtils.getLocationLogRow());
         return b.toString();
     }
@@ -628,108 +587,18 @@ public class MS2Extra310 extends Megasquirt
     @Override
     public void initGauges()
     {
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advdegGauge", "advance", advance, "Ignition Advance", "degrees", 0, 50, -1, -1, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("IACgauge", "iacstep", iacstep, "IAC position", "steps", 0, 255, -1, -1, 999, 999, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwellGauge", "dwell", dwell, "Dwell", "mSec", 0, 10, 0.5, 1.0, 6.0, 8.0, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("PWMIdlegauge", "idleDC", idleDC, "Idle PWM%", "%", 0, 100, -1, -1, 999, 90, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge", "pulseWidth1", pulseWidth1, "Pulse Width 1", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge", "pulseWidth2", pulseWidth2, "Pulse Width 2", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth3Gauge", "pulseWidth3", pulseWidth3, "Pulse Width 3", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth4Gauge", "pulseWidth4", pulseWidth4, "Pulse Width 4", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advdegGauge", "advance", advance, "Ignition Advance", "degrees", 0, 50, -1, -1, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge", "dutyCycle1", dutyCycle1, "Duty Cycle 1", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge", "dutyCycle2", dutyCycle2, "Duty Cycle 2", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge", "boostduty", boostduty, "Boost Duty", "%", 0, 100, -1, -1, 100, 100, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv1Gauge", "inj_adv1", inj_adv1, "Injection Timing 1", "degrees", -360, 360, -999, -999, 999,
-                999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv2Gauge", "inj_adv2", inj_adv2, "Injection Timing 2", "degrees", -360, 360, -999, -999, 999,
-                999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge", "accDecEnrich", accDecEnrich, "Accel Enrich", "%", 50, 150, -1, -1, 999, 999, 0,
                 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge", "seconds", seconds, "Clock", "Seconds", 0, 65535, 10, 10, 65535, 65535, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge", "gammaEnrich", gammaEnrich, "Gamma Enrichment", "%", 50, 150, -1, -1, 151, 151, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaairGauge", "airCorrection", airCorrection, "Gair/aircor", "%", 50, 150, -1, -1, 151, 151, 0, 0,
-                0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge1", "wallfuel1", wallfuel1, "Fuel on the walls 1", "", 0, 40000000, 0, 0, 40000000, 40000000,
-                0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge2", "wallfuel2", wallfuel2, "Fuel on the walls 2", "", 0, 40000000, 0, 0, 40000000, 40000000,
-                0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1", "EAEFuelCorr1", EAEFuelCorr1, "EAE Fuel Correction 1", "%", 0, 200, 40, 70, 130, 160, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2", "EAEFuelCorr2", EAEFuelCorr2, "EAE Fuel Correction 2", "%", 0, 200, 40, 70, 130, 160, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge1", "vetrim1curr", vetrim1curr, "VE Trim 1", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge2", "vetrim2curr", vetrim2curr, "VE Trim 2", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge3", "vetrim3curr", vetrim3curr, "VE Trim 3", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge4", "vetrim4curr", vetrim4curr, "VE Trim 4", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lostsyncGauge", "synccnt", synccnt, "Lost sync counter", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge", "syncreason", syncreason, "Lost sync reason", "", 0, 255, 255, 255, 255, 255, 0, 0,
-                0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("user0Gauge", "user0", user0, "User defined", "", 0, 65535, 65535, 65535, 65535, 65535, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge1", "veCurr1", veCurr1, "VE Current1", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge2", "veCurr2", veCurr2, "VE2 Current", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge", "warmupEnrich", warmupEnrich, "Warmup Enrichment", "%", 100, 150, -1, -1, 101,
-                105, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmdot", "rpmdot", rpmdot, "rpmdot", "rpm/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tpsdot", "tpsDOT", tpsDOT, "tpsdot", "%/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapdot", "mapDOT", mapDOT, "mapdot", "kPa/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
-        if (CELSIUS)
-        {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 150, -100, -100, 95, 105, 0, 0, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°C", -40, 110, -15, 0, 95, 100, 0, 0, 0));
-        }
-        else
-        {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°F", -40, 215, 0, 30, 200, 210, 0, 0, 0));
-        }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2,
-                0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer", "rpm", rpm, "Engine Speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge", "throttle", throttle, "Throttle Position", "%", 0, 100, -1, 1, 90, 100, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge", "map", map, "Engine MAP", "kPa", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge", "barometer", barometer, "Barometer", "kPa", 60, 120, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelloadGauge", "fuelload", fuelload, "Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE
-                .addGauge(new GaugeDetails("fuelload2Gauge", "fuelload2", fuelload2, "Secondary Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignloadGauge", "ignload", ignload, "Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignload2Gauge", "ignload2", ignload2, "Secondary Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("eaeloadGauge", "eaeload1", eaeload1, "EAE load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrloadGauge", "afrload1", afrload1, "AFR load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafGauge", "maf", maf, "Mass Air Flow", "g/sec", 0, 650, 0, 200, 480, 550, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafMapGauge", "mafmap", mafmap, "MAFMAP", "kPa", 0, 400, -1, -1, 999, 999, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc0Gauge", "gpioadc0", gpioadc0, "GPIO ADC 0", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc1Gauge", "gpioadc1", gpioadc1, "GPIO ADC 1", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc2Gauge", "gpioadc2", gpioadc2, "GPIO ADC 2", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc3Gauge", "gpioadc3", gpioadc3, "GPIO ADC 3", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc4Gauge", "gpioadc4", gpioadc4, "GPIO ADC 4", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc5Gauge", "gpioadc5", gpioadc5, "GPIO ADC 5", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc6Gauge", "gpioadc6", gpioadc6, "GPIO ADC 6", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc7Gauge", "gpioadc7", gpioadc7, "GPIO ADC 7", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc6Gauge", "adc6", adc6, "ADC 6", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc7Gauge", "adc7", adc7, "ADC 7", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
-        if (CELSIUS)
-        {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "C", 0, 1250, 0, 0, 1250, 1250, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "C", 0, 1250, 0, 0, 1250, 1250, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "C", 0, 1000, 0, 0, 1000, 1000, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "C", 0, 1000, 0, 0, 1000, 1000, 1, 1, 0));
-        }
-        else
-        {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "F", 0, 2280, 0, 0, 2280, 2280, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "F", 0, 2280, 0, 0, 2280, 2280, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "F", 0, 1830, 0, 0, 1830, 1830, 1, 1, 0));
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "F", 0, 1830, 0, 0, 1830, 1830, 1, 1, 0));
-        }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1Gauge", "afr1", afr1, "Air:Fuel Ratio", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2Gauge", "afr2", afr2, "Air:Fuel Ratio2", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge", "seconds", seconds, "Clock", "Seconds", 0, 65535, 10, 10, 65535, 65535, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge", "deadValue", deadValue, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge", "dutyCycle1", dutyCycle1, "Duty Cycle 1", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge", "dutyCycle2", dutyCycle2, "Duty Cycle 2", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge", "egoCorrection", egoCorrection, "EGO Correction", "%", 50, 150, 90, 99, 101, 110, 1,
                 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge1", "egoCorrection1", egoCorrection1, "EGO Correction 1", "%", 50, 150, 90, 99, 101, 110,
@@ -742,14 +611,84 @@ public class MS2Extra310 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge", "egoV2", egoV2, "Exhaust Gas Oxygen2", "volts", 0, 5, 5, 5, 5, 5, 5, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda1Gauge", "lambda1", lambda1, "Lambda", "", 0.5, 1.5, 0.5, 0.7, 2, 1.1, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda2Gauge", "lambda2", lambda2, "Lambda", "", 0.5, 1.5, 0.5, 0.7, 2, 1.1, 2, 2, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge", "gammaEnrich", gammaEnrich, "Gamma Enrichment", "%", 50, 150, -1, -1, 151, 151, 0,
+                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge", "map", map, "Engine MAP", "kPa", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge", "barometer", barometer, "Barometer", "kPa", 60, 120, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelloadGauge", "fuelload", fuelload, "Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE
+                .addGauge(new GaugeDetails("fuelload2Gauge", "fuelload2", fuelload2, "Secondary Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignloadGauge", "ignload", ignload, "Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignload2Gauge", "ignload2", ignload2, "Secondary Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge", "pulseWidth1", pulseWidth1, "Pulse Width 1", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
+                1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge", "pulseWidth2", pulseWidth2, "Pulse Width 2", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
+                1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer", "rpm", rpm, "Engine Speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge", "throttle", throttle, "Throttle Position", "%", 0, 100, -1, 1, 90, 100, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge1", "veCurr1", veCurr1, "VE Current1", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge2", "veCurr2", veCurr2, "VE2 Current", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2,
+                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge", "warmupEnrich", warmupEnrich, "Warmup Enrichment", "%", 100, 150, -1, -1, 101,
+                105, 0, 0, 0));
+        if (CELSIUS)
+        {
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 150, -100, -100, 95, 105, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°C", -40, 110, -15, 0, 95, 100, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "C", 0, 1250, 0, 0, 1250, 1250, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "C", 0, 1250, 0, 0, 1250, 1250, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "C", 0, 1000, 0, 0, 1000, 1000, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "C", 0, 1000, 0, 0, 1000, 1000, 1, 1, 0));
+        }
+        else
+        {
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°F", -40, 215, 0, 30, 200, 210, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "F", 0, 2280, 0, 0, 2280, 2280, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "F", 0, 2280, 0, 0, 2280, 2280, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6", "egt6temp", egt6temp, "EGT", "F", 0, 1830, 0, 0, 1830, 1830, 1, 1, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7", "egt7temp", egt7temp, "EGT", "F", 0, 1830, 0, 0, 1830, 1830, 1, 1, 0));
+        }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status1Gauge", "status1", status1, "Status 1", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status2Gauge", "status2", status2, "Status 2", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status3Gauge", "status3", status3, "Status 3", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status4Gauge", "status4", status4, "Status 4", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status5Gauge", "status5", status5, "Status 5", "", 0, 65535, 65535, 65535, 65535, 65535, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("looptimeGauge", "looptime", looptime, "Mainloop time", "us", 0, 65535, 255, 255, 255, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge", "deadValue", deadValue, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0));
-
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge1", "wallfuel1", wallfuel1, "Fuel on the walls 1", "", 0, 40000000, 0, 0, 40000000, 40000000,
+                0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge2", "wallfuel2", wallfuel2, "Fuel on the walls 2", "", 0, 40000000, 0, 0, 40000000, 40000000,
+                0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1", "EAEFuelCorr1", EAEFuelCorr1, "EAE Fuel Correction 1", "%", 0, 200, 40, 70, 130, 160, 0,
+                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2", "EAEFuelCorr2", EAEFuelCorr2, "EAE Fuel Correction 2", "%", 0, 200, 40, 70, 130, 160, 0,
+                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc6Gauge", "adc6", adc6, "ADC 6", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc7Gauge", "adc7", adc7, "ADC 7", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc0Gauge", "gpioadc0", gpioadc0, "GPIO ADC 0", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc1Gauge", "gpioadc1", gpioadc1, "GPIO ADC 1", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc2Gauge", "gpioadc2", gpioadc2, "GPIO ADC 2", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc3Gauge", "gpioadc3", gpioadc3, "GPIO ADC 3", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc4Gauge", "gpioadc4", gpioadc4, "GPIO ADC 4", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc5Gauge", "gpioadc5", gpioadc5, "GPIO ADC 5", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc6Gauge", "gpioadc6", gpioadc6, "GPIO ADC 6", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gpioadc7Gauge", "gpioadc7", gpioadc7, "GPIO ADC 7", "", 0, 1023, 1023, 1023, 1023, 1023, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dbgcrkmaskGauge", "dbg_crk_mask", dbg_crk_mask, "Crank masked", "", 0, 255, 255, 255, 255, 255, 0, 0,
+                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dbgcrkfiltGauge", "dbg_crk_filt", dbg_crk_filt, "Crank filtered", "", 0, 255, 255, 255, 255, 255, 0,
+                0, 0));
+        GaugeRegister.INSTANCE
+                .addGauge(new GaugeDetails("dbgcammaskGauge", "dbg_cam_mask", dbg_cam_mask, "Cam masked", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dbgcamfiltGauge", "dbg_cam_filt", dbg_cam_filt, "Cam filtered", "", 0, 255, 255, 255, 255, 255, 0, 0,
+                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge", "boostduty", boostduty, "Boost Duty", "%", 0, 100, -1, -1, 100, 100, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lostsyncGauge", "synccnt", synccnt, "Lost sync counter", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge", "syncreason", syncreason, "Lost sync reason", "", 0, 255, 255, 255, 255, 255, 0, 0,
+                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("user0Gauge", "user0", user0, "User defined", "", 0, 65535, 65535, 65535, 65535, 65535, 0, 0, 0));
     }
 
 }

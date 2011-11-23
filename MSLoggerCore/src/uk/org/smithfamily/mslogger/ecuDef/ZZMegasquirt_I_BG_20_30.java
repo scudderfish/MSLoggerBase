@@ -1,12 +1,10 @@
-package uk.org.smithfamily.mslogger.ecuDef.gen;
+package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 import java.util.*;
 
 import android.content.Context;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
