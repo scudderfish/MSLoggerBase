@@ -1,21 +1,19 @@
-package uk.org.smithfamily.mslogger.ecuDef.gen;
+package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 import java.util.*;
 
 import android.content.Context;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
 /*
- Fingerprint : e30cc8a85a041c369864bef23e0f08c3
+ Fingerprint : ceb9b01783855c296ee19117d36e8542
  */
-public class ZZMegasquirt_II_3760 extends Megasquirt
+public class ZZMegasquirt_II_v2905 extends Megasquirt
 {
-	public ZZMegasquirt_II_3760(Context c)
+	public ZZMegasquirt_II_v2905(Context c)
 	{
 		super(c);
 		n2o = isSet("n2o");
@@ -23,15 +21,13 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		CELSIUS = isSet("CELSIUS");
 		MS2_SEQ = isSet("MS2_SEQ");
 		LAMBDA = isSet("LAMBDA");
-		nAUTO_TRIG = isSet("nAUTO_TRIG");
-		AUTO_TRIG = isSet("AUTO_TRIG");
 		EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
 	}
 
 	byte[]				queryCommand	= new byte[] { 'Q' };
-	String				signature		= "MSII Rev 3.76000   \0";
+	String				signature		= "MSII Rev 2.90500   \0";
 	byte[]				ochGetCommand	= new byte[] { 'a', 0, 6 };
-	int					ochBlockSize	= 130;
+	int					ochBlockSize	= 112;
 	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { signature }));
 	// Flags
 	boolean				n2o;
@@ -39,14 +35,11 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	boolean				CELSIUS;
 	boolean				MS2_SEQ;
 	boolean				LAMBDA;
-	boolean				nAUTO_TRIG;
-	boolean				AUTO_TRIG;
 	boolean				EXPANDED_CLT_TEMP;
 	// Runtime vars
 	int					tpsDOT;
-	double				spare1;
+	int					spare1;
 	double				dwell;
-	int					uspare2;
 	int					spare2;
 	int					cksum;
 	int					spare4;
@@ -63,19 +56,15 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	double				afr1;
 	int					tpsden;
 	int					rpm;
-	int					ignmode;
-	int					uspare1;
 	double				barometer;
 	int					mapDOT;
 	int					wbo2_en2;
 	double				coolant;
 	double				coldAdvDeg;
-	double				mapmaf;
 	double				afrtgt2;
 	int					engine;
 	double				afrtgt1;
-	double				mafraw;
-	int					vergm;
+	int					mapaen;
 	int					synch;
 	int					wbo2_en1;
 	int					trig_fix;
@@ -83,7 +72,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					tpsfuelcut;
 	int					baroCorrection;
 	int					crank;
-	double				mafmap;
 	double				kpa;
 	double				kpaix;
 	double				pulseWidth2;
@@ -104,7 +92,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	double				maf;
 	int					port5;
 	double				map;
-	double				mafDOT;
 	int					warmup;
 	int					firing1;
 	int					firing2;
@@ -115,11 +102,10 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					xTauFuelCorr2;
 	int					airCorrection;
 	int					squirt;
+	int					cspare;
 	double				egoV1;
 	int					deltaT;
 	double				egoV2;
-	double				mafsensor;
-	double				vemafmap;
 	int					seconds;
 	int					sched2;
 	int					startw;
@@ -135,8 +121,8 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 
 	// eval vars
 	double				accDecEnrich;
-	double				throttle;
 	double				dutyCycle2;
+	double				throttle;
 	int					deadValue;
 	double				dutyCycle1;
 	double				pulseWidth;
@@ -149,10 +135,9 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					altDiv2;
 	double				fuelComposition;
 	double				rpm100;
-	double				egoVoltage2;
 	int					nSquirts2;
-	int					nSquirts1;
 	double				accEnrichMS;
+	int					nSquirts1;
 	double				tpsADC;
 	double				lambda2;
 	double				lambda1;
@@ -167,21 +152,18 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	// Constants
 	int					taeColdM;
 	double				triggerOffset;
-	double				AFRStoich;
 	int					egoRPM;
+	double				AFRStoich;
 	int					tempUnits;
 	double				dwellAcc;
 	double				baro0;
 	int					tpsMin;
 	double				IdleHyst;
-	double				NBVStoich;
 	double				taeColdA;
 	int					Delay_Teeth;
 	int					egoType;
-	int					seq_ack;
 	int					alternate;
 	int					VEIXOptn;
-	double				c2rgm;
 	double				crankCold;
 	int					cltmult;
 	int					knkDirection;
@@ -190,14 +172,14 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					crankingRPM;
 	double				egoTemp;
 	double				MAPOXLimit;
+	double				egoTarget;
 	int					asePctHot;
 	int					AMCve_rpm;
 	int					board_type;
 	double				primePulseCold;
 	double				spkN2O;
-	int					InjStart;
 	int					ASEHot;
-	int					SprAdj;
+	int					InjStart;
 	double				alpha_baro_spkadv;
 	double				max_spk_dur;
 	double				knk_dtble_adv;
@@ -205,13 +187,13 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					MAFRPM2;
 	int					MAFRPM1;
 	int					beta;
-	int					tie1_2cyl;
 	int					flexFuel;
 	double				pwImpulse;
 	int					gamma;
 	int					ICCrankTrigger;
-	double				mafSample;
+	int					mapdotSample;
 	int					CWOption;
+	int					Dtpred_Gain;
 	int					AMCramve_dt;
 	int					egoCount;
 	int					knkOption;
@@ -222,8 +204,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					IACcrankxt;
 	int					xTauOption;
 	int					ae_lorpm;
-	int					CPWOption;
-	int					VERGMOptn;
 	int					aseCountHot;
 	int					egoAlgorithm;
 	int					dualTable;
@@ -232,7 +212,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	double				floodClear;
 	int					fuelFreq0;
 	int					fuelFreq1;
-	int					Cam_Tooth;
 	int					aseCountCold;
 	double				fuelSpkDel0;
 	double				knockmax;
@@ -260,31 +239,23 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					RevLimOption;
 	int					AMCstep;
 	int					crankTolerance;
-	double				VOF;
+	double				AFRStoichNB;
 	int					fet_delay;
-	int					Vmfld;
 	int					rpmLF;
 	int					asTolerance;
 	int					AfrAlpha;
 	int					knk_lorpm;
-	double				CR;
 	int					prime_delay;
 	double				injTestOffTime;
 	double				AFRTarget;
-	int					airdotSample;
-	double				tachoPW;
-	double				mapSample;
 	int					spkout_hi_lo;
 	int					MatRtdRPMHi;
 	double				primePulseHot;
-	int					activate_xrate_2;
 	int					alpha_hirpm;
-	int					activate_xrate_1;
 	int					knkLF;
-	int					activate_xrate_0;
 	double				RevLimMaxRtd;
 	int					AFRMult;
-	int					nskpCPW;
+	double				AFRStoichWB;
 	double				OddAng;
 	int					egoDelta;
 	int					egoKI;
@@ -293,7 +264,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					matmult;
 	int					AMCOption;
 	int					tpsMax;
-	double				SpkAdj;
 	int					knk_ndet;
 	int					bcor0;
 	int					adcLF;
@@ -306,7 +276,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					egoKdelay1;
 	int					DualSpkOptn;
 	int					PredOpt;
-	double				c1rgm;
 	int					MapThreshXTD;
 	int					egoLF;
 	int					tdePct;
@@ -319,18 +288,13 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					nImpulse;
 	int					knk_hirpm;
 	int					alphDir;
-	int					MAFDir;
 	double				AMCve_map;
 	double				knk_maxmap;
+	int					MAFDir;
 	double				batt0;
 	double				knk_trtd;
-	int					activate_xrate_7;
 	int					ICIgnOption;
-	int					activate_xrate_3;
 	double				TPSOXLimit;
-	int					activate_xrate_4;
-	int					activate_xrate_5;
-	int					activate_xrate_6;
 	double				battFac;
 	double				baromax;
 	int					trendmapLimit;
@@ -338,16 +302,14 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					IACStart;
 	int					no_skip_pulses;
 	int					injType;
-	int					mafLF;
 	double				ICISR_tmask;
 	double				max_coil_dur;
 	int					pulseTolerance;
 	int					IdleCtl;
-	int					MatRtdRPMLo;
 	int					injTestMode;
+	int					MatRtdRPMLo;
 	int					n2oEnrich;
 	int					injTestSqrts;
-	int					MAFtype;
 	int					AMCupdate_thresh;
 	double				injOpen;
 	int					IACminstep;
@@ -367,27 +329,20 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	int					baud;
 	int					ae_hirpm;
 	int					injPwmPd;
-	int					autoTrig;
 	int					ICIgnCapture;
-	double				maf_tlag;
-	int					tachoDuty;
 	int					baroCorr;
 	int					injPwmP;
 	int					IACcrankpos;
 	double				crankHot;
 	double				aeTaperTime;
 	int					triggerTeeth;
-	double				FuelAdj;
 	int					RevLimRpm2;
-	int					spark_fuel_offset;
-	double				AFRStoichFF;
 	int					RevLimRpm1;
 	int					egoLimit;
 	double				IACtstep;
 	double				knk_step2;
 	double				injPwmT;
 	double				knk_step1;
-	int					IdleAdj;
 
 	private String[]	defaultGauges	= { "tachometer", "throttleGauge", "pulseWidth1Gauge", "egoGauge", "lambda1Gauge",
 			"afr1Gauge", "mapGauge", "IACgauge", "PWMIdlegauge", "matGauge", "advdegGauge", "dwellGauge" };
@@ -417,22 +372,9 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		warmup = MSUtils.getBits(ochBuffer, 11, 3, 3, 0);
 		tpsaen = MSUtils.getBits(ochBuffer, 11, 4, 4, 0);
 		tpsden = MSUtils.getBits(ochBuffer, 11, 5, 5, 0);
-		ignmode = MSUtils.getBits(ochBuffer, 11, 6, 6, 0);
-		if (NARROW_BAND_EGO)
-		{
-			afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.010);
-			afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.010);
-		}
-		else if (LAMBDA)
-		{
-			afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.010);
-			afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.010);
-		}
-		else
-		{
-			afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.100);
-			afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.100);
-		}
+		mapaen = MSUtils.getBits(ochBuffer, 11, 6, 6, 0);
+		afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.100);
+		afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.100);
 		wbo2_en1 = (int) ((MSUtils.getByte(ochBuffer, 14) + 0.0) * 1.000);
 		wbo2_en2 = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.0) * 1.000);
 		barometer = (double) ((MSUtils.getSignedWord(ochBuffer, 16) + 0.0) * 0.100);
@@ -475,47 +417,39 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		tpsDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 1.000);
 		mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
 		dwell = (double) ((MSUtils.getSignedWord(ochBuffer, 62) + 0.0) * 0.100);
-		maf = (double) ((MSUtils.getWord(ochBuffer, 64) + 0.0) * 0.010);
+		maf = (double) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 0.010);
 		kpa = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
-		mafDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 0.100);
-		fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 70) + 0.0) * 1.000);
-		portStatus = (int) ((MSUtils.getByte(ochBuffer, 72) + 0.0) * 1.000);
-		port0 = MSUtils.getBits(ochBuffer, 72, 0, 0, 0);
-		port1 = MSUtils.getBits(ochBuffer, 72, 1, 1, 0);
-		port2 = MSUtils.getBits(ochBuffer, 72, 2, 2, 0);
-		port3 = MSUtils.getBits(ochBuffer, 72, 3, 3, 0);
-		port4 = MSUtils.getBits(ochBuffer, 72, 4, 4, 0);
-		port5 = MSUtils.getBits(ochBuffer, 72, 5, 5, 0);
-		port6 = MSUtils.getBits(ochBuffer, 72, 6, 6, 0);
-		knockRetard = (double) ((MSUtils.getByte(ochBuffer, 73) + 0.0) * 0.100);
-		xTauFuelCorr1 = (int) ((MSUtils.getSignedWord(ochBuffer, 74) + 0.0) * 1.000);
-		egoV1 = (double) ((MSUtils.getSignedWord(ochBuffer, 76) + 0.0) * 0.010);
-		egoV2 = (double) ((MSUtils.getSignedWord(ochBuffer, 78) + 0.0) * 0.010);
-		amcUpdates = (int) ((MSUtils.getSignedWord(ochBuffer, 80) + 0.0) * 1.000);
-		kpaix = (double) ((MSUtils.getSignedWord(ochBuffer, 82) + 0.0) * 0.100);
-		xTauFuelCorr2 = (int) ((MSUtils.getSignedWord(ochBuffer, 84) + 0.0) * 1.000);
-		vemafmap = (double) ((MSUtils.getSignedWord(ochBuffer, 86) + 0.0) * 0.100);
-		vergm = (int) ((MSUtils.getSignedWord(ochBuffer, 88) + 0.0) * 1.000);
-		mafraw = (double) ((MSUtils.getWord(ochBuffer, 90) + 0.0) * 0.010);
-		mafsensor = (double) ((MSUtils.getWord(ochBuffer, 92) + 0.0) * 0.010);
-		mapmaf = (double) ((MSUtils.getWord(ochBuffer, 94) + 0.0) * 0.010);
-		mafmap = (double) ((MSUtils.getSignedWord(ochBuffer, 96) + 0.0) * 0.100);
-		synch = (int) ((MSUtils.getByte(ochBuffer, 98) + 0.0) * 1.000);
-		spare1 = (double) ((MSUtils.getSignedWord(ochBuffer, 100) + 0.0) * 0.100);
-		spare2 = (int) ((MSUtils.getSignedWord(ochBuffer, 102) + 0.0) * 1.000);
-		trig_fix = (int) ((MSUtils.getSignedWord(ochBuffer, 104) + 0.0) * 1.000);
-		spare4 = (int) ((MSUtils.getSignedWord(ochBuffer, 106) + 0.0) * 1.000);
-		spare5 = (int) ((MSUtils.getSignedWord(ochBuffer, 108) + 0.0) * 1.000);
-		spare6 = (int) ((MSUtils.getSignedWord(ochBuffer, 110) + 0.0) * 1.000);
-		spare7 = (int) ((MSUtils.getSignedWord(ochBuffer, 112) + 0.0) * 1.000);
-		spare8 = (int) ((MSUtils.getSignedWord(ochBuffer, 114) + 0.0) * 1.000);
-		spare9 = (int) ((MSUtils.getSignedWord(ochBuffer, 116) + 0.0) * 1.000);
-		uspare1 = (int) ((MSUtils.getWord(ochBuffer, 118) + 0.0) * 1.000);
-		uspare2 = (int) ((MSUtils.getWord(ochBuffer, 120) + 0.0) * 1.000);
-		tachCount = (int) ((MSUtils.getWord(ochBuffer, 122) + 0.0) * 1.000);
-		ospare = (int) ((MSUtils.getByte(ochBuffer, 124) + 0.0) * 1.000);
-		cksum = (int) ((MSUtils.getByte(ochBuffer, 125) + 0.0) * 1.000);
-		deltaT = (int) ((MSUtils.getLong(ochBuffer, 126) + 0.0) * 1.000);
+		fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
+		portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
+		port0 = MSUtils.getBits(ochBuffer, 70, 0, 0, 0);
+		port1 = MSUtils.getBits(ochBuffer, 70, 1, 1, 0);
+		port2 = MSUtils.getBits(ochBuffer, 70, 2, 2, 0);
+		port3 = MSUtils.getBits(ochBuffer, 70, 3, 3, 0);
+		port4 = MSUtils.getBits(ochBuffer, 70, 4, 4, 0);
+		port5 = MSUtils.getBits(ochBuffer, 70, 5, 5, 0);
+		port6 = MSUtils.getBits(ochBuffer, 70, 6, 6, 0);
+		knockRetard = (double) ((MSUtils.getByte(ochBuffer, 71) + 0.0) * 0.100);
+		xTauFuelCorr1 = (int) ((MSUtils.getSignedWord(ochBuffer, 72) + 0.0) * 1.000);
+		egoV1 = (double) ((MSUtils.getSignedWord(ochBuffer, 74) + 0.0) * 0.010);
+		egoV2 = (double) ((MSUtils.getSignedWord(ochBuffer, 76) + 0.0) * 0.010);
+		amcUpdates = (int) ((MSUtils.getSignedWord(ochBuffer, 78) + 0.0) * 1.000);
+		kpaix = (double) ((MSUtils.getSignedWord(ochBuffer, 80) + 0.0) * 0.100);
+		xTauFuelCorr2 = (int) ((MSUtils.getSignedWord(ochBuffer, 82) + 0.0) * 1.000);
+		synch = (int) ((MSUtils.getByte(ochBuffer, 84) + 0.0) * 1.000);
+		cspare = (int) ((MSUtils.getByte(ochBuffer, 85) + 0.0) * 1.000);
+		spare1 = (int) ((MSUtils.getSignedWord(ochBuffer, 86) + 0.0) * 1.000);
+		spare2 = (int) ((MSUtils.getSignedWord(ochBuffer, 88) + 0.0) * 1.000);
+		trig_fix = (int) ((MSUtils.getSignedWord(ochBuffer, 90) + 0.0) * 1.000);
+		spare4 = (int) ((MSUtils.getSignedWord(ochBuffer, 92) + 0.0) * 1.000);
+		spare5 = (int) ((MSUtils.getSignedWord(ochBuffer, 94) + 0.0) * 1.000);
+		spare6 = (int) ((MSUtils.getSignedWord(ochBuffer, 96) + 0.0) * 1.000);
+		spare7 = (int) ((MSUtils.getSignedWord(ochBuffer, 98) + 0.0) * 1.000);
+		spare8 = (int) ((MSUtils.getSignedWord(ochBuffer, 100) + 0.0) * 1.000);
+		spare9 = (int) ((MSUtils.getSignedWord(ochBuffer, 102) + 0.0) * 1.000);
+		tachCount = (int) ((MSUtils.getWord(ochBuffer, 104) + 0.0) * 1.000);
+		ospare = (int) ((MSUtils.getByte(ochBuffer, 106) + 0.0) * 1.000);
+		cksum = (int) ((MSUtils.getByte(ochBuffer, 107) + 0.0) * 1.000);
+		deltaT = (int) ((MSUtils.getLong(ochBuffer, 108) + 0.0) * 1.000);
 		accDecEnrich = (((accEnrichMS + decEnrichMS) / pulseWidth1 * 100) + 100);
 		accDecEnrichPcnt = (((accelEnrich / pulseWidth1 + (tpsden) != 0) ? tpsfuelcut : accelEnrich / pulseWidth1 * 100));
 		accEnrichPcnt = (100 + (accelEnrich / pulseWidth1 * 100));
@@ -526,24 +460,16 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		rpm100 = (rpm / 100.0);
 		altDiv1 = (((alternate) != 0) ? 2 : 1);
 		altDiv2 = (((alternate) != 0) ? 2 : 1);
-		cycleTime1 = ((60000.0 / rpm) * (2.0 - twoStroke));
-		cycleTime2 = ((60000.0 / rpm) * (2.0 - twoStroke));
-		if (MS2_SEQ)
-		{
-			dutyCycle1 = ((100.0 * pulseWidth1) / (cycleTime1 / (2.0 - ignmode)));
-			dutyCycle2 = ((100.0 * pulseWidth2) / (cycleTime2 / (2.0 - ignmode)));
-		}
-		else
-		{
-			nSquirts1 = (nCylinders / divider);
-			nSquirts2 = (nCylinders / divider);
-			dutyCycle1 = (100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
-			dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
-		}
+		cycleTime1 = (60000.0 / rpm * (2.0 - twoStroke));
+		cycleTime2 = (60000.0 / rpm * (2.0 - twoStroke));
+		nSquirts1 = (nCylinders / divider);
+		nSquirts1 = (nCylinders / divider);
+		nSquirts2 = (nCylinders / divider);
+		dutyCycle1 = (100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
+		dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
 		if (NARROW_BAND_EGO)
 		{
 			egoVoltage = (egoV1);
-			egoVoltage2 = (egoV2);
 		}
 		else if (LAMBDA)
 		{
@@ -552,7 +478,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		else
 		{
 			egoVoltage = (afr1);
-			egoVoltage2 = (afr2);
 		}
 	}
 
@@ -606,8 +531,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		b.append("Trigger±").append("\t");
 		b.append("Sync Stat").append("\t");
 		b.append("tachCount").append("\t");
-		b.append("maf_frm_map").append("\t");
-		b.append("map_frm_maf").append("\t");
 		b.append("AFRtrgt1").append("\t");
 		b.append("knck-V").append("\t");
 		b.append(MSUtils.getLocationLogHeader());
@@ -664,8 +587,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		b.append(trig_fix).append("\t");
 		b.append(synch).append("\t");
 		b.append(tachCount).append("\t");
-		b.append(round(mafmap)).append("\t");
-		b.append(round(mapmaf)).append("\t");
 		b.append(round(afrtgt1)).append("\t");
 		b.append(round(knock)).append("\t");
 		b.append(MSUtils.getLocationLogRow());
@@ -697,31 +618,8 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 				2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2Gauge", "afr2", afr2, "Air:Fuel Ratio 2", "", 10, 19.4, 12, 13, 15,
 				16, 2, 2, 0));
-		if (NARROW_BAND_EGO)
-		{
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt1Gauge", "afrtgt1", afrtgt1, "Target EGO (V)", "", 0, 1.0, .2,
-					.3, .6, .8, 2, 2, 0));
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt2Gauge", "afrtgt2", afrtgt2, "Target EGO2 (V)", "", 0, 1.0, .2,
-					.3, .6, .8, 2, 2, 0));
-		}
-		else if (LAMBDA)
-		{
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt1Gauge", "afrtgt1", afrtgt1, "Target EGO (Lmbda)", "", 0, 2.0,
-					.5, .7, 1.3, 1.5, 2, 2, 0));
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt2Gauge", "afrtgt2", afrtgt2, "Target EGO2 (Lmbda)", "", 0, 2.0,
-					.5, .7, 1.3, 1.5, 2, 2, 0));
-		}
-		else
-		{
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt1Gauge", "afrtgt1", afrtgt1, "Target AFR", "", 10, 19.4, 12,
-					13, 15, 16, 1, 1, 0));
-			GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrtgt2Gauge", "afrtgt2", afrtgt2, "Target AFR2", "", 10, 19.4, 12,
-					13, 15, 16, 1, 1, 0));
-		}
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge", "seconds", seconds, "Clock", "Seconds", 0, 255, 10, 10, 245,
 				245, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge", "deadValue", deadValue, "---", "", 0, 1, -1, -1, 2, 2, 0, 0,
-				0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge", "dutyCycle1", dutyCycle1, "Duty Cycle 1", "%", 0, 100,
 				-1, -1, 85, 90, 1, 1, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge", "dutyCycle2", dutyCycle2, "Duty Cycle 2", "%", 0, 100,
@@ -734,16 +632,8 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 				"%", 50, 150, 90, 99, 101, 110, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoGauge", "egoVoltage", egoVoltage, "Exhaust Gas Oxygen", "volts", 0,
 				1.0, 0.2, 0.3, 0.7, 0.8, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ego2Gauge", "egoVoltage2", egoVoltage2, "Exhaust Gas Oxygen2", "volts",
-				0, 1.0, 0.2, 0.3, 0.7, 0.8, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("engine", "engine", engine, "Engine Codes", "", 0, 127, 0, 0, 127, 127, 0,
-				0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("kpaixGauge", "kpaix", kpaix, "Table Load Index", "kPa", 0, 255, 0, 20,
 				200, 245, 1, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knockGauge", "knockRetard", knockRetard, "Knock Retard", "deg", 0, 25.0,
-				-1, -1, 5.0, 10.0, 1, 1, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knockVGauge", "knock", knock, "Knock Volts", "volts", 0, 5.0, -1, -1,
-				4.0, 5.0, 1, 1, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda1Gauge", "lambda1", lambda1, "Lambda", "", 0.5, 1.5, 0.5, 0.7, 2,
 				1.1, 2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda2Gauge", "lambda2", lambda2, "Lambda", "", 0.5, 1.5, 0.5, 0.7, 2,
@@ -752,20 +642,8 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 				50, 150, -1, -1, 151, 151, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge", "map", map, "Engine MAP", "kPa", 0, 255, 0, 20, 200, 245, 1,
 				0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafRaw", "mafraw", mafraw, "Raw MAF Sensor", "g/sec", 0, 650, 0, 200,
-				480, 550, 2, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafSensor", "mafsensor", mafsensor, "Corr. MAF Sensor", "g/sec", 0, 650,
-				0, 200, 480, 550, 2, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafGauge", "maf", maf, "MAF Cyl Air flow", "g/sec", 0, 650, 0, 200, 480,
-				550, 2, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafDOTGauge", "mafDOT", mafDOT, "MAFDOT", "g/sec^^2", -600, 600, -480,
-				-200, 200, 550, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapmafGauge", "mapmaf", mapmaf, "MAF from MAP", "g/sec", 0, 650, 0, 200,
-				480, 550, 1, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafmapGauge", "mafmap", mafmap, "MAP from MAF", "kPa", 0, 255, 0, 20,
-				200, 245, 1, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapDOTGauge", "mapDOT", mapDOT, "MAPDOT", "kPa/sec", -600, 600, -480,
-				-200, 200, 550, 0, 0, 0));
+		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafGauge", "maf", maf, "MAF Air flow", "g/sec", 0, 650, 0, 200, 480, 550,
+				0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge", "barometer", barometer, "Barometer", "kPa", 60, 120, 0,
 				20, 200, 245, 1, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("calcMapGauge", "kpa", kpa, "calcMAP", "kPa", 0, 255, 0, 20, 200, 245, 1,
@@ -782,30 +660,10 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 				25000, 25000, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge", "veCurr1", veCurr1, "VE Current", "%", 0, 120, -1, -1, 999,
 				999, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veRGM", "vergm", vergm, "VE Res Gas Model", "%", 0, 120, -1, -1, 999,
-				999, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veMafMap", "vemafmap", vemafmap, "VE from maf + map", "%", 0, 120, -1,
-				-1, 999, 999, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts",
 				7, 21, 9, 10, 16, 17, 2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge", "warmupEnrich", warmupEnrich, "Warmup Enrichment",
 				"%", 100, 150, -1, -1, 101, 105, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare1Gauge", "spare1", spare1, "spare1[0] spk_deg_err", "", -30, 30,
-				-10, -5, 5, 10, 1, 1, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare2Gauge", "spare2", spare2, "spare2[1] reset count", "", 0, 100, 0,
-				0, 32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare4Gauge", "spare4", spare4, "spare4[3] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare5Gauge", "spare5", spare5, "spare5[4] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare6Gauge", "spare6", spare6, "spare6[5] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare7Gauge", "spare7", spare7, "spare7[6] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare8Gauge", "spare8", spare8, "spare8[7] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("spare9Gauge", "spare9", spare9, "spare9[8] count", "", 0, 32535, 0, 0,
-				32535, 17, 2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("xTauGauge1", "xTauFuelCorr1", xTauFuelCorr1, "X-Tau Correction1", "%", 0,
 				200, 40, 70, 130, 160, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("xTauGauge2", "xTauFuelCorr2", xTauFuelCorr2, "X-Tau Correction2", "%", 0,
@@ -917,26 +775,12 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 	public void loadConstants(boolean simulated)
 	{
 		byte[] pageBuffer = null;
-		pageBuffer = loadPage(1, 0, 996, null, new byte[] { 114, 3, -28, 0, 0, 3, -28 });
+		pageBuffer = loadPage(1, 0, 994, null, new byte[] { 114, 3, -30, 0, 0, 3, -30 });
 		nCylinders = MSUtils.getBits(pageBuffer, 0, 0, 3, 0);
 		no_skip_pulses = (int) ((MSUtils.getByte(pageBuffer, 1) + 0.0) * 1.0);
 		ICIgnCapture = MSUtils.getBits(pageBuffer, 2, 0, 0, 0);
-		if (MS2_SEQ)
-		{
-			ICCrankTrigger = MSUtils.getBits(pageBuffer, 2, 1, 2, 0);
-		}
-		else
-		{
-			ICCrankTrigger = MSUtils.getBits(pageBuffer, 2, 1, 2, 0);
-		}
-		if (MS2_SEQ)
-		{
-			ICIgnOption = MSUtils.getBits(pageBuffer, 2, 4, 5, 0);
-		}
-		else
-		{
-			ICIgnOption = MSUtils.getBits(pageBuffer, 2, 4, 5, 0);
-		}
+		ICCrankTrigger = MSUtils.getBits(pageBuffer, 2, 1, 2, 0);
+		ICIgnOption = MSUtils.getBits(pageBuffer, 2, 4, 5, 0);
 		spkout_hi_lo = MSUtils.getBits(pageBuffer, 3, 0, 0, 0);
 		max_coil_dur = (double) ((MSUtils.getByte(pageBuffer, 4) + 0.0) * 0.1);
 		max_spk_dur = (double) ((MSUtils.getByte(pageBuffer, 5) + 0.0) * 0.1);
@@ -999,15 +843,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		bcormult = (int) ((MSUtils.getSignedWord(pageBuffer, 536) + 0.0) * 1.0);
 		knock0 = (double) ((MSUtils.getSignedWord(pageBuffer, 538) + 0.0) * 0.01);
 		knockmax = (double) ((MSUtils.getSignedWord(pageBuffer, 540) + 0.0) * 0.01);
-		if (MS2_SEQ)
-		{
-			CPWOption = MSUtils.getBits(pageBuffer, 542, 0, 1, 0);
-		}
-		else
-		{
-			CPWOption = MSUtils.getBits(pageBuffer, 542, 0, 1, 0);
-		}
-		Cam_Tooth = (int) ((MSUtils.getByte(pageBuffer, 543) + 0.0) * 1.0);
+		Dtpred_Gain = (int) ((MSUtils.getSignedWord(pageBuffer, 542) + 0.0) * 1.0);
 		crankTolerance = (int) ((MSUtils.getByte(pageBuffer, 544) + 0.0) * 1.0);
 		asTolerance = (int) ((MSUtils.getByte(pageBuffer, 545) + 0.0) * 1.0);
 		pulseTolerance = (int) ((MSUtils.getByte(pageBuffer, 546) + 0.0) * 1.0);
@@ -1075,7 +911,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		egoLimit = (int) ((MSUtils.getByte(pageBuffer, 597) + 0.0) * 1.0);
 		if (NARROW_BAND_EGO)
 		{
-			AFRTarget = (double) ((MSUtils.getByte(pageBuffer, 598) + 0.0) * 0.01);
+			egoTarget = (double) ((MSUtils.getByte(pageBuffer, 598) + 0.0) * 0.01);
 		}
 		else if (LAMBDA)
 		{
@@ -1088,15 +924,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		tempUnits = MSUtils.getBits(pageBuffer, 599, 0, 0, 0);
 		MAFOption = MSUtils.getBits(pageBuffer, 600, 0, 1, 0);
 		MAFpin = MSUtils.getBits(pageBuffer, 600, 4, 5, 0);
-		MAFtype = MSUtils.getBits(pageBuffer, 600, 7, 7, 0);
-		if (MS2_SEQ)
-		{
-			DualSpkOptn = MSUtils.getBits(pageBuffer, 601, 0, 3, 0);
-		}
-		else
-		{
-			DualSpkOptn = MSUtils.getBits(pageBuffer, 601, 0, 3, 0);
-		}
+		DualSpkOptn = MSUtils.getBits(pageBuffer, 601, 0, 3, 0);
 		if (CELSIUS)
 		{
 			if (EXPANDED_CLT_TEMP)
@@ -1126,38 +954,14 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		egoRPM = (int) ((MSUtils.getSignedWord(pageBuffer, 606) + 0.0) * 1.0);
 		reqFuel = (double) ((MSUtils.getWord(pageBuffer, 608) + 0.0) * 0.0010);
 		divider = (int) ((MSUtils.getByte(pageBuffer, 610) + 0.0) * 1.0);
-		if (MS2_SEQ)
-		{
-			alternate = MSUtils.getBits(pageBuffer, 611, 0, 0, 0);
-		}
-		else
-		{
-			alternate = MSUtils.getBits(pageBuffer, 611, 0, 0, 0);
-		}
+		alternate = MSUtils.getBits(pageBuffer, 611, 0, 0, 0);
 		injOpen = (double) ((MSUtils.getByte(pageBuffer, 612) + 0.0) * 0.1);
-		if (MS2_SEQ)
-		{
-			injPwmT = (double) ((MSUtils.getByte(pageBuffer, 613) + 0.0) * 0.1);
-			injPwmPd = (int) ((MSUtils.getByte(pageBuffer, 614) + 0.0) * 1.0);
-			injPwmP = (int) ((MSUtils.getByte(pageBuffer, 615) + 0.0) * 1.0);
-		}
-		else
-		{
-			injPwmT = (double) ((MSUtils.getByte(pageBuffer, 613) + 0.0) * 0.1);
-			injPwmPd = (int) ((MSUtils.getByte(pageBuffer, 614) + 0.0) * 1.0);
-			injPwmP = (int) ((MSUtils.getByte(pageBuffer, 615) + 0.0) * 1.0);
-		}
+		injPwmT = (double) ((MSUtils.getByte(pageBuffer, 613) + 0.0) * 0.1);
+		injPwmPd = (int) ((MSUtils.getByte(pageBuffer, 614) + 0.0) * 1.0);
+		injPwmP = (int) ((MSUtils.getByte(pageBuffer, 615) + 0.0) * 1.0);
 		battFac = (double) ((MSUtils.getByte(pageBuffer, 616) + 0.0) * 0.0166667);
-		if (MS2_SEQ)
-		{
-			twoStroke = MSUtils.getBits(pageBuffer, 617, 0, 0, 0);
-			injType = MSUtils.getBits(pageBuffer, 618, 0, 0, 0);
-		}
-		else
-		{
-			twoStroke = MSUtils.getBits(pageBuffer, 617, 0, 0, 0);
-			injType = MSUtils.getBits(pageBuffer, 618, 0, 0, 0);
-		}
+		twoStroke = MSUtils.getBits(pageBuffer, 617, 0, 0, 0);
+		injType = MSUtils.getBits(pageBuffer, 618, 0, 0, 0);
 		nInjectors = MSUtils.getBits(pageBuffer, 619, 0, 4, 0);
 		OddAng = (double) ((MSUtils.getSignedWord(pageBuffer, 620) + 0.0) * 0.1);
 		rpmLF = (int) ((MSUtils.getByte(pageBuffer, 622) + 0.0) * 1.0);
@@ -1167,12 +971,14 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		adcLF = (int) ((MSUtils.getByte(pageBuffer, 626) + 0.0) * 1.0);
 		knkLF = (int) ((MSUtils.getByte(pageBuffer, 627) + 0.0) * 1.0);
 		AMCOption = MSUtils.getBits(pageBuffer, 628, 0, 1, 0);
-		dualTable = MSUtils.getBits(pageBuffer, 629, 0, 1, 0);
+		dualTable = MSUtils.getBits(pageBuffer, 629, 0, 0, 0);
 		algorithm = MSUtils.getBits(pageBuffer, 630, 0, 1, 0);
 		alphDir = MSUtils.getBits(pageBuffer, 630, 4, 4, 0);
 		alpha_baro_spkadv = (double) ((MSUtils.getByte(pageBuffer, 631) + 0.0) * 0.01);
 		AfrAlpha = (int) ((MSUtils.getByte(pageBuffer, 632) + 0.0) * 1.0);
-		NBVStoich = (double) ((MSUtils.getByte(pageBuffer, 633) + 0.0) * 0.01);
+		AFRStoich = (double) ((MSUtils.getByte(pageBuffer, 633) + 0.0) * 0.1);
+		AFRStoichWB = (double) ((MSUtils.getByte(pageBuffer, 633) + 0.0) * 0.1);
+		AFRStoichNB = (double) ((MSUtils.getByte(pageBuffer, 633) + 0.0) * 0.01);
 		alpha_lorpm = (int) ((MSUtils.getSignedWord(pageBuffer, 634) + 0.0) * 1.0);
 		alpha_hirpm = (int) ((MSUtils.getSignedWord(pageBuffer, 636) + 0.0) * 1.0);
 		baud = (int) ((MSUtils.getLong(pageBuffer, 734) + 0.0) * 1.0);
@@ -1181,14 +987,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		mycan_id = (int) ((MSUtils.getByte(pageBuffer, 741) + 0.0) * 1.0);
 		fet_delay = (int) ((MSUtils.getByte(pageBuffer, 742) + 0.0) * 1.0);
 		vr_delay = (int) ((MSUtils.getByte(pageBuffer, 743) + 0.0) * 1.0);
-		if (MS2_SEQ)
-		{
-			ECUType = (int) ((MSUtils.getByte(pageBuffer, 744) + 0.0) * 1.0);
-		}
-		else
-		{
-			ECUType = (int) ((MSUtils.getByte(pageBuffer, 744) + 0.0) * 1.0);
-		}
+		ECUType = (int) ((MSUtils.getByte(pageBuffer, 744) + 0.0) * 1.0);
 		MapThreshXTD2 = (int) ((MSUtils.getByte(pageBuffer, 745) + 0.0) * 1.0);
 		if (n2o)
 		{
@@ -1200,9 +999,10 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		}
 		impulseSec = (int) ((MSUtils.getByte(pageBuffer, 747) + 0.0) * 1.0);
 		nImpulse = (int) ((MSUtils.getByte(pageBuffer, 748) + 0.0) * 1.0);
-		airdotSample = (int) ((MSUtils.getByte(pageBuffer, 749) + 0.0) * 1.0);
+		mapdotSample = (int) ((MSUtils.getByte(pageBuffer, 749) + 0.0) * 1.0);
 		tpsdotSample = (int) ((MSUtils.getByte(pageBuffer, 750) + 0.0) * 1.0);
 		ASEHot = MSUtils.getBits(pageBuffer, 751, 0, 0, 0);
+		InjStart = (int) ((MSUtils.getByte(pageBuffer, 752) + 0.0) * 1.0);
 		MapThreshXTD = (int) ((MSUtils.getByte(pageBuffer, 753) + 0.0) * 1.0);
 		MapThreshXTA = (int) ((MSUtils.getByte(pageBuffer, 754) + 0.0) * 1.0);
 		trendmapLimit = (int) ((MSUtils.getByte(pageBuffer, 755) + 0.0) * 1.0);
@@ -1215,7 +1015,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		egoKD = (int) ((MSUtils.getByte(pageBuffer, 903) + 0.0) * 1.0);
 		egoKdelay1 = (int) ((MSUtils.getWord(pageBuffer, 904) + 0.0) * 1.0);
 		egoKdelay2 = (int) ((MSUtils.getWord(pageBuffer, 906) + 0.0) * 1.0);
-		flexFuel = MSUtils.getBits(pageBuffer, 908, 0, 1, 0);
+		flexFuel = MSUtils.getBits(pageBuffer, 908, 0, 0, 0);
 		prime_delay = (int) ((MSUtils.getByte(pageBuffer, 909) + 0.0) * 1.0);
 		fuelFreq0 = (int) ((MSUtils.getByte(pageBuffer, 910) + 0.0) * 1.0);
 		fuelFreq1 = (int) ((MSUtils.getByte(pageBuffer, 911) + 0.0) * 1.0);
@@ -1243,11 +1043,8 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		knk_hirpm = (int) ((MSUtils.getWord(pageBuffer, 940) + 0.0) * 1.0);
 		triggerTeeth = (int) ((MSUtils.getWord(pageBuffer, 966) + 0.0) * 1.0);
 		No_Miss_Teeth = (int) ((MSUtils.getByte(pageBuffer, 968) + 0.0) * 1.0);
-		if (nAUTO_TRIG)
-		{
-			No_Skip_Teeth = (int) ((MSUtils.getByte(pageBuffer, 969) + 0.0) * 1.0);
-			Delay_Teeth = (int) ((MSUtils.getByte(pageBuffer, 970) + 0.0) * 1.0);
-		}
+		No_Skip_Teeth = (int) ((MSUtils.getByte(pageBuffer, 969) + 0.0) * 1.0);
+		Delay_Teeth = (int) ((MSUtils.getByte(pageBuffer, 970) + 0.0) * 1.0);
 		ICISR_tmask = (double) ((MSUtils.getByte(pageBuffer, 971) + 0.0) * 0.1);
 		ICISR_pmask = (int) ((MSUtils.getByte(pageBuffer, 972) + 0.0) * 1.0);
 		injTestMode = MSUtils.getBits(pageBuffer, 973, 0, 1, 0);
@@ -1263,8 +1060,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		beta = (int) ((MSUtils.getByte(pageBuffer, 991) + 0.0) * 1.0);
 		gamma = (int) ((MSUtils.getByte(pageBuffer, 992) + 0.0) * 1.0);
 		acc_synchk = MSUtils.getBits(pageBuffer, 993, 0, 1, 0);
-		tie1_2cyl = MSUtils.getBits(pageBuffer, 994, 0, 0, 0);
-		autoTrig = MSUtils.getBits(pageBuffer, 995, 0, 0, 0);
 		pageBuffer = loadPage(2, 954, 954, null, new byte[] { 114, 3, -70, 3, -70, 3, -70 });
 		AMCNBurns = (int) ((MSUtils.getWord(pageBuffer, 576) + 0.0) * 1.0);
 		if (CELSIUS)
@@ -1287,43 +1082,7 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		}
 		xTauOption = MSUtils.getBits(pageBuffer, 676, 0, 1, 0);
 		spkN2O = (double) ((MSUtils.getByte(pageBuffer, 677) + 0.0) * 0.1);
-		if (nAUTO_TRIG)
-		{
-			spark_fuel_offset = (int) ((MSUtils.getByte(pageBuffer, 800) + 0.0) * 1.0);
-		}
-		seq_ack = (int) ((MSUtils.getByte(pageBuffer, 801) + 0.0) * 1.0);
-		nskpCPW = (int) ((MSUtils.getByte(pageBuffer, 802) + 0.0) * 1.0);
-		mafLF = (int) ((MSUtils.getByte(pageBuffer, 803) + 0.0) * 1.0);
-		fRate = (double) ((MSUtils.getWord(pageBuffer, 804) + 0.0) * 0.0010);
-		Vmfld = (int) ((MSUtils.getWord(pageBuffer, 806) + 0.0) * 1.0);
-		maf_tlag = (double) ((MSUtils.getWord(pageBuffer, 808) + 0.0) * 0.1);
-		VOF = (double) ((MSUtils.getByte(pageBuffer, 810) + 0.0) * 0.01);
-		CR = (double) ((MSUtils.getByte(pageBuffer, 811) + 0.0) * 0.1);
-		VERGMOptn = MSUtils.getBits(pageBuffer, 812, 0, 1, 0);
-		c1rgm = (double) ((MSUtils.getWord(pageBuffer, 814) + 0.0) * 0.0010);
-		c2rgm = (double) ((MSUtils.getWord(pageBuffer, 816) + 0.0) * 0.0010);
-		tachoPW = (double) ((MSUtils.getByte(pageBuffer, 818) + 0.0) * 0.128);
-		tachoDuty = (int) ((MSUtils.getByte(pageBuffer, 819) + 0.0) * 1.0);
-		if (AUTO_TRIG)
-		{
-			InjStart = (int) ((MSUtils.getWord(pageBuffer, 820) + 0.0) * 0.1);
-		}
-		else
-		{
-			InjStart = (int) ((MSUtils.getWord(pageBuffer, 820) + 0.0) * 1.0);
-		}
-		mapSample = (double) ((MSUtils.getWord(pageBuffer, 822) + 0.0) * 0.1);
-		mafSample = (double) ((MSUtils.getWord(pageBuffer, 824) + 0.0) * 0.1);
-		AFRStoich = (double) ((MSUtils.getByte(pageBuffer, 826) + 0.0) * 0.1);
-		AFRStoichFF = (double) ((MSUtils.getByte(pageBuffer, 827) + 0.0) * 0.1);
-		activate_xrate_0 = MSUtils.getBits(pageBuffer, 862, 0, 0, 0);
-		activate_xrate_1 = MSUtils.getBits(pageBuffer, 862, 1, 1, 0);
-		activate_xrate_2 = MSUtils.getBits(pageBuffer, 862, 2, 2, 0);
-		activate_xrate_3 = MSUtils.getBits(pageBuffer, 862, 3, 3, 0);
-		activate_xrate_4 = MSUtils.getBits(pageBuffer, 862, 4, 4, 0);
-		activate_xrate_5 = MSUtils.getBits(pageBuffer, 862, 5, 5, 0);
-		activate_xrate_6 = MSUtils.getBits(pageBuffer, 862, 6, 6, 0);
-		activate_xrate_7 = MSUtils.getBits(pageBuffer, 862, 7, 7, 0);
+		fRate = (double) ((MSUtils.getWord(pageBuffer, 768) + 0.0) * 0.0010);
 		if (CELSIUS)
 		{
 			if (EXPANDED_CLT_TEMP)
@@ -1348,10 +1107,6 @@ public class ZZMegasquirt_II_3760 extends Megasquirt
 		VEIXOptn = MSUtils.getBits(pageBuffer, 941, 0, 1, 0);
 		MatRtdRPMHi = (int) ((MSUtils.getWord(pageBuffer, 942) + 0.0) * 1.0);
 		MatRtdRPMLo = (int) ((MSUtils.getWord(pageBuffer, 944) + 0.0) * 1.0);
-		FuelAdj = (double) ((MSUtils.getSignedWord(pageBuffer, 946) + 0.0) * 0.1);
-		SpkAdj = (double) ((MSUtils.getSignedWord(pageBuffer, 948) + 0.0) * 0.1);
-		IdleAdj = (int) ((MSUtils.getSignedWord(pageBuffer, 950) + 0.0) * 1.0);
-		SprAdj = (int) ((MSUtils.getSignedWord(pageBuffer, 952) + 0.0) * 1.0);
 	}
 
 }

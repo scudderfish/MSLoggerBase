@@ -1,21 +1,19 @@
-package uk.org.smithfamily.mslogger.ecuDef.gen;
+package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 import java.util.*;
 
 import android.content.Context;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
 /*
- Fingerprint : 9cfaa0cd1a5746e2a44e250cb8d330d4
+ Fingerprint : d9babd26b30a89a9ccbd6e8b479102e1
  */
-public class ZZMS2ExtraSerial312a extends Megasquirt
+public class ZZMS2Extra310 extends Megasquirt
 {
-	public ZZMS2ExtraSerial312a(Context c)
+	public ZZMS2Extra310(Context c)
 	{
 		super(c);
 		NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
@@ -31,7 +29,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
 	}
 
 	byte[]				queryCommand	= new byte[] { 'Q' };
-	String				signature		= "MS2Extra Serial312a\0";
+	String				signature		= "MS2Extra Serial310 \0";
 	byte[]				ochGetCommand	= new byte[] { 'A' };
 	int					ochBlockSize	= 169;
 	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { signature }));
@@ -127,7 +125,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
 	int					status2;
 	int					baroCorrection;
 	int					tpsfuelcut;
-	double				mafmap;
+	int					mafmap;
 	double				pulseWidth4;
 	double				pulseWidth3;
 	double				pulseWidth2;
@@ -484,7 +482,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
 	int					launch_sft_lim;
 	int					N2Oopt_pins2;
 	int					inj_time_mask;
-	double				egoDelta;
+	int					egoDelta;
 	int					testmodelock;
 	double				OverBoostKpa;
 	int					egoKI;
@@ -683,7 +681,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
 		tpsDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 0.100);
 		mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
 		dwell = (double) ((MSUtils.getWord(ochBuffer, 62) + 0.0) * 0.0666);
-		mafmap = (double) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 0.100);
+		mafmap = (int) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 1.000);
 		fuelload = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
 		fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
 		portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
@@ -1414,7 +1412,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
 		baroCorr = MSUtils.getBits(pageBuffer, 593, 0, 1, 0);
 		egoType = MSUtils.getBits(pageBuffer, 594, 0, 2, 0);
 		egoCount = (int) ((MSUtils.getByte(pageBuffer, 595) + 0.0) * 1.0);
-		egoDelta = (double) ((MSUtils.getByte(pageBuffer, 596) + 0.0) * 0.1);
+		egoDelta = (int) ((MSUtils.getByte(pageBuffer, 596) + 0.0) * 1.0);
 		oldegoLimit = (int) ((MSUtils.getByte(pageBuffer, 597) + 0.0) * 1.0);
 		if (LAMBDA)
 		{

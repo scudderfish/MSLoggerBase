@@ -1,21 +1,19 @@
-package uk.org.smithfamily.mslogger.ecuDef.gen;
+package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 import java.util.*;
 
 import android.content.Context;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
 /*
- Fingerprint : a7d4cde2efa0e21b1e8c1815855b304f
+ Fingerprint : b16dddd5844d068f18f73a51be476b73
  */
-public class ZZMS1Extra29y extends Megasquirt
+public class ZZMSExtra_format_hr_10 extends Megasquirt
 {
-	public ZZMS1Extra29y(Context c)
+	public ZZMSExtra_format_hr_10(Context c)
 	{
 		super(c);
 		NGK_AFX = isSet("NGK_AFX");
@@ -46,10 +44,10 @@ public class ZZMS1Extra29y extends Megasquirt
 	}
 
 	byte[]				queryCommand	= new byte[] { 'S' };
-	String				signature		= "MS1/Extra format 029y3 *********";
+	String				signature		= "MS/Extra format hr_10 **********";
 	byte[]				ochGetCommand	= new byte[] { 'R' };
-	int					ochBlockSize	= 39;
-	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { signature,"MSnS-extra format 029q *********" }));
+	int					ochBlockSize	= 41;
+	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { signature }));
 	// Flags
 	boolean				NGK_AFX;
 	boolean				MPXH6300A;
@@ -153,7 +151,6 @@ public class ZZMS1Extra29y extends Megasquirt
 	int					nSquirts1;
 	double				RpmHiRes;
 	double				CCpHr;
-	int					nosActive1;
 	int					test2;
 	double				gph;
 	double				USgph;
@@ -559,7 +556,7 @@ public class ZZMS1Extra29y extends Megasquirt
 	int					TpsOn;
 
 	private String[]	defaultGauges	= { "RpmHiResGauge", "cltGauge", "pulseWidth1Gauge", "dutyCycle1Gauge", "mapGauge",
-			"matGauge", "ego2Gauge", "afrGauge", "advanceGauge", "tpsADCGauge" };
+			"matGauge", "afrGauge", "advanceGauge" };
 
 	@Override
 	public void calculate(byte[] ochBuffer) throws IOException
@@ -579,30 +576,30 @@ public class ZZMS1Extra29y extends Megasquirt
 		airCorrection = (int) ((MSUtils.getByte(ochBuffer, 11) + 0.000) * 1.000);
 		warmupEnrich = (int) ((MSUtils.getByte(ochBuffer, 12) + 0.000) * 1.000);
 		rpm100 = (int) ((MSUtils.getByte(ochBuffer, 13) + 0.000) * 1.000);
-		pulseWidth1 = (double) ((MSUtils.getByte(ochBuffer, 14) + 0.000) * 0.100);
-		accelEnrich = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.000) * 1.000);
-		baroCorrection = (int) ((MSUtils.getByte(ochBuffer, 16) + 0.000) * 1.000);
-		gammaEnrich = (int) ((MSUtils.getByte(ochBuffer, 17) + 0.000) * 1.000);
-		veCurr1 = (int) ((MSUtils.getByte(ochBuffer, 18) + 0.000) * 1.000);
-		pulseWidth2 = (double) ((MSUtils.getByte(ochBuffer, 19) + 0.000) * 0.100);
-		veCurr2 = (int) ((MSUtils.getByte(ochBuffer, 20) + 0.000) * 1.000);
-		idleDC = (int) ((MSUtils.getByte(ochBuffer, 21) + 0.000) * 1.000);
-		iTime = (int) ((MSUtils.getWord(ochBuffer, 22) + 0.000) * 1.000);
-		advance = (int) ((MSUtils.getByte(ochBuffer, 24) + 0.000) * 1.000);
-		afrtarget = (int) ((MSUtils.getByte(ochBuffer, 25) + 0.000) * 1.000);
-		fuelADC = (int) ((MSUtils.getByte(ochBuffer, 26) + 0.000) * 1.000);
-		egtADC = (int) ((MSUtils.getByte(ochBuffer, 27) + 0.000) * 1.000);
-		CltIatAngle = (int) ((MSUtils.getByte(ochBuffer, 28) + 0.000) * 1.000);
-		KnockAngle = (int) ((MSUtils.getByte(ochBuffer, 29) + 0.000) * 1.000);
-		egoCorrection2 = (int) ((MSUtils.getByte(ochBuffer, 30) + 0.000) * 1.000);
-		porta = (int) ((MSUtils.getByte(ochBuffer, 31) + 0) * 1.000);
-		portb = (int) ((MSUtils.getByte(ochBuffer, 32) + 0) * 1.000);
-		portc = (int) ((MSUtils.getByte(ochBuffer, 33) + 0) * 1.000);
-		portd = (int) ((MSUtils.getByte(ochBuffer, 34) + 0) * 1.000);
-		stackL = (int) ((MSUtils.getByte(ochBuffer, 35) + 0) * 1.000);
-		tpsLast = (int) ((MSUtils.getByte(ochBuffer, 36) + 0) * 1.000);
-		iTimeX = (int) ((MSUtils.getByte(ochBuffer, 37) + 0.000) * 1.000);
-		bcDC = (double) ((MSUtils.getByte(ochBuffer, 38) + 0.000) * 0.3922);
+		pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 14) + 0.000) * 0.001);
+		accelEnrich = (int) ((MSUtils.getByte(ochBuffer, 16) + 0.000) * 1.000);
+		baroCorrection = (int) ((MSUtils.getByte(ochBuffer, 17) + 0.000) * 1.000);
+		gammaEnrich = (int) ((MSUtils.getByte(ochBuffer, 18) + 0.000) * 1.000);
+		veCurr1 = (int) ((MSUtils.getByte(ochBuffer, 19) + 0.000) * 1.000);
+		pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 20) + 0.000) * 0.001);
+		veCurr2 = (int) ((MSUtils.getByte(ochBuffer, 22) + 0.000) * 1.000);
+		idleDC = (int) ((MSUtils.getByte(ochBuffer, 23) + 0.000) * 1.000);
+		iTime = (int) ((MSUtils.getWord(ochBuffer, 24) + 0.000) * 1.000);
+		advance = (int) ((MSUtils.getByte(ochBuffer, 26) + 0.000) * 1.000);
+		afrtarget = (int) ((MSUtils.getByte(ochBuffer, 27) + 0.000) * 1.000);
+		fuelADC = (int) ((MSUtils.getByte(ochBuffer, 28) + 0.000) * 1.000);
+		egtADC = (int) ((MSUtils.getByte(ochBuffer, 29) + 0.000) * 1.000);
+		CltIatAngle = (int) ((MSUtils.getByte(ochBuffer, 30) + 0.000) * 1.000);
+		KnockAngle = (int) ((MSUtils.getByte(ochBuffer, 31) + 0.000) * 1.000);
+		egoCorrection2 = (int) ((MSUtils.getByte(ochBuffer, 32) + 0.000) * 1.000);
+		porta = (int) ((MSUtils.getByte(ochBuffer, 33) + 0) * 1.000);
+		portb = (int) ((MSUtils.getByte(ochBuffer, 34) + 0) * 1.000);
+		portc = (int) ((MSUtils.getByte(ochBuffer, 35) + 0) * 1.000);
+		portd = (int) ((MSUtils.getByte(ochBuffer, 36) + 0) * 1.000);
+		stackL = (int) ((MSUtils.getByte(ochBuffer, 37) + 0) * 1.000);
+		tpsLast = (int) ((MSUtils.getByte(ochBuffer, 38) + 0) * 1.000);
+		iTimeX = (int) ((MSUtils.getByte(ochBuffer, 39) + 0.000) * 1.000);
+		bcDC = (double) ((MSUtils.getByte(ochBuffer, 40) + 0.000) * 0.3922);
 		accDecEnrich = ((((engine & 32)) != 0) ? 100
 				: ((pulseWidth - injOpen1) / (pulseWidth - (accelEnrich / 10) - injOpen1) * 100));
 		batteryVoltage = (batADC / 255.0 * 30.0);
@@ -634,11 +631,6 @@ public class ZZMS1Extra29y extends Megasquirt
 		{
 			lambda2 = (fuelADC / 255.0 + 0.5);
 			afr2 = (lambda * 14.7);
-		}
-		else if (FAST_WIDEBAND_O2)
-		{
-			lambda2 = (fuelADC / 51);
-			afr2 = (lambda2 * 14.7);
 		}
 		else
 		{
@@ -826,7 +818,6 @@ public class ZZMS1Extra29y extends Megasquirt
 		Timeroll = (portc & 4);
 		waterIlog = (porta & 16);
 		MAFVolts = (fuelADC * 0.0196078);
-		nosActive1 = ((((portd & 2)) != 0) ? 0 : 1);
 	}
 
 	@Override
@@ -885,7 +876,6 @@ public class ZZMS1Extra29y extends Megasquirt
 			b.append("DutyCycle1").append("\t");
 			b.append("DutyCycle2").append("\t");
 			b.append("idleDC").append("\t");
-			b.append("BCDuty3").append("\t");
 			b.append("Spark Angle").append("\t");
 			b.append("EGT").append("\t");
 			b.append("Fuel Press").append("\t");
@@ -896,7 +886,6 @@ public class ZZMS1Extra29y extends Megasquirt
 			b.append("portb").append("\t");
 			b.append("portc").append("\t");
 			b.append("portd").append("\t");
-			b.append("NOS On").append("\t");
 			b.append("batt V").append("\t");
 		}
 		b.append(MSUtils.getLocationLogHeader());
@@ -959,7 +948,6 @@ public class ZZMS1Extra29y extends Megasquirt
 			b.append(dutyCycle1).append("\t");
 			b.append(dutyCycle2).append("\t");
 			b.append(idleDC).append("\t");
-			b.append(round(bcDC)).append("\t");
 			b.append(advSpark).append("\t");
 			b.append(egttemp).append("\t");
 			b.append(fuelpress).append("\t");
@@ -970,7 +958,6 @@ public class ZZMS1Extra29y extends Megasquirt
 			b.append(portb).append("\t");
 			b.append(portc).append("\t");
 			b.append(portd).append("\t");
-			b.append(nosActive1).append("\t");
 			b.append(batteryVoltage).append("\t");
 		}
 		b.append(MSUtils.getLocationLogRow());
@@ -1050,9 +1037,9 @@ public class ZZMS1Extra29y extends Megasquirt
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barocorrGauge", "baroCorrection", baroCorrection, "baro correction", "%",
 				0, 120, -1, -1, 999, 999, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge", "pulseWidth1", pulseWidth1, "Pulse Width 1", "mSec",
-				0, 25.5, 1.0, 1.2, 20, 25, 1, 1, 0));
+				0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge", "pulseWidth2", pulseWidth2, "Pulse Width 2", "mSec",
-				0, 25.5, 1.0, 1.2, 20, 25, 1, 1, 0));
+				0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer", "rpm", rpm, "Engine Speed", "RPM", 0, 8000, 300, 600, 3000,
 				5000, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge", "throttle", throttle, "Throttle Position", "%TPS", 0,
@@ -1078,7 +1065,7 @@ public class ZZMS1Extra29y extends Megasquirt
 					200, 210, 0, 0, 0));
 		}
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advanceGauge", "advSpark", advSpark, "Spark Advance", "deg BTDC", 50,
-				-10, 0, 0, 35, 45, 1, 0, 0));
+				-10, 0, 0, 35, 45, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("stackGauge", "stackL", stackL, "CPU stack", "bytes", 240, 200, 0, 0, 254,
 				254, 0, 0, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelGauge", "fuelpress", fuelpress, "Fuel Pressure", "lb/in", 0, 80, 30,
@@ -1095,13 +1082,6 @@ public class ZZMS1Extra29y extends Megasquirt
 		}
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2", "egoCorrection2", egoCorrection2, "EGO Correction2", "%",
 				50, 150, 90, 99, 101, 110, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("testGauge", "test", test, "TEST", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
-		GaugeRegister.INSTANCE
-				.addGauge(new GaugeDetails("test2Gauge", "test2", test2, "TEST2", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD6Gauge", "fuelADC", fuelADC, "AD6 raw", "", 0, 255, 255, 255, 0, 0, 0,
-				0, 0));
-		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD7Gauge", "egtADC", egtADC, "AD7 raw", "", 0, 255, 255, 255, 0, 0, 0, 0,
-				0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambdaGauge2", "lambda2", lambda2, "Lambda2", "", 0.5, 1.5, 0.5, 0.7, 2,
 				1.1, 2, 2, 0));
 		GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrGauge2", "afr2", afr2, "Air:Fuel Ratio2", "", 10, 19.4, 12, 13, 15,
@@ -1161,7 +1141,7 @@ public class ZZMS1Extra29y extends Megasquirt
 	@Override
 	public int getInterWriteDelay()
 	{
-		return 100;
+		return 300;
 	}
 
 	@Override
@@ -1224,10 +1204,10 @@ public class ZZMS1Extra29y extends Megasquirt
 		reqFuel1 = (double) ((MSUtils.getByte(pageBuffer, 148) + 0.0) * 0.1);
 		divider1 = (int) ((MSUtils.getByte(pageBuffer, 149) + 0.0) * 1.0);
 		alternate1 = MSUtils.getBits(pageBuffer, 150, 0, 0, 0);
-		injOpen1 = (double) ((MSUtils.getByte(pageBuffer, 151) + 0.0) * 0.1);
+		injOpen1 = (double) ((MSUtils.getByte(pageBuffer, 151) + 0.0) * 0.01);
 		injPwmP1 = (int) ((MSUtils.getByte(pageBuffer, 153) + 0.0) * 1.0);
 		injPwmT1 = (double) ((MSUtils.getByte(pageBuffer, 154) + 0.0) * 0.1);
-		battFac1 = (double) ((MSUtils.getByte(pageBuffer, 155) + 0.0) * 0.0166667);
+		battFac1 = (double) ((MSUtils.getByte(pageBuffer, 155) + 0.0) * 0.01);
 		rpmk1 = (int) ((MSUtils.getWord(pageBuffer, 156) + 0.0) * 1.0);
 		mapType1 = MSUtils.getBits(pageBuffer, 182, 0, 1, 0);
 		mapSensor1 = MSUtils.getBits(pageBuffer, 182, 0, 0, 0);
@@ -1283,10 +1263,10 @@ public class ZZMS1Extra29y extends Megasquirt
 		reqFuel2 = (double) ((MSUtils.getByte(pageBuffer, 148) + 0.0) * 0.1);
 		divider2 = (int) ((MSUtils.getByte(pageBuffer, 149) + 0.0) * 1.0);
 		alternate2 = MSUtils.getBits(pageBuffer, 150, 0, 0, 0);
-		injOpen2 = (double) ((MSUtils.getByte(pageBuffer, 151) + 0.0) * 0.1);
+		injOpen2 = (double) ((MSUtils.getByte(pageBuffer, 151) + 0.0) * 0.01);
 		injPwmP2 = (int) ((MSUtils.getByte(pageBuffer, 153) + 0.0) * 1.0);
 		injPwmT2 = (double) ((MSUtils.getByte(pageBuffer, 154) + 0.0) * 0.1);
-		battFac2 = (double) ((MSUtils.getByte(pageBuffer, 155) + 0.0) * 0.0166667);
+		battFac2 = (double) ((MSUtils.getByte(pageBuffer, 155) + 0.0) * 0.01);
 		rpmk2 = (int) ((MSUtils.getWord(pageBuffer, 156) + 0.0) * 1.0);
 		mapType2 = MSUtils.getBits(pageBuffer, 182, 0, 1, 0);
 		twoStroke2 = MSUtils.getBits(pageBuffer, 182, 2, 2, 0);
@@ -1895,9 +1875,6 @@ public class ZZMS1Extra29y extends Megasquirt
 		else if (INNOVATE_LC1_DEFAULT)
 		{
 		}
-		else if (FAST_WIDEBAND_O2)
-		{
-		}
 		else if (ZEITRONIX_NON_LINEAR)
 		{
 		}
@@ -1954,9 +1931,6 @@ public class ZZMS1Extra29y extends Megasquirt
 		{
 		}
 		else if (INNOVATE_LC1_DEFAULT)
-		{
-		}
-		else if (FAST_WIDEBAND_O2)
 		{
 		}
 		else if (ZEITRONIX_NON_LINEAR)

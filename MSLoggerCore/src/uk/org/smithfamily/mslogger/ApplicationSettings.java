@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.mslogger.ecuDef.gen.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
