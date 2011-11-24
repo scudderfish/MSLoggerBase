@@ -9,9 +9,6 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/megasquirt">
-		<ListPreference android:entries="@array/MSNames"
-			android:key="mstype" android:entryValues="@array/MSNames"
-			android:defaultValue="MS1Extra" android:title="@string/ms_model" />
 		<ListPreference android:key="maptype" android:entries="@array/mapnames"
 			android:entryValues="@array/maptypes" android:title="@string/map_sensor" />
 		<ListPreference android:key="egotype" android:entries="@array/egonames"
