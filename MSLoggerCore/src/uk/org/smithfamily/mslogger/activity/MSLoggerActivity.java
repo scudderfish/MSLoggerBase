@@ -85,6 +85,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         GPSLocationManager.INSTANCE.start();
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
+        registerMessages();
+
         if (ApplicationSettings.INSTANCE.getEcuDefinition() == null)
         {
             Intent serverIntent = new Intent(this, StartupActivity.class);
@@ -111,7 +113,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void finaliseInit()
     {
         initGauges();
-        registerMessages();
 
         if (testBluetooth())
         {
@@ -157,7 +158,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     synchronized void doBindService()
     {
-        bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
+        if(service == null)
+        {
+            bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
@@ -328,6 +332,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
+        IntentFilter ecuFilter = new IntentFilter(ApplicationSettings.ECU_CHANGED);
+        registerReceiver(updateReceiver, ecuFilter);
         registered = true;
     }
 
@@ -831,33 +837,41 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            Log.i(ApplicationSettings.TAG, "Received :" + intent.getAction());
+            String action = intent.getAction();
+            Log.i(ApplicationSettings.TAG, "Received :" + action);
             boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
 
-            if (intent.getAction().equals(Megasquirt.CONNECTED))
+            if(action.equals(ApplicationSettings.ECU_CHANGED))
             {
-                DebugLogManager.INSTANCE.log(intent.getAction());
+                DebugLogManager.INSTANCE.log(action);
+                initGauges();
+                doBindService();
+                ApplicationSettings.INSTANCE.getEcuDefinition().start();
+            }
+            if (action.equals(Megasquirt.CONNECTED))
+            {
+                DebugLogManager.INSTANCE.log(action);
                 indicatorManager.setDisabled(false);
                 if (shouldBeLogging && service != null)
                 {
                     service.startLogging();
                 }
             }
-            if (intent.getAction().equals(Megasquirt.CONNECTION_LOST))
+            if (action.equals(Megasquirt.CONNECTION_LOST))
             {
                 indicatorManager.setDisabled(true);
                 if (shouldBeLogging)
                 {
                     DatalogManager.INSTANCE.mark("Connection Lost");
                 }
-                DebugLogManager.INSTANCE.log(intent.getAction());
+                DebugLogManager.INSTANCE.log(action);
             }
 
-            if (intent.getAction().equals(Megasquirt.NEW_DATA))
+            if (action.equals(Megasquirt.NEW_DATA))
             {
                 processData();
             }
-            if (intent.getAction().equals(ApplicationSettings.GENERAL_MESSAGE))
+            if (action.equals(ApplicationSettings.GENERAL_MESSAGE))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 

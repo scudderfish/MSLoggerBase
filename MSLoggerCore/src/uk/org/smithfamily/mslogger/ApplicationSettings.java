@@ -1,15 +1,11 @@
 package uk.org.smithfamily.mslogger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
-import uk.org.smithfamily.mslogger.ecuDef.gen.*;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -18,35 +14,35 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 {
     INSTANCE;
 
-    public static final String   MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
-    public static final String   GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
-    public static final String   MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
-    public static final String   TAG                 = "uk.org.smithfamily.mslogger";
-    private Context              context;
-    private File                 dataDir;
-    private int                  hertz;
-    private SharedPreferences    prefs;
-    private Megasquirt           ecuDefinition;
-    private String               bluetoothMac;
-    private Boolean              autoConnectOverride = null;
+    public static final String      MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
+    public static final String      GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
+    public static final String      MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
+    public static final String      ECU_CHANGED         = "uk.org.smithfamily.mslogger.ECU_CHANGED";
+    public static final String      TAG                 = "uk.org.smithfamily.mslogger";
+    private Context                 context;
+    private File                    dataDir;
+    private int                     hertz;
+    private SharedPreferences       prefs;
+    private Megasquirt              ecuDefinition;
+    private String                  bluetoothMac;
+    private Boolean                 autoConnectOverride = null;
 
-    private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
-    private Boolean              loggingOverride     = null;
-    private BluetoothAdapter    defaultAdapter;
-	private boolean	writable;
-	private Map<String,Megasquirt> sigMap;
+    private Map<String, Boolean>    settings            = new HashMap<String, Boolean>();
+    private Boolean                 loggingOverride     = null;
+    private BluetoothAdapter        defaultAdapter;
+    private boolean                 writable;
+    private Map<String, Megasquirt> sigMap;
 
     public void initialise(Context context)
     {
         this.context = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.registerOnSharedPreferenceChangeListener(this);
-        dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
-                context.getString(R.string.app_name)));
+        dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
-        sigMap = new HashMap<String,Megasquirt>();
-  
+        sigMap = new HashMap<String, Megasquirt>();
+
         registerEcu(new ZZGPIO_MShift_2110(context));
         registerEcu(new ZZJimstim21(context));
         registerEcu(new ZZMegasquirt_I_BG_20_30(context));
@@ -59,22 +55,19 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         registerEcu(new ZZMS2Extra310(context));
         registerEcu(new ZZMS2Extra311mb_v12(context));
         registerEcu(new ZZMS2ExtraSerial312a(context));
-        registerEcu(new ZZMS3_Format_0221002  (context));
+        registerEcu(new ZZMS3_Format_0221002(context));
         registerEcu(new ZZMS3_Format_0095002_102(context));
         registerEcu(new ZZMS3_Pre11_alpha15(context));
         registerEcu(new ZZMSExtra_format_hr_10(context));
         registerEcu(new ZZMSExtra_format_hr_11(context));
         registerEcu(new ZZMSExtra_format_hr_11d(context));
         registerEcu(new ZZMS1Extra29y(context));
-//        registerEcu(new MS1Extra29y(context));
-//        registerEcu(new MS2Extra210(context));
-//        registerEcu(new MS2Extra310(context));
     }
 
     private void registerEcu(Megasquirt ecu)
     {
         Set<String> sigs = ecu.getSignature();
-        for(String sig : sigs)
+        for (String sig : sigs)
         {
             sigMap.put(sig, ecu);
         }
@@ -105,12 +98,14 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
         return bluetoothMac;
     }
+
     public synchronized void setBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
         editor.putString("bluetooth_mac", m);
         editor.commit();
     }
+
     // This method mimics the C style preprocessor of INI files
     public boolean isSet(String name)
     {
@@ -214,14 +209,15 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         this.defaultAdapter = defaultAdapter;
     }
 
-	public void setWritable(boolean cardOK)
-	{
-		this.writable = cardOK;	
-	}
-	public boolean isWritable()
-	{
-		return this.writable;
-	}
+    public void setWritable(boolean cardOK)
+    {
+        this.writable = cardOK;
+    }
+
+    public boolean isWritable()
+    {
+        return this.writable;
+    }
 
     public Megasquirt getEcuForSig(String sig)
     {
@@ -231,6 +227,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public void setEcu(Megasquirt ecu)
     {
         ecuDefinition = ecu;
+
+        Intent broadcast = new Intent();
+        broadcast.setAction(ApplicationSettings.ECU_CHANGED);
+        context.sendBroadcast(broadcast);
     }
 
 }

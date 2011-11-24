@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.log.*;
 import android.bluetooth.*;
 import android.content.Context;

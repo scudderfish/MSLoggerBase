@@ -123,7 +123,7 @@ public class StartupActivity extends Activity
     private void unrecognisedEcu(final String sig)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("I don't recognise your ECU, would you like to email the developer about this?").setTitle(R.string.app_name)
+        builder.setMessage(R.string.unrecognised_ecu).setTitle(R.string.app_name)
                 .setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id)
