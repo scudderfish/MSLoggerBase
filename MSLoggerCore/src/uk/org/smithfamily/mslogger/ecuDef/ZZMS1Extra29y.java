@@ -1060,12 +1060,14 @@ public class ZZMS1Extra29y extends Megasquirt
         {
             GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge", "egttemp", egttemp, "EGT", "F", 0, 2200, 0, 0, 1450, 1480, 1, 1, 0));
         }
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("CltIatGauge", "CltIatDeg", CltIatDeg, "Clt IAT Angle", "Deg", -10, 10, -10, -10, 10, 10, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2", "egoCorrection2", egoCorrection2, "EGO Correction2", "%", 50, 150, 90, 99, 101, 110,
                 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("testGauge", "test", test, "TEST", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("test2Gauge", "test2", test2, "TEST2", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD6Gauge", "fuelADC", fuelADC, "AD6 raw", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("AD7Gauge", "egtADC", egtADC, "AD7 raw", "", 0, 255, 255, 255, 0, 0, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("RpmHiResGauge", "RpmHiRes", RpmHiRes, "Engine RPM", "RPM", 0, 8000, 0, 300, 7800, 8000, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambdaGauge2", "lambda2", lambda2, "Lambda2", "", 0.5, 1.5, 0.5, 0.7, 2, 1.1, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrGauge2", "afr2", afr2, "Air:Fuel Ratio2", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vacuumGauge", "vacuum", vacuum, "Engine Vacuum", "in-HG", 0, 30, 0, 0, 30, 30, 1, 1, 0));
@@ -1073,6 +1075,16 @@ public class ZZMS1Extra29y extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("VacBooGauge", "boostVac", boostVac, "Engine Vac Boost", "in-HG/PSIG", -30, 30, -30, -30, 30, 30, 1,
                 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("TargetAFRGauge", "TargetAFR", TargetAFR, "Target AFR", "AFR", 10, 19.4, 0, 0, 20, 20, 2, 2, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mphGauge", "mph", mph, "Speedo", "MPH", 0, 200, -1, -1, 200, 200, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("USgphGauge", "USgph", USgph, "US GPH", "GPH", 0, 100, -1, -1, 100, 100, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gphGauge", "gph", gph, "GPH", "GPH", 0, 100, -1, -1, 100, 100, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("USmpgGauge", "USmpg", USmpg, "US MPG", "MPG", 0, 100, -1, -1, 100, 100, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mpgGauge", "mpg", mpg, "MPG", "MPG", 0, 100, -1, -1, 100, 100, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("YGForceGauge", "YForce", YForce, "Y G-Force", "G", -3, 3, 0, 0, 2, 3, 3, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("XGForceGauge", "XForce", XForce, "X G-Force", "G", -3, 3, 0, 0, 2, 3, 3, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("MAFGauge", "MAFVolts", MAFVolts, "Volts", "V", 0, 5, 0, 0, 5, 5, 2, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("bcDCGauge", "bcDC", bcDC, "Boost Control DC", "%", 0, 100, -1, -1, 999, 0, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("idleDCGauge", "idleDC", idleDC, "Idle DC", "%", 0, 100, -1, -1, 999, 0, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("RealDutyGauge1", "dutyCy1Real", dutyCy1Real, "Fuel Delivery 1", "Flow", 0, 75, -1, -1, 75, 75, 1, 1,
                 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("RealDutyGauge2", "dutyCy2Real", dutyCy2Real, "Fuel Delivery 2", "Flow", 0, 75, -1, -1, 75, 75, 1, 1,
