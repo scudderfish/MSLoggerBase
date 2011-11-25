@@ -68,7 +68,12 @@ public class MSLoggerService extends Service
     private void disconnect()
     {
         Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
-        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if(ecuDefinition != null)
+        {
+            ecuDefinition.stop();
+        }
         removeNotification();
     }
 

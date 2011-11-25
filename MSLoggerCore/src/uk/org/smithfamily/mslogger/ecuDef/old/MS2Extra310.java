@@ -21,6 +21,11 @@ public class MS2Extra310 extends Megasquirt
     public MS2Extra310(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         LAMBDA = isSet("LAMBDA");
         EGTFULL = isSet("EGTFULL");

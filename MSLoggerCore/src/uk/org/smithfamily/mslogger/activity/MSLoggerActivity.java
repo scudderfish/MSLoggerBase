@@ -60,6 +60,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                                                  + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
                                                                  + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
                                                                  + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
+    private static final int       SHOW_PREFS            = 124230;
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
     private LicenseChecker         mChecker;
@@ -77,7 +78,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         messages = (TextView) findViewById(R.id.messages);
 
         findGauges();
-        PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
+        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
+        prefsManager.registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
+
         indicatorManager = IndicatorManager.INSTANCE;
         indicatorManager.setDisabled(true);
 
@@ -158,7 +161,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     synchronized void doBindService()
     {
-        if(service == null)
+        if (service == null)
         {
             bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
         }
@@ -584,20 +587,39 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void openPreferences()
     {
         Intent launchPrefs = new Intent(this, PreferencesActivity.class);
-        startActivity(launchPrefs);
+        startActivityForResult(launchPrefs, SHOW_PREFS);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK)
+        if (resultCode == RESULT_OK)
         {
-            doBindService();
-        }
-        if(requestCode == MSLoggerApplication.PROBE_ECU && resultCode==RESULT_OK)
-        {
-            completeCreate();
+            if (requestCode == REQUEST_ENABLE_BT)
+            {
+                doBindService();
+            }
+            if (requestCode == MSLoggerApplication.PROBE_ECU)
+            {
+                completeCreate();
+            }
+            if (requestCode == SHOW_PREFS)
+            {
+                Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
+                if(dirty)
+                {
+                    resetConnection();
+                    Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+                    if(ecuDefinition!=null)
+                    {
+                        ecuDefinition.refreshFlags();
+                        GaugeRegister.INSTANCE.flush();
+                        ecuDefinition.initGauges();
+                        initGauges();
+                    }
+                }
+            }
         }
     }
 
@@ -622,9 +644,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             initGauges();
         }
-        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ApplicationSettings.INSTANCE.getEcuDefinition() != null)
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
         {
-            ConnectionState currentState = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState();
+
+            ConnectionState currentState = ecuDefinition.getCurrentState();
             if (currentState == Megasquirt.ConnectionState.STATE_NONE)
             {
                 if (service == null)
@@ -841,7 +866,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             Log.i(ApplicationSettings.TAG, "Received :" + action);
             boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
 
-            if(action.equals(ApplicationSettings.ECU_CHANGED))
+            if (action.equals(ApplicationSettings.ECU_CHANGED))
             {
                 DebugLogManager.INSTANCE.log(action);
                 initGauges();

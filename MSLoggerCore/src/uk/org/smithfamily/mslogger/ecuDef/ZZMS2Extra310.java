@@ -16,6 +16,11 @@ public class ZZMS2Extra310 extends Megasquirt
     public ZZMS2Extra310(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         EGTFULL = isSet("EGTFULL");
         CELSIUS = isSet("CELSIUS");
@@ -603,8 +608,8 @@ public class ZZMS2Extra310 extends Megasquirt
     double              knk_step1;
     int                 pwmidleset_hz;
 
-    private String[]    defaultGauges = { "tachometer", "throttleGauge", "pulseWidth1Gauge", "pulseWidth2Gauge", "advdegGauge", "fuelloadGauge", "egoVGauge",
-            "lambda1Gauge", "afr1Gauge", "injadv2Gauge" };
+    private String[]    defaultGauges = { "tachometer", "throttleGauge", "afr1Gauge", "pulseWidth1Gauge", "pulseWidth2Gauge", "advdegGauge", "fuelloadGauge", "egoVGauge",
+            "lambda1Gauge", "injadv2Gauge" };
 
     @Override
     public void calculate(byte[] ochBuffer) throws IOException

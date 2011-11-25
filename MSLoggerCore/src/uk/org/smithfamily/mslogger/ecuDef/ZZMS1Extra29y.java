@@ -16,6 +16,11 @@ public class ZZMS1Extra29y extends Megasquirt
     public ZZMS1Extra29y(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NGK_AFX = isSet("NGK_AFX");
         MPXH6300A = isSet("MPXH6300A");
         ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");
@@ -556,7 +561,7 @@ public class ZZMS1Extra29y extends Megasquirt
     int                 alternate1;
     int                 TpsOn;
 
-    private String[]    defaultGauges = { "RpmHiResGauge", "cltGauge", "pulseWidth1Gauge", "dutyCycle1Gauge", "mapGauge", "matGauge", "ego2Gauge", "afrGauge",
+    private String[]    defaultGauges = { "RpmHiResGauge", "cltGauge","afrGauge", "mapGauge", "matGauge","pulseWidth1Gauge", "dutyCycle1Gauge", "ego2Gauge", 
             "advanceGauge", "tpsADCGauge" };
 
     @Override
