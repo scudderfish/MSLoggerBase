@@ -77,7 +77,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         messages = (TextView) findViewById(R.id.messages);
 
         findGauges();
-        PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this).registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
+        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
+        prefsManager.registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
+        
         indicatorManager = IndicatorManager.INSTANCE;
         indicatorManager.setDisabled(true);
 
@@ -622,9 +624,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             initGauges();
         }
-        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ApplicationSettings.INSTANCE.getEcuDefinition() != null)
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
         {
-            ConnectionState currentState = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState();
+            
+            ConnectionState currentState = ecuDefinition.getCurrentState();
             if (currentState == Megasquirt.ConnectionState.STATE_NONE)
             {
                 if (service == null)

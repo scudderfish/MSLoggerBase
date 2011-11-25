@@ -4,6 +4,8 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import org.acra.ErrorReporter;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.*;
 import android.bluetooth.*;
@@ -73,6 +75,8 @@ public abstract class Megasquirt
     public abstract void initGauges();
 
     public abstract String[] defaultGauges();
+    
+    public abstract void refreshFlags();
 
     private byte[]  ochBuffer;
 
@@ -553,6 +557,12 @@ public abstract class Megasquirt
                 Log.e(TAG, "disconnected", e);
                 connectionLost();
             }
+            catch(RuntimeException t)
+            {
+                ErrorReporter.getInstance().handleException(t);
+                DebugLogManager.INSTANCE.logException(t);
+                throw (t);
+            }
             if (t != null)
             {
                 t.cancel();
@@ -749,18 +759,22 @@ public abstract class Megasquirt
     {
         return running;
     }
-    protected byte[] loadPage(int PageNo,int pageOffset, int pageSize, byte[] select, byte[] read)
+
+    protected byte[] loadPage(int PageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
     {
-    	byte[] buffer = new byte[pageSize];
-    	try
-		{
-			getPage(buffer,select,read);
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return buffer;
+        byte[] buffer = new byte[pageSize];
+        try
+        {
+            sendMessage("Loading constants from page " + PageNo);
+            getPage(buffer, select, read);
+            sendMessage("Constants loaded from page " + PageNo);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            DebugLogManager.INSTANCE.logException(e);
+            sendMessage("Error loading constants from page " + PageNo);
+        }
+        return buffer;
     }
 }

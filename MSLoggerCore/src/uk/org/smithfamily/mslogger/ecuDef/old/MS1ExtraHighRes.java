@@ -23,6 +23,12 @@ public class MS1ExtraHighRes extends Megasquirt
     public MS1ExtraHighRes(Context c)
     {
         super(c);
+        refreshFlags();
+
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         CELSIUS = isSet("CELSIUS");
         MSLVV_COMPATIBLE = isSet("MSLVV_COMPATIBLE");
@@ -31,7 +37,6 @@ public class MS1ExtraHighRes extends Megasquirt
         INNOVATE_LC1_DEFAULT = isSet("INNOVATE_LC1_DEFAULT");
         ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");
         MPXH6400A = isSet("MPXH6400A");
-
     }
 
     @Override

@@ -233,4 +233,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         context.sendBroadcast(broadcast);
     }
 
+    public void refreshFlags()
+    {
+        settings.clear();
+        
+    }
+
 }

@@ -16,7 +16,12 @@ public class ZZMS3_Format_0221002 extends Megasquirt
 	public ZZMS3_Format_0221002(Context c)
 	{
 		super(c);
-		NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
+		refreshFlags();
+	}
+
+    public void refreshFlags()
+    {
+        NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
 		CYL_12_16_SUPPORT = isSet("CYL_12_16_SUPPORT");
 		MPH = isSet("MPH");
 		INTERNAL_LOG_FIELDS = isSet("INTERNAL_LOG_FIELDS");
@@ -27,7 +32,7 @@ public class ZZMS3_Format_0221002 extends Megasquirt
 		USE_CRC_DATA_CHECK = isSet("USE_CRC_DATA_CHECK");
 		METRES = isSet("METRES");
 		EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
-	}
+    }
 
 	byte[]				queryCommand	= new byte[] { 'Q' };
 	String				signature		= "MS3 Format 0221.002\0";

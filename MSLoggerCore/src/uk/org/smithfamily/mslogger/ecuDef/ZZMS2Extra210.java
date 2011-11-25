@@ -16,6 +16,11 @@ public class ZZMS2Extra210 extends Megasquirt
     public ZZMS2Extra210(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         EGTFULL = isSet("EGTFULL");
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         CELSIUS = isSet("CELSIUS");
