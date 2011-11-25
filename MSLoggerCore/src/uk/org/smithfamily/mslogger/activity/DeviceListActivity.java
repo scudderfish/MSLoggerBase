@@ -13,6 +13,7 @@ package uk.org.smithfamily.mslogger.activity;
 
 import java.util.Set;
 
+import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
 
 import android.app.Activity;
@@ -43,6 +44,7 @@ public class DeviceListActivity extends Activity
     // Debugging
     private static final String  TAG                  = "DeviceListActivity";
     private static final boolean D                    = true;
+    private static final int REQUEST_ENABLE_BT = 0;
 
     // Return Intent extra
     public static String         EXTRA_DEVICE_ADDRESS = "device_address";
@@ -51,6 +53,8 @@ public class DeviceListActivity extends Activity
     private BluetoothAdapter     mBtAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
+    private Button scanButton;
+    private ListView pairedListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -65,7 +69,7 @@ public class DeviceListActivity extends Activity
         setResult(Activity.RESULT_CANCELED);
 
         // Initialize the button to perform device discovery
-        Button scanButton = (Button) findViewById(R.id.button_scan);
+        scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
@@ -81,7 +85,7 @@ public class DeviceListActivity extends Activity
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        pairedListView = (ListView) findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
@@ -100,6 +104,14 @@ public class DeviceListActivity extends Activity
 
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+        boolean bluetoothOK = mBtAdapter.isEnabled();
+        if (!bluetoothOK)
+        {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            scanButton.setEnabled(false);
+            pairedListView.setEnabled(false);
+        }
 
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
@@ -119,6 +131,17 @@ public class DeviceListActivity extends Activity
             mPairedDevicesArrayAdapter.add(noDevices);
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK)
+        {
+            scanButton.setEnabled(true);
+            pairedListView.setEnabled(true);
+        }
+    }
+
 
     @Override
     protected void onDestroy()

@@ -29,8 +29,10 @@
 
         <activity
             android:label="@string/app_name"
-            android:name="uk.org.smithfamily.mslogger.activity.MSLoggerActivity"
+            android:name="uk.org.smithfamily.mslogger.activity.MSLoggerActivity">
+           <!-- 
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            -->
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

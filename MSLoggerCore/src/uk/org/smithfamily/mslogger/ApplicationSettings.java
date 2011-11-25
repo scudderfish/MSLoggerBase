@@ -36,8 +36,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public void initialise(Context context)
     {
         this.context = context;
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Map<String, ?> foo = prefs.getAll();
         prefs.registerOnSharedPreferenceChangeListener(this);
+        
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
@@ -114,7 +117,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             return result;
         boolean val = false;
 
-        if (!val && prefs.getString("temptype", MISSING_VALUE).equals(name))
+        String tempType = prefs.getString("temptype", MISSING_VALUE);
+        if (!val && tempType.equals(name))
             val = true;
 
         if (!val && prefs.getString("mstype", MISSING_VALUE).equals(name))
@@ -231,6 +235,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         Intent broadcast = new Intent();
         broadcast.setAction(ApplicationSettings.ECU_CHANGED);
         context.sendBroadcast(broadcast);
+    }
+
+    public void refreshFlags()
+    {
+        settings.clear();
+        
     }
 
 }

@@ -16,6 +16,11 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
     public ZZMS2ExtraSerial312a(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         EGTFULL = isSet("EGTFULL");
         CELSIUS = isSet("CELSIUS");

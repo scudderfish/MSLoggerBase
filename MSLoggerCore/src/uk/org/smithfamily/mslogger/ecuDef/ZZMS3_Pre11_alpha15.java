@@ -16,6 +16,11 @@ public class ZZMS3_Pre11_alpha15 extends Megasquirt
     public ZZMS3_Pre11_alpha15(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         CYL_12_16_SUPPORT = isSet("CYL_12_16_SUPPORT");
         MPH = isSet("MPH");
@@ -1487,8 +1492,8 @@ public class ZZMS3_Pre11_alpha15 extends Megasquirt
     int                 canadc_id1;
     int                 egomap1t;
 
-    private String[]    defaultGauges = { "tachometer", "throttleGauge", "pulseWidth1Gauge", "cltGauge", "advdegGauge", "fuelloadGauge", "egoGauge",
-            "lambda1Gauge", "afr1Gauge", "matGauge" };
+    private String[]    defaultGauges = { "tachometer", "throttleGauge", "afr1Gauge", "cltGauge", "matGauge", "pulseWidth1Gauge", "advdegGauge", "fuelloadGauge", "egoGauge",
+            "lambda1Gauge" };
 
     @Override
     public void calculate(byte[] ochBuffer) throws IOException

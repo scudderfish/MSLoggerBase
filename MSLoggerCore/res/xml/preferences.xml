@@ -26,7 +26,7 @@
 			android:title="@string/autoemail_autosend" android:summary="@string/autoemail_autosend_summary" />
 
 		<EditTextPreference android:key="autoemail_target"
-			android:title="@string/autoemail_target" android:summary="@string/autoemail_target_summary"
+			android:title="@string/autoemail_target" android:summary="@string/autoemail_target_summary" android:inputType="textEmailAddress"
 			android:dialogTitle="@string/autoemail_target" android:hint="@string/autoemail_sendto" />
 
 		<CheckBoxPreference android:key="autoconnect" android:defaultValue="true"

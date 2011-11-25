@@ -16,7 +16,12 @@ public class ZZMSExtra_format_hr_10 extends Megasquirt
 	public ZZMSExtra_format_hr_10(Context c)
 	{
 		super(c);
-		NGK_AFX = isSet("NGK_AFX");
+		refreshFlags();
+	}
+
+    public void refreshFlags()
+    {
+        NGK_AFX = isSet("NGK_AFX");
 		MPXH6300A = isSet("MPXH6300A");
 		ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");
 		WB_1_0_LINEAR = isSet("WB_1_0_LINEAR");
@@ -41,7 +46,7 @@ public class ZZMSExtra_format_hr_10 extends Megasquirt
 		AEM_NON_LINEAR = isSet("AEM_NON_LINEAR");
 		WB_UNKNOWN = isSet("WB_UNKNOWN");
 		MPXH6400A = isSet("MPXH6400A");
-	}
+    }
 
 	byte[]				queryCommand	= new byte[] { 'S' };
 	String				signature		= "MS/Extra format hr_10 **********";

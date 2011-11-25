@@ -11,130 +11,157 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 
 public enum GaugeRegister
 {
-	INSTANCE;
-	private Map<String, GaugeDetails>	details			= new HashMap<String, GaugeDetails>();
-	private static final String			GAUGE_DETAILS	= "gaugedetails";
+    INSTANCE;
+    private Map<String, GaugeDetails> details       = new HashMap<String, GaugeDetails>();
+    private static final String       GAUGE_DETAILS = "gaugedetails";
 
-	public void addGauge(GaugeDetails gaugeDetails)
-	{
-		if (details.containsKey(gaugeDetails.getName()))
-			return;
+    public void resetAll()
+    {
+        for (String name : details.keySet())
+        {
+            GaugeDetails gd = details.get(name);
+            if (gd != null)
+            {
+                File store = getFileStore(gd);
+                if (store != null)
+                {
+                    store.delete();
+                }
+            }
+        }
+        details.clear();
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecuDefinition != null)
+        {
+            ecuDefinition.initGauges();
+        }
+    }
 
-		GaugeDetails tmp = loadDetails(gaugeDetails);
-		if (tmp != null)
-		{
-			gaugeDetails = tmp;
-		}
-		else
-		{
-			persistDetails(gaugeDetails);
-		}
-        DebugLogManager.INSTANCE.log("Adding gauge : " +gaugeDetails);
+    public void addGauge(GaugeDetails gaugeDetails)
+    {
+        if (details.containsKey(gaugeDetails.getName()))
+            return;
 
-		details.put(gaugeDetails.getName(), gaugeDetails);
-	}
+        GaugeDetails tmp = loadDetails(gaugeDetails);
+        if (tmp != null)
+        {
+            gaugeDetails = tmp;
+        }
+        else
+        {
+            persistDetails(gaugeDetails);
+        }
+        DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails);
 
-	public void reset(String nme)
-	{
-		GaugeDetails gd = details.get(nme);
-		if (gd != null)
-		{
-			File store = getFileStore(gd);
-			if (store != null)
-			{
-				store.delete();
-			}
-			details.remove(nme);
+        details.put(gaugeDetails.getName(), gaugeDetails);
+    }
 
-			ApplicationSettings.INSTANCE.getEcuDefinition().initGauges();
-		}
-	}
+    public void reset(String nme)
+    {
+        GaugeDetails gd = details.get(nme);
+        if (gd != null)
+        {
+            File store = getFileStore(gd);
+            if (store != null)
+            {
+                store.delete();
+            }
+            details.remove(nme);
 
-	public GaugeDetails getGaugeDetails(String nme)
-	{
-		return details.get(nme);
-	}
+            Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+            if (ecuDefinition != null)
+            {
+                ecuDefinition.initGauges();
+            }
+        }
+    }
 
-	public Set<String> getGaugeNames()
-	{
-		return details.keySet();
-	}
+    public GaugeDetails getGaugeDetails(String nme)
+    {
+        return details.get(nme);
+    }
 
-	public void flush()
-	{
-		details = new HashMap<String, GaugeDetails>();
-	}
+    public Set<String> getGaugeNames()
+    {
+        return details.keySet();
+    }
 
-	private GaugeDetails loadDetails(GaugeDetails gd)
-	{
-		try
-		{
-			File input = getFileStore(gd);
+    public void flush()
+    {
+        details = new HashMap<String, GaugeDetails>();
+    }
 
-			// Read from disk using FileInputStream.
-			FileInputStream f_in = new FileInputStream(input);
+    private GaugeDetails loadDetails(GaugeDetails gd)
+    {
+        try
+        {
+            File input = getFileStore(gd);
 
-			// Read object using ObjectInputStream.
-			ObjectInputStream obj_in = new ObjectInputStream(f_in);
+            // Read from disk using FileInputStream.
+            FileInputStream f_in = new FileInputStream(input);
 
-			// Read an object.
-			Object obj = obj_in.readObject();
-			if (obj instanceof GaugeDetails)
-			{
+            // Read object using ObjectInputStream.
+            ObjectInputStream obj_in = new ObjectInputStream(f_in);
 
-				return (GaugeDetails) obj;
-			}
-			else
-			{
-				return null;
-			}
-		}
-		catch (IOException e)
-		{
-		    e.printStackTrace();
-		}
-		catch (ClassNotFoundException e)
-		{
+            // Read an object.
+            Object obj = obj_in.readObject();
+            if (obj instanceof GaugeDetails)
+            {
 
-		}
-		return null;
+                return (GaugeDetails) obj;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
+        {
 
-	}
+        }
+        return null;
 
-	private File getFileStore(GaugeDetails gd)
-	{
-		String name = getStoreName(gd);
-		File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
-		dir.mkdirs();
-		File input = new File(dir, name);
-		return input;
-	}
+    }
 
-	public void persistDetails(GaugeDetails gd)
-	{
-		try
-		{
-			File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
-			dir.mkdirs();
-			File output = new File(dir, getStoreName(gd));
-			FileOutputStream f_out = new FileOutputStream(output);
-			ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+    private File getFileStore(GaugeDetails gd)
+    {
+        String name = getStoreName(gd);
+        File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
+        dir.mkdirs();
+        File input = new File(dir, name);
+        return input;
+    }
 
-			obj_out.writeObject(gd);
-			details.put(gd.getName(), gd);
-		}
-		catch (IOException e)
-		{
+    public void persistDetails(GaugeDetails gd)
+    {
+        try
+        {
+            File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
+            dir.mkdirs();
+            File output = new File(dir, getStoreName(gd));
+            FileOutputStream f_out = new FileOutputStream(output);
+            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
 
-		}
-	}
+            obj_out.writeObject(gd);
+            details.put(gd.getName(), gd);
+        }
+        catch (IOException e)
+        {
 
-	private String getStoreName(GaugeDetails gd)
-	{
-		return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName()+"."+gd.getName();
-	}
+        }
+    }
+
+    private String getStoreName(GaugeDetails gd)
+    {
+        return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName() + "." + gd.getName();
+    }
 }
