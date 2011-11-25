@@ -16,6 +16,11 @@ public class ZZMS3_Pre11_alpha15 extends Megasquirt
     public ZZMS3_Pre11_alpha15(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         CYL_12_16_SUPPORT = isSet("CYL_12_16_SUPPORT");
         MPH = isSet("MPH");

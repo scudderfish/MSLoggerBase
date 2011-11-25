@@ -16,6 +16,11 @@ public class ZZMegasquirt_II_v2905 extends Megasquirt
     public ZZMegasquirt_II_v2905(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         n2o = isSet("n2o");
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         CELSIUS = isSet("CELSIUS");

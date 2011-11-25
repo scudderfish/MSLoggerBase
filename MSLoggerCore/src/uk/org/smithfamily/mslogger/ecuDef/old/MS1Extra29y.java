@@ -38,6 +38,11 @@ public class MS1Extra29y extends Megasquirt
     public MS1Extra29y(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         CELSIUS = isSet("CELSIUS");
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");

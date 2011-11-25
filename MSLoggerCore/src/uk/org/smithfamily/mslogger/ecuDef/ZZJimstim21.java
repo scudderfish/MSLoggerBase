@@ -17,7 +17,10 @@ public class ZZJimstim21 extends Megasquirt
     {
         super(c);
     }
-
+    public void refreshFlags()
+    {
+        
+    }
     byte[]              queryCommand  = new byte[] { 'Q' };
     String              signature     = "JimStim format V2.0.3 *********";
     byte[]              ochGetCommand = new byte[] { 'A' };

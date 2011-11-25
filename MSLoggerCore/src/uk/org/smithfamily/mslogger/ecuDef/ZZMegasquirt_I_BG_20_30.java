@@ -16,6 +16,11 @@ public class ZZMegasquirt_I_BG_20_30 extends Megasquirt
     public ZZMegasquirt_I_BG_20_30(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         DIYWB_NON_LINEAR = isSet("DIYWB_NON_LINEAR");
         INNOVATE_0_5_LINEAR = isSet("INNOVATE_0_5_LINEAR");
         NGK_AFX = isSet("NGK_AFX");

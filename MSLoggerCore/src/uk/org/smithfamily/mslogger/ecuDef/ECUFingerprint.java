@@ -152,7 +152,7 @@ public class ECUFingerprint implements Runnable
     {
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
-        // sendMessage("Establishing connection");
+        sendStatus("Establishing connection");
 
         // Get the BluetoothSocket input and output streams
         try
@@ -178,7 +178,7 @@ public class ECUFingerprint implements Runnable
         sendStatus("Probing the ECU");
         byte[] probeCommand1 = { 'Q' };
         byte[] probeCommand2 = { 'S' };
-        byte[] bootCommand = { 'X' };
+        byte[] bootCommand   = { 'X' };
         int i = 0;
         String sig = UNKNOWN;
 
@@ -214,16 +214,21 @@ public class ECUFingerprint implements Runnable
 
     private byte[] writeAndRead(byte[] probeCommand1, int d) throws IOException
     {
+        sendStatus("Flushing streams");
         mmOutStream.flush();
         while (mmInStream.available() > 0)
         {
             mmInStream.read();
         }
+        sendStatus("Sending "+new String(probeCommand1));
         mmOutStream.write(probeCommand1);
         delay(d);
 
         if (mmInStream.available() == 0)
+        {
+            sendStatus("Didn't receive anything");
             return null;
+        }
         List<Byte> read = new ArrayList<Byte>();
 
         while (mmInStream.available() > 0)
@@ -237,6 +242,7 @@ public class ECUFingerprint implements Runnable
         {
             result[i++] = b;
         }
+        sendStatus("Recieved '"+new String(result)+"'");
         return result;
     }
 
@@ -248,27 +254,30 @@ public class ECUFingerprint implements Runnable
         }
         catch (InterruptedException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            //Swallow
         }
     }
 
     private String processResponse(byte[] response) throws BootException
     {
         String result = new String(response);
+        if (result != null)
+        {
+            sendStatus("Got a signature of '" + result + "'");
+        }
         if (result.contains("Boot>"))
         {
             throw new BootException();
         }
         if (response == null)
             return UNKNOWN;
-        
-        if(response.length == 1 && response[0] != 20 )
+
+        if (response.length == 1 && response[0] != 20)
             return UNKNOWN;
-        
-        if((response[0] != 'M' && response[0] != 'J')  || (response[1] != 'S' && response[1] != 'o' && response[1] != 'i'))
+
+        if ((response[0] != 'M' && response[0] != 'J') || (response[1] != 'S' && response[1] != 'o' && response[1] != 'i'))
             return UNKNOWN;
-        
+
         return result;
     }
 

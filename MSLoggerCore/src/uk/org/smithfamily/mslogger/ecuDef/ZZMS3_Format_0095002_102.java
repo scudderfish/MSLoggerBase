@@ -16,6 +16,11 @@ public class ZZMS3_Format_0095002_102 extends Megasquirt
     public ZZMS3_Format_0095002_102(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
         MPH = isSet("MPH");
         INTERNAL_LOG_FIELDS = isSet("INTERNAL_LOG_FIELDS");

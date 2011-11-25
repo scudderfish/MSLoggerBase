@@ -16,6 +16,11 @@ public class ZZMS1Extra29y extends Megasquirt
     public ZZMS1Extra29y(Context c)
     {
         super(c);
+        refreshFlags();
+    }
+
+    public void refreshFlags()
+    {
         NGK_AFX = isSet("NGK_AFX");
         MPXH6300A = isSet("MPXH6300A");
         ZEITRONIX_NON_LINEAR = isSet("ZEITRONIX_NON_LINEAR");
