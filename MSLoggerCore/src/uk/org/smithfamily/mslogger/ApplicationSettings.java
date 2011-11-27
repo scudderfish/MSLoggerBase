@@ -242,5 +242,15 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         settings.clear();
         
     }
+    public boolean isBTWorkaround()
+    {
+    	return prefs.getBoolean("workaround", false);
+    }
+    public void setBTWorkaround(boolean state)
+    {
+        Editor editor = prefs.edit();
+        editor.putBoolean("workaround", state);
+        editor.commit();
 
+    }
 }
