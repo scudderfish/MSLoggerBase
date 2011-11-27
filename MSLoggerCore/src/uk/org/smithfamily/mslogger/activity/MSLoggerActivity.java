@@ -382,7 +382,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecuDefinition != null)
+        {
+            ecuDefinition.stop();
+        }
         resetConnection();
         doUnbindService();
         sendLogs();
@@ -414,7 +418,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setTitle(R.string.EnableGaugeEdit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        if (ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecuDefinition != null && ecuDefinition.getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
         {
             connectionItem.setTitle(R.string.disconnect);
         }
@@ -527,7 +532,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecuDefinition != null)
+        {
+            ecuDefinition.stop();
+        }
         resetConnection();
         sendLogs();
         doUnbindService();
@@ -535,16 +544,18 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     private void toggleConnection()
-
     {
-        if (ApplicationSettings.INSTANCE.getEcuDefinition().isRunning())
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if (ecuDefinition != null && ecuDefinition.isRunning())
         {
-            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+            ecuDefinition.stop();
             ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
         }
         else
         {
-            ApplicationSettings.INSTANCE.getEcuDefinition().start();
+            if (ecuDefinition != null)
+                ecuDefinition.start();
             ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
         }
     }
@@ -607,11 +618,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (requestCode == SHOW_PREFS)
             {
                 Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
-                if(dirty)
+                if (dirty)
                 {
                     resetConnection();
                     Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-                    if(ecuDefinition!=null)
+                    if (ecuDefinition != null)
                     {
                         ecuDefinition.refreshFlags();
                         GaugeRegister.INSTANCE.flush();
@@ -785,7 +796,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
             ApplicationSettings.INSTANCE.setLoggingOverride(false);
-            ApplicationSettings.INSTANCE.getEcuDefinition().stop();
+            Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+            if (ecuDefinition != null)
+            {
+                ecuDefinition.stop();
+            }
 
             if (isFinishing())
             {
@@ -871,7 +886,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DebugLogManager.INSTANCE.log(action);
                 initGauges();
                 doBindService();
-                ApplicationSettings.INSTANCE.getEcuDefinition().start();
+                Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+                if (ecuDefinition != null)
+                {
+                    ecuDefinition.start();
+                }
+
             }
             if (action.equals(Megasquirt.CONNECTED))
             {
