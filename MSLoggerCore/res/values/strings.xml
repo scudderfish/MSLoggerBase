@@ -79,4 +79,5 @@
 	<string name="please_wait">Please Wait</string>
 	<string name="identifying">Identifying your ECU</string>
 	<string name="unrecognised_ecu">I don\'t recognise your ECU, would you like to email the developer about this?</string>
+	<string name="workaround">Use alternate connection method</string>
 </resources>

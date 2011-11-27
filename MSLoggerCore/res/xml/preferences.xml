@@ -6,6 +6,7 @@
 		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
 			android:title="Bluetooth Device" android:key="bluetooth_mac"
 			android:dialogTitle="Choose Bluetooth Device" />
+		<CheckBoxPreference android:title="@string/workaround" android:key="btworkaround" android:defaultValue="false"/>  
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/megasquirt">
