@@ -594,6 +594,12 @@ public abstract class Megasquirt
 				Log.e(TAG, "disconnected", e);
 				connectionLost();
 			}
+			catch(ArithmeticException e)
+			{
+                DebugLogManager.INSTANCE.logException(e);
+                constantsLoaded = false;
+                connectionLost();
+			}
 			catch (RuntimeException t)
 			{
 				ErrorReporter.getInstance().handleException(t);
@@ -777,7 +783,11 @@ public abstract class Megasquirt
 			throw new IOException("Not connected!");
 		}
 
-		mConnectedThread.write(pageSelectCommand);
+		mConnectedThread.flush();
+		if(pageSelectCommand != null)
+		{    
+		    mConnectedThread.write(pageSelectCommand);
+		}
 		delay(getPageActivationDelay());
 		if (pageReadCommand != null)
 		{
@@ -799,6 +809,7 @@ public abstract class Megasquirt
 
 	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
 	{
+	    
 		byte[] buffer = new byte[pageSize];
 		try
 		{
@@ -829,7 +840,9 @@ public abstract class Megasquirt
 			BufferedOutputStream out = null;
 			try
 			{
-				out = new BufferedOutputStream(new FileOutputStream(outputFile, (pageNo == 0)));
+				boolean append = !(pageNo == 1);
+                out = new BufferedOutputStream(new FileOutputStream(outputFile, append));
+                DebugLogManager.INSTANCE.log("Saving page "+pageNo+" append="+append);
 				out.write(buffer);
 			}
 			finally
