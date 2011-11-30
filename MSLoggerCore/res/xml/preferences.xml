@@ -1,50 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <PreferenceCategory android:title="@string/bluetooth" >
 
-	<PreferenceCategory android:title="@string/bluetooth">
-		<uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
-			android:title="Bluetooth Device" android:key="bluetooth_mac"
-			android:dialogTitle="Choose Bluetooth Device" />
-		<CheckBoxPreference android:title="@string/workaround" android:key="btworkaround" android:defaultValue="false"/>  
-	</PreferenceCategory>
+        <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
+            android:dialogTitle="Choose Bluetooth Device"
+            android:key="bluetooth_mac"
+            android:title="Bluetooth Device" />
 
-	<PreferenceCategory android:title="@string/megasquirt">
-		<ListPreference android:key="maptype" android:entries="@array/mapnames"
-			android:entryValues="@array/maptypes" android:title="@string/map_sensor" />
-		<ListPreference android:key="egotype" android:entries="@array/egonames"
-			android:entryValues="@array/egotypes" android:title="@string/ego_sensor" />
-		<ListPreference android:key="temptype" android:title="@string/temp_unit"
-			android:entries="@array/tempent" android:entryValues="@array/tempvalues"
-			android:defaultValue="CELSIUS" />
-	</PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="btworkaround"
+            android:title="@string/workaround" />
+    </PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/AppSettings">
-		<EditTextPreference android:dialogTitle="@string/data_log_directory"
-			android:defaultValue="@string/app_name" android:key="DataDir"
-			android:title="Log Directory" />
-		<CheckBoxPreference android:key="autoemail_enabled"
-			android:title="@string/autoemail_autosend" android:summary="@string/autoemail_autosend_summary" />
+    <PreferenceCategory android:title="@string/megasquirt" >
 
-		<EditTextPreference android:key="autoemail_target"
-			android:title="@string/autoemail_target" android:summary="@string/autoemail_target_summary" android:inputType="textEmailAddress"
-			android:dialogTitle="@string/autoemail_target" android:hint="@string/autoemail_sendto" />
+        <ListPreference
+            android:entries="@array/mapnames"
+            android:entryValues="@array/maptypes"
+            android:key="maptype"
+            android:title="@string/map_sensor" />
 
-		<CheckBoxPreference android:key="autoconnect" android:defaultValue="true"
-			android:title="@string/autoconnect" android:summary="@string/autoconnect_summary" />
+        <ListPreference
+            android:entries="@array/egonames"
+            android:entryValues="@array/egotypes"
+            android:key="egotype"
+            android:title="@string/ego_sensor" />
 
-		<CheckBoxPreference android:key="autolog" android:defaultValue="true"
-			android:title="@string/autolog" android:summary="@string/autolog_summary" />
-	</PreferenceCategory>
+        <ListPreference
+            android:defaultValue="CELSIUS"
+            android:entries="@array/tempent"
+            android:entryValues="@array/tempvalues"
+            android:key="temptype"
+            android:title="@string/temp_unit" />
+    </PreferenceCategory>
 
-	<PreferenceCategory android:title="Gauges">
-	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 1" android:key="gauge1" android:dialogTitle="Choose Gauge 1"/>
-	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 2" android:key="gauge2" android:dialogTitle="Choose Gauge 2"/>
-	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 3" android:key="gauge3" android:dialogTitle="Choose Gauge 3"/>
-	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 4" android:key="gauge4" android:dialogTitle="Choose Gauge 4"/>
-	<uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference android:title="Gauge 5" android:key="gauge5" android:dialogTitle="Choose Gauge 5"/>
-	
-	
-	
-	</PreferenceCategory>
+    <PreferenceCategory android:title="@string/AppSettings" >
+
+        <EditTextPreference
+            android:defaultValue="@string/app_name"
+            android:dialogTitle="@string/data_log_directory"
+            android:key="DataDir"
+            android:title="Log Directory" />
+
+        <CheckBoxPreference
+            android:key="autoemail_enabled"
+            android:summary="@string/autoemail_autosend_summary"
+            android:title="@string/autoemail_autosend" />
+
+        <EditTextPreference
+            android:dialogTitle="@string/autoemail_target"
+            android:hint="@string/autoemail_sendto"
+            android:inputType="textEmailAddress"
+            android:key="autoemail_target"
+            android:summary="@string/autoemail_target_summary"
+            android:title="@string/autoemail_target" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autoconnect"
+            android:summary="@string/autoconnect_summary"
+            android:title="@string/autoconnect" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autolog"
+            android:summary="@string/autolog_summary"
+            android:title="@string/autolog" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Gauges" >
+
+        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
+            android:dialogTitle="Choose Gauge 1"
+            android:key="gauge1"
+            android:title="Gauge 1" />
+
+        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
+            android:dialogTitle="Choose Gauge 2"
+            android:key="gauge2"
+            android:title="Gauge 2" />
+
+        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
+            android:dialogTitle="Choose Gauge 3"
+            android:key="gauge3"
+            android:title="Gauge 3" />
+
+        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
+            android:dialogTitle="Choose Gauge 4"
+            android:key="gauge4"
+            android:title="Gauge 4" />
+
+        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
+            android:dialogTitle="Choose Gauge 5"
+            android:key="gauge5"
+            android:title="Gauge 5" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
