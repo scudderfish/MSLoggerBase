@@ -1,8 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import android.text.format.DateFormat;
-import android.text.format.Formatter;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
+import android.text.format.DateFormat;
 
 public class MSUtils
 {
