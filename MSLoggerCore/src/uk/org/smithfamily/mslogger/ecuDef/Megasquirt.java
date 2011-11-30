@@ -2,15 +2,20 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.acra.ErrorReporter;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.log.*;
-import android.bluetooth.*;
+import uk.org.smithfamily.mslogger.comms.BTSocketFactory;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -34,7 +39,6 @@ public abstract class Megasquirt
 
 	private volatile ConnectionState	currentState	= ConnectionState.STATE_NONE;
 
-	private UUID						RFCOMM_UUID		= UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
 	protected BluetoothSocket			sock;
 
@@ -318,49 +322,8 @@ public abstract class Megasquirt
 			BluetoothSocket tmp = null;
 			// Get a BluetoothSocket for a connection with the
 			// given BluetoothDevice
-			if (ApplicationSettings.INSTANCE.isBTWorkaround())
-			{
-				try
-				{
-					tmp = createWorkaroundSocket(device);
-				}
-				catch (Exception e)
-				{
-					DebugLogManager.INSTANCE.logException(e);
-				}
-			}
-			else
-			{
-				try
-				{
-					tmp = device.createRfcommSocketToServiceRecord(RFCOMM_UUID);
-				}
-				catch (IOException e)
-				{
-					// That didn't work, let's try the work around
-					DebugLogManager.INSTANCE.logException(e);
-
-					try
-					{
-						tmp = createWorkaroundSocket(device);
-						// That did work, let's make it permanment
-						ApplicationSettings.INSTANCE.setBTWorkaround(true);
-					}
-					catch (Exception e1)
-					{
-						// We're boned, nothing works
-						DebugLogManager.INSTANCE.logException(e);
-					}
-				}
-			}
+			tmp = BTSocketFactory.getSocket(device);
 			mmSocket = tmp;
-		}
-
-		private BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
-		{
-			Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
-			BluetoothSocket tmp = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
-			return tmp;
 		}
 
 		public void run()
