@@ -31,10 +31,7 @@ package com.android.vending.licensing;
  */
 public class StrictPolicy implements Policy {
 
-    private static final String TAG = "StrictPolicy";
-
     private LicenseResponse mLastResponse;
-    private PreferenceObfuscator mPreferences;
 
     public StrictPolicy() {
         // Set default policy. This will force the application to check the policy on launch.
