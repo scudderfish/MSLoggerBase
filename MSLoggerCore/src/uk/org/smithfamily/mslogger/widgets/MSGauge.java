@@ -260,10 +260,10 @@ public class MSGauge extends View implements Indicator
         double range = (max - min);
         double tenpower = Math.floor(Math.log10(range));
         double scalefactor = Math.pow(10, tenpower);
-        double maxprimarydigit = Math.ceil(max / scalefactor);
+        //double maxprimarydigit = Math.ceil(max / scalefactor);
         double gaugeMax = max;// maxprimarydigit * scalefactor;
 
-        double minprimarydigit = Math.ceil(min / scalefactor);
+        //double minprimarydigit = Math.ceil(min / scalefactor);
         double gaugeMin = min;// minprimarydigit * scalefactor;
         // gaugeMin = Math.min(0, gaugeMin);
 
