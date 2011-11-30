@@ -38,7 +38,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         this.context = context;
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Map<String, ?> foo = prefs.getAll();
         prefs.registerOnSharedPreferenceChangeListener(this);
         
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
@@ -163,6 +162,15 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return (autoConnectOverride == null || autoConnectOverride == true) && btDeviceSelected && autoconnectpref;
     }
 
+    public String getPref(String name)
+    {
+    	String value = prefs.getString(name, MISSING_VALUE);
+        if (value.equals(MISSING_VALUE))
+        {
+        	value = null;
+        }
+        return value;
+    }
     public String getOrSetPref(String name, String def)
     {
         String value = prefs.getString(name, MISSING_VALUE);

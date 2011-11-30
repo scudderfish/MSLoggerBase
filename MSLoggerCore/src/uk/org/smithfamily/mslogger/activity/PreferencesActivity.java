@@ -2,12 +2,12 @@ package uk.org.smithfamily.mslogger.activity;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
 
 public class PreferencesActivity extends PreferenceActivity
 {
@@ -19,12 +19,9 @@ public class PreferencesActivity extends PreferenceActivity
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue)
         {
-
             resetECU();
             return true;
-
         }
-
     }
 
     @Override
@@ -55,7 +52,6 @@ public class PreferencesActivity extends PreferenceActivity
 
     protected void resetECU()
     {
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         ApplicationSettings.INSTANCE.refreshFlags();
         ecuDirty = true;
     }

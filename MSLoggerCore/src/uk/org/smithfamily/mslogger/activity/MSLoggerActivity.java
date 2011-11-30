@@ -554,9 +554,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         else
         {
-            if (ecuDefinition != null)
-                ecuDefinition.start();
             ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
+            Intent serverIntent = new Intent(this, StartupActivity.class);
+            startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
+
         }
     }
 
