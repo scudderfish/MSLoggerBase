@@ -176,12 +176,16 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         String value = prefs.getString(name, MISSING_VALUE);
         if (value.equals(MISSING_VALUE))
         {
-            Editor editor = prefs.edit();
-            editor.putString(name, def);
-            editor.commit();
+            setPref(name,def);
             value = def;
         }
         return value;
+    }
+    public void setPref(String name,String value)
+    {
+        Editor editor = prefs.edit();
+        editor.putString(name, value);
+        editor.commit();
     }
 
     public double getGaugeSetting(String gaugeName, String title, String var, double def)

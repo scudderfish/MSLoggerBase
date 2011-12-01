@@ -71,7 +71,7 @@ public class ECUFingerprint implements Runnable
 			catch (IOException e)
 			{
 				sendStatus("Connection failed");
-
+				
 				// ErrorReporter.getInstance().handleException(e);
 				DebugLogManager.INSTANCE.logException(e);
 				delay(1000);
@@ -86,6 +86,7 @@ public class ECUFingerprint implements Runnable
 					// ErrorReporter.getInstance().handleException(e2);
 					Log.e(TAG, "unable to close() socket during connection failure", e2);
 				}
+				ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
 			}
 
 			try

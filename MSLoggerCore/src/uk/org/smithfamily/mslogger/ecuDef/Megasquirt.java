@@ -538,6 +538,8 @@ public abstract class Megasquirt
 					connectionLost();
 					return;
 				}
+				ApplicationSettings.INSTANCE.refreshFlags();
+				refreshFlags();
 				if (!constantsLoaded)
 				{
 					loadConstants(simulated);
