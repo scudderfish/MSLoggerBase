@@ -390,6 +390,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         resetConnection();
         doUnbindService();
         sendLogs();
+        indicatorManager.setDisabled(true);
         if (!testDialogShown)
         {
             testDialogShown = true;
@@ -419,7 +420,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecuDefinition != null && ecuDefinition.getCurrentState() != Megasquirt.ConnectionState.STATE_NONE)
+        if(ecuDefinition != null && ecuDefinition.isRunning())
         {
             connectionItem.setTitle(R.string.disconnect);
         }
@@ -555,9 +556,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         else
         {
             ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
-            Intent serverIntent = new Intent(this, StartupActivity.class);
-            startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
-
         }
     }
 
