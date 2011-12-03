@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 public class StartupActivity extends Activity
 {
-    private static final int REQUEST_ENABLE_BT = 0;
     private static final int SELECT_EGO        = 1;
     private static final int SELECT_MAP        = 2;
     private static final int SELECT_EMAIL      = 3;
@@ -132,17 +131,6 @@ public class StartupActivity extends Activity
             }
             break;
 
-        case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
-            if (resultCode != Activity.RESULT_OK)
-            {
-                finishDialogNoBluetooth();
-            }
-            else
-            {
-                initSequence();
-            }
-            break;
         case SELECT_EGO:
         case SELECT_MAP:
         case SELECT_EMAIL:
@@ -196,6 +184,10 @@ public class StartupActivity extends Activity
 
     private void unrecognisedEcu(final String sig)
     {
+        if(isFinishing())
+        {
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unrecognised_ecu).setTitle(R.string.app_name).setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
         {
