@@ -72,12 +72,10 @@ public class DeviceListActivity extends Activity
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
         pairedListView = (ListView) findViewById(R.id.paired_devices);
-        pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
@@ -103,6 +101,13 @@ public class DeviceListActivity extends Activity
             scanButton.setEnabled(false);
             pairedListView.setEnabled(false);
         }
+
+        initPairedDevices();
+    }
+    public void initPairedDevices()
+    {
+        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        pairedListView.setAdapter(mPairedDevicesArrayAdapter);
 
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
@@ -130,6 +135,7 @@ public class DeviceListActivity extends Activity
         {
             scanButton.setEnabled(true);
             pairedListView.setEnabled(true);
+            initPairedDevices();
         }
     }
 
@@ -180,6 +186,11 @@ public class DeviceListActivity extends Activity
                                                              public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3)
                                                              {
                                                             	 String info = ((TextView) v).getText().toString();
+                                                            	 String noDevices = getResources().getText(R.string.none_found).toString();
+                                                                 if(noDevices.equals(info))
+                                                                 {
+                                                                     return;
+                                                                 }
                                                                  String address = info.substring(info.length() - 17);
                                                                  if(!BluetoothAdapter.checkBluetoothAddress(address))
                                                                  {
@@ -231,6 +242,7 @@ public class DeviceListActivity extends Activity
                                                                          String noDevices = getResources().getText(R.string.none_found).toString();
                                                                          mNewDevicesArrayAdapter.add(noDevices);
                                                                      }
+                                                                     scanButton.setVisibility(View.VISIBLE);
                                                                  }
                                                              }
                                                          };
