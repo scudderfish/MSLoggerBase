@@ -559,6 +559,7 @@ public class Normaliser
 		writer.println("\n}\n");
 	}
 
+	@SuppressWarnings("unused")
 	private static void outputGaugeDoc(PrintWriter writer)
 	{
 		writer.println("/*");
@@ -575,6 +576,11 @@ public class Normaliser
 		writer.println("public " + className + "(Context c)");
 		writer.println("{");
 		writer.println("    super(c);");
+		writer.println("    refreshFlags();");
+		writer.println(" }");
+		writer.println("@Override");
+		writer.println("public void refreshFlags()");
+		writer.println("{");
 		for (String flag : flags)
 		{
 			writer.println("    " + flag + " = isSet(\"" + flag + "\");");
