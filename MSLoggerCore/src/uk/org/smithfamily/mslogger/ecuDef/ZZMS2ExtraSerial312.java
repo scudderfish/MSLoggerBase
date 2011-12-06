@@ -11,9 +11,9 @@ import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 /*
  * Fingerprint : 9cfaa0cd1a5746e2a44e250cb8d330d4
  */
-public class ZZMS2ExtraSerial312a extends Megasquirt
+public class ZZMS2ExtraSerial312 extends Megasquirt
 {
-    public ZZMS2ExtraSerial312a(Context c)
+    public ZZMS2ExtraSerial312(Context c)
     {
         super(c);
         refreshFlags();
@@ -37,7 +37,7 @@ public class ZZMS2ExtraSerial312a extends Megasquirt
     String              signature     = "MS2Extra Serial312a\0";
     byte[]              ochGetCommand = new byte[] { 'A' };
     int                 ochBlockSize  = 169;
-    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { signature }));
+    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { signature,"MS2Extra Serial312b\0" }));
     // Flags
     boolean             NARROW_BAND_EGO;
     boolean             EGTFULL;
