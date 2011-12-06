@@ -335,8 +335,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
-        IntentFilter ecuFilter = new IntentFilter(ApplicationSettings.ECU_CHANGED);
-        registerReceiver(updateReceiver, ecuFilter);
         registered = true;
     }
 
@@ -371,7 +369,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         if (vanilla)
         {
             dataCount++;
-            if (dataCount > 100)
+            if (dataCount > 500)
             {
                 terminateTest();
             }
@@ -382,12 +380,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecuDefinition != null)
+        if (service != null)
         {
-            ecuDefinition.stop();
+            service.disconnect();
         }
-        resetConnection();
         doUnbindService();
         sendLogs();
         indicatorManager.setDisabled(true);
@@ -533,29 +529,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecuDefinition != null)
+        if (service != null)
         {
-            ecuDefinition.stop();
+            service.disconnect();
         }
-        resetConnection();
         sendLogs();
+        ApplicationSettings.INSTANCE.resetECUs();
         doUnbindService();
         this.finish();
     }
 
     private void toggleConnection()
     {
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-        if (ecuDefinition != null && ecuDefinition.isRunning())
+        if (service != null)
         {
-            ecuDefinition.stop();
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        }
-        else
-        {
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
+            service.toggleConnection();
         }
     }
 
@@ -795,10 +783,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
             ApplicationSettings.INSTANCE.setLoggingOverride(false);
-            Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-            if (ecuDefinition != null)
+            if (service != null)
             {
-                ecuDefinition.stop();
+                service.disconnect();
             }
 
             if (isFinishing())
@@ -880,18 +867,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             Log.i(ApplicationSettings.TAG, "Received :" + action);
             boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
 
-            if (action.equals(ApplicationSettings.ECU_CHANGED))
-            {
-                DebugLogManager.INSTANCE.log(action);
-                initGauges();
-                doBindService();
-                Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-                if (ecuDefinition != null)
-                {
-                    ecuDefinition.start();
-                }
-
-            }
             if (action.equals(Megasquirt.CONNECTED))
             {
                 DebugLogManager.INSTANCE.log(action);
@@ -900,6 +875,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 {
                     service.startLogging();
                 }
+            }
+            if (action.equals(Megasquirt.DISCONNECTED))
+            {
+                DebugLogManager.INSTANCE.log(action);
+                indicatorManager.setDisabled(true);
             }
             if (action.equals(Megasquirt.CONNECTION_LOST))
             {
@@ -922,8 +902,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 messages.setText(msg);
                 Log.i(ApplicationSettings.TAG, "Message : " + msg);
                 DebugLogManager.INSTANCE.log("Message : " + msg);
-
             }
+
             if (shouldBeLogging && service == null)
             {
                 doBindService();

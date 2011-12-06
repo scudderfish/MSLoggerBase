@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger;
 
 import java.io.File;
 import java.util.*;
+import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
 import android.bluetooth.BluetoothAdapter;
@@ -264,5 +265,14 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         editor.putBoolean("workaround", state);
         editor.commit();
 
+    }
+
+    public void resetECUs()
+    {
+        for(Entry<String, Megasquirt> e : sigMap.entrySet())
+        {
+            e.getValue().reset();
+        }
+        
     }
 }

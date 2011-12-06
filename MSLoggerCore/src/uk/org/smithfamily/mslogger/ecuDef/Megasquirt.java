@@ -92,7 +92,7 @@ public abstract class Megasquirt
 	private boolean	signatureChecked;
 	private String	trueSignature	= "Unknown";
 
-	private boolean	running;
+	private volatile boolean	running;
 
 	protected int table(int i1, String name)
 	{
@@ -133,7 +133,7 @@ public abstract class Megasquirt
 				}
 			}
 		};
-		connectionWatcher.schedule(connectionTask, 1000, 5000);
+		connectionWatcher.schedule(connectionTask, 100, 2000);
 		running = true;
 	}
 
@@ -145,6 +145,14 @@ public abstract class Megasquirt
 		disconnect();
 		sendMessage("");
 		setState(ConnectionState.STATE_NONE);
+		
+	}
+	public void reset()
+	{
+	    refreshFlags();
+	    signatureChecked = false;
+	    constantsLoaded = false;
+	    setState(ConnectionState.STATE_NONE);
 	}
 
 	public void initialiseConnection()
@@ -218,7 +226,7 @@ public abstract class Megasquirt
 		}
 		FRDLogManager.INSTANCE.close();
 		DatalogManager.INSTANCE.close();
-
+		broadcast(DISCONNECTED);
 	}
 
 	protected void sendMessage(String msg)
@@ -545,6 +553,7 @@ public abstract class Megasquirt
 					loadConstants(simulated);
 					constantsLoaded = true;
 				}
+				running = true;
 				while (running)
 				{
 					getRuntimeVars();
