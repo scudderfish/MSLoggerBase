@@ -38,7 +38,7 @@ public class ZZMS3_Format_0221002 extends Megasquirt
 	String				signature		= "MS3 Format 0221.002\0";
 	byte[]				ochGetCommand	= new byte[] { 'A' };
 	int					ochBlockSize	= 376;
-	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { signature }));
+	private Set<String>	sigs			= new HashSet<String>(Arrays.asList(new String[] { "MS3 Format 0214.003\0",signature }));
 	// Flags
 	boolean				NARROW_BAND_EGO;
 	boolean				CYL_12_16_SUPPORT;
