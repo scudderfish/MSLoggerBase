@@ -205,7 +205,10 @@ public class StartupActivity extends Activity
         });
 
         AlertDialog alert = builder.create();
-        alert.show();
+        if(!isFinishing())
+        {
+            alert.show();
+        }
     }
 
     private void constructEmail(String sig)
