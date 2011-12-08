@@ -11,9 +11,9 @@ import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 /*
  * Fingerprint : 1db6ae262e7189230ad3be8670eec0a1
  */
-public class ZZMS3_Pre11_alpha15 extends Megasquirt
+public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
 {
-    public ZZMS3_Pre11_alpha15(Context c)
+    public ZZMS3_Pre11_alpha15_16(Context c)
     {
         super(c);
         refreshFlags();
@@ -38,7 +38,7 @@ public class ZZMS3_Pre11_alpha15 extends Megasquirt
     String              signature     = "MS3 Format 0225.005\0";
     byte[]              ochGetCommand = new byte[] { 'A' };
     int                 ochBlockSize  = 380;
-    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { signature }));
+    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] {"MS3 Format 0225.010\0", signature }));
     // Flags
     boolean             NARROW_BAND_EGO;
     boolean             CYL_12_16_SUPPORT;
