@@ -406,6 +406,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public boolean onPrepareOptionsMenu(Menu menu)
     {
         MenuItem editItem = menu.findItem(R.id.gaugeEditing);
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        editItem.setEnabled(ecuDefinition != null);
         if (gaugeEditEnabled)
         {
             editItem.setTitle(R.string.DisableGaugeEdit);
@@ -415,7 +418,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setTitle(R.string.EnableGaugeEdit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
         if(ecuDefinition != null && ecuDefinition.isRunning())
         {
             connectionItem.setTitle(R.string.disconnect);
@@ -426,6 +428,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         MenuItem loggingItem = menu.findItem(R.id.forceLogging);
+        loggingItem.setEnabled(ecuDefinition != null && service != null);
         if (ApplicationSettings.INSTANCE.shouldBeLogging())
         {
             loggingItem.setTitle(R.string.stop_logging);
