@@ -26,7 +26,14 @@ public enum GPSLocationManager implements LocationListener
 
 		DebugLogManager.INSTANCE.log("Using location provider " + providerName);
 
-		locationManager.requestLocationUpdates(providerName, 1000, 0, this);
+		if(providerName != null)
+		{
+		    locationManager.requestLocationUpdates(providerName, 1000, 0, this);
+		}
+		else
+		{
+		    sendMessage("No location provider available");
+		}
 	}
 
 	synchronized public void stop()
