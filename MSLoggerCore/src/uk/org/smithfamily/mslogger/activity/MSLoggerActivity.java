@@ -629,7 +629,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         DebugLogManager.INSTANCE.log("resetConnection()");
 
         connected = false;
-        service.stopLogging();
+        if(service != null)
+        {
+            service.stopLogging();
+        }
 
         indicatorManager.setDisabled(true);
     }
