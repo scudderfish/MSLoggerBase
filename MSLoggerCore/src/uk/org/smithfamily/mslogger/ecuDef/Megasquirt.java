@@ -153,6 +153,7 @@ public abstract class Megasquirt
 	    signatureChecked = false;
 	    constantsLoaded = false;
 	    setState(ConnectionState.STATE_NONE);
+	    running=false;
 	}
 
 	public void initialiseConnection()
