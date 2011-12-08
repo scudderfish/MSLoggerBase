@@ -25,6 +25,8 @@ public class BTSocketFactory
 			catch (Exception e)
 			{
 				DebugLogManager.INSTANCE.logException(e);
+				//That didn't work, lets switch it off for the next go around
+				ApplicationSettings.INSTANCE.setBTWorkaround(false);
 			}
 		}
 		else
