@@ -22,7 +22,8 @@ public enum GPSLocationManager implements LocationListener
 	{
 		locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
 		Criteria c = new Criteria();
-		String providerName = locationManager.getBestProvider(c, true);
+		c.setAccuracy(Criteria.ACCURACY_FINE);
+		String providerName = locationManager.getBestProvider(c, false);
 
 		DebugLogManager.INSTANCE.log("Using location provider " + providerName);
 

@@ -7,7 +7,6 @@ import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ConnectionState;
 import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.service.MSLoggerService;
 import uk.org.smithfamily.mslogger.widgets.*;
 import android.app.*;
 import android.bluetooth.BluetoothAdapter;
@@ -30,8 +29,6 @@ import com.android.vending.licensing.*;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
-    MSLoggerService                service;
-    private static final int       REQUEST_ENABLE_BT     = 0;
     private BroadcastReceiver      updateReceiver        = new Reciever();
     private IndicatorManager       indicatorManager;
     TextView                       messages;
@@ -47,7 +44,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private MSGauge                gauge4;
     private MSGauge                gauge5;
 
-    private ServiceConnection      mConnection           = new MSServiceConnection();
     private GestureDetector        gestureDetector;
     private boolean                gaugeEditEnabled;
     boolean                        scrolling;
@@ -70,9 +66,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        
         vanilla = getPackageName().endsWith("vanilla");
         super.onCreate(savedInstanceState);
-
+        checkSDCard();
+        
+        DebugLogManager.INSTANCE.log(getPackageName());
+        try
+        {
+            String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+            DebugLogManager.INSTANCE.log(app_ver);
+        }
+        catch (NameNotFoundException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
         mHandler = new Handler();
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
@@ -89,16 +97,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
-
-        if (ApplicationSettings.INSTANCE.getEcuDefinition() == null)
-        {
-            Intent serverIntent = new Intent(this, StartupActivity.class);
-            startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
-        }
-        else
-        {
-            completeCreate();
-        }
+        Intent serverIntent = new Intent(this, StartupActivity.class);
+        startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
 
     private void completeCreate()
@@ -117,12 +117,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         initGauges();
 
-        if (testBluetooth())
-        {
-            doBindService();
-        }
         checkBTDeviceSet();
         checkSDCard();
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecu != null)
+        {
+            ecu.start();
+        }
+
     }
 
     private void checkSDCard()
@@ -140,31 +142,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         deRegisterMessages();
         GPSLocationManager.INSTANCE.stop();
-        doUnbindService();
         super.onDestroy();
-    }
-
-    synchronized private void doUnbindService()
-    {
-        if (service != null)
-        {
-            try
-            {
-                unbindService(mConnection);
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-    }
-
-    synchronized void doBindService()
-    {
-        if (service == null)
-        {
-            bindService(new Intent(this, MSLoggerService.class), mConnection, Context.BIND_AUTO_CREATE);
-        }
     }
 
     @Override
@@ -193,11 +171,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
-            editor.putString("gauge1", gauge1.getName());
-            editor.putString("gauge2", gauge2.getName());
-            editor.putString("gauge3", gauge3.getName());
-            editor.putString("gauge4", gauge4.getName());
-            editor.putString("gauge5", gauge5.getName());
+            if (!gauge1.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+                editor.putString("gauge1", gauge1.getName());
+            if (!gauge2.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+                editor.putString("gauge2", gauge2.getName());
+            if (!gauge3.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+                editor.putString("gauge3", gauge3.getName());
+            if (!gauge4.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+                editor.putString("gauge4", gauge4.getName());
+            if (!gauge5.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+                editor.putString("gauge5", gauge5.getName());
             editor.commit();
         }
     }
@@ -231,6 +214,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         layout = (LinearLayout) (findViewById(R.id.layout));
         findGauges();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
         String[] defaultGauges = ecu.defaultGauges();
         gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
         gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
@@ -306,24 +290,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             gauge5.setOnTouchListener(l);
     }
 
-    private boolean testBluetooth()
-    {
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null)
-        {
-            return false;
-        }
-        boolean bluetoothOK = mBluetoothAdapter.isEnabled();
-        if (!bluetoothOK)
-        {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            return false;
-        }
-        return true;
-    }
-
-    private void registerMessages()
+     private void registerMessages()
     {
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
@@ -355,9 +322,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             for (Indicator i : indicators)
             {
                 String channelName = i.getChannel();
-                if (channelName != null && service != null)
+                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+                if (channelName != null && ecu != null)
                 {
-                    double value = service.getValue(channelName);
+                    double value = ecu.getValue(channelName);
                     i.setCurrentValue(value);
                 }
                 else
@@ -380,11 +348,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        if (service != null)
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecu != null)
         {
-            service.disconnect();
+            ecu.stop();
         }
-        doUnbindService();
         sendLogs();
         indicatorManager.setDisabled(true);
         if (!testDialogShown)
@@ -407,7 +375,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         MenuItem editItem = menu.findItem(R.id.gaugeEditing);
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-        
+
         editItem.setEnabled(ecuDefinition != null);
         if (gaugeEditEnabled)
         {
@@ -418,7 +386,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setTitle(R.string.EnableGaugeEdit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        if(ecuDefinition != null && ecuDefinition.isRunning())
+        if (ecuDefinition != null && ecuDefinition.isRunning())
         {
             connectionItem.setTitle(R.string.disconnect);
         }
@@ -428,7 +396,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         MenuItem loggingItem = menu.findItem(R.id.forceLogging);
-        loggingItem.setEnabled(ecuDefinition != null && service != null);
+        loggingItem.setEnabled(ecuDefinition != null);
         if (ApplicationSettings.INSTANCE.shouldBeLogging())
         {
             loggingItem.setTitle(R.string.stop_logging);
@@ -445,45 +413,56 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public boolean onOptionsItemSelected(MenuItem item)
     {
         checkBTDeviceSet();
-        if (item.getItemId() == R.id.preferences)
+        int itemId = item.getItemId();
+        if (itemId == R.id.preferences)
         {
             openPreferences();
             return true;
         }
-        else if (item.getItemId() == R.id.calibrate)
+        else if (itemId == R.id.calibrate)
         {
             openCalibrateTPS();
             return true;
         }
-        else if (item.getItemId() == R.id.about)
+        else if (itemId == R.id.about)
         {
             showAbout();
             return true;
         }
-        else if (item.getItemId() == R.id.gaugeEditing)
+        else if (itemId == R.id.gaugeEditing)
         {
             toggleEditing();
             return true;
         }
-        else if (item.getItemId() == R.id.forceConnection)
+        else if (itemId == R.id.forceConnection)
         {
             toggleConnection();
             return true;
         }
-        else if (item.getItemId() == R.id.quit)
+        else if (itemId == R.id.quit)
         {
             quit();
             return true;
         }
-        else if (item.getItemId() == R.id.forceLogging)
+        else if (itemId == R.id.forceLogging)
         {
             toggleLogging();
+            return true;
+        }
+        else if (itemId == R.id.resetGauges)
+        {
+            resetGuages();
             return true;
         }
         else
         {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void resetGuages()
+    {
+        new ResetGaugesTask().execute((Void) null);
     }
 
     private void toggleEditing()
@@ -499,14 +478,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void toggleLogging()
     {
         boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
         if (shouldBeLogging)
         {
-            service.stopLogging();
+            ecu.stopLogging();
             sendLogs();
         }
         else
         {
-            service.startLogging();
+            ecu.startLogging();
         }
         ApplicationSettings.INSTANCE.setLoggingOverride(!shouldBeLogging);
     }
@@ -532,21 +513,25 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        if (service != null)
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if (ecu != null)
         {
-            service.disconnect();
+            ecu.stop();
         }
         sendLogs();
         ApplicationSettings.INSTANCE.resetECUs();
-        doUnbindService();
+
         this.finish();
     }
 
     private void toggleConnection()
     {
-        if (service != null)
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+        if (ecu != null)
         {
-            service.toggleConnection();
+            ecu.toggleConnection();
         }
     }
 
@@ -597,10 +582,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK)
         {
-            if (requestCode == REQUEST_ENABLE_BT)
-            {
-                doBindService();
-            }
             if (requestCode == MSLoggerApplication.PROBE_ECU)
             {
                 completeCreate();
@@ -610,7 +591,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
                 if (dirty)
                 {
-                    resetConnection();
                     Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
                     if (ecuDefinition != null)
                     {
@@ -622,19 +602,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
-    }
-
-    synchronized private void resetConnection()
-    {
-        DebugLogManager.INSTANCE.log("resetConnection()");
-
-        connected = false;
-        if(service != null)
-        {
-            service.stopLogging();
-        }
-
-        indicatorManager.setDisabled(true);
     }
 
     @Override
@@ -656,10 +623,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             ConnectionState currentState = ecuDefinition.getCurrentState();
             if (currentState == Megasquirt.ConnectionState.STATE_NONE)
             {
-                if (service == null)
-                {
-                    doBindService();
-                }
+
             }
         }
     }
@@ -741,6 +705,44 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     // *****************************************************************************
+    private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
+    {
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute()
+        {
+            dialog = new ProgressDialog(MSLoggerActivity.this);
+            dialog.setMessage(getString(R.string.ResetGauges));
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            GaugeRegister.INSTANCE.resetAll();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
+            Editor editor = prefs.edit();
+            editor.remove("gauge1");
+            editor.remove("gauge2");
+            editor.remove("gauge3");
+            editor.remove("gauge4");
+            editor.remove("gauge5");
+            editor.commit();
+            initGauges();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused)
+        {
+            dialog.dismiss();
+        }
+    }
+
+    // *****************************************************************************
     private class InitTask extends AsyncTask<Void, Void, Void>
     {
 
@@ -789,9 +791,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
             ApplicationSettings.INSTANCE.setLoggingOverride(false);
-            if (service != null)
+            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+            if (ecu != null)
             {
-                service.disconnect();
+                ecu.stop();
             }
 
             if (isFinishing())
@@ -848,22 +851,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     // *****************************************************************************
-
-    private final class MSServiceConnection implements ServiceConnection
-    {
-
-        public void onServiceConnected(ComponentName className, IBinder binder)
-        {
-            service = ((MSLoggerService.MSLoggerBinder) binder).getService();
-        }
-
-        public void onServiceDisconnected(ComponentName className)
-        {
-            service = null;
-        }
-    }
-
-    // *****************************************************************************
     private final class Reciever extends BroadcastReceiver
     {
         @Override
@@ -875,11 +862,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
             if (action.equals(Megasquirt.CONNECTED))
             {
+                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
                 DebugLogManager.INSTANCE.log(action);
                 indicatorManager.setDisabled(false);
-                if (shouldBeLogging && service != null)
+                if (shouldBeLogging && ecu != null)
                 {
-                    service.startLogging();
+                    ecu.startLogging();
                 }
             }
             if (action.equals(Megasquirt.DISCONNECTED))
@@ -910,10 +899,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 DebugLogManager.INSTANCE.log("Message : " + msg);
             }
 
-            if (shouldBeLogging && service == null)
-            {
-                doBindService();
-            }
         }
     }
 
@@ -931,7 +916,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         @Override
         public boolean onTouch(View v, MotionEvent event)
         {
-            if (service != null && service.isLogging() && event.getAction() == MotionEvent.ACTION_DOWN)
+            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+
+            if (ecu != null && ecu.isLogging() && event.getAction() == MotionEvent.ACTION_DOWN)
             {
                 layout.setBackgroundColor(Color.BLUE);
                 layout.invalidate();

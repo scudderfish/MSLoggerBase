@@ -39,7 +39,7 @@ public enum DebugLogManager
 
     }
 
-    public void log(String s)
+    public synchronized void log(String s)
     {
 		if(!ApplicationSettings.INSTANCE.isWritable())
 		{
@@ -60,7 +60,7 @@ public enum DebugLogManager
         }
     }
 
-    public void logException(Exception ex)
+    public synchronized void logException(Exception ex)
     {
 		if(!ApplicationSettings.INSTANCE.isWritable())
 		{

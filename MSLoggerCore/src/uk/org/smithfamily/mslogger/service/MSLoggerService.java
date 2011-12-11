@@ -70,12 +70,12 @@ public class MSLoggerService extends Service
         unregisterReceiver(updateReceiver);
     }
 
-    public double getValue(String channelName)
+    private double getValue(String channelName)
     {
         return ApplicationSettings.INSTANCE.getEcuDefinition().getValue(channelName);
     }
 
-    public void connect()
+    private void connect()
     {
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
@@ -86,7 +86,7 @@ public class MSLoggerService extends Service
         }
         
     }
-    public void disconnect()
+    private void disconnect()
     {
         Toast.makeText(this, R.string.disconnecting_from_ms, Toast.LENGTH_LONG).show();
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
@@ -127,14 +127,14 @@ public class MSLoggerService extends Service
         mNotificationManager.cancelAll();
     }
 
-    public void stopLogging()
+    private void stopLogging()
     {
         logging = false;
         ApplicationSettings.INSTANCE.getEcuDefinition().stopLogging();
         removeNotification();
     }
 
-    public void startLogging()
+    private void startLogging()
     {
         showNotification();
 
@@ -142,12 +142,12 @@ public class MSLoggerService extends Service
         logging = true;
     }
 
-    public void connectToECU()
+    private void connectToECU()
     {
         ApplicationSettings.INSTANCE.getEcuDefinition().initialiseConnection();
     }
 
-    public void toggleConnection()
+    private void toggleConnection()
     {
        if(isConnected)
        {
