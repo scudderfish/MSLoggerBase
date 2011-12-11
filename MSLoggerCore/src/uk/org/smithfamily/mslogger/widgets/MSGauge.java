@@ -9,6 +9,7 @@ import android.view.View;
 
 public class MSGauge extends View implements Indicator
 {
+    public static final String DEAD_GAUGE_NAME = "deadGauge";
     private int                diameter;
     private String             name        = "RPM";
     private String             title       = "RPM";
@@ -38,7 +39,7 @@ public class MSGauge extends View implements Indicator
     private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
-    private GaugeDetails deadGauge = new GaugeDetails("deadGauge", "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
+    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
     
     public MSGauge(Context context)
     {
@@ -231,7 +232,8 @@ public class MSGauge extends View implements Indicator
     private void drawPointer(Canvas canvas)
     {
         float radius = 0.42f;
-
+        float back_radius=0.042f;
+                
         double range = 270.0 / (max - min);
         double pointerValue = value;
         if (pointerValue < min)
@@ -246,10 +248,13 @@ public class MSGauge extends View implements Indicator
         double rads = angle * pi / 180.0;
         float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
         float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
-
+        float bx = (float) (0.5f + back_radius * Math.cos(rads - pi / 2.0));
+        float by = (float) (0.5f + back_radius * Math.sin(rads - pi / 2.0));
+        
         pointerPaint.setColor(getFgColour());
 
-        canvas.drawLine(0.5f, 0.5f, x, y, pointerPaint);
+        canvas.drawCircle(0.5f,0.5f,back_radius/2.0f, pointerPaint);
+        canvas.drawLine(bx, by, x, y, pointerPaint);
         // canvas.drawText(Integer.toString((int) val), x, y, scalePaint);
     }
 

@@ -40,7 +40,6 @@ public class FRDLogFileHeader
 		timeStamp[2] = (byte) (now >> 8);
 		timeStamp[3] = (byte) (now);
 
-		blockSize = ecu.getBlockSize();
 		outputLength[0] = (byte) (blockSize >> 8);
 		outputLength[1] = (byte) (blockSize);
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.org.smithfamily.mslogger.chocolate"
-    android:versionCode="2326"
-    android:versionName="3.6.6" >
+    android:versionCode="2327"
+    android:versionName="3.6.7" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -20,7 +20,7 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:name="uk.org.smithfamily.mslogger.MSLoggerApplication" >
-        <service android:name="uk.org.smithfamily.mslogger.service.MSLoggerService" />
+       
 
         <activity
             android:label="@string/app_name"

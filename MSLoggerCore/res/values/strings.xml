@@ -26,6 +26,7 @@
 	<string name="mslogger_is_running">MSLogger is running</string>
 	<string name="logging_to">Logging to %s</string>
 	<string name="CalibrateTPS">Calibrate TPS</string>
+	<string name="ResetGauges">Reset Gauges</string>
 	<string name="connect">Connect</string>
 	<string name="disconnect">Disconnect</string>
 	<string name="please_select">Please select your Bluetooth device in Preferences</string>

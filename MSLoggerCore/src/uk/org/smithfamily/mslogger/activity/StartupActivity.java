@@ -17,6 +17,7 @@ public class StartupActivity extends Activity
     private static final int SELECT_EGO        = 1;
     private static final int SELECT_MAP        = 2;
     private static final int SELECT_EMAIL      = 3;
+    private static final int REQUEST_ENABLE_BT = 0;
 
     private class StartupHandler extends Handler
     {
@@ -56,7 +57,17 @@ public class StartupActivity extends Activity
             finishDialogNoBluetooth();
             return;
         }
-        initSequence();
+
+        boolean bluetoothOK = mBluetoothAdapter.isEnabled();
+        if (!bluetoothOK)
+        {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        else
+        {
+            initSequence();
+        }
     }
 
     private void initSequence()
@@ -71,9 +82,9 @@ public class StartupActivity extends Activity
             selectEGO();
             return;
         }
-        if (ApplicationSettings.INSTANCE.getPref("email_offered")==null)
+        if (ApplicationSettings.INSTANCE.getPref("email_offered") == null)
         {
-            ApplicationSettings.INSTANCE.setPref("email_offered","yes");
+            ApplicationSettings.INSTANCE.setPref("email_offered", "yes");
             selectEmail();
             return;
         }
@@ -117,7 +128,16 @@ public class StartupActivity extends Activity
     {
         switch (requestCode)
         {
-
+        case REQUEST_ENABLE_BT:
+            if (resultCode == Activity.RESULT_OK)
+            {
+                initSequence();
+            }
+            else
+            {
+                finishDialogNoBluetooth();
+            }
+            break;
         case MSLoggerApplication.REQUEST_CONNECT_DEVICE:
 
             // When DeviceListActivity returns with a device to connect
@@ -136,7 +156,7 @@ public class StartupActivity extends Activity
         case SELECT_EMAIL:
             initSequence();
             break;
-            
+
         }
     }
 
@@ -184,7 +204,7 @@ public class StartupActivity extends Activity
 
     private void unrecognisedEcu(final String sig)
     {
-        if(isFinishing())
+        if (isFinishing())
         {
             return;
         }
@@ -205,7 +225,7 @@ public class StartupActivity extends Activity
         });
 
         AlertDialog alert = builder.create();
-        if(!isFinishing())
+        if (!isFinishing())
         {
             alert.show();
         }

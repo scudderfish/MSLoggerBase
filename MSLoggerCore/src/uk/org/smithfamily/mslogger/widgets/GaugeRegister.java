@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 
