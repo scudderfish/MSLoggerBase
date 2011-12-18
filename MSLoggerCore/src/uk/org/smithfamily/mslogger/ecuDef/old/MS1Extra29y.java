@@ -99,14 +99,14 @@ public class MS1Extra29y extends Megasquirt
         }
         else
         {
-            byte[] pageBuffer1 = new byte[189];
+            byte[] pageBuffer1;
             byte[] pageBuffer2 = new byte[189];
 
             byte[] selectPage1 = { 80, 1 };
             byte[] selectPage2 = { 80, 2 };
             byte[] readPage = { 86 };
-            getPage(pageBuffer1, selectPage1, readPage);
-            getPage(pageBuffer2, selectPage2, readPage);
+            pageBuffer1=loadPage(1,0,189, selectPage1, readPage);
+            pageBuffer2=loadPage(2,189,189, selectPage2, readPage);
 
             alternate1 = MSUtils.getBits(pageBuffer1, 150, 0, 0,0);
             injOpen1 = MSUtils.getByte(pageBuffer1, 151);

@@ -97,5 +97,13 @@
             android:key="gauge5"
             android:title="Gauge 5" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Debug">
+          <ListPreference
+            android:entries="@array/levelnames"
+            android:entryValues="@array/levelvalues"
+            android:defaultValue="6"
+            android:key="loglevel"
+            android:title="@string/log_level" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -73,7 +73,7 @@ public class MS2Extra310 extends Megasquirt
 
             byte[] selectPage1 = { 114, 0, 4, 0, 0, 4, 0 };
 
-            getPage(pageBuffer, selectPage1, null);
+            pageBuffer = loadPage(1,0,1024, selectPage1, null);
             alternate = MSUtils.getBits(pageBuffer, 611, 0, 0,0);
             twoStroke = MSUtils.getBits(pageBuffer, 617, 0, 0,0);
             nCylinders = MSUtils.getBits(pageBuffer, 0, 0, 4,0);

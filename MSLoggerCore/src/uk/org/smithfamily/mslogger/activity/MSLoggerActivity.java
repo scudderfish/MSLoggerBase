@@ -1,11 +1,11 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ConnectionState;
+
 import uk.org.smithfamily.mslogger.log.*;
 import uk.org.smithfamily.mslogger.widgets.*;
 import android.app.*;
@@ -71,16 +71,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onCreate(savedInstanceState);
         checkSDCard();
         
-        DebugLogManager.INSTANCE.log(getPackageName());
+        DebugLogManager.INSTANCE.log(getPackageName(),Log.ASSERT);
         try
         {
             String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
-            DebugLogManager.INSTANCE.log(app_ver);
+            DebugLogManager.INSTANCE.log(app_ver,Log.ASSERT);
         }
         catch (NameNotFoundException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
+        dumpPreferences();
         mHandler = new Handler();
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
@@ -99,6 +100,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerMessages();
         Intent serverIntent = new Intent(this, StartupActivity.class);
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
+    }
+
+    private void dumpPreferences()
+    {
+        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
+        Map<String, ?> prefs = prefsManager.getAll();
+        for(Entry<String, ?> entry : prefs.entrySet())
+        {
+            DebugLogManager.INSTANCE.log("Preference:"+entry.getKey()+":"+entry.getValue(), Log.ASSERT);
+        }
     }
 
     private void completeCreate()
@@ -296,8 +307,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerReceiver(updateReceiver, connectedFilter);
         IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
         registerReceiver(updateReceiver, disconnectedFilter);
-        IntentFilter connectionLostFilter = new IntentFilter(Megasquirt.CONNECTION_LOST);
-        registerReceiver(updateReceiver, connectionLostFilter);
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
@@ -619,12 +628,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
         {
-
-            ConnectionState currentState = ecuDefinition.getCurrentState();
-            if (currentState == Megasquirt.ConnectionState.STATE_NONE)
-            {
-
-            }
+        	ecuDefinition.refreshFlags();
         }
     }
 
@@ -731,7 +735,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editor.remove("gauge4");
             editor.remove("gauge5");
             editor.commit();
-            initGauges();
             return null;
         }
 
@@ -739,6 +742,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         protected void onPostExecute(Void unused)
         {
             dialog.dismiss();
+            initGauges();
         }
     }
 
@@ -864,7 +868,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-                DebugLogManager.INSTANCE.log(action);
+                DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(false);
                 if (shouldBeLogging && ecu != null)
                 {
@@ -873,19 +877,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
             if (action.equals(Megasquirt.DISCONNECTED))
             {
-                DebugLogManager.INSTANCE.log(action);
-                indicatorManager.setDisabled(true);
-            }
-            if (action.equals(Megasquirt.CONNECTION_LOST))
-            {
+                DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(true);
                 if (shouldBeLogging)
                 {
                     DatalogManager.INSTANCE.mark("Connection Lost");
                 }
-                DebugLogManager.INSTANCE.log(action);
             }
-
+ 
             if (action.equals(Megasquirt.NEW_DATA))
             {
                 processData();
@@ -895,8 +894,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
                 messages.setText(msg);
-                Log.i(ApplicationSettings.TAG, "Message : " + msg);
-                DebugLogManager.INSTANCE.log("Message : " + msg);
+                DebugLogManager.INSTANCE.log("Message : " + msg,Log.INFO);
             }
 
         }

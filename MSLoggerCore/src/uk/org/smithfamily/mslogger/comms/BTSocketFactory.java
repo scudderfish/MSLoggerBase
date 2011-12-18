@@ -13,7 +13,7 @@ public class BTSocketFactory
 {
 	private static UUID	RFCOMM_UUID	= UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-	public static BluetoothSocket getSocket(BluetoothDevice device)
+	public static BluetoothSocket getSocket(BluetoothDevice device) throws Exception
 	{
 		BluetoothSocket tmp = null;
 		if (ApplicationSettings.INSTANCE.isBTWorkaround())
@@ -50,6 +50,7 @@ public class BTSocketFactory
 				{
 					// We're boned, nothing works
 					DebugLogManager.INSTANCE.logException(e);
+					throw e1;
 				}
 			}
 		}

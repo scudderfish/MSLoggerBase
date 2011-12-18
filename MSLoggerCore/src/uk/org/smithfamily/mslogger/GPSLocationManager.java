@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.*;
 import android.os.Bundle;
+import android.util.Log;
 
 public enum GPSLocationManager implements LocationListener
 {
@@ -25,7 +26,7 @@ public enum GPSLocationManager implements LocationListener
 		c.setAccuracy(Criteria.ACCURACY_FINE);
 		String providerName = locationManager.getBestProvider(c, false);
 
-		DebugLogManager.INSTANCE.log("Using location provider " + providerName);
+		DebugLogManager.INSTANCE.log("Using location provider " + providerName,Log.INFO);
 
 		if(providerName != null)
 		{

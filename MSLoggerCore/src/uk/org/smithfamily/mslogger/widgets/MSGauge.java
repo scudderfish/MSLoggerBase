@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 public class MSGauge extends View implements Indicator
@@ -494,7 +495,7 @@ public class MSGauge extends View implements Indicator
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
         if (gd == null)
         {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme);
+            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
             gd = deadGauge;
         }
         initFromGD(gd);

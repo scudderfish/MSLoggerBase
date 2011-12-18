@@ -94,7 +94,19 @@ public class StartupActivity extends Activity
             startActivityForResult(serverIntent, MSLoggerApplication.REQUEST_CONNECT_DEVICE);
             return;
         }
-        startFingerprint();
+        if(ApplicationSettings.INSTANCE.getEcuDefinition() == null)
+        {
+            startFingerprint();
+        }
+        else
+        {
+
+            Intent intent = new Intent();
+
+            setResult(Activity.RESULT_OK, intent);
+
+            finish();
+        }
 
     }
 
@@ -171,7 +183,6 @@ public class StartupActivity extends Activity
         {
             ApplicationSettings.INSTANCE.setEcu(ecu);
 
-            // Create the result Intent and include the MAC address
             Intent intent = new Intent();
 
             // Set result and finish this Activity

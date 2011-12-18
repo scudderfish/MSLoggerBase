@@ -247,8 +247,6 @@ public enum Connection
 
 	public byte[] writeAndRead(byte[] cmd, int d) throws IOException
 	{
-		flushAll();
-
 		writeCommand(cmd, d);
 
 		byte[] result = readBytes();
@@ -257,8 +255,6 @@ public enum Connection
 
 	public void writeAndRead(byte[] cmd, byte[] result, int d) throws IOException
 	{
-		flushAll();
-
 		writeCommand(cmd, d);
 
 		readBytes(result);
@@ -275,16 +271,24 @@ public enum Connection
 		int bytesRead = 0;
 		while (bytesRead < nBytes)
 		{
-			while (mmInStream.available() < nBytes)
+		    int available = mmInStream.available();
+			while (available < nBytes)
 			{
 				delay(5);
 				now = System.currentTimeMillis();
 				if (now - start > IO_TIMEOUT)
 				{
-					DebugLogManager.INSTANCE.log("Timeout " + IO_TIMEOUT + "ms reached. Only " + mmInStream.available()
+					DebugLogManager.INSTANCE.log("Timeout " + IO_TIMEOUT + "ms reached. Only " + available
 							+ " bytes available of " + bytes.length, Log.ERROR);
+					if(available > 0)
+					{
+					    byte[] dross = new byte[available];
+					    mmInStream.read(dross,0,available);
+					    DebugLogManager.INSTANCE.log("Those bytes were",dross,Log.ERROR);
+					}
 					throw new IOException("Timeout waiting for data to arrive");
 				}
+				available = mmInStream.available();
 			}
 
 			try
