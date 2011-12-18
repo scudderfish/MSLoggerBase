@@ -5,11 +5,13 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -264,6 +266,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         Editor editor = prefs.edit();
         editor.putBoolean("workaround", state);
         editor.commit();
+        DebugLogManager.INSTANCE.log("set BTWorkaround to "+state,Log.ASSERT);
+
 
     }
 
@@ -274,5 +278,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             e.getValue().reset();
         }
         
+    }
+
+    public int getLoggingLevel()
+    {
+        String value = prefs.getString("loglevel", null);
+        return value == null ? 6 : Integer.valueOf(value);
     }
 }

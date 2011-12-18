@@ -18,11 +18,10 @@ public enum DebugLogManager
 
     private void createLogFile() throws IOException
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
-		{
-			return;
-		}
-		
+        if (!ApplicationSettings.INSTANCE.isWritable())
+        {
+            return;
+        }
 
         File dir = new File(Environment.getExternalStorageDirectory(), "MSLogger");
         dir.mkdirs();
@@ -39,19 +38,25 @@ public enum DebugLogManager
 
     }
 
-    public synchronized void log(String s)
+    public synchronized void log(String s, int logLevel)
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
-		{
-			return;
-		}
-		
+        if (!checkLogLevel(logLevel))
+        {
+            return;
+
+        }
+        if (!ApplicationSettings.INSTANCE.isWritable())
+        {
+            return;
+        }
+
         try
         {
             if (logFile == null || os == null)
                 createLogFile();
 
-            os.write(String.format("%tc:%s\n", System.currentTimeMillis(), s));
+            long now = System.currentTimeMillis();
+            os.write(String.format("%tc:%tL:%s:%s\n", now, now, Thread.currentThread().getName(), s));
             os.flush();
         }
         catch (IOException e)
@@ -60,13 +65,18 @@ public enum DebugLogManager
         }
     }
 
+    private boolean checkLogLevel(int logLevel)
+    {
+        return (ApplicationSettings.INSTANCE.getLoggingLevel() <= logLevel);
+    }
+
     public synchronized void logException(Exception ex)
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
-		{
-			return;
-		}
-		
+        if (!ApplicationSettings.INSTANCE.isWritable())
+        {
+            return;
+        }
+
         if (os == null)
         {
             try
@@ -99,5 +109,20 @@ public enum DebugLogManager
     public String getAbsolutePath()
     {
         return absolutePath;
+    }
+
+    public void log(String msg, byte[] result, int logLevel)
+    {
+        if (!checkLogLevel(logLevel))
+        {
+            return;
+
+        }
+        StringBuffer b = new StringBuffer(msg);
+        for (int i = 0; i < result.length; i++)
+        {
+            b.append(String.format(" %02x", result[i]));
+        }
+        log(b.toString(), logLevel);
     }
 }
