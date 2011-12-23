@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-
 import uk.org.smithfamily.mslogger.log.*;
 import uk.org.smithfamily.mslogger.widgets.*;
 import android.app.*;
@@ -18,14 +17,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.*;
 import android.preference.PreferenceManager;
-import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.*;
 
-import com.android.vending.licensing.*;
+import com.android.vending.licensing.LicenseChecker;
+import com.android.vending.licensing.LicenseCheckerCallback;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
@@ -49,13 +48,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     boolean                        scrolling;
     private LinearLayout           layout;
     private Handler                mHandler;
-    private static final byte[]    SALT                  = new byte[] { 124, 172 - 255, 82, 169 - 255, 179 - 255, 25, 173 - 255, 157 - 255, 200 - 255,
-            245 - 255, 125, 60, 228 - 255, 80, 81, 45, 184 - 255, 54, 176 - 255, 217 - 255 };
-    private static final String    BASE64_PUBLIC_KEY     = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA30H1+YM+Ddz3Qbdz4"
-                                                                 + "Q1utp2uq/DLH8bw3qWpef39tkal45kHrVRIaWMlrryUshj0JCTXbfoeQVvGTHEbzJw6BWiU3smf3pqwW36lBWOWYocqiWLWeME0qI"
-                                                                 + "tgVR3dYPEWD1AbBrCCyxn9mizZpHSGVCIxK7yTo8JxDIcZOMc4HUGRX0FYHPI837K+Ivg4NbJFuT21NHq0wEu8i/r5GHVXoW06QmR"
-                                                                 + "vNlFQQkvGHTiNlu9MbCFJlETBYUBm5cteeJMW/euOvHTIcAYKlB65JUdgBH6gAe88y5I8uTSUJyhmxCQ7SO8S/BnonzCncOmwdgSn"
-                                                                 + "mxMFMXMWMgKN1bsLlHiKUQIDAQAB";
     private static final int       SHOW_PREFS            = 124230;
 
     private LicenseCheckerCallback mLicenseCheckerCallback;
@@ -196,11 +188,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    private void doCheck()
-    {
-        setProgressBarIndeterminateVisibility(true);
-        mChecker.checkAccess(mLicenseCheckerCallback);
-    }
 
     private void displayResult(final String result)
     {
@@ -689,20 +676,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         @Override
         protected Void doInBackground(Void... params)
         {
-            if (licenseCheckCompleted != null)
-            {
-                return null;
-            }
-            licenseCheckCompleted = false;
-
-            String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-
-            mLicenseCheckerCallback = new MSLoggerCheckerCallback();
-            mChecker = new LicenseChecker(MSLoggerActivity.this, new ServerManagedPolicy(MSLoggerActivity.this, new AESObfuscator(SALT, getPackageName(),
-                    deviceId)), BASE64_PUBLIC_KEY);
-
-            doCheck();
-
             return null;
         }
 
