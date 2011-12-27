@@ -23,8 +23,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.*;
 
-import com.android.vending.licensing.LicenseChecker;
-import com.android.vending.licensing.LicenseCheckerCallback;
 
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
@@ -33,7 +31,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     TextView                       messages;
     public boolean                 connected;
     static private Boolean         ready                 = null;
-    static private Boolean         licenseCheckCompleted = null;
     private boolean                vanilla               = false;
     private boolean                testDialogShown;
     private int                    dataCount             = 0;
@@ -50,8 +47,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private Handler                mHandler;
     private static final int       SHOW_PREFS            = 124230;
 
-    private LicenseCheckerCallback mLicenseCheckerCallback;
-    private LicenseChecker         mChecker;
     private boolean                registered;
 
     /** Called when the activity is first created. */
@@ -750,53 +745,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    // *****************************************************************************
-    private class MSLoggerCheckerCallback implements LicenseCheckerCallback
-    {
-        public void allow()
-        {
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            // Should allow user access.
-            displayResult("Excellent!");
-        }
-
-        public void dontAllow()
-        {
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-            ApplicationSettings.INSTANCE.setLoggingOverride(false);
-            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-            if (ecu != null)
-            {
-                ecu.stop();
-            }
-
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            displayResult("Denied!");
-            showDialog(0);
-        }
-
-        public void applicationError(ApplicationErrorCode errorCode)
-        {
-            if (isFinishing())
-            {
-                // Don't update UI if Activity is finishing.
-                return;
-            }
-            // This is a polite way of saying the developer made a mistake
-            // while setting up or calling the license checker library.
-            // Please examine the error code and fix the error.
-            System.out.println("Bork!");
-        }
-    }
-
+ 
     // *****************************************************************************
 
     public class GaugeTouchListener implements OnTouchListener
