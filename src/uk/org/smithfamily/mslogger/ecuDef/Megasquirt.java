@@ -5,8 +5,6 @@ import java.lang.reflect.Field;
 import java.util.Set;
 import java.util.Timer;
 
-import org.acra.ErrorReporter;
-
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.Connection;
@@ -355,7 +353,6 @@ public abstract class Megasquirt
             }
             catch (RuntimeException t)
             {
-                ErrorReporter.getInstance().handleException(t);
                 DebugLogManager.INSTANCE.logException(t);
                 throw (t);
             }
