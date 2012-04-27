@@ -5,6 +5,8 @@ import java.util.*;
 
 import android.content.Context;
 
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
@@ -19,6 +21,7 @@ public class ZZMS2Extra310 extends Megasquirt
         refreshFlags();
     }
 
+    @Override
     public void refreshFlags()
     {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
@@ -608,197 +611,196 @@ public class ZZMS2Extra310 extends Megasquirt
     double              knk_step1;
     int                 pwmidleset_hz;
 
-    private String[]    defaultGauges = { "tachometer", "throttleGauge", "afr1Gauge", "pulseWidth1Gauge", "pulseWidth2Gauge", "advdegGauge", "fuelloadGauge", "egoVGauge",
-            "lambda1Gauge", "injadv2Gauge" };
+    private String[]    defaultGauges = { "tachometer", "throttleGauge", "pulseWidth1Gauge", "pulseWidth2Gauge", "advdegGauge", "fuelloadGauge", "egoVGauge", "lambda1Gauge", "afr1Gauge", "injadv2Gauge" };
 
     @Override
-    public void calculate(byte[] ochBuffer) throws IOException
-    {
-        deadValue = (0);
-        if (CAN_COMMANDS)
-        {
-        }
-        else
-        {
-        }
-        seconds = (int) ((MSUtils.getWord(ochBuffer, 0) + 0.0) * 1.000);
-        secl = (seconds % 256);
-        pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 2) + 0.0) * 0.000666);
-        pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 4) + 0.0) * 0.000666);
-        pulseWidth = (pulseWidth1);
-        rpm = (int) ((MSUtils.getWord(ochBuffer, 6) + 0.0) * 1.000);
-        advance = (double) ((MSUtils.getSignedWord(ochBuffer, 8) + 0.0) * 0.100);
-        squirt = (int) ((MSUtils.getByte(ochBuffer, 10) + 0.0) * 1.000);
-        firing1 = MSUtils.getBits(ochBuffer, 10, 0, 0, 0);
-        firing2 = MSUtils.getBits(ochBuffer, 10, 1, 1, 0);
-        sched1 = MSUtils.getBits(ochBuffer, 10, 2, 2, 0);
-        inj1 = MSUtils.getBits(ochBuffer, 10, 3, 3, 0);
-        sched2 = MSUtils.getBits(ochBuffer, 10, 4, 4, 0);
-        inj2 = MSUtils.getBits(ochBuffer, 10, 5, 5, 0);
-        engine = (int) ((MSUtils.getByte(ochBuffer, 11) + 0.0) * 1.000);
-        ready = MSUtils.getBits(ochBuffer, 11, 0, 0, 0);
-        crank = MSUtils.getBits(ochBuffer, 11, 1, 1, 0);
-        startw = MSUtils.getBits(ochBuffer, 11, 2, 2, 0);
-        warmup = MSUtils.getBits(ochBuffer, 11, 3, 3, 0);
-        tpsaccaen = MSUtils.getBits(ochBuffer, 11, 4, 4, 0);
-        tpsaccden = MSUtils.getBits(ochBuffer, 11, 5, 5, 0);
-        mapaccaen = MSUtils.getBits(ochBuffer, 11, 6, 6, 0);
-        mapaccden = MSUtils.getBits(ochBuffer, 11, 7, 7, 0);
-        afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
-        afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
-        wbo2_en1 = (int) ((MSUtils.getByte(ochBuffer, 14) + 0.0) * 1.000);
-        wbo2_en2 = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.0) * 1.000);
-        barometer = (double) ((MSUtils.getSignedWord(ochBuffer, 16) + 0.0) * 0.100);
-        map = (double) ((MSUtils.getSignedWord(ochBuffer, 18) + 0.0) * 0.100);
-        if (CELSIUS)
-        {
-            mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + -320.0) * 0.05555);
-            coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + -320.0) * 0.05555);
-        }
-        else
-        {
-            mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + 0.0) * 0.100);
-            coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + 0.0) * 0.100);
-        }
-        tps = (double) ((MSUtils.getSignedWord(ochBuffer, 24) + 0.0) * 0.100);
-        throttle = (tps);
-        batteryVoltage = (double) ((MSUtils.getSignedWord(ochBuffer, 26) + 0.0) * 0.100);
-        afr1 = (double) ((MSUtils.getSignedWord(ochBuffer, 28) + 0.0) * 0.100);
-        afr2 = (double) ((MSUtils.getSignedWord(ochBuffer, 30) + 0.0) * 0.100);
-        lambda1 = (afr1 / 14.7);
-        lambda2 = (afr2 / 14.7);
-        knock = (double) ((MSUtils.getSignedWord(ochBuffer, 32) + 0.0) * 0.100);
-        egoCorrection1 = (double) ((MSUtils.getSignedWord(ochBuffer, 34) + 0.0) * 0.1000);
-        egoCorrection = ((egoCorrection1 + egoCorrection2) / 2);
-        egoCorrection2 = (double) ((MSUtils.getSignedWord(ochBuffer, 36) + 0.0) * 0.1000);
-        airCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 38) + 0.0) * 1.000);
-        warmupEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 40) + 0.0) * 1.000);
-        accelEnrich = (double) ((MSUtils.getSignedWord(ochBuffer, 42) + 0.0) * 0.100);
-        tpsfuelcut = (int) ((MSUtils.getSignedWord(ochBuffer, 44) + 0.0) * 1.000);
-        baroCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 46) + 0.0) * 1.000);
-        gammaEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 48) + 0.0) * 1.000);
-        veCurr1 = (double) ((MSUtils.getSignedWord(ochBuffer, 50) + 0.0) * 0.1000);
-        veCurr2 = (double) ((MSUtils.getSignedWord(ochBuffer, 52) + 0.0) * 0.1000);
-        veCurr = (veCurr1);
-        iacstep = (int) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 1.000);
-        idleDC = (double) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 0.39063);
-        coldAdvDeg = (double) ((MSUtils.getSignedWord(ochBuffer, 56) + 0.0) * 0.100);
-        tpsDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 0.100);
-        mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
-        dwell = (double) ((MSUtils.getWord(ochBuffer, 62) + 0.0) * 0.0666);
-        mafmap = (int) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 1.000);
-        fuelload = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
-        fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
-        portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
-        port0 = MSUtils.getBits(ochBuffer, 70, 0, 0, 0);
-        port1 = MSUtils.getBits(ochBuffer, 70, 1, 1, 0);
-        port2 = MSUtils.getBits(ochBuffer, 70, 2, 2, 0);
-        port3 = MSUtils.getBits(ochBuffer, 70, 3, 3, 0);
-        port4 = MSUtils.getBits(ochBuffer, 70, 4, 4, 0);
-        port5 = MSUtils.getBits(ochBuffer, 70, 5, 5, 0);
-        port6 = MSUtils.getBits(ochBuffer, 70, 6, 6, 0);
-        knockRetard = (double) ((MSUtils.getByte(ochBuffer, 71) + 0.0) * 0.1);
-        EAEFuelCorr1 = (int) ((MSUtils.getWord(ochBuffer, 72) + 0.0) * 1.0);
-        egoV = (double) ((MSUtils.getSignedWord(ochBuffer, 74) + 0.0) * 0.01);
-        egoV2 = (double) ((MSUtils.getSignedWord(ochBuffer, 76) + 0.0) * 0.01);
-        status1 = (int) ((MSUtils.getByte(ochBuffer, 78) + 0.0) * 1.0);
-        status2 = (int) ((MSUtils.getByte(ochBuffer, 79) + 0.0) * 1.0);
-        status3 = (int) ((MSUtils.getByte(ochBuffer, 80) + 0.0) * 1.0);
-        status4 = (int) ((MSUtils.getByte(ochBuffer, 81) + 0.0) * 1.0);
-        looptime = (double) ((MSUtils.getWord(ochBuffer, 82) + 0.0) * 0.6667);
-        status5 = (int) ((MSUtils.getWord(ochBuffer, 84) + 0) * 1);
-        tpsADC = (int) ((MSUtils.getWord(ochBuffer, 86) + 0) * 1);
-        fuelload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 88) + 0.0) * 0.100);
-        ignload = (double) ((MSUtils.getSignedWord(ochBuffer, 90) + 0.0) * 0.100);
-        ignload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 92) + 0.0) * 0.100);
-        synccnt = (int) ((MSUtils.getByte(ochBuffer, 94) + 0) * 1);
-        timing_err = (double) ((MSUtils.getSignedByte(ochBuffer, 95) + 0) * 0.1);
-        deltaT = (int) ((MSUtils.getSignedLong(ochBuffer, 96) + 0.0) * 1.000);
-        wallfuel1 = (int) ((MSUtils.getLong(ochBuffer, 100) + 0.0) * 1.000);
-        gpioadc0 = (int) ((MSUtils.getWord(ochBuffer, 104) + 0.0) * 1.000);
-        gpioadc1 = (int) ((MSUtils.getWord(ochBuffer, 106) + 0.0) * 1.000);
-        gpioadc2 = (int) ((MSUtils.getWord(ochBuffer, 108) + 0.0) * 1.000);
-        gpioadc3 = (int) ((MSUtils.getWord(ochBuffer, 110) + 0.0) * 1.000);
-        gpioadc4 = (int) ((MSUtils.getWord(ochBuffer, 112) + 0.0) * 1.000);
-        gpioadc5 = (int) ((MSUtils.getWord(ochBuffer, 114) + 0.0) * 1.000);
-        gpioadc6 = (int) ((MSUtils.getWord(ochBuffer, 116) + 0.0) * 1.000);
-        gpioadc7 = (int) ((MSUtils.getWord(ochBuffer, 118) + 0.0) * 1.000);
-        gpiopwmin0 = (int) ((MSUtils.getWord(ochBuffer, 120) + 0.0) * 1.000);
-        gpiopwmin1 = (int) ((MSUtils.getWord(ochBuffer, 122) + 0.0) * 1.000);
-        gpiopwmin2 = (int) ((MSUtils.getWord(ochBuffer, 124) + 0.0) * 1.000);
-        gpiopwmin3 = (int) ((MSUtils.getWord(ochBuffer, 126) + 0.0) * 1.000);
-        adc6 = (int) ((MSUtils.getWord(ochBuffer, 128) + 0.0) * 1);
-        adc7 = (int) ((MSUtils.getWord(ochBuffer, 130) + 0.0) * 1);
-        wallfuel2 = (int) ((MSUtils.getLong(ochBuffer, 132) + 0.0) * 1.000);
-        EAEFuelCorr2 = (int) ((MSUtils.getWord(ochBuffer, 136) + 0.0) * 1.0);
-        boostduty = (int) ((MSUtils.getByte(ochBuffer, 138) + 0.0) * 1.0);
-        syncreason = (int) ((MSUtils.getByte(ochBuffer, 139) + 0.0) * 1.0);
-        user0 = (int) ((MSUtils.getWord(ochBuffer, 140) + 0.0) * 1.0);
-        inj_adv1 = (double) ((MSUtils.getSignedWord(ochBuffer, 142) + 0.0) * 0.100);
-        inj_adv2 = (double) ((MSUtils.getSignedWord(ochBuffer, 144) + 0.0) * 0.100);
-        pulseWidth3 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0.0) * 0.000666);
-        pulseWidth4 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0.0) * 0.000666);
-        vetrim1curr = (double) ((MSUtils.getSignedWord(ochBuffer, 150) + 10240.0) * 0.00976562500);
-        vetrim2curr = (double) ((MSUtils.getSignedWord(ochBuffer, 152) + 10240.0) * 0.00976562500);
-        vetrim3curr = (double) ((MSUtils.getSignedWord(ochBuffer, 154) + 10240.0) * 0.00976562500);
-        vetrim4curr = (double) ((MSUtils.getSignedWord(ochBuffer, 156) + 10240.0) * 0.00976562500);
-        maf = (double) ((MSUtils.getWord(ochBuffer, 158) + 0.0) * 0.010);
-        eaeload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 160) + 0.0) * 0.1);
-        afrload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 162) + 0.0) * 0.1);
-        rpmdot = (double) ((MSUtils.getSignedWord(ochBuffer, 164) + 0.0) * 10);
-        gpioport0 = (int) ((MSUtils.getByte(ochBuffer, 166) + 0.0) * 1.000);
-        gpioport1 = (int) ((MSUtils.getByte(ochBuffer, 167) + 0.0) * 1.000);
-        gpioport2 = (int) ((MSUtils.getByte(ochBuffer, 168) + 0.0) * 1.000);
-        accDecEnrich = (((accelEnrich + (tpsaccden) != 0) ? tpsfuelcut : 100));
-        time = (timeNow());
-        rpm100 = (rpm / 100.0);
-        altDiv1 = (((alternate) != 0) ? 2 : 1);
-        altDiv2 = (((alternate) != 0) ? 2 : 1);
-        cycleTime1 = (60000.0 / rpm * (2.0 - twoStroke));
-        nSquirts1 = (nCylinders / divider);
-        dutyCycle1 = (100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
-        cycleTime2 = (60000.0 / rpm * (2.0 - twoStroke));
-        nSquirts2 = (nCylinders / divider);
-        dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
-        if (NARROW_BAND_EGO)
-        {
-            egoVoltage = (egoV);
-        }
-        else if (LAMBDA)
-        {
-            egoVoltage = (lambda1);
-        }
-        else
-        {
-            egoVoltage = (afr1);
-        }
-        if (EGTFULL)
-        {
-            if (CELSIUS)
-            {
-                egt6temp = (adc6 * 1.222);
-                egt7temp = (adc7 * 1.222);
-            }
-            else
-            {
-                egt6temp = ((adc6 * 2.200) + 32);
-                egt7temp = ((adc7 * 2.200) + 32);
-            }
-        }
-        else
-        {
-            if (CELSIUS)
-            {
-                egt6temp = (adc6 * 0.956);
-                egt7temp = (adc7 * 0.956);
-            }
-            else
-            {
-                egt6temp = ((adc6 * 1.721) + 32);
-                egt7temp = ((adc7 * 1.721) + 32);
-            }
-        }
-    }
+	public void calculate(byte[] ochBuffer) throws IOException
+{
+deadValue = (0);
+if (CAN_COMMANDS)
+{
+}
+else
+{
+}
+seconds = (int)((MSUtils.getWord(ochBuffer,0) + 0.0) * 1.000);
+secl = (seconds % 256);
+pulseWidth1 = (double)((MSUtils.getWord(ochBuffer,2) + 0.0) * 0.000666);
+pulseWidth2 = (double)((MSUtils.getWord(ochBuffer,4) + 0.0) * 0.000666);
+pulseWidth = (pulseWidth1);
+rpm = (int)((MSUtils.getWord(ochBuffer,6) + 0.0) * 1.000);
+advance = (double)((MSUtils.getSignedWord(ochBuffer,8) + 0.0) * 0.100);
+squirt = (int)((MSUtils.getByte(ochBuffer,10) + 0.0) * 1.000);
+firing1 = MSUtils.getBits(ochBuffer,10,0,0,0);
+firing2 = MSUtils.getBits(ochBuffer,10,1,1,0);
+sched1 = MSUtils.getBits(ochBuffer,10,2,2,0);
+inj1 = MSUtils.getBits(ochBuffer,10,3,3,0);
+sched2 = MSUtils.getBits(ochBuffer,10,4,4,0);
+inj2 = MSUtils.getBits(ochBuffer,10,5,5,0);
+engine = (int)((MSUtils.getByte(ochBuffer,11) + 0.0) * 1.000);
+ready = MSUtils.getBits(ochBuffer,11,0,0,0);
+crank = MSUtils.getBits(ochBuffer,11,1,1,0);
+startw = MSUtils.getBits(ochBuffer,11,2,2,0);
+warmup = MSUtils.getBits(ochBuffer,11,3,3,0);
+tpsaccaen = MSUtils.getBits(ochBuffer,11,4,4,0);
+tpsaccden = MSUtils.getBits(ochBuffer,11,5,5,0);
+mapaccaen = MSUtils.getBits(ochBuffer,11,6,6,0);
+mapaccden = MSUtils.getBits(ochBuffer,11,7,7,0);
+afrtgt1 = (double)((MSUtils.getByte(ochBuffer,12) + 0.0) * 0.1);
+afrtgt2 = (double)((MSUtils.getByte(ochBuffer,13) + 0.0) * 0.1);
+wbo2_en1 = (int)((MSUtils.getByte(ochBuffer,14) + 0.0) * 1.000);
+wbo2_en2 = (int)((MSUtils.getByte(ochBuffer,15) + 0.0) * 1.000);
+barometer = (double)((MSUtils.getSignedWord(ochBuffer,16) + 0.0) * 0.100);
+map = (double)((MSUtils.getSignedWord(ochBuffer,18) + 0.0) * 0.100);
+if (CELSIUS)
+{
+mat = (double)((MSUtils.getSignedWord(ochBuffer,20) + -320.0) * 0.05555);
+coolant = (double)((MSUtils.getSignedWord(ochBuffer,22) + -320.0) * 0.05555);
+}
+else
+{
+mat = (double)((MSUtils.getSignedWord(ochBuffer,20) + 0.0) * 0.100);
+coolant = (double)((MSUtils.getSignedWord(ochBuffer,22) + 0.0) * 0.100);
+}
+tps = (double)((MSUtils.getSignedWord(ochBuffer,24) + 0.0) * 0.100);
+throttle = (tps);
+batteryVoltage = (double)((MSUtils.getSignedWord(ochBuffer,26) + 0.0) * 0.100);
+afr1 = (double)((MSUtils.getSignedWord(ochBuffer,28) + 0.0) * 0.100);
+afr2 = (double)((MSUtils.getSignedWord(ochBuffer,30) + 0.0) * 0.100);
+lambda1 = (afr1 / 14.7);
+lambda2 = (afr2 / 14.7);
+knock = (double)((MSUtils.getSignedWord(ochBuffer,32) + 0.0) * 0.100);
+egoCorrection1 = (double)((MSUtils.getSignedWord(ochBuffer,34) + 0.0) * 0.1000);
+egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+egoCorrection2 = (double)((MSUtils.getSignedWord(ochBuffer,36) + 0.0) * 0.1000);
+airCorrection = (int)((MSUtils.getSignedWord(ochBuffer,38) + 0.0) * 1.000);
+warmupEnrich = (int)((MSUtils.getSignedWord(ochBuffer,40) + 0.0) * 1.000);
+accelEnrich = (double)((MSUtils.getSignedWord(ochBuffer,42) + 0.0) * 0.100);
+tpsfuelcut = (int)((MSUtils.getSignedWord(ochBuffer,44) + 0.0) * 1.000);
+baroCorrection = (int)((MSUtils.getSignedWord(ochBuffer,46) + 0.0) * 1.000);
+gammaEnrich = (int)((MSUtils.getSignedWord(ochBuffer,48) + 0.0) * 1.000);
+veCurr1 = (double)((MSUtils.getSignedWord(ochBuffer,50) + 0.0) * 0.1000);
+veCurr2 = (double)((MSUtils.getSignedWord(ochBuffer,52) + 0.0) * 0.1000);
+veCurr = (veCurr1);
+iacstep = (int)((MSUtils.getSignedWord(ochBuffer,54) + 0.0) * 1.000);
+idleDC = (double)((MSUtils.getSignedWord(ochBuffer,54) + 0.0) * 0.39063);
+coldAdvDeg = (double)((MSUtils.getSignedWord(ochBuffer,56) + 0.0) * 0.100);
+tpsDOT = (double)((MSUtils.getSignedWord(ochBuffer,58) + 0.0) * 0.100);
+mapDOT = (int)((MSUtils.getSignedWord(ochBuffer,60) + 0.0) * 1.000);
+dwell = (double)((MSUtils.getWord(ochBuffer,62) + 0.0) * 0.0666);
+mafmap = (int)((MSUtils.getSignedWord(ochBuffer,64) + 0.0) * 1.000);
+fuelload = (double)((MSUtils.getSignedWord(ochBuffer,66) + 0.0) * 0.100);
+fuelCorrection = (int)((MSUtils.getSignedWord(ochBuffer,68) + 0.0) * 1.000);
+portStatus = (int)((MSUtils.getByte(ochBuffer,70) + 0.0) * 1.000);
+port0 = MSUtils.getBits(ochBuffer,70,0,0,0);
+port1 = MSUtils.getBits(ochBuffer,70,1,1,0);
+port2 = MSUtils.getBits(ochBuffer,70,2,2,0);
+port3 = MSUtils.getBits(ochBuffer,70,3,3,0);
+port4 = MSUtils.getBits(ochBuffer,70,4,4,0);
+port5 = MSUtils.getBits(ochBuffer,70,5,5,0);
+port6 = MSUtils.getBits(ochBuffer,70,6,6,0);
+knockRetard = (double)((MSUtils.getByte(ochBuffer,71) + 0.0) * 0.1);
+EAEFuelCorr1 = (int)((MSUtils.getWord(ochBuffer,72) + 0.0) * 1.0);
+egoV = (double)((MSUtils.getSignedWord(ochBuffer,74) + 0.0) * 0.01);
+egoV2 = (double)((MSUtils.getSignedWord(ochBuffer,76) + 0.0) * 0.01);
+status1 = (int)((MSUtils.getByte(ochBuffer,78) + 0.0) * 1.0);
+status2 = (int)((MSUtils.getByte(ochBuffer,79) + 0.0) * 1.0);
+status3 = (int)((MSUtils.getByte(ochBuffer,80) + 0.0) * 1.0);
+status4 = (int)((MSUtils.getByte(ochBuffer,81) + 0.0) * 1.0);
+looptime = (double)((MSUtils.getWord(ochBuffer,82) + 0.0) * 0.6667);
+status5 = (int)((MSUtils.getWord(ochBuffer,84) + 0) * 1);
+tpsADC = (int)((MSUtils.getWord(ochBuffer,86) + 0) * 1);
+fuelload2 = (double)((MSUtils.getSignedWord(ochBuffer,88) + 0.0) * 0.100);
+ignload = (double)((MSUtils.getSignedWord(ochBuffer,90) + 0.0) * 0.100);
+ignload2 = (double)((MSUtils.getSignedWord(ochBuffer,92) + 0.0) * 0.100);
+synccnt = (int)((MSUtils.getByte(ochBuffer,94) + 0) * 1);
+timing_err = (double)((MSUtils.getSignedByte(ochBuffer,95) + 0) * 0.1);
+deltaT = (int)((MSUtils.getSignedLong(ochBuffer,96) + 0.0) * 1.000);
+wallfuel1 = (int)((MSUtils.getLong(ochBuffer,100) + 0.0) * 1.000);
+gpioadc0 = (int)((MSUtils.getWord(ochBuffer,104) + 0.0) * 1.000);
+gpioadc1 = (int)((MSUtils.getWord(ochBuffer,106) + 0.0) * 1.000);
+gpioadc2 = (int)((MSUtils.getWord(ochBuffer,108) + 0.0) * 1.000);
+gpioadc3 = (int)((MSUtils.getWord(ochBuffer,110) + 0.0) * 1.000);
+gpioadc4 = (int)((MSUtils.getWord(ochBuffer,112) + 0.0) * 1.000);
+gpioadc5 = (int)((MSUtils.getWord(ochBuffer,114) + 0.0) * 1.000);
+gpioadc6 = (int)((MSUtils.getWord(ochBuffer,116) + 0.0) * 1.000);
+gpioadc7 = (int)((MSUtils.getWord(ochBuffer,118) + 0.0) * 1.000);
+gpiopwmin0 = (int)((MSUtils.getWord(ochBuffer,120) + 0.0) * 1.000);
+gpiopwmin1 = (int)((MSUtils.getWord(ochBuffer,122) + 0.0) * 1.000);
+gpiopwmin2 = (int)((MSUtils.getWord(ochBuffer,124) + 0.0) * 1.000);
+gpiopwmin3 = (int)((MSUtils.getWord(ochBuffer,126) + 0.0) * 1.000);
+adc6 = (int)((MSUtils.getWord(ochBuffer,128) + 0.0) * 1);
+adc7 = (int)((MSUtils.getWord(ochBuffer,130) + 0.0) * 1);
+wallfuel2 = (int)((MSUtils.getLong(ochBuffer,132) + 0.0) * 1.000);
+EAEFuelCorr2 = (int)((MSUtils.getWord(ochBuffer,136) + 0.0) * 1.0);
+boostduty = (int)((MSUtils.getByte(ochBuffer,138) + 0.0) * 1.0);
+syncreason = (int)((MSUtils.getByte(ochBuffer,139) + 0.0) * 1.0);
+user0 = (int)((MSUtils.getWord(ochBuffer,140) + 0.0) * 1.0);
+inj_adv1 = (double)((MSUtils.getSignedWord(ochBuffer,142) + 0.0) * 0.100);
+inj_adv2 = (double)((MSUtils.getSignedWord(ochBuffer,144) + 0.0) * 0.100);
+pulseWidth3 = (double)((MSUtils.getWord(ochBuffer,146) + 0.0) * 0.000666);
+pulseWidth4 = (double)((MSUtils.getWord(ochBuffer,148) + 0.0) * 0.000666);
+vetrim1curr = (double)((MSUtils.getSignedWord(ochBuffer,150) + 10240.0) * 0.00976562500);
+vetrim2curr = (double)((MSUtils.getSignedWord(ochBuffer,152) + 10240.0) * 0.00976562500);
+vetrim3curr = (double)((MSUtils.getSignedWord(ochBuffer,154) + 10240.0) * 0.00976562500);
+vetrim4curr = (double)((MSUtils.getSignedWord(ochBuffer,156) + 10240.0) * 0.00976562500);
+maf = (double)((MSUtils.getWord(ochBuffer,158) + 0.0) * 0.010);
+eaeload1 = (double)((MSUtils.getSignedWord(ochBuffer,160) + 0.0) * 0.1);
+afrload1 = (double)((MSUtils.getSignedWord(ochBuffer,162) + 0.0) * 0.1);
+rpmdot = (double)((MSUtils.getSignedWord(ochBuffer,164) + 0.0) * 10);
+gpioport0 = (int)((MSUtils.getByte(ochBuffer,166) + 0.0 ) * 1.000);
+gpioport1 = (int)((MSUtils.getByte(ochBuffer,167) + 0.0 ) * 1.000);
+gpioport2 = (int)((MSUtils.getByte(ochBuffer,168) + 0.0 ) * 1.000);
+accDecEnrich = (((accelEnrich + (tpsaccden ) != 0 ) ?  tpsfuelcut : 100));
+time = (timeNow());
+rpm100 = (rpm / 100.0);
+altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
+altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
+cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+nSquirts1 = (nCylinders/divider);
+dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+nSquirts2 = (nCylinders/divider);
+dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+if (NARROW_BAND_EGO)
+{
+egoVoltage = (egoV);
+}
+else if (LAMBDA)
+{
+egoVoltage = (lambda1);
+}
+else
+{
+egoVoltage = (afr1);
+}
+if (EGTFULL)
+{
+if (CELSIUS)
+{
+egt6temp = (adc6 * 1.222);
+egt7temp = (adc7 * 1.222);
+}
+else
+{
+egt6temp = ((adc6 * 2.200)+32);
+egt7temp = ((adc7 * 2.200)+32);
+}
+}
+else
+{
+if (CELSIUS)
+{
+egt6temp = (adc6 * 0.956);
+egt7temp = (adc7 * 0.956);
+}
+else
+{
+egt6temp = ((adc6 * 1.721) + 32);
+egt7temp = ((adc7 * 1.721) + 32);
+}
+}
+}
 
     @Override
     public String getLogHeader()
@@ -984,51 +986,34 @@ public class ZZMS2Extra310 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("IACgauge", "iacstep", iacstep, "IAC position", "steps", 0, 255, -1, -1, 999, 999, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwellGauge", "dwell", dwell, "Dwell", "mSec", 0, 10, 0.5, 1.0, 6.0, 8.0, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("PWMIdlegauge", "idleDC", idleDC, "Idle PWM%", "%", 0, 100, -1, -1, 999, 90, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge", "pulseWidth1", pulseWidth1, "Pulse Width 1", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge", "pulseWidth2", pulseWidth2, "Pulse Width 2", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth3Gauge", "pulseWidth3", pulseWidth3, "Pulse Width 3", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth4Gauge", "pulseWidth4", pulseWidth4, "Pulse Width 4", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3,
-                1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge", "pulseWidth1", pulseWidth1, "Pulse Width 1", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge", "pulseWidth2", pulseWidth2, "Pulse Width 2", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth3Gauge", "pulseWidth3", pulseWidth3, "Pulse Width 3", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth4Gauge", "pulseWidth4", pulseWidth4, "Pulse Width 4", "mSec", 0, 25.5, 1.0, 1.2, 20, 25, 3, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advdegGauge", "advance", advance, "Ignition Advance", "degrees", 0, 50, -1, -1, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge", "dutyCycle1", dutyCycle1, "Duty Cycle 1", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge", "dutyCycle2", dutyCycle2, "Duty Cycle 2", "%", 0, 100, -1, -1, 85, 90, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge", "boostduty", boostduty, "Boost Duty", "%", 0, 100, -1, -1, 100, 100, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv1Gauge", "inj_adv1", inj_adv1, "Injection Timing 1", "degrees", -360, 360, -999, -999, 999,
-                999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv2Gauge", "inj_adv2", inj_adv2, "Injection Timing 2", "degrees", -360, 360, -999, -999, 999,
-                999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge", "accDecEnrich", accDecEnrich, "Accel Enrich", "%", 50, 150, -1, -1, 999, 999, 0,
-                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv1Gauge", "inj_adv1", inj_adv1, "Injection Timing 1", "degrees", -360, 360, -999, -999, 999, 999, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injadv2Gauge", "inj_adv2", inj_adv2, "Injection Timing 2", "degrees", -360, 360, -999, -999, 999, 999, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge", "accDecEnrich", accDecEnrich, "Accel Enrich", "%", 50, 150, -1, -1, 999, 999, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge", "seconds", seconds, "Clock", "Seconds", 0, 65535, 10, 10, 65535, 65535, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge", "gammaEnrich", gammaEnrich, "Gamma Enrichment", "%", 50, 150, -1, -1, 151, 151, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaairGauge", "airCorrection", airCorrection, "Gair/aircor", "%", 50, 150, -1, -1, 151, 151, 0, 0,
-                0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge1", "wallfuel1", wallfuel1, "Fuel on the walls 1", "", 0, 40000000, 0, 0, 40000000, 40000000,
-                0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge2", "wallfuel2", wallfuel2, "Fuel on the walls 2", "", 0, 40000000, 0, 0, 40000000, 40000000,
-                0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1", "EAEFuelCorr1", EAEFuelCorr1, "EAE Fuel Correction 1", "%", 0, 200, 40, 70, 130, 160, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2", "EAEFuelCorr2", EAEFuelCorr2, "EAE Fuel Correction 2", "%", 0, 200, 40, 70, 130, 160, 0,
-                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge", "gammaEnrich", gammaEnrich, "Gamma Enrichment", "%", 50, 150, -1, -1, 151, 151, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaairGauge", "airCorrection", airCorrection, "Gair/aircor", "%", 50, 150, -1, -1, 151, 151, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge1", "wallfuel1", wallfuel1, "Fuel on the walls 1", "", 0, 40000000, 0, 0, 40000000, 40000000, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge2", "wallfuel2", wallfuel2, "Fuel on the walls 2", "", 0, 40000000, 0, 0, 40000000, 40000000, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1", "EAEFuelCorr1", EAEFuelCorr1, "EAE Fuel Correction 1", "%", 0, 200, 40, 70, 130, 160, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2", "EAEFuelCorr2", EAEFuelCorr2, "EAE Fuel Correction 2", "%", 0, 200, 40, 70, 130, 160, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge1", "vetrim1curr", vetrim1curr, "VE Trim 1", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge2", "vetrim2curr", vetrim2curr, "VE Trim 2", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge3", "vetrim3curr", vetrim3curr, "VE Trim 3", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vetrimGauge4", "vetrim4curr", vetrim4curr, "VE Trim 4", "%", 87, 113, -999, -999, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("timingerrGauge", "timing_err", timing_err, "Timing pred err", "%", -12.7, 12.7, 255, 255, 255, 0, 1,
-                0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lostsyncGauge", "synccnt", synccnt, "Lost sync counter", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge", "syncreason", syncreason, "Lost sync reason", "", 0, 255, 255, 255, 255, 255, 0, 0,
-                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge", "syncreason", syncreason, "Lost sync reason", "", 0, 255, 255, 255, 255, 255, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("user0Gauge", "user0", user0, "User defined", "", 0, 65535, 65535, 65535, 65535, 65535, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge1", "veCurr1", veCurr1, "VE Current1", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge2", "veCurr2", veCurr2, "VE2 Current", "%", 0, 120, -1, -1, 999, 999, 1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge", "warmupEnrich", warmupEnrich, "Warmup Enrichment", "%", 100, 150, -1, -1, 101,
-                105, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge", "warmupEnrich", warmupEnrich, "Warmup Enrichment", "%", 100, 150, -1, -1, 101, 105, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmdot", "rpmdot", rpmdot, "rpmdot", "rpm/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tpsdot", "tpsDOT", tpsDOT, "tpsdot", "%/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapdot", "mapDOT", mapDOT, "mapdot", "kPa/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0, 0));
@@ -1036,8 +1021,7 @@ public class ZZMS2Extra310 extends Megasquirt
         {
             if (EXPANDED_CLT_TEMP)
             {
-                GaugeRegister.INSTANCE
-                        .addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
             }
             else
             {
@@ -1049,25 +1033,21 @@ public class ZZMS2Extra310 extends Megasquirt
         {
             if (EXPANDED_CLT_TEMP)
             {
-                GaugeRegister.INSTANCE
-                        .addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
             }
             else
             {
-                GaugeRegister.INSTANCE
-                        .addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
             }
             GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "¡F", -40, 215, 0, 30, 200, 210, 0, 0, 0));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2,
-                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer", "rpm", rpm, "Engine Speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge", "throttle", throttle, "Throttle Position", "%", 0, 100, -1, 1, 90, 100, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge", "map", map, "Engine MAP", "kPa", 0, 255, 0, 20, 200, 245, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge", "barometer", barometer, "Barometer", "kPa", 60, 120, 0, 20, 200, 245, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelloadGauge", "fuelload", fuelload, "Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE
-                .addGauge(new GaugeDetails("fuelload2Gauge", "fuelload2", fuelload2, "Secondary Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelload2Gauge", "fuelload2", fuelload2, "Secondary Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignloadGauge", "ignload", ignload, "Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignload2Gauge", "ignload2", ignload2, "Secondary Ign Load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("eaeloadGauge", "eaeload1", eaeload1, "EAE load", "%", 0, 255, 0, 20, 200, 245, 1, 0, 0));
@@ -1112,14 +1092,10 @@ public class ZZMS2Extra310 extends Megasquirt
         }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1Gauge", "afr1", afr1, "Air:Fuel Ratio", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2Gauge", "afr2", afr2, "Air:Fuel Ratio2", "", 10, 19.4, 12, 13, 15, 16, 2, 2, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge", "egoCorrection", egoCorrection, "EGO Correction", "%", 50, 150, 90, 99, 101, 110, 1,
-                1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge1", "egoCorrection1", egoCorrection1, "EGO Correction 1", "%", 50, 150, 90, 99, 101, 110,
-                1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2", "egoCorrection2", egoCorrection2, "EGO Correction 2", "%", 50, 150, 90, 99, 101, 110,
-                1, 1, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoGauge", "egoVoltage", egoVoltage, "Exhaust Gas Oxygen", "volts", 0, 1.0, 0.2, 0.3, 0.7, 0.8, 2, 2,
-                0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge", "egoCorrection", egoCorrection, "EGO Correction", "%", 50, 150, 90, 99, 101, 110, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge1", "egoCorrection1", egoCorrection1, "EGO Correction 1", "%", 50, 150, 90, 99, 101, 110, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2", "egoCorrection2", egoCorrection2, "EGO Correction 2", "%", 50, 150, 90, 99, 101, 110, 1, 1, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoGauge", "egoVoltage", egoVoltage, "Exhaust Gas Oxygen", "volts", 0, 1.0, 0.2, 0.3, 0.7, 0.8, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoVGauge", "egoV", egoV, "Exhaust Gas Oxygen", "volts", 0, 5, 5, 5, 5, 5, 5, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge", "egoV2", egoV2, "Exhaust Gas Oxygen2", "volts", 0, 5, 5, 5, 5, 5, 5, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda1Gauge", "lambda1", lambda1, "Lambda", "", 0.5, 1.5, 0.5, 0.7, 2, 1.1, 2, 2, 0));
@@ -1576,7 +1552,7 @@ public class ZZMS2Extra310 extends Megasquirt
         crank_dwell = (double) ((MSUtils.getByte(pageBuffer, 1019) + 0.0) * 0.0666);
         crank_timing = (double) ((MSUtils.getSignedWord(pageBuffer, 1020) + 0.0) * 0.1);
         fixed_timing = (double) ((MSUtils.getSignedWord(pageBuffer, 1022) + 0.0) * 0.1);
-        pageBuffer = loadPage(2, 1024, 1024, null, new byte[] { 114, 0, 5, 4, 0, 4, 0 });
+        pageBuffer = loadPage(2, 0, 1024, null, new byte[] { 114, 0, 5, 0, 0, 4, 0 });
         if (CELSIUS)
         {
             if (EXPANDED_CLT_TEMP)
@@ -1789,7 +1765,7 @@ public class ZZMS2Extra310 extends Megasquirt
         fc_rpm_lower = (int) ((MSUtils.getWord(pageBuffer, 849) + 0.0) * 1.0);
         pwmidle_shift_lower_rpm = (int) ((MSUtils.getWord(pageBuffer, 851) + 0.0) * 1.0);
         pwmidle_shift_open_time = (int) ((MSUtils.getByte(pageBuffer, 853) + 0.0) * 1.0);
-        pageBuffer = loadPage(3, 2048, 1024, null, new byte[] { 114, 0, 49, 8, 0, 4, 0 });
+        pageBuffer = loadPage(3, 0, 1024, null, new byte[] { 114, 0, 10, 0, 0, 4, 0 });
         feature3_1 = MSUtils.getBits(pageBuffer, 672, 1, 1, 0);
         feature3_3 = MSUtils.getBits(pageBuffer, 672, 3, 3, 0);
         launch_opt_on = MSUtils.getBits(pageBuffer, 673, 6, 7, 0);
@@ -1904,7 +1880,7 @@ public class ZZMS2Extra310 extends Megasquirt
         staged_primary_delay = (int) ((MSUtils.getByte(pageBuffer, 985) + 0.0) * 1.0);
         trig_init = (int) ((MSUtils.getByte(pageBuffer, 1003) + 0.0) * 1.0);
         inj_time_mask = (int) ((MSUtils.getByte(pageBuffer, 1004) + 0.0) * 1.0);
-        pageBuffer = loadPage(4, 3072, 1024, null, new byte[] { 114, 0, 8, 12, 0, 4, 0 });
+        pageBuffer = loadPage(4, 0, 1024, null, new byte[] { 114, 0, 8, 0, 0, 4, 0 });
         if (INI_VERSION_2)
         {
             testmodelock = (int) ((MSUtils.getWord(pageBuffer, 0) + 0.0) * 1.0);

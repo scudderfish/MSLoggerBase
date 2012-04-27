@@ -1,12 +1,15 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import android.content.Context;
-
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import android.content.Context;
 
 /*
  * Fingerprint : 235e7e4735ca1f942ae7b586e214b402
@@ -19,6 +22,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
         refreshFlags();
     }
 
+    @Override
     public void refreshFlags()
     {
         CAN_COMMANDS = isSet("CAN_COMMANDS");
@@ -27,7 +31,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
 
     byte[]              queryCommand  = new byte[] { 'Q' };
     String              signature     = "MShift 2.110       \0";
-    byte[]              ochGetCommand = new byte[] { 'a', 0, 6 };
+    byte[]              ochGetCommand = new byte[] { 'a', 00, 06 };
     int                 ochBlockSize  = 61;
     private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { signature }));
     // Flags
@@ -82,10 +86,10 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
     int                 second2;
     int                 ic2_period;
     double              time;
-    double              VSS_Hz;
+    double                 VSS_Hz;
     double              kmileage;
     int                 deadValue;
-    double              ic1_period;
+    double                 ic1_period;
     int                 secl;
     double              os_rpm;
 
@@ -458,7 +462,8 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
     double              mlever_v7;
     int                 clutch16d;
 
-    private String[]    defaultGauges = { "speedo", "odometer", "tach", "FuelEfficiency", "current_gear", "trans_temp", "pcsol", "load" };
+    private String[]    defaultGauges = { "speedo", "odometer", "tach", "FuelEfficiency", "current_gear", "trans_temp", "pcsol",
+            "load"                   };
 
     @Override
     public void calculate(byte[] ochBuffer) throws IOException
@@ -540,7 +545,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
         {
             os_rpm = (((speedo * 0.893) / (((tire_diam / 2.54) / 12) * 3.1416)) * 60 * axle_ratio);
         }
-        VSS_Hz = ((os_rpm * num_teeth) / 60);
+        VSS_Hz = (int) ((os_rpm * num_teeth) / 60);
         ic1_period = (1 / VSS_Hz);
         ic2_period = (60 / (is_rpm * iss_divider));
     }
@@ -662,47 +667,67 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
     @Override
     public void initGauges()
     {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("auxVolts", "aux_volts", aux_volts, "Aux. Channel Volts", "Volts", 0, 5, 0, 0, 5, 5, 3, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clock", "second2", second2, "Clock", "seconds", 0, 255, 0, 0, 253, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Converter_slip", "converter_slip", converter_slip, "Conv. Slip", "%", 0, 200, -1, -1, 200, 200, 0, 0,
-                0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("DShaft_RPM", "os_rpm", os_rpm, "Driveshaft RPM", "", 0, 6000, -1, -1, 5000, 5500, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("auxVolts", "aux_volts", aux_volts, "Aux. Channel Volts", "Volts", 0, 5,
+                0, 0, 5, 5, 3, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clock", "second2", second2, "Clock", "seconds", 0, 255, 0, 0, 253, 255,
+                0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Converter_slip", "converter_slip", converter_slip, "Conv. Slip", "%", 0,
+                200, -1, -1, 200, 200, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("DShaft_RPM", "os_rpm", os_rpm, "Driveshaft RPM", "", 0, 6000, -1, -1,
+                5000, 5500, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Error", "error", error, "Status", "", 0, 255, -1, -1, 255, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Input_Shaft_RPM", "is_rpm", is_rpm, "Input Shaft RPM", "", 0, 9000, -1, -1, 6000, 6500, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Manual_gear", "manual_gear", manual_gear, "Manual Gear", "", -1, 4, -1, -1, 5, 5, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Target_gear", "target_gear", target_gear, "Target Gear", "", 1, 4, -1, -1, 5, 5, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("FuelEfficiency", "mileage", mileage, "Fuel Efficiency", "mpg", 0, 50, 5, 10, 99, 99, 2, 2, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("FuelConsumption", "kmileage", kmileage, "Fuel EConsumpt.", "l/100km", 0, 25, 2, 3, 20, 24, 2, 2, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("current_gear", "current_gear", current_gear, "Current Gear", "", -1, 4, -1, -1, 5, 5, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Input_Shaft_RPM", "is_rpm", is_rpm, "Input Shaft RPM", "", 0, 9000, -1,
+                -1, 6000, 6500, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Manual_gear", "manual_gear", manual_gear, "Manual Gear", "", -1, 4, -1,
+                -1, 5, 5, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Target_gear", "target_gear", target_gear, "Target Gear", "", 1, 4, -1,
+                -1, 5, 5, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("FuelEfficiency", "mileage", mileage, "Fuel Efficiency", "mpg", 0, 50, 5,
+                10, 99, 99, 2, 2, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("FuelConsumption", "kmileage", kmileage, "Fuel EConsumpt.", "l/100km", 0,
+                25, 2, 3, 20, 24, 2, 2, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("current_gear", "current_gear", current_gear, "Current Gear", "", -1, 4,
+                -1, -1, 5, 5, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("load", "LOAD", LOAD, "Load", "kpa", 0, 200, -1, -1, 250, 250, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("line_pressure", "linepressure", linepressure, "Line Pressure", "psi", 0, 500, 50, 100, 400, 480, 0,
-                0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("odometer", "odometer", odometer, "Trip Odometer", "miles", 0, 100, -1, -1, 255, 255, 2, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Output_Shaft_RPM", "os_rpm", os_rpm, "Output Shaft RPM", "", 0, 6000, -1, -1, 3000, 4500, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pcsol", "PC_duty", PC_duty, "Pressure Control", "100-PWM%", 0, 100, -1, -1, 101, 101, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("line_pressure", "linepressure", linepressure, "Line Pressure", "psi", 0,
+                500, 50, 100, 400, 480, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("odometer", "odometer", odometer, "Trip Odometer", "miles", 0, 100, -1,
+                -1, 255, 255, 2, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Output_Shaft_RPM", "os_rpm", os_rpm, "Output Shaft RPM", "", 0, 6000, -1,
+                -1, 3000, 4500, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pcsol", "PC_duty", PC_duty, "Pressure Control", "100-PWM%", 0, 100, -1,
+                -1, 101, 101, 0, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Input1", "swADC", swADC, "Input1", "volts", 0, 5, 0, 0, 5, 5, 3, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Input2", "swBDC", swBDC, "Input2", "volts", 0, 5, 0, 0, 5, 5, 3, 0, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Input3", "swCDC", swCDC, "Input3", "volts", 0, 5, 0, 0, 5, 5, 3, 0, 0));
         if (NOT_METRIC)
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("speedo", "speedo", speedo, "Speed", "mph", 0, 200, -1, -1, 160, 180, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("speedo", "speedo", speedo, "Speed", "mph", 0, 200, -1, -1, 160, 180,
+                    0, 0, 0));
         }
         else
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("speedo", "speedo", speedo, "Speed", "kph", 0, 300, -1, -1, 200, 270, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("speedo", "speedo", speedo, "Speed", "kph", 0, 300, -1, -1, 200, 270,
+                    0, 0, 0));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tach", "engine_rpm", engine_rpm, "Tach", "rpm", 0, 8000, -1, -1, 6000, 6500, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tach", "engine_rpm", engine_rpm, "Tach", "rpm", 0, 8000, -1, -1, 6000,
+                6500, 0, 0, 0));
         if (NOT_METRIC)
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("trans_temp", "clt", clt, "Trans. Temp.", "degF", -40, 220, -20, -10, 200, 210, 1, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("trans_temp", "clt", clt, "Trans. Temp.", "degF", -40, 220, -20, -10,
+                    200, 210, 1, 0, 0));
         }
         else
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("trans_temp", "clt", clt, "Trans. Temp.", "degC", -40, 220, -20, -10, 200, 210, 1, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("trans_temp", "clt", clt, "Trans. Temp.", "degC", -40, 220, -20, -10,
+                    200, 210, 1, 0, 0));
         }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("solst", "solst", solst, "Solenoids", "", 0, 4, -1, -1, 10, 10, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("VSS_errors", "dbug", dbug, "VSS Errors", "", 0, 1000, 0, -1, 1000, 1000, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("load_short", "LOAD_short", LOAD_short, "Short Load", "kpa", 0, 200, -1, -1, 250, 250, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("VSS_errors", "dbug", dbug, "VSS Errors", "", 0, 1000, 0, -1, 1000, 1000,
+                0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("load_short", "LOAD_short", LOAD_short, "Short Load", "kpa", 0, 200, -1,
+                -1, 250, 250, 1, 0, 0));
+
     }
 
     @Override
@@ -752,7 +777,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
     public int getCurrentTPS()
     {
 
-        return (int) 0;
+        return 0;
     }
 
     @Override
@@ -1071,7 +1096,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
             min_speed = (double) ((MSUtils.getByte(pageBuffer, 551) + 0.0) * 0.1);
         }
         vss_error_max = (int) ((MSUtils.getWord(pageBuffer, 552) + 0.0) * 1.0);
-        line_units = MSUtils.getBits(pageBuffer, 554, 0, 1, 0);
+        line_units = MSUtils.getBits(pageBuffer, 554, 0, 1,  0);
         inj_flow = (double) ((MSUtils.getWord(pageBuffer, 555) + 0.0) * 0.01);
         open_time = (double) ((MSUtils.getByte(pageBuffer, 557) + 0.0) * 0.01);
         fuel_density = (double) ((MSUtils.getWord(pageBuffer, 558) + 0.0) * 0.0010);
@@ -1211,7 +1236,7 @@ public class ZZGPIO_MShift_2110 extends Megasquirt
         pad5 = (int) ((MSUtils.getByte(pageBuffer, 637) + 0.0) * 1.0);
         pad6 = (int) ((MSUtils.getByte(pageBuffer, 638) + 0.0) * 1.0);
         pad7 = (int) ((MSUtils.getByte(pageBuffer, 639) + 0.0) * 1.0);
-        pageBuffer = loadPage(2, 32, 32, null, new byte[] { 114, 0, 32, 0, 32, 0, 32 });
+        pageBuffer = loadPage(2, 0, 32, null, new byte[] { 114, 0, 32, 0, 0, 0, 32 });
         spare21 = (int) ((MSUtils.getSignedWord(pageBuffer, 0) + 0.0) * 1.0);
         spare22 = (int) ((MSUtils.getSignedWord(pageBuffer, 2) + 0.0) * 1.0);
         spare23 = (int) ((MSUtils.getSignedWord(pageBuffer, 4) + 0.0) * 1.0);
