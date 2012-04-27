@@ -5,6 +5,8 @@ import java.util.*;
 
 import android.content.Context;
 
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 
@@ -16,11 +18,14 @@ public class ZZJimstim21 extends Megasquirt
     public ZZJimstim21(Context c)
     {
         super(c);
+        refreshFlags();
     }
+
+    @Override
     public void refreshFlags()
     {
-        
     }
+
     byte[]              queryCommand  = new byte[] { 'Q' };
     String              signature     = "JimStim format V2.0.3 *********";
     byte[]              ochGetCommand = new byte[] { 'A' };
@@ -100,16 +105,24 @@ public class ZZJimstim21 extends Megasquirt
     @Override
     public void initGauges()
     {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge", "deadValue", deadValue, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2,
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge", "deadValue", deadValue, "---", "", 0, 1, -1, -1, 2, 2, 0, 0,
                 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("seclGauge", "secl", secl, "Secs", "s", 0, 255, 255, 0, 255, 255, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmGauge", "rpm", rpm, "Simulated speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("modeGauge", "rtmode", rtmode, "Wheel mode", "", 0, 255, 0, 20, 200, 245, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("scaleGauge", "rtscale", rtscale, "speed scaling", "", 0, 65535, 0, 20, 65000, 65000, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("coarseGauge", "rtcoarse", rtcoarse, "coarse adc", "", 0, 255, 0, 20, 255, 255, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fineGauge", "rtfine", rtfine, "fine adc", "", 0, 255, 0, 20, 255, 255, 1, 0, 0));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("myrpmGauge", "myrpm", myrpm, "Commanded speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts",
+                7, 21, 8, 9, 15, 16, 2, 2, 0));
+        GaugeRegister.INSTANCE
+                .addGauge(new GaugeDetails("seclGauge", "secl", secl, "Secs", "s", 0, 255, 255, 0, 255, 255, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmGauge", "rpm", rpm, "Simulated speed", "RPM", 0, 8000, 300, 600, 3000,
+                5000, 0, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("modeGauge", "rtmode", rtmode, "Wheel mode", "", 0, 255, 0, 20, 200, 245,
+                1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("scaleGauge", "rtscale", rtscale, "speed scaling", "", 0, 65535, 0, 20,
+                65000, 65000, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("coarseGauge", "rtcoarse", rtcoarse, "coarse adc", "", 0, 255, 0, 20, 255,
+                255, 1, 0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fineGauge", "rtfine", rtfine, "fine adc", "", 0, 255, 0, 20, 255, 255, 1,
+                0, 0));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("myrpmGauge", "myrpm", myrpm, "Commanded speed", "RPM", 0, 8000, 300, 600,
+                3000, 5000, 0, 0, 0));
 
     }
 
@@ -160,7 +173,7 @@ public class ZZJimstim21 extends Megasquirt
     public int getCurrentTPS()
     {
 
-        return (int) 0;
+        return 0;
     }
 
     @Override
@@ -173,7 +186,7 @@ public class ZZJimstim21 extends Megasquirt
     public void loadConstants(boolean simulated)
     {
         byte[] pageBuffer = null;
-        pageBuffer = loadPage(1, 0, 64, null, new byte[] { 86 });
+        pageBuffer = loadPage(1, 0, 64, null, new byte[] { 118 });
         mode = MSUtils.getBits(pageBuffer, 0, 0, 5, 0);
         rpm_in = (int) ((MSUtils.getWord(pageBuffer, 1) + 0.0) * 1.0);
         baud = MSUtils.getBits(pageBuffer, 3, 0, 1, 0);
