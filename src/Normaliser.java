@@ -692,32 +692,41 @@ public class Normaliser
 	    String digits = "0123456789abcdef";
 		String ret = "new byte[]{";
 		boolean first = true;
-		s=s.toLowerCase();
+		
 		for (int p = 0; p < s.length(); p++)
 		{
 			if (!first)
 				ret += ",";
-			char c = s.charAt(p);
+			
+            char c = s.charAt(p);
 			switch (c)
 			{
 			case '\\':
 				p++;
-				assert s.charAt(p) == 'x';
+				c = s.charAt(p);
+				assert c == 'x';
 				p++;
+				c = s.charAt(p);
+				c=Character.toLowerCase(c);
 				int val = 0;
-				int digit = digits.indexOf(s.charAt(p));
+				int digit = digits.indexOf(c);
 				val = digit * 16;
 				p++;
-				digit = digits.indexOf(s.charAt(p));
+				c = s.charAt(p);
+				c=Character.toLowerCase(c);
+                digit = digits.indexOf(c);
 				val = val + digit;
 				ret += val;
 				break;
 
 			case '%':
 				p++;
-				assert s.charAt(p) == '2';
+				c = s.charAt(p);
+                
+				assert c == '2';
 				p++;
-				if (s.charAt(p) == 'o')
+				c = s.charAt(p);
+                if (c == 'o')
 				{
 					ret += bytes(offset);
 				}
