@@ -631,7 +631,7 @@ public class Normaliser
 					readCommand = pageReadCommands.get(pageNo - 1);
 				}
 
-				outputLoadPage(pageNo, pageOffset, pageSize, activateCommand, readCommand, writer);
+				outputLoadPage(pageNo, 0, pageSize, activateCommand, readCommand, writer);
 			}
 			// getScalar(String bufferName,String name, String dataType, String
 			// offset, String scale, String numOffset)
@@ -689,8 +689,10 @@ public class Normaliser
 
 	private static String processStringToBytes(String s, int offset, int count)
 	{
+	    String digits = "0123456789abcdef";
 		String ret = "new byte[]{";
 		boolean first = true;
+		s=s.toLowerCase();
 		for (int p = 0; p < s.length(); p++)
 		{
 			if (!first)
@@ -703,9 +705,11 @@ public class Normaliser
 				assert s.charAt(p) == 'x';
 				p++;
 				int val = 0;
-				val = (s.charAt(p) - '0') * 16;
+				int digit = digits.indexOf(s.charAt(p));
+				val = digit * 16;
 				p++;
-				val = val + (s.charAt(p) - '0');
+				digit = digits.indexOf(s.charAt(p));
+				val = val + digit;
 				ret += val;
 				break;
 
