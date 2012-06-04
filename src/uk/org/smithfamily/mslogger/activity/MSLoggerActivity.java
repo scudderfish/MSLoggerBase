@@ -44,7 +44,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private boolean                gaugeEditEnabled;
     boolean                        scrolling;
     private LinearLayout           layout;
-    private Handler                mHandler;
     private static final int       SHOW_PREFS            = 124230;
 
     private boolean                registered;
@@ -69,7 +68,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             DebugLogManager.INSTANCE.logException(e);
         }
         dumpPreferences();
-        mHandler = new Handler();
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
 
@@ -183,17 +181,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-
-    private void displayResult(final String result)
-    {
-        mHandler.post(new Runnable()
-        {
-            public void run()
-            {
-                setProgressBarIndeterminateVisibility(false);
-            }
-        });
-    }
 
     private void loadGauges()
     {
