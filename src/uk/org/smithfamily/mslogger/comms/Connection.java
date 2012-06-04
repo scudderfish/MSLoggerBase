@@ -1,8 +1,7 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
@@ -14,353 +13,347 @@ import android.util.Log;
 
 public enum Connection
 {
-	INSTANCE;
-	private String				btAddr;
-	private BluetoothAdapter	adapter;
-	private BluetoothSocket		socket;
-	private InputStream			mmInStream;
-	private OutputStream		mmOutStream;
-	private BluetoothDevice		remote;
-	private Handler				handler;
-	private static final long	IO_TIMEOUT	= 1000;
+    INSTANCE;
 
-	public enum ConnectionState
-	{
-		STATE_NONE, STATE_CONNECTING, STATE_CONNECTED
-	};
+    class Reaper extends TimerTask
+    {
 
-	private volatile ConnectionState	currentState	= ConnectionState.STATE_NONE;
-	private Thread	ownerThread;
+        @Override
+        public void run()
+        {
+            timerTriggered = true;
+            tearDown();
+        }
 
-	public ConnectionState getCurrentState()
-	{
-		return currentState;
-	}
+    }
 
-	public Handler getHandler()
-	{
-		return handler;
-	}
+    private String            btAddr;
+    private BluetoothAdapter  adapter;
+    private BluetoothSocket   socket;
+    private InputStream       mmInStream;
+    private OutputStream      mmOutStream;
+    private BluetoothDevice   remote;
+    private Handler           handler;
+    private static final long IO_TIMEOUT     = 5000;
+    volatile boolean          timerTriggered = false;
+    Timer                     t              = new Timer();
 
-	public void setHandler(Handler handler)
-	{
-		this.handler = handler;
-	}
+    public enum ConnectionState
+    {
+        STATE_NONE, STATE_CONNECTING, STATE_CONNECTED
+    };
 
-	public synchronized void init(String btAddr, BluetoothAdapter adapter, Handler h)
-	{
-		if (currentState != ConnectionState.STATE_NONE && !btAddr.equals(this.btAddr))
-		{
-			tearDown();
-			setState(ConnectionState.STATE_NONE);
-		}
-		this.btAddr = btAddr;
-		this.adapter = adapter;
-		this.handler = h;
-		this.ownerThread = Thread.currentThread();
-	}
+    private volatile ConnectionState currentState = ConnectionState.STATE_NONE;
+    private Thread                   ownerThread;
 
-	private void setState(ConnectionState state)
-	{
-		currentState = state;
-		DebugLogManager.INSTANCE.log("Set state to " + state, Log.INFO);
-	}
+    public ConnectionState getCurrentState()
+    {
+        return currentState;
+    }
 
-	public synchronized void connect() throws IOException
-	{
-		if(currentState != ConnectionState.STATE_NONE)
-		{
-			return;
-		}
-		setState(ConnectionState.STATE_CONNECTING);
-		remote = adapter.getRemoteDevice(btAddr);
-		getSocket(remote);
+    public Handler getHandler()
+    {
+        return handler;
+    }
 
-		adapter.cancelDiscovery();
+    public void setHandler(Handler handler)
+    {
+        this.handler = handler;
+    }
 
-		try
-		{
-			socket.connect();
-		}
-		catch (IOException e)
-		{
-			DebugLogManager.INSTANCE.logException(e);
-			delay(1000);
+    public synchronized void init(String btAddr, BluetoothAdapter adapter, Handler h)
+    {
+        if (currentState != ConnectionState.STATE_NONE && !btAddr.equals(this.btAddr))
+        {
+            tearDown();
+            setState(ConnectionState.STATE_NONE);
+        }
+        this.btAddr = btAddr;
+        this.adapter = adapter;
+        this.handler = h;
+        this.ownerThread = Thread.currentThread();
+        timerTriggered = false;
+    }
 
-			try
-			{
-				socket.close();
-			}
-			catch (Exception e1)
-			{
-				DebugLogManager.INSTANCE.logException(e);
-			}
-			ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
-			getSocket(remote);
-			socket.connect();
-		}
-		InputStream tmpIn = null;
-		OutputStream tmpOut = null;
-		DebugLogManager.INSTANCE.log("Establishing connection", Log.DEBUG);
+    private void setState(ConnectionState state)
+    {
+        currentState = state;
+        DebugLogManager.INSTANCE.log("Set state to " + state, Log.INFO);
+    }
 
-		// Get the BluetoothSocket input and output streams
-		try
-		{
-			tmpIn = socket.getInputStream();
-			tmpOut = socket.getOutputStream();
-		}
-		catch (IOException e)
-		{
-			DebugLogManager.INSTANCE.logException(e);
-		}
+    public synchronized void connect() throws IOException
+    {
+        if (currentState != ConnectionState.STATE_NONE)
+        {
+            return;
+        }
+        setState(ConnectionState.STATE_CONNECTING);
+        remote = adapter.getRemoteDevice(btAddr);
+        getSocket(remote);
 
-		mmInStream = tmpIn;
-		mmOutStream = tmpOut;
-		if (mmInStream != null && mmOutStream != null)
-		{
-			setState(ConnectionState.STATE_CONNECTED);
-		}
-		else
-		{
-			DebugLogManager.INSTANCE.log("Failed to complete connection", Log.ERROR);
-			setState(ConnectionState.STATE_NONE);
-			tearDown();
-		}
-		return;
-	}
+        adapter.cancelDiscovery();
 
-	private void getSocket(BluetoothDevice remote) throws IOException
-	{
-		try
-		{
-			socket = BTSocketFactory.getSocket(remote);
-		}
-		catch (Exception e)
-		{
-			DebugLogManager.INSTANCE.log("Failed to get a socket!", Log.ERROR);
-			throw new IOException(e.getLocalizedMessage());
-		}
-	}
-	
-	private synchronized void checkConnection() throws IOException
-	{
-		if(currentState == ConnectionState.STATE_NONE)
-		{
-			boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
-			if(autoConnect)
-			{
-				connect();
-			}
-			else
-			{
-				throw new IOException("Autoconnection not allowed");
-			}
-		}
-		if(ownerThread != Thread.currentThread())
-		{
-			throw new IOException("Attempt to use from thread'"+Thread.currentThread().getName()+"' when owned by thread '"+ownerThread.getName());
-		}
-	}
+        try
+        {
+            socket.connect();
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+            delay(1000);
 
+            try
+            {
+                socket.close();
+            }
+            catch (Exception e1)
+            {
+                DebugLogManager.INSTANCE.logException(e);
+            }
+            ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
+            getSocket(remote);
+            socket.connect();
+        }
+        InputStream tmpIn = null;
+        OutputStream tmpOut = null;
+        DebugLogManager.INSTANCE.log("Establishing connection", Log.DEBUG);
 
+        // Get the BluetoothSocket input and output streams
+        try
+        {
+            tmpIn = socket.getInputStream();
+            tmpOut = socket.getOutputStream();
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
 
-	private void delay(int d)
-	{
-		try
-		{
-			Thread.sleep(d);
-		}
-		catch (InterruptedException e)
-		{
-			// Swallow
-		}
-	}
+        mmInStream = tmpIn;
+        mmOutStream = tmpOut;
+        if (mmInStream != null && mmOutStream != null)
+        {
+            setState(ConnectionState.STATE_CONNECTED);
+        }
+        else
+        {
+            DebugLogManager.INSTANCE.log("Failed to complete connection", Log.ERROR);
+            setState(ConnectionState.STATE_NONE);
+            tearDown();
+        }
+        return;
+    }
 
-	public BluetoothDevice getRemote()
-	{
-		return remote;
-	}
+    private void getSocket(BluetoothDevice remote) throws IOException
+    {
+        try
+        {
+            socket = BTSocketFactory.getSocket(remote);
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to get a socket!", Log.ERROR);
+            throw new IOException(e.getLocalizedMessage());
+        }
+    }
 
-	public void tearDown()
-	{
-		if (mmInStream != null)
-		{
-			try
-			{
-				mmInStream.close();
-			}
-			catch (IOException e)
-			{
-			}
-			mmInStream = null;
-		}
-		if (mmOutStream != null)
-		{
-			try
-			{
-				mmOutStream.close();
-			}
-			catch (IOException e)
-			{
-			}
-			mmOutStream = null;
-		}
+    private synchronized void checkConnection() throws IOException
+    {
+        if (currentState == ConnectionState.STATE_NONE)
+        {
+            boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
+            if (autoConnect)
+            {
+                connect();
+            }
+            else
+            {
+                throw new IOException("Autoconnection not allowed");
+            }
+        }
+        if (ownerThread != Thread.currentThread())
+        {
+            throw new IOException("Attempt to use from thread'" + Thread.currentThread().getName() + "' when owned by thread '" + ownerThread.getName());
+        }
+    }
 
-		if (socket != null)
-		{
-			try
-			{
-				DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
+    private void delay(int d)
+    {
+        try
+        {
+            Thread.sleep(d);
+        }
+        catch (InterruptedException e)
+        {
+            // Swallow
+        }
+    }
 
-				socket.close();
-			}
-			catch (IOException e)
-			{
-			}
-			socket = null;
-		}
-		setState(ConnectionState.STATE_NONE);
-	}
+    public BluetoothDevice getRemote()
+    {
+        return remote;
+    }
 
-	public void writeCommand(byte[] command, int d) throws IOException
-	{
-		checkConnection();
-		int dreckCount = mmInStream.available();
-		if (dreckCount > 0)
-		{
-			DebugLogManager.INSTANCE.log("Found " + dreckCount + " bytes of dreck", Log.DEBUG);
-			StringBuffer b = new StringBuffer();
-			b.append("Dreck:");
-			while (dreckCount > 0)
-			{
-				int i = mmInStream.read();
-				b.append(String.format("%02x ", i));
-				dreckCount = mmInStream.available();
-			}
-			DebugLogManager.INSTANCE.log(b.toString(), Log.DEBUG);
-		}
-		DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
-		this.mmOutStream.write(command);
-		this.mmOutStream.flush();
-		delay(d);
-	}
+    public void tearDown()
+    {
+        if (mmInStream != null)
+        {
+            try
+            {
+                mmInStream.close();
+            }
+            catch (IOException e)
+            {
+            }
+            mmInStream = null;
+        }
+        if (mmOutStream != null)
+        {
+            try
+            {
+                mmOutStream.close();
+            }
+            catch (IOException e)
+            {
+            }
+            mmOutStream = null;
+        }
 
-	public byte[] writeAndRead(byte[] cmd, int d) throws IOException
-	{
-		writeCommand(cmd, d);
+        if (socket != null)
+        {
+            try
+            {
+                DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
 
-		byte[] result = readBytes();
-		return result;
-	}
+                socket.close();
+            }
+            catch (IOException e)
+            {
+            }
+            socket = null;
+        }
+        setState(ConnectionState.STATE_NONE);
+    }
 
-	public void writeAndRead(byte[] cmd, byte[] result, int d) throws IOException
-	{
-		writeCommand(cmd, d);
+    public void writeCommand(byte[] command, int d) throws IOException
+    {
+        checkConnection();
+        int dreckCount = mmInStream.available();
+        if (dreckCount > 0)
+        {
+            DebugLogManager.INSTANCE.log("Found " + dreckCount + " bytes of dreck", Log.DEBUG);
+            StringBuffer b = new StringBuffer();
+            b.append("Dreck:");
+            while (dreckCount > 0)
+            {
+                int i = mmInStream.read();
+                b.append(String.format("%02x ", i));
+                dreckCount = mmInStream.available();
+            }
+            DebugLogManager.INSTANCE.log(b.toString(), Log.DEBUG);
+        }
+        DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
+        this.mmOutStream.write(command);
+        this.mmOutStream.flush();
+        delay(d);
+    }
 
-		readBytes(result);
-	}
+    public byte[] writeAndRead(byte[] cmd, int d) throws IOException
+    {
+        writeCommand(cmd, d);
 
-	public void readBytes(byte[] bytes) throws IOException
-	{
-		checkConnection();
+        byte[] result = readBytes();
+        return result;
+    }
 
-		boolean timerTriggered = false;
-		long start = System.currentTimeMillis();
-		long now = start;
-		int nBytes = bytes.length;
-		int bytesRead = 0;
-		while (bytesRead < nBytes)
-		{
-		    int available = mmInStream.available();
-			while (available < nBytes)
-			{
-				delay(5);
-				now = System.currentTimeMillis();
-				if (now - start > IO_TIMEOUT)
-				{
-					DebugLogManager.INSTANCE.log("Timeout " + IO_TIMEOUT + "ms reached. Only " + available
-							+ " bytes available of " + bytes.length, Log.ERROR);
-					if(available > 0)
-					{
-					    byte[] dross = new byte[available];
-					    mmInStream.read(dross,0,available);
-					    DebugLogManager.INSTANCE.log("Those bytes were",dross,Log.ERROR);
-					}
-					throw new IOException("Timeout waiting for data to arrive");
-				}
-				available = mmInStream.available();
-			}
+    public void writeAndRead(byte[] cmd, byte[] result, int d) throws IOException
+    {
+        writeCommand(cmd, d);
 
-			try
-			{
-				int result = mmInStream.read(bytes, bytesRead, nBytes - bytesRead);
-				if (result == -1)
-					break;
+        readBytes(result);
+    }
 
-				bytesRead += result;
-				DebugLogManager.INSTANCE.log("read([])", bytes, Log.DEBUG);
-			}
-			catch (IOException e)
-			{
-				if (timerTriggered)
-				{
-					DebugLogManager.INSTANCE.log("read timeout occured : read " + bytesRead + " : expected " + nBytes, Log.ERROR);
-				}
-				throw e;
-			}
-		}
+    public void readBytes(byte[] bytes) throws IOException
+    {
+        checkConnection();
+        TimerTask reaper = new Reaper();
+        t.schedule(reaper, IO_TIMEOUT);
+        int target = bytes.length;
+        int read = 0;
+        try
+        {
+            while (read < target)
+            {
+                int numRead = mmInStream.read(bytes, read, target - read);
+                if (numRead == -1)
+                {
+                    throw new IOException("end of stream attempting to read");
+                }
+                read += numRead;
+            }
+            reaper.cancel();
+        }
+        catch (IOException e)
+        {
+            if (timerTriggered)
+            {
+                DebugLogManager.INSTANCE.log("Time out reading from stream", Log.ERROR);
+                throw e;
+            }
+        }
+        int x = 0;
+    }
 
-	}
+    public byte[] readBytes() throws IOException
+    {
+        checkConnection();
 
-	public byte[] readBytes() throws IOException
-	{
-		checkConnection();
+        List<Byte> read = new ArrayList<Byte>();
 
-		List<Byte> read = new ArrayList<Byte>();
+        while (mmInStream.available() > 0)
+        {
+            byte b = (byte) mmInStream.read();
+            read.add(b);
+        }
+        byte[] result = new byte[read.size()];
+        int i = 0;
+        for (Byte b : read)
+        {
+            result[i++] = b;
+        }
+        DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
+        sendStatus("Recieved '" + new String(result) + "'");
+        return result;
+    }
 
-		while (mmInStream.available() > 0)
-		{
-			byte b = (byte) mmInStream.read();
-			read.add(b);
-		}
-		byte[] result = new byte[read.size()];
-		int i = 0;
-		for (Byte b : read)
-		{
-			result[i++] = b;
-		}
-		DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
-		sendStatus("Recieved '" + new String(result) + "'");
-		return result;
-	}
+    public void flushAll() throws IOException
+    {
+        checkConnection();
 
-	public void flushAll() throws IOException
-	{
-		checkConnection();
+        mmOutStream.flush();
+        int dreck = mmInStream.available();
+        while (mmInStream.available() > 0)
+        {
+            int x = mmInStream.read();
+        }
+    }
 
-		mmOutStream.flush();
-		while (mmInStream.available() > 0)
-		{
-			mmInStream.read();
-		}
-	}
+    private void sendStatus(String msgStr)
+    {
+        DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
 
-	private void sendStatus(String msgStr)
-	{
-		DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
+        if (handler != null)
+        {
+            Message msg = handler.obtainMessage(MSLoggerApplication.MESSAGE_TOAST);
+            Bundle bundle = new Bundle();
+            bundle.putString(MSLoggerApplication.MSG_ID, msgStr);
+            msg.setData(bundle);
+            handler.sendMessage(msg);
+        }
+    }
 
-		if (handler != null)
-		{
-			Message msg = handler.obtainMessage(MSLoggerApplication.MESSAGE_TOAST);
-			Bundle bundle = new Bundle();
-			bundle.putString(MSLoggerApplication.MSG_ID, msgStr);
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-		}
-	}
-
-	public synchronized void disconnect()
-	{
-		tearDown();
-	}
+    public synchronized void disconnect()
+    {
+        tearDown();
+    }
 }
