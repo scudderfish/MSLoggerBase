@@ -198,7 +198,7 @@ public enum Connection
         return remote;
     }
 
-    public void tearDown()
+    public synchronized void tearDown()
     {
         if (mmInStream != null)
         {
