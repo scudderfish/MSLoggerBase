@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import uk.org.smithfamily.mslogger.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.*;
@@ -15,7 +16,7 @@ public class DialogPreferenceActivity extends PreferenceActivity
 	{
 		LinearLayout v = new LinearLayout(this);
 		Button b = new Button(this);
-		b.setText("OK");
+		b.setText(R.string.bt_ok);
 		b.setGravity(Gravity.CENTER_HORIZONTAL);
 		LayoutParams p = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 
