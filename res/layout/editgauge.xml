@@ -104,24 +104,22 @@
 
 			</TableLayout>
 
-			<LinearLayout android:orientation="horizontal"
-				android:layout_height="wrap_content" android:layout_width="fill_parent">
-				<Button android:text="OK" android:id="@+id/editOK"
-					android:layout_weight="1" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-				<Button android:text="Reset" android:id="@+id/editReset"
-					android:layout_weight="1" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-				<Button android:text="Cancel" android:id="@+id/editCancel"
-					android:layout_weight="1" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-
-
-			</LinearLayout>
 		</LinearLayout>
 	</ScrollView>
+	
+	<LinearLayout android:orientation="horizontal"
+		android:layout_height="wrap_content" android:layout_width="fill_parent">
+		<Button android:text="OK" android:id="@+id/editOK"
+			android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+		<Button android:text="Reset" android:id="@+id/editReset"
+			android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+		<Button android:text="Cancel" android:id="@+id/editCancel"
+			android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
 
 
-
+	</LinearLayout>
 
 </LinearLayout>
