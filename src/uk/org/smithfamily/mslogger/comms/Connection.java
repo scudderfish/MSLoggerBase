@@ -17,12 +17,16 @@ public enum Connection
 
     class Reaper extends TimerTask
     {
-
+		Connection parent;
+		Reaper(Connection p)
+		{
+			this.parent = p;
+		}
         @Override
         public void run()
         {
-            timerTriggered = true;
-            tearDown();
+            parent.timerTriggered = true;
+            parent.tearDown();
         }
 
     }
@@ -276,7 +280,7 @@ public enum Connection
     public void readBytes(byte[] bytes) throws IOException
     {
         checkConnection();
-        TimerTask reaper = new Reaper();
+        TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
         int target = bytes.length;
         int read = 0;
