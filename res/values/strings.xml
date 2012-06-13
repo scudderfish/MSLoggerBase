@@ -68,7 +68,7 @@
 	        
     <string name="sd_card_error">SD Card Error</string>
     
-    <string name="bt_ok">Ok</string>
+    <string name="bt_ok">OK</string>
     <string name="no_bt">Bluetooth not available.  The application will close.</string>
     <string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Devices</string>
