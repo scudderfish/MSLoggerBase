@@ -67,7 +67,6 @@ public abstract class Megasquirt
 
     private boolean            logging;
     private boolean            constantsLoaded;
-    private boolean            signatureChecked;
     private String             trueSignature = "Unknown";
     private ECUThread          ecuThread;
     private volatile boolean   running;
@@ -140,7 +139,6 @@ public abstract class Megasquirt
     public void reset()
     {
         refreshFlags();
-        signatureChecked = false;
         constantsLoaded = false;
         running = false;
     }
@@ -148,7 +146,7 @@ public abstract class Megasquirt
     private void logValues()
     {
 
-        if (!logging)
+        if (!isLogging())
         {
             return;
         }
@@ -388,8 +386,6 @@ public abstract class Megasquirt
             if (verified)
             {
                 sendMessage("Connected to " + trueSignature);
-
-                signatureChecked = true;
                 broadcast(CONNECTED);
             }
             else
