@@ -814,7 +814,6 @@ public class Normaliser
 			{
 				variable = "round(" + variable + ")";
 			}
-			System.out.println(header);
 			logHeader.add("b.append(\"" + header + "\").append(\"\\t\");");
 			logRecord.add("b.append(" + variable + ").append(\"\\t\");");
 		}
