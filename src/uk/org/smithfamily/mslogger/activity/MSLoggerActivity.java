@@ -357,19 +357,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         editItem.setEnabled(ecuDefinition != null);
         if (gaugeEditEnabled)
         {
+        	editItem.setIcon(R.drawable.ic_menu_disable_gauge_editing);
             editItem.setTitle(R.string.DisableGaugeEdit);
         }
         else
         {
+        	editItem.setIcon(R.drawable.ic_menu_enable_gauge_editing);
             editItem.setTitle(R.string.EnableGaugeEdit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
         if (ecuDefinition != null && ecuDefinition.isRunning())
         {
+        	connectionItem.setIcon(R.drawable.ic_menu_disconnect);
             connectionItem.setTitle(R.string.disconnect);
         }
         else
         {
+        	connectionItem.setIcon(R.drawable.ic_menu_connect);
             connectionItem.setTitle(R.string.connect);
         }
 
@@ -377,10 +381,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         loggingItem.setEnabled(ecuDefinition != null);
         if (ApplicationSettings.INSTANCE.shouldBeLogging())
         {
+        	loggingItem.setIcon(R.drawable.ic_menu_stop_logging);
             loggingItem.setTitle(R.string.stop_logging);
         }
         else
         {
+        	loggingItem.setIcon(R.drawable.ic_menu_start_logging);
             loggingItem.setTitle(R.string.start_logging);
         }
 
