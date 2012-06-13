@@ -301,7 +301,6 @@ public enum Connection
                 throw e;
             }
         }
-        int x = 0;
     }
 
     public byte[] readBytes() throws IOException
@@ -331,10 +330,9 @@ public enum Connection
         checkConnection();
 
         mmOutStream.flush();
-        int dreck = mmInStream.available();
         while (mmInStream.available() > 0)
         {
-            int x = mmInStream.read();
+            mmInStream.read();
         }
     }
 
