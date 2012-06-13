@@ -20,7 +20,7 @@ public class Normaliser
 																	.compile("(\\w*)\\s*=\\s*scalar\\s*,\\s*([U|S]\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(.*,.*)");
 	private static Pattern				expr				= Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
 	private static Pattern				ternary				= Pattern.compile("(.*?)\\?(.*)");
-	private static Pattern				log					= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*)\",.*");
+	private static Pattern				log					= Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*?)\",.*");
 	private static Pattern				binary				= Pattern.compile("(.*)0b([01]{8})(.*)");
 	private static Pattern				gauge				= Pattern
 																	.compile("\\s*(.*?)\\s*=\\s*(.*?)\\s*,\\s*\"(.*?)\"\\s*,\\s*\"(.*?)\"\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)");
@@ -814,6 +814,7 @@ public class Normaliser
 			{
 				variable = "round(" + variable + ")";
 			}
+			System.out.println(header);
 			logHeader.add("b.append(\"" + header + "\").append(\"\\t\");");
 			logRecord.add("b.append(" + variable + ").append(\"\\t\");");
 		}
