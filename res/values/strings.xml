@@ -15,8 +15,8 @@
 	<string name="megasquirt">Megasquirt</string>
 	<string name="hertz">Hertz</string>
 	<string name="quit">Quit</string>
-	<string name="disconnecting_from_ms">Disconnecting from MS...</string>
-	<string name="connecting_to_ms">Connecting to MS...</string>
+	<string name="disconnecting_from_ms">Disconnecting from MS…</string>
+	<string name="connecting_to_ms">Connecting to MS…</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="ms_model">MS Model</string>
 	<string name="map_sensor">MAP Sensor</string>
@@ -74,7 +74,7 @@
 	<string name="title_other_devices">Other Devices</string>
 	<string name="button_scan">Scan</string>       
 	<string name="none_paired">No paired devices</string>
-	<string name="scanning">Scanning....</string>
+	<string name="scanning">Scanning…</string>
 	<string name="select_device">Select Device</string>
 	<string name="none_found">None found</string>
 	<string name="please_wait">Please Wait</string>
