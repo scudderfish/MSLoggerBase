@@ -96,22 +96,24 @@ public enum GaugeRegister
         {
             File input = getFileStore(gd);
 
-            // Read from disk using FileInputStream.
-            FileInputStream f_in = new FileInputStream(input);
-
-            // Read object using ObjectInputStream.
-            ObjectInputStream obj_in = new ObjectInputStream(f_in);
-
-            // Read an object.
-            Object obj = obj_in.readObject();
-            if (obj instanceof GaugeDetails)
-            {
-
-                return (GaugeDetails) obj;
-            }
-            else
-            {
-                return null;
+            // Make sure file exists before trying to read it
+            if (input.isFile()) {            
+                // Read from disk using FileInputStream.
+                FileInputStream f_in = new FileInputStream(input);
+    
+                // Read object using ObjectInputStream.
+                ObjectInputStream obj_in = new ObjectInputStream(f_in);
+    
+                // Read an object.
+                Object obj = obj_in.readObject();
+                if (obj instanceof GaugeDetails)
+                {    
+                    return (GaugeDetails) obj;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
         catch (IOException e)
@@ -122,8 +124,8 @@ public enum GaugeRegister
         {
 
         }
+        
         return null;
-
     }
 
     private File getFileStore(GaugeDetails gd)
