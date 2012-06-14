@@ -1,10 +1,12 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-
 import android.os.Environment;
 import android.text.format.DateFormat;
 

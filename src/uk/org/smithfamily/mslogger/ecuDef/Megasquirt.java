@@ -169,6 +169,8 @@ public abstract class Megasquirt
     {
         if (simulated)
             return;
+        DebugLogManager.INSTANCE.log("Disconnect",Log.INFO);
+        
         Connection.INSTANCE.disconnect();
         DatalogManager.INSTANCE.mark("Disconnected");
         FRDLogManager.INSTANCE.close();
