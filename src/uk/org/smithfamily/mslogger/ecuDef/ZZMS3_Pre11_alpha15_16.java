@@ -1,12 +1,14 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import android.content.Context;
-
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import android.content.Context;
 
 /*
  * Fingerprint : 1db6ae262e7189230ad3be8670eec0a1
@@ -39,7 +41,7 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
     String              signature     = "MS3 Format 0225.005\0";
     byte[]              ochGetCommand = new byte[] { 'A' };
     int                 ochBlockSize  = 380;
-    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { "MS3 Format 0225.010\0","MS3 Format 0233.003\0", signature }));
+    private Set<String> sigs          = new HashSet<String>(Arrays.asList(new String[] { signature }));
     // Flags
     boolean             NARROW_BAND_EGO;
     boolean             CYL_12_16_SUPPORT;
@@ -1498,6 +1500,7 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
     @Override
     public void calculate(byte[] ochBuffer) throws IOException
     {
+        try {
         deadValue = (0);
         if (CAN_COMMANDS)
         {
@@ -1903,6 +1906,11 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
         economy_l_km = (fuelflow / (vss1_real * 6));
         economy_mpg_us = ((2.361 / economy_l_km));
         economy_mpg_uk = ((2.825 / economy_l_km));
+        }
+        catch (Exception e) 
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
     }
 
     @Override
@@ -3705,7 +3713,7 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
         }
         idleve_delay = (int) ((MSUtils.getByte(pageBuffer, 1022) + 0.0) * 1.0);
         ac_idleup_cl_lockout_mapadder = (double) ((MSUtils.getByte(pageBuffer, 1023) + 0.0) * 0.1);
-        pageBuffer = loadPage(2, 0, 1024, null, new byte[] { 114, 0, 5, 0, 0, 4, 0 });
+        pageBuffer = loadPage(2, 1024, 1024, null, new byte[] { 114, 0, 4, 0, 0, 4, 0 });
         testmodelock = (int) ((MSUtils.getWord(pageBuffer, 0) + 0.0) * 1.0);
         testop_0 = (int) ((MSUtils.getByte(pageBuffer, 0) + 0.0) * 1.0);
         testop_coil = MSUtils.getBits(pageBuffer, 2, 0, 1, 0);
