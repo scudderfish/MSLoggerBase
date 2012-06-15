@@ -12,6 +12,10 @@ import android.content.Intent;
 import android.os.*;
 import android.widget.TextView;
 
+/**
+ * 
+ * 
+ */
 public class StartupActivity extends Activity
 {
     private static final int SELECT_EGO        = 1;
@@ -41,7 +45,9 @@ public class StartupActivity extends Activity
     private BluetoothAdapter mBluetoothAdapter;
     private TextView         msgBox;
 
-    /** Called when the activity is first created. */
+    /**
+     *  Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -70,6 +76,9 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     */
     private void initSequence()
     {
         if (ApplicationSettings.INSTANCE.getPref("maptype") == null)
@@ -110,6 +119,9 @@ public class StartupActivity extends Activity
 
     }
 
+    /**
+     * 
+     */
     private void selectEmail()
     {
         Intent i = new Intent(this, EmailSelectActivity.class);
@@ -117,12 +129,18 @@ public class StartupActivity extends Activity
 
     }
 
+    /**
+     * 
+     */
     private void selectEGO()
     {
         Intent i = new Intent(this, EGOSelectActivity.class);
         startActivityForResult(i, SELECT_EGO);
     }
 
+    /**
+     * 
+     */
     private void selectMAP()
     {
         Intent i = new Intent(this, MAPSelectActivity.class);
@@ -130,12 +148,21 @@ public class StartupActivity extends Activity
 
     }
 
+    /**
+     * 
+     * @param msg
+     */
     public void showMessage(Message msg)
     {
         String text = msg.getData().getString(MSLoggerApplication.MSG_ID);
         msgBox.setText(text);
     }
 
+    /**
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         switch (requestCode)
@@ -172,6 +199,10 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     * @param sig
+     */
     public void checkSig(String sig)
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuForSig(sig);
@@ -192,12 +223,18 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     */
     private void startFingerprint()
     {
         Thread t = new Thread(new ECUFingerprint(mHandler, mBluetoothAdapter));
         t.start();
     }
 
+    /**
+     * 
+     */
     public void finishDialogNoBluetooth()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -213,6 +250,10 @@ public class StartupActivity extends Activity
         alert.show();
     }
 
+    /**
+     * 
+     * @param sig
+     */
     private void unrecognisedEcu(final String sig)
     {
         if (isFinishing())
@@ -242,6 +283,10 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     * @param sig
+     */
     private void constructEmail(String sig)
     {
         EmailManager.email(this, "dave@mslogger.co.uk", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + sig

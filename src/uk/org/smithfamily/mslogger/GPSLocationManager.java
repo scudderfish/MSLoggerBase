@@ -7,6 +7,10 @@ import android.location.*;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * 
+ * 
+ */
 public enum GPSLocationManager implements LocationListener
 {
 	INSTANCE;
@@ -14,11 +18,19 @@ public enum GPSLocationManager implements LocationListener
 	private Location		lastLocation	= new Location("null");
 	private LocationManager	locationManager	= null;
 
+	/**
+	 * 
+	 * @return
+	 */
 	synchronized public Location getLastKnownLocation()
 	{
 		return lastLocation;
 	}
 
+	/**
+	 * Start the location service
+	 * 
+	 */
 	synchronized public void start()
 	{
 		locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
@@ -38,6 +50,10 @@ public enum GPSLocationManager implements LocationListener
 		}
 	}
 
+	/**
+	 * Stop the location service
+	 * 
+	 */
 	synchronized public void stop()
 	{
 
@@ -49,6 +65,11 @@ public enum GPSLocationManager implements LocationListener
 
 	}
 
+	/**
+	 * Broadcast a message to the application
+	 * 
+	 * @param msg Message to be broadcasted
+	 */
 	protected void sendMessage(String msg)
 	{
 		Intent broadcast = new Intent();
@@ -56,7 +77,12 @@ public enum GPSLocationManager implements LocationListener
 		broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
 		ApplicationSettings.INSTANCE.getContext().sendBroadcast(broadcast);
 	}
-
+	
+    /**
+     * Triggered when the location change
+     * 
+     * @param location
+     */
 	@Override
 	public void onLocationChanged(Location location)
 	{
@@ -64,6 +90,9 @@ public enum GPSLocationManager implements LocationListener
 
 	}
 
+	/**
+     * @param provider
+     */
 	@Override
 	public void onProviderDisabled(String provider)
 	{
@@ -71,11 +100,20 @@ public enum GPSLocationManager implements LocationListener
 	}
 
 	@Override
+	/**
+	 * @param provider
+	 */
 	public void onProviderEnabled(String provider)
 	{
 	}
 
 	@Override
+	/**
+	 * 
+	 * @param provider
+	 * @param status
+	 * @param extras
+	 */
 	public void onStatusChanged(String provider, int status, Bundle extras)
 	{
 		if (status == LocationProvider.OUT_OF_SERVICE)

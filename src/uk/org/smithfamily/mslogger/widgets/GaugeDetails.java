@@ -7,6 +7,9 @@ import java.io.ObjectOutput;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 
+/**
+ *
+ */
 public class GaugeDetails implements Externalizable
 {
     private static final long serialVersionUID = 5603843897470844381L;
@@ -24,6 +27,10 @@ public class GaugeDetails implements Externalizable
     private int               vd;
     private int               ld;
 
+    /**
+     * 
+     * @param oi
+     */
     @Override
     public void readExternal(ObjectInput oi) throws IOException, ClassNotFoundException
     {
@@ -42,6 +49,10 @@ public class GaugeDetails implements Externalizable
         ld = oi.readInt();
     }
 
+    /**
+     * 
+     * @param oo
+     */
     @Override
     public void writeExternal(ObjectOutput oo) throws IOException
     {
@@ -59,10 +70,32 @@ public class GaugeDetails implements Externalizable
         oo.writeInt(vd);
         oo.writeInt(ld);
     }
+    
+    /**
+     * 
+     */
     public GaugeDetails()
     {
         
     }
+    
+    /**
+     * 
+     * @param name
+     * @param channel
+     * @param iniCheck
+     * @param title
+     * @param units
+     * @param min
+     * @param max
+     * @param loD
+     * @param loW
+     * @param hiW
+     * @param hiD
+     * @param vd
+     * @param ld
+     * @param offsetAngle
+     */
     public GaugeDetails(String name, String channel, double iniCheck, String title, String units, double min, double max, double loD, double loW,
             double hiW, double hiD, int vd, int ld, double offsetAngle)
     {
@@ -81,126 +114,201 @@ public class GaugeDetails implements Externalizable
         this.offsetAngle = ApplicationSettings.INSTANCE.getGaugeSetting(name, title, "offsetAngle", offsetAngle);
     }
 
+    /**
+     * @return
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * @return
+     */
     public String getChannel()
     {
         return channel;
     }
-
+    
+    /**
+     * @return
+     */
     public String getTitle()
     {
         return title;
     }
 
+    /**
+     * @return
+     */
     public String getUnits()
     {
         return units;
     }
 
+    /**
+     * @return
+     */
     public double getMin()
     {
         return min;
     }
 
+    /**
+     * @return
+     */
     public double getMax()
     {
         return max;
     }
 
+    /**
+     * @return
+     */
     public double getLoD()
     {
         return loD;
     }
 
+    /**
+     * @return
+     */
     public double getLoW()
     {
         return loW;
     }
 
+    /**
+     * @return
+     */
     public double getHiW()
     {
         return hiW;
     }
 
+    /**
+     * @return
+     */
     public double getHiD()
     {
         return hiD;
     }
 
+    /**
+     * @return
+     */
     public int getVd()
     {
         return vd;
     }
 
+    /**
+     * @return
+     */
     public int getLd()
     {
         return ld;
     }
 
+    /**
+     * @param name
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /**
+     * @param channel
+     */
     public void setChannel(String channel)
     {
         this.channel = channel;
     }
 
+    /**
+     * @param title
+     */
     public void setTitle(String title)
     {
         this.title = title;
     }
 
+    /**
+     * @param min
+     */
     public void setUnits(String units)
     {
         this.units = units;
     }
 
+    /**
+     * @param min
+     */
     public void setMin(double min)
     {
         this.min = min;
     }
 
+    /**
+     * @param max
+     */
     public void setMax(double max)
     {
         this.max = max;
     }
 
+    /**
+     * @param lowD
+     */
     public void setLoD(double loD)
     {
         this.loD = loD;
     }
 
+    /**
+     * @param loW
+     */
     public void setLoW(double loW)
     {
         this.loW = loW;
     }
 
+    /**
+     * @param hiW
+     */
     public void setHiW(double hiW)
     {
         this.hiW = hiW;
     }
 
+    /**
+     * @param hiD
+     */
     public void setHiD(double hiD)
     {
         this.hiD = hiD;
     }
 
+    /**
+     * @param vd
+     */
     public void setVd(int vd)
     {
         this.vd = vd;
     }
 
+    /**
+     * @param ld
+     */
     public void setLd(int ld)
     {
         this.ld = ld;
     }
 
+    /**
+     * @return
+     */
     @Override
     public String toString()
     {
@@ -209,11 +317,17 @@ public class GaugeDetails implements Externalizable
                 + "]";
     }
 
+    /**
+     * @return
+     */
     public double getOffsetAngle()
     {
         return offsetAngle;
     }
 
+    /**
+     * @param offsetAngle
+     */
     public void setOffsetAngle(double offsetAngle)
     {
         this.offsetAngle = offsetAngle;

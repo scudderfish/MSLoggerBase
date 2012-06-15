@@ -17,6 +17,11 @@ import android.content.Intent;
 import android.os.*;
 import android.util.Log;
 
+/**
+ * 
+ * @author Seb
+ *
+ */
 public abstract class Megasquirt
 {
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
@@ -75,11 +80,20 @@ public abstract class Megasquirt
 
     private RebroadcastHandler handler;
 
+    /**
+     * 
+     * @param i1
+     * @param name
+     * @return
+     */
     protected int table(int i1, String name)
     {
         return TableManager.INSTANCE.table(i1, name);
     }
 
+    /**
+     * 
+     */
     public synchronized void toggleConnection()
     {
         if (!running)
@@ -94,11 +108,20 @@ public abstract class Megasquirt
         }
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isLogging()
     {
         return logging;
     }
 
+    /**
+     * 
+     * @param t
+     * @return
+     */
     protected double tempCvt(int t)
     {
         if (isSet("CELSIUS"))
@@ -111,6 +134,9 @@ public abstract class Megasquirt
         }
     }
 
+    /**
+     * 
+     */
     public synchronized void start()
     {
         DebugLogManager.INSTANCE.log("Megasquirt.start()", Log.INFO);
@@ -122,6 +148,9 @@ public abstract class Megasquirt
         }
     }
 
+    /**
+     * 
+     */
     public synchronized void stop()
     {
         if (ecuThread != null)
@@ -136,6 +165,9 @@ public abstract class Megasquirt
 
     }
 
+    /**
+     * 
+     */
     public void reset()
     {
         refreshFlags();
@@ -143,6 +175,9 @@ public abstract class Megasquirt
         running = false;
     }
 
+    /**
+     * 
+     */
     private void logValues()
     {
 
@@ -165,6 +200,9 @@ public abstract class Megasquirt
         }
     }
 
+    /**
+     * 
+     */
     private void disconnect()
     {
         if (simulated)
@@ -178,6 +216,10 @@ public abstract class Megasquirt
         broadcast(DISCONNECTED);
     }
 
+    /**
+     * 
+     * @param msg
+     */
     protected void sendMessage(String msg)
     {
         Intent broadcast = new Intent();
@@ -186,6 +228,10 @@ public abstract class Megasquirt
         context.sendBroadcast(broadcast);
     }
 
+    /**
+     * 
+     * @param action
+     */
     private void broadcast(String action)
     {
         Intent broadcast = new Intent();
@@ -195,17 +241,30 @@ public abstract class Megasquirt
 
     }
 
+    /**
+     * 
+     * @param c
+     */
     public Megasquirt(Context c)
     {
         this.context = c;
         handler = new RebroadcastHandler(this);
     }
 
+    /**
+     * 
+     * @return
+     */
     protected double timeNow()
     {
         return (System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0;
     }
 
+    /**
+     * 
+     * @param channel
+     * @return
+     */
     public double getValue(String channel)
     {
 
@@ -224,6 +283,9 @@ public abstract class Megasquirt
         return value;
     }
 
+    /**
+     * 
+     */
     public void startLogging()
     {
         logging = true;
@@ -231,6 +293,9 @@ public abstract class Megasquirt
 
     }
 
+    /**
+     * 
+     */
     public void stopLogging()
     {
         DebugLogManager.INSTANCE.log("stopLogging()", Log.INFO);
@@ -239,25 +304,46 @@ public abstract class Megasquirt
         DatalogManager.INSTANCE.close();
     }
 
+    /**
+     * 
+     * @param v
+     * @return
+     */
     protected double round(double v)
     {
         return Math.floor(v * 100 + .5) / 100;
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
     protected boolean isSet(String name)
     {
         return ApplicationSettings.INSTANCE.isSet(name);
     }
 
+    /**
+     *
+     */
     private class RebroadcastHandler extends Handler
     {
         private Megasquirt ecu;
 
+        /**
+         * 
+         * @param ecu
+         */
         public RebroadcastHandler(Megasquirt ecu)
         {
             this.ecu = ecu;
         }
 
+        /**
+         * 
+         * @param m
+         */
         @Override
         public void handleMessage(Message m)
         {
@@ -268,15 +354,24 @@ public abstract class Megasquirt
         }
     }
 
+    /**
+     *
+     */
     private class ECUThread extends Thread
     {
 
+        /**
+         * 
+         */
         public ECUThread()
         {
             Set<String> sigs = Megasquirt.this.getSignature();
             setName("ECUThread:" + sigs.iterator().next());
         }
 
+        /**
+         * 
+         */
         public void initialiseConnection()
         {
             ochBuffer = new byte[Megasquirt.this.getBlockSize()];
@@ -299,6 +394,9 @@ public abstract class Megasquirt
 
         }
 
+        /**
+         * 
+         */
         public void run()
         {
             sendMessage("");
@@ -359,11 +457,19 @@ public abstract class Megasquirt
 
         }
 
+        /**
+         * 
+         */
         public void halt()
         {
             running = false;
         }
 
+        /**
+         * 
+         * @return
+         * @throws IOException
+         */
         private boolean verifySignature() throws IOException
         {
             boolean verified = false;
@@ -397,6 +503,10 @@ public abstract class Megasquirt
             return verified;
         }
 
+        /**
+         * 
+         * @throws IOException
+         */
         private void getRuntimeVars() throws IOException
         {
             // Debug.startMethodTracing("getRuntimeVars");
@@ -410,11 +520,22 @@ public abstract class Megasquirt
             // Debug.stopMethodTracing();
         }
 
+        /**
+         * 
+         * @throws IOException
+         */
         private void calculateValues() throws IOException
         {
             calculate(ochBuffer);
         }
 
+        /**
+         * 
+         * @param pageBuffer
+         * @param pageSelectCommand
+         * @param pageReadCommand
+         * @throws IOException
+         */
         protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
         {
 
@@ -431,6 +552,12 @@ public abstract class Megasquirt
             Connection.INSTANCE.readBytes(pageBuffer);
         }
 
+        /**
+         * 
+         * @param sigCommand
+         * @return
+         * @throws IOException
+         */
         private String getSignature(byte[] sigCommand) throws IOException
         {
             String sig1 = "NoSigReadYet";
@@ -462,16 +589,33 @@ public abstract class Megasquirt
 
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getTrueSignature()
     {
         return trueSignature;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isRunning()
     {
         return running;
     }
 
+    /**
+     * 
+     * @param pageNo
+     * @param pageOffset
+     * @param pageSize
+     * @param select
+     * @param read
+     * @return
+     */
     protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
     {
 
@@ -492,11 +636,23 @@ public abstract class Megasquirt
         return buffer;
     }
 
+    /**
+     * 
+     * @param buffer
+     * @param select
+     * @param read
+     * @throws IOException
+     */
     private void getPage(byte[] buffer, byte[] select, byte[] read) throws IOException
     {
         ecuThread.getPage(buffer, select, read);
     }
 
+    /**
+     * 
+     * @param pageNo
+     * @param buffer
+     */
     private void savePage(int pageNo, byte[] buffer)
     {
 

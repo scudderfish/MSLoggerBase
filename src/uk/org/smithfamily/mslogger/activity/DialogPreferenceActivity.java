@@ -9,9 +9,16 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+/**
+ * 
+ * 
+ */
 public class DialogPreferenceActivity extends PreferenceActivity
 {
 
+    /**
+     * 
+     */
 	protected void addButton()
 	{
 		LinearLayout v = new LinearLayout(this);
@@ -34,6 +41,11 @@ public class DialogPreferenceActivity extends PreferenceActivity
 		this.getListView().addFooterView(v);
 	}
 
+	/**
+	 * 
+	 * @param savedInstanceState
+	 * @param preferences
+	 */
 	public void onCreate(Bundle savedInstanceState, int preferences)
 	{
 		super.onCreate(savedInstanceState);

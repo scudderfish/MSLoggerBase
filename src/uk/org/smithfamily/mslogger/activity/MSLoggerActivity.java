@@ -23,7 +23,10 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.*;
 
-
+/**
+ * 
+ * 
+ */
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
     private BroadcastReceiver      updateReceiver        = new Reciever();
@@ -87,6 +90,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
 
+    /**
+     * 
+     */
     private void dumpPreferences()
     {
         SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
@@ -97,6 +103,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     private void completeCreate()
     {
         if (ready == null)
@@ -109,6 +118,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     private void finaliseInit()
     {
         initGauges();
@@ -123,6 +135,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
+    /**
+     * 
+     */
     private void checkSDCard()
     {
         boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
@@ -133,6 +148,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     @Override
     protected void onDestroy()
     {
@@ -141,6 +159,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onDestroy();
     }
 
+    /**
+     * 
+     */
     @Override
     public void onStop()
     {
@@ -148,6 +169,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         saveGauges();
     }
 
+    /**
+     * 
+     */
     private void checkBTDeviceSet()
     {
 
@@ -157,6 +181,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     private void saveGauges()
     {
         if (!(gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null))
@@ -181,7 +208,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-
+    /**
+     * 
+     */
     private void loadGauges()
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
@@ -189,6 +218,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ecu.initGauges();
     }
 
+    /**
+     * 
+     */
     private void initGauges()
     {
         layout = (LinearLayout) (findViewById(R.id.layout));
@@ -251,6 +283,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
+    /**
+     * 
+     */
     private void findGauges()
     {
         gauge1 = (MSGauge) findViewById(R.id.g1);
@@ -260,6 +295,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge5 = (MSGauge) findViewById(R.id.g5);
     }
 
+    /**
+     * 
+     * @param l
+     */
     private void setTouchListeners(MarkListener l)
     {
         gauge1.setOnTouchListener(l);
@@ -270,7 +309,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             gauge5.setOnTouchListener(l);
     }
 
-     private void registerMessages()
+    /**
+     * 
+     */
+    private void registerMessages()
     {
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
@@ -283,6 +325,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registered = true;
     }
 
+    /**
+     * 
+     */
     private void deRegisterMessages()
     {
         if (registered)
@@ -291,6 +336,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     protected void processData()
     {
         List<Indicator> indicators;
@@ -322,6 +370,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     private void terminateTest()
     {
         DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
@@ -340,6 +391,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     * @param menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -348,6 +403,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         return true;
     }
 
+    /**
+     * 
+     * @param menu
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
@@ -393,6 +452,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         return super.onPrepareOptionsMenu(menu);
     }
 
+    /**
+     * 
+     * @param item
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -444,11 +507,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     public void resetGuages()
     {
         new ResetGaugesTask().execute((Void) null);
     }
 
+    /**
+     * 
+     */
     private void toggleEditing()
     {
         if (gaugeEditEnabled)
@@ -459,6 +528,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         initGauges();
     }
 
+    /**
+     * 
+     */
     private void toggleLogging()
     {
         boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
@@ -476,6 +548,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setLoggingOverride(!shouldBeLogging);
     }
 
+    /**
+     * 
+     */
     private void sendLogs()
     {
         if (ApplicationSettings.INSTANCE.emailEnabled())
@@ -494,6 +569,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
+    /**
+     * 
+     */
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
@@ -509,6 +587,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         this.finish();
     }
 
+    /**
+     * 
+     */
     private void toggleConnection()
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
@@ -519,6 +600,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     */
     private void showAbout()
     {
         Dialog dialog = new Dialog(this);
@@ -548,18 +632,30 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         dialog.show();
     }
 
+    /**
+     * 
+     */
     private void openCalibrateTPS()
     {
         Intent launchCalibrate = new Intent(this, CalibrateActivity.class);
         startActivity(launchCalibrate);
     }
 
+    /**
+     * 
+     */
     private void openPreferences()
     {
         Intent launchPrefs = new Intent(this, PreferencesActivity.class);
         startActivityForResult(launchPrefs, SHOW_PREFS);
     }
 
+    /**
+     * 
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -588,6 +684,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     * @param prefs
+     * @param key
+     */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
@@ -607,11 +708,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * 
+     * @param v
+     */
     @Override
     public void onClick(View v)
     {
     }
 
+    /**
+     * 
+     * @param id
+     */
     protected Dialog onCreateDialog(int id)
     {
         if (id == 0)
@@ -658,9 +767,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     *
+     */
     private class LicenceCheckTask extends AsyncTask<Void, Void, Void>
     {
 
+        /**
+         * 
+         * @param params
+         */
         @Override
         protected Void doInBackground(Void... params)
         {
@@ -669,11 +785,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
-    // *****************************************************************************
+    /**
+     *
+     */
     private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
     {
         private ProgressDialog dialog;
 
+        /**
+         * 
+         */
         @Override
         protected void onPreExecute()
         {
@@ -684,6 +805,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             dialog.show();
         }
 
+        /**
+         * 
+         * @param arg0
+         */
         @Override
         protected Void doInBackground(Void... arg0)
         {
@@ -699,6 +824,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             return null;
         }
 
+        /**
+         * 
+         * @param unused
+         */
         @Override
         protected void onPostExecute(Void unused)
         {
@@ -707,10 +836,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    // *****************************************************************************
+    /**
+     * 
+     */
     private class InitTask extends AsyncTask<Void, Void, Void>
     {
 
+        /**
+         * 
+         * @param result
+         */
         @Override
         protected void onPostExecute(Void result)
         {
@@ -723,6 +858,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             ready = true;
         }
 
+        /**
+         * 
+         * @param params
+         */
         @Override
         protected Void doInBackground(Void... params)
         {
@@ -739,13 +878,18 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
  
-    // *****************************************************************************
-
+    /**
+     * 
+     */
     public class GaugeTouchListener implements OnTouchListener
     {
 
         private MSGauge gauge;
 
+        /**
+         * 
+         * @param gauge
+         */
         public GaugeTouchListener(MSGauge gauge)
         {
             this.gauge = gauge;
@@ -769,9 +913,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
-    // *****************************************************************************
+    /**
+     *
+     */
     private final class Reciever extends BroadcastReceiver
     {
+        /**
+         * 
+         * @param context
+         * @param intent
+         */
         @Override
         public void onReceive(Context context, Intent intent)
         {
@@ -815,17 +966,27 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    // *****************************************************************************
-
+    /**
+     *
+     */
     private class MarkListener implements OnTouchListener
     {
         private LinearLayout layout;
 
+        /**
+         * 
+         * @param layout
+         */
         public MarkListener(LinearLayout layout)
         {
             this.layout = layout;
         }
 
+        /**
+         * 
+         * @param v
+         * @param event
+         */
         @Override
         public boolean onTouch(View v, MotionEvent event)
         {

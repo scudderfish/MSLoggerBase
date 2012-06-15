@@ -11,12 +11,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * 
+ * 
+ */
 public class EditGaugeDialog extends Dialog implements android.view.View.OnClickListener
 {
 
     private GaugeDetails gd;
     private MSGauge      gauge;
 
+    /**
+     * 
+     * @param context
+     * @param gauge
+     */
     public EditGaugeDialog(Context context, MSGauge gauge)
     {
         super(context);
@@ -24,6 +33,10 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         this.gd = gauge.getDetails();
     }
 
+    /**
+     * 
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -57,6 +70,11 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
     }
 
+    /**
+     * 
+     * @param id
+     * @param value
+     */
     private void setValue(int id, String value)
     {
         View v = findViewById(id);
@@ -66,6 +84,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         }
     }
 
+    /**
+     * 
+     */
     public void saveDetails()
     {
         gd.setName(getValue(R.id.editName));
@@ -88,6 +109,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
     }
 
+    /**
+     * 
+     */
     public void resetDetails()
     {
         GaugeRegister.INSTANCE.reset(gd.getName());
@@ -97,6 +121,11 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         dismiss();
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     */
     private int getValueI(int id)
     {
         int val = 0;
@@ -109,6 +138,11 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         return val;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     */
     private double getValueD(int id)
     {
         double val = 0;
@@ -121,6 +155,11 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         return val;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     */
     private String getValue(int id)
     {
         String val = "";
@@ -133,6 +172,10 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         return val;
     }
 
+    /**
+     * 
+     * @param v
+     */
     @Override
     public void onClick(View v)
     {

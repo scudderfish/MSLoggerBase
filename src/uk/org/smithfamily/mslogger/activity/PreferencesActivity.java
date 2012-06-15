@@ -9,11 +9,18 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 
+/**
+ * 
+ * 
+ */
 public class PreferencesActivity extends PreferenceActivity
 {
     public  static final String DIRTY = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
     private Boolean ecuDirty = false;
 
+    /**
+     *
+     */
     private class ECUPreferenceChangeListener implements OnPreferenceChangeListener
     {
         @Override
@@ -24,6 +31,10 @@ public class PreferencesActivity extends PreferenceActivity
         }
     }
 
+    /**
+     * 
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -39,6 +50,9 @@ public class PreferencesActivity extends PreferenceActivity
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
     }
 
+    /**
+     * 
+     */
     @Override
     public void finish()
     {
@@ -50,6 +64,9 @@ public class PreferencesActivity extends PreferenceActivity
         super.finish();
     }
 
+    /**
+     * 
+     */
     protected void resetECU()
     {
         ApplicationSettings.INSTANCE.refreshFlags();

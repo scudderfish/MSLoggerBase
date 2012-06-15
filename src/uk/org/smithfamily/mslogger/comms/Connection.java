@@ -11,10 +11,16 @@ import android.bluetooth.*;
 import android.os.*;
 import android.util.Log;
 
+/**
+ * Main connection class that wrap all the Bluetooth stuff that communicate with the Megasquirt
+ */
 public enum Connection
 {
     INSTANCE;
 
+    /**
+     * Class that is used to time out the Bluetooth communication
+     */
     class Reaper extends TimerTask
     {
 		Connection parent;
@@ -50,21 +56,43 @@ public enum Connection
     private volatile ConnectionState currentState = ConnectionState.STATE_NONE;
     private Thread                   ownerThread;
 
+    /**
+     * Get the current Bluetooth connection state
+     * 
+     * @return
+     */
     public ConnectionState getCurrentState()
     {
         return currentState;
     }
 
+    /**
+     * Get the handler
+     * 
+     * @return
+     */
     public Handler getHandler()
     {
         return handler;
     }
 
+    /**
+     * Set the handler 
+     * 
+     * @param handler
+     */
     public void setHandler(Handler handler)
     {
         this.handler = handler;
     }
 
+    /**
+     * Initialise the Bluetooth connection
+     * 
+     * @param btAddr
+     * @param adapter
+     * @param h
+     */
     public synchronized void init(String btAddr, BluetoothAdapter adapter, Handler h)
     {
         if (currentState != ConnectionState.STATE_NONE && !btAddr.equals(this.btAddr))
@@ -79,12 +107,23 @@ public enum Connection
         timerTriggered = false;
     }
 
+    /**
+     * Set the current state of the Bluetooth connection
+     * 
+     * @param state
+     */
     private void setState(ConnectionState state)
     {
         currentState = state;
         DebugLogManager.INSTANCE.log("Set state to " + state, Log.INFO);
     }
 
+    /**
+     * Connect to the Bluetooth device
+     *  
+     * 
+     * @throws IOException
+     */
     public synchronized void connect() throws IOException
     {
         if (currentState != ConnectionState.STATE_NONE)
@@ -148,6 +187,12 @@ public enum Connection
         return;
     }
 
+    /**
+     * Get socket to the Bluetooth device
+     * 
+     * @param remote Remote Bluetooth device
+     * @throws IOException
+     */
     private void getSocket(BluetoothDevice remote) throws IOException
     {
         try
@@ -161,6 +206,11 @@ public enum Connection
         }
     }
 
+    /**
+     * Check if the application should auto-connect and automatically connect if it should
+     * 
+     * @throws IOException
+     */
     private synchronized void checkConnection() throws IOException
     {
         if (currentState == ConnectionState.STATE_NONE)
@@ -181,6 +231,11 @@ public enum Connection
         }
     }
 
+    /**
+     * Make the connection thread sleep
+     * 
+     * @param d Delay
+     */
     private void delay(int d)
     {
         try
@@ -193,11 +248,19 @@ public enum Connection
         }
     }
 
+    /**
+     * Return the remote Bluetooth device
+     * 
+     * @return
+     */
     public BluetoothDevice getRemote()
     {
         return remote;
     }
 
+    /**
+     * Close input and output Bluetooth streams and socket
+     */
     public synchronized void tearDown()
     {
         if (mmInStream != null)
@@ -239,6 +302,13 @@ public enum Connection
         setState(ConnectionState.STATE_NONE);
     }
 
+    /**
+     * Write a command to the Bluetooth stream
+     * 
+     * @param cmd       Command to be send
+     * @param d         Delay to wait after sending command
+     * @throws IOException
+     */
     public void writeCommand(byte[] command, int d) throws IOException
     {
         checkConnection();
@@ -262,6 +332,14 @@ public enum Connection
         delay(d);
     }
 
+    /**
+     * Write a command to the Bluetooth stream and return the result
+     * 
+     * @param cmd       Command to be send
+     * @param d         Delay to wait after sending command
+     * @return
+     * @throws IOException
+     */
     public byte[] writeAndRead(byte[] cmd, int d) throws IOException
     {
         writeCommand(cmd, d);
@@ -270,6 +348,14 @@ public enum Connection
         return result;
     }
 
+    /**
+     * Write a command to the Bluetooth stream and read the result
+     * 
+     * @param cmd       Command to be send
+     * @param result    Result of the command sent by the Megasquirt
+     * @param d         Delay to wait after sending command
+     * @throws IOException
+     */
     public void writeAndRead(byte[] cmd, byte[] result, int d) throws IOException
     {
         writeCommand(cmd, d);
@@ -277,6 +363,12 @@ public enum Connection
         readBytes(result);
     }
 
+    /**
+     * Read bytes available on Bluetooth stream
+     * 
+     * @param bytes
+     * @throws IOException
+     */
     public void readBytes(byte[] bytes) throws IOException
     {
         checkConnection();
@@ -307,6 +399,12 @@ public enum Connection
         }
     }
 
+    /**
+     * Read bytes available on Bluetooth stream and return the resulting array
+     * 
+     * @return Array of bytes read from Bluetooth stream
+     * @throws IOException
+     */
     public byte[] readBytes() throws IOException
     {
         checkConnection();
@@ -329,6 +427,11 @@ public enum Connection
         return result;
     }
 
+    /**
+     * Flush all data on the Bluetooth stream
+     * 
+     * @throws IOException
+     */
     public void flushAll() throws IOException
     {
         checkConnection();
@@ -340,6 +443,11 @@ public enum Connection
         }
     }
 
+    /**
+     * Send status to the application that appear in the status bar
+     * 
+     * @param msgStr Message to be broadcasted
+     */
     private void sendStatus(String msgStr)
     {
         DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
@@ -354,6 +462,9 @@ public enum Connection
         }
     }
 
+    /**
+     * Disconnect the current Bluetooth connection with the Megasquirt ECU
+     */
     public synchronized void disconnect()
     {
         tearDown();

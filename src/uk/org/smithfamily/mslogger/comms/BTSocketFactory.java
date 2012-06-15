@@ -9,10 +9,20 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
+/**
+ *
+ */
 public class BTSocketFactory
 {
 	private static UUID	RFCOMM_UUID	= UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+	/**
+	 * Create a socket to the current specified Bluetooth device and return it
+	 * 
+	 * @param device   The Bluetooth device
+	 * @return
+	 * @throws Exception
+	 */
 	public static BluetoothSocket getSocket(BluetoothDevice device) throws Exception
 	{
 		BluetoothSocket tmp = null;
@@ -57,6 +67,14 @@ public class BTSocketFactory
 		return tmp;
 	}
 
+	/**
+	 * Create a work around socket when the first method to create the Bluetooth socket doesn't work
+	 * See http://stackoverflow.com/questions/3397071/service-discovery-failed-exception-using-bluetooth-on-android
+	 * 
+	 * @param device   The Bluetooth device
+	 * @return
+	 * @throws Exception
+	 */
 	private static BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
 	{
 		Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });

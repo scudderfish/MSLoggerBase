@@ -17,6 +17,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+/**
+ * 
+ * 
+ */
 public class CalibrateActivity extends Activity
 {
 	private static final String	THROTTLEFACTOR_INC	= "throttlefactor.inc";
@@ -37,6 +41,10 @@ public class CalibrateActivity extends Activity
 	private TextView	maxValView;
 	private ProgressBar	tpsDisplay;
 
+	/**
+	 * 
+	 * @param savedInstanceState
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -73,6 +81,10 @@ public class CalibrateActivity extends Activity
 
 	}
 
+	/**
+	 * 
+	 * @param raw
+	 */
 	private void updateWithRaw(int raw)
 	{
 		if (raw < minTPS)
@@ -90,6 +102,9 @@ public class CalibrateActivity extends Activity
 		tpsDisplay.setProgress(Math.abs(raw - minTPS));
 	}
 
+	/**
+	 * 
+	 */
 	private void saveValues()
 	{
 		File  dataFile=new File(ApplicationSettings.INSTANCE.getDataDir(),THROTTLEFACTOR_INC);
@@ -116,6 +131,11 @@ public class CalibrateActivity extends Activity
 		}
 	}
 
+	/**
+	 * 
+	 * @param x
+	 * @return
+	 */
 	private int getPercentage(int x)
 	{
 		if (x <= minTPS)

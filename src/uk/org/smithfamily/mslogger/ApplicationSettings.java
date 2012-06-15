@@ -13,6 +13,11 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+/**
+ * This class take care of the settings of the application. All these preferences can be found in the app
+ * in the "Preferences" section (bottom left menu icon)
+ * 
+ */
 public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     INSTANCE;
@@ -35,7 +40,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private BluetoothAdapter        defaultAdapter;
     private boolean                 writable;
     private Map<String, Megasquirt> sigMap;
-
+    
+    /**
+     * Initialise all preferences
+     * Also load all ECU definitions currently supported
+     * 
+     * @param context
+     */
     public void initialise(Context context)
     {
         this.context = context;
@@ -70,6 +81,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         registerEcu(new ZZMS1Extra29y(context));
     }
 
+    /**
+     * Register an ECU file by creating a signature map of all supported signatures by the Megasquirt ECU definition Java class
+     * 
+     * @param ecu Instance of Megasquirt ECU definition Java class
+     */
     private void registerEcu(Megasquirt ecu)
     {
         Set<String> sigs = ecu.getSignature();
@@ -79,32 +95,57 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         }
     }
 
+    /**
+     * Get the data directory on the SD card
+     * 
+     */
     public File getDataDir()
     {
         return dataDir;
     }
 
+    /**
+     * Get the context where the application settings are used
+     * 
+     */
     public Context getContext()
     {
         return context;
     }
 
+    /**
+     * Get the hertz of the Android device
+     * 
+     */
     public int getHertz()
     {
         return hertz;
     }
 
+    /**
+     * Get the current ECU definition
+     * 
+     */
     public synchronized Megasquirt getEcuDefinition()
     {
         return ecuDefinition;
     }
 
+    /**
+     * Get the MAC address of the Bluetooth device
+     *
+     */
     public synchronized String getBluetoothMac()
     {
         bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
         return bluetoothMac;
     }
 
+    /**
+     * Set the MAC address of the current Bluetooth device
+     * 
+     * @param m
+     */
     public synchronized void setBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
@@ -112,7 +153,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         editor.commit();
     }
 
-    // This method mimics the C style preprocessor of INI files
+    /**
+     * This method mimics the C style preprocessor of INI files
+     *  
+     *  @param name Name of the settings to look for
+     */
     public boolean isSet(String name)
     {
         Boolean result = settings.get(name);
@@ -138,6 +183,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     @Override
+    /**
+     * Triggered whenever the prefenrece change to reset MAC address and settings
+     * 
+     * @param sharedPreferences
+     * @param key
+     * 
+     */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         bluetoothMac = null;
@@ -149,16 +201,29 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return !MISSING_VALUE.equals(getBluetoothMac());
     }
 
+    /**
+     * Return true if preference that automatically send email with datalog is enabled, false otherwise
+     *
+     */
     public boolean emailEnabled()
     {
         return prefs.getBoolean("autoemail_enabled", false);
     }
 
+    /**
+     * Return the current email to send datalog to 
+     * 
+     * @return
+     */
     public String getEmailDestination()
     {
         return prefs.getString("autoemail_target", "");
     }
 
+    
+    /**
+     * Return true if the preferences is enabled to automatically connect to the Megasquirt on startup
+     */
     public boolean autoConnectable()
     {
         boolean autoconnectpref = prefs.getBoolean("autoconnect", true);
@@ -166,6 +231,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return (autoConnectOverride == null || autoConnectOverride == true) && btDeviceSelected && autoconnectpref;
     }
 
+    /**
+     * Get a specific application preference by name
+     * 
+     * @param name The name of the preference
+     */
     public String getPref(String name)
     {
     	String value = prefs.getString(name, MISSING_VALUE);
@@ -175,6 +245,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         }
         return value;
     }
+    
+    /**
+     * 
+     * @param name
+     * @param def
+     * @return
+     */
     public String getOrSetPref(String name, String def)
     {
         String value = prefs.getString(name, MISSING_VALUE);
@@ -185,6 +262,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         }
         return value;
     }
+    
+    /**
+     * 
+     * @param name
+     * @param value
+     */
     public void setPref(String name,String value)
     {
         Editor editor = prefs.edit();
@@ -192,58 +275,108 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         editor.commit();
     }
 
+    /**
+     * 
+     * @param gaugeName
+     * @param title
+     * @param var
+     * @param def
+     * @return
+     */
     public double getGaugeSetting(String gaugeName, String title, String var, double def)
     {
         return def;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isAutoConnectOverride()
     {
         return autoConnectOverride;
     }
 
+    /**
+     * 
+     * @param autoConnectOverride
+     */
     public void setAutoConnectOverride(Boolean autoConnectOverride)
     {
         this.autoConnectOverride = autoConnectOverride;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean shouldBeLogging()
     {
         boolean shouldBeLogging = prefs.getBoolean("autolog", true);
         return (loggingOverride == null || loggingOverride == true) && shouldBeLogging;
     }
 
+    /**
+     * 
+     * @param b
+     */
     public void setLoggingOverride(boolean b)
     {
         this.loggingOverride = b;
 
     }
 
+    /**
+     * 
+     * @return
+     */
     public BluetoothAdapter getDefaultAdapter()
     {
         return defaultAdapter;
     }
 
+    /**
+     * 
+     * @param defaultAdapter
+     */
     public void setDefaultAdapter(BluetoothAdapter defaultAdapter)
     {
         this.defaultAdapter = defaultAdapter;
     }
 
+    /**
+     * 
+     * @param cardOK
+     */
     public void setWritable(boolean cardOK)
     {
         this.writable = cardOK;
     }
 
+    /**
+     * 
+     *
+     */
     public boolean isWritable()
     {
         return this.writable;
     }
 
+    /**
+     * Return the ECU file for the specified Megasquirt signature
+     * 
+     * @param sig
+     * @return
+     */
     public Megasquirt getEcuForSig(String sig)
     {
         return sigMap.get(sig);
     }
 
+    /**
+     * 
+     * @param ecu
+     */
     public void setEcu(Megasquirt ecu)
     {
         ecuDefinition = ecu;
@@ -253,25 +386,40 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         context.sendBroadcast(broadcast);
     }
 
+    /**
+     * 
+     */
     public void refreshFlags()
     {
         settings.clear();
-        
     }
+    
+    /**
+     * Return true if Bluetooth work around is activated, false otherwise
+     * 
+     * @return
+     */
     public boolean isBTWorkaround()
     {
     	return prefs.getBoolean("workaround", false);
     }
+    
+    /**
+     * Set the state for the Bluetooth work around
+     * 
+     * @param state
+     */
     public void setBTWorkaround(boolean state)
     {
         Editor editor = prefs.edit();
         editor.putBoolean("workaround", state);
         editor.commit();
         DebugLogManager.INSTANCE.log("set BTWorkaround to "+state,Log.ASSERT);
-
-
     }
 
+    /**
+     * Reset all ECUs
+     */
     public void resetECUs()
     {
         for(Entry<String, Megasquirt> e : sigMap.entrySet())
@@ -281,6 +429,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         
     }
 
+    /**
+     * Return the logging level of the application
+     * Used for application debugging
+     * 
+     * @return
+     */
     public int getLoggingLevel()
     {
         String value = prefs.getString("loglevel", null);

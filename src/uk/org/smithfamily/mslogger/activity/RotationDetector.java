@@ -5,11 +5,12 @@ import android.graphics.PointF;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+/**
+ * 
+ * 
+ */
 class RotationDetector extends GestureDetector.SimpleOnGestureListener
 {
-    /**
-     * 
-     */
     private final MSLoggerActivity msLoggerActivity;
     private MSGauge gauge;
     private float   dragStartDeg;

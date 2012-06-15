@@ -1,7 +1,5 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-//Borrowed from http://stackoverflow.com/questions/2936919/is-it-possible-to-load-listpreference-items-from-an-adapter
-
 import java.util.Set;
 
 import android.bluetooth.BluetoothAdapter;
@@ -10,6 +8,10 @@ import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 
+/**
+ *
+ * Borrowed from http://stackoverflow.com/questions/2936919/is-it-possible-to-load-listpreference-items-from-an-adapter
+ */
 public class BluetoothDevicePreference extends ListPreference
 {
     public BluetoothDevicePreference(Context context, AttributeSet attrs)

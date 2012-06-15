@@ -2,6 +2,9 @@ package uk.org.smithfamily.mslogger.widgets;
 
 import java.util.*;
 
+/**
+ *
+ */
 public enum IndicatorManager
 {
     INSTANCE;
@@ -9,6 +12,10 @@ public enum IndicatorManager
     private List<Indicator>              indicatorList = new ArrayList<Indicator>();
     private boolean                      disabled      = false;
 
+    /**
+     * 
+     * @param d
+     */
     public void setDisabled(boolean d)
     {
         if (d != disabled)
@@ -21,6 +28,10 @@ public enum IndicatorManager
         disabled = d;
     }
 
+    /**
+     * 
+     * @param i
+     */
     void registerIndicator(Indicator i)
     {
         indicatorList.add(i);
@@ -34,6 +45,10 @@ public enum IndicatorManager
         i.setDisabled(disabled);
     }
 
+    /**
+     * 
+     * @param i
+     */
     void deregisterIndicator(Indicator i)
     {
         indicatorList.remove(i);
@@ -46,12 +61,20 @@ public enum IndicatorManager
         indicators.remove(i);
     }
 
+    /**
+     * 
+     * @param channel
+     * @return
+     */
     public List<Indicator> getIndicators(String channel)
     {
         List<Indicator> indicators = indicatorMap.get(channel);
         return indicators;
     }
 
+    /**
+     * @return
+     */
     public List<Indicator> getIndicators()
     {
         return indicatorList;
