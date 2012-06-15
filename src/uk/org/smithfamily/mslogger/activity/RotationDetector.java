@@ -15,12 +15,23 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
     private MSGauge gauge;
     private float   dragStartDeg;
 
+    /**
+     * 
+     * @param msLoggerActivity
+     * @param gauge
+     */
     public RotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
     {
         this.msLoggerActivity = msLoggerActivity;
         this.gauge = gauge;
     }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
     private float positionToAngle(float x, float y)
     {
         float radius = PointF.length((x - 0.5f), (y - 0.5f));
@@ -34,12 +45,23 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         }
     }
 
+    /**
+     * 
+     * @param e1
+     * @param e2
+     * @param velocityX
+     * @param velocityY
+     */
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
     {
         return false;
     }
 
+    /**
+     * 
+     * @param e
+     */
     @Override
     public boolean onDoubleTap(MotionEvent e)
     {
@@ -49,6 +71,13 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         return true;
     }
 
+    /**
+     * 
+     * @param e1
+     * @param e2
+     * @param distanceX
+     * @param distanceY
+     */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
     {

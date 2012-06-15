@@ -58,6 +58,7 @@ public class StartupActivity extends Activity
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        // Bluetooth is not supported on this Android device
         if (mBluetoothAdapter == null)
         {
             finishDialogNoBluetooth();
@@ -65,19 +66,22 @@ public class StartupActivity extends Activity
         }
 
         boolean bluetoothOK = mBluetoothAdapter.isEnabled();
-        if (!bluetoothOK)
+        
+        // Bluetooth is enabled, we can start!
+        if (bluetoothOK)
+        {
+            initSequence();
+        }
+        // Bluetooth is not enabled, request the user to enable it
+        else
         {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        else
-        {
-            initSequence();
-        }
     }
 
     /**
-     * 
+     * Initialise the sequence of prompt to the user to select all his preferences
      */
     private void initSequence()
     {
@@ -120,17 +124,16 @@ public class StartupActivity extends Activity
     }
 
     /**
-     * 
+     *  Start the activity to prompt the user for his email address
      */
     private void selectEmail()
     {
         Intent i = new Intent(this, EmailSelectActivity.class);
         startActivityForResult(i, SELECT_EMAIL);
-
     }
 
     /**
-     * 
+     *  Start the activity to prompt the user for his EGO device
      */
     private void selectEGO()
     {
@@ -139,7 +142,7 @@ public class StartupActivity extends Activity
     }
 
     /**
-     * 
+     *  Start the activity to prompt the user for his MAP sensor
      */
     private void selectMAP()
     {
@@ -206,6 +209,8 @@ public class StartupActivity extends Activity
     public void checkSig(String sig)
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuForSig(sig);
+        
+        // ECU is not supported by MSLogger
         if (ecu == null)
         {
             unrecognisedEcu(sig);
@@ -233,7 +238,7 @@ public class StartupActivity extends Activity
     }
 
     /**
-     * 
+     * It was determinated that the android device don't support Bluetooth, so we tell the user
      */
     public void finishDialogNoBluetooth()
     {
@@ -251,6 +256,8 @@ public class StartupActivity extends Activity
     }
 
     /**
+     * It was determinated that the Megasquirt ECU detected is not supported by MSLogger, ask the user if he want
+     * to tell the developer about it
      * 
      * @param sig
      */
@@ -284,8 +291,9 @@ public class StartupActivity extends Activity
     }
 
     /**
+     * Construct the email to send to the developer about the unrecognised firmware signature
      * 
-     * @param sig
+     * @param sig The signature of the unsupported firmware
      */
     private void constructEmail(String sig)
     {

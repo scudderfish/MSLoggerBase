@@ -249,9 +249,7 @@ public enum Connection
     }
 
     /**
-     * Return the remote Bluetooth device
-     * 
-     * @return
+     * @return Return the remote Bluetooth device
      */
     public BluetoothDevice getRemote()
     {

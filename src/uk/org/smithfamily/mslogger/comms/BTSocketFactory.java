@@ -10,7 +10,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
 /**
- *
+ * Bluetooth class that create the socket with the Bluetooth device on the Megasquirt
  */
 public class BTSocketFactory
 {
