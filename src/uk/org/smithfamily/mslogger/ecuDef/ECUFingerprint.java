@@ -13,7 +13,7 @@ import android.os.Message;
 import android.util.Log;
 
 /**
- *
+ * Probe the ECU to figure out what it is
  */
 public class ECUFingerprint implements Runnable
 {
@@ -98,7 +98,7 @@ public class ECUFingerprint implements Runnable
     }
     
     /**
-     * 
+     * Get a signature from the ECU.  This is complicated by different firmwares responding to different commands
      * @return
      * @throws IOException
      */
@@ -111,6 +111,7 @@ public class ECUFingerprint implements Runnable
         int i = 0;
         String sig = UNKNOWN;
 
+        // IF we don't get it in 20 goes, we're not talking to a Megasquirt
         while (i++ < 20)
         {
             byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500);
@@ -134,6 +135,9 @@ public class ECUFingerprint implements Runnable
             }
             catch (BootException e)
             {
+                /* My ECU also occasionally goes to a Boot> prompt on start up (dodgy electrics) so if we see that, force 
+                * the ECU to start.
+                */
                 response = Connection.INSTANCE.writeAndRead(bootCommand, 500);
             }
         }
@@ -158,7 +162,7 @@ public class ECUFingerprint implements Runnable
     }
 
     /**
-     * 
+     * Attempt to figure out the data we got back from the device
      * @param response
      * @return
      * @throws BootException
@@ -173,15 +177,17 @@ public class ECUFingerprint implements Runnable
         if (response == null)
             return UNKNOWN;
 
+        //Early ECUs only respond with one byte
         if (response.length == 1 && response[0] != 20)
             return UNKNOWN;
 
         if(response.length <= 1)
             return UNKNOWN;
-        
+        //Examine the first few bytes and see if it smells of one of the things an MS may say to us.
         if ((response[0] != 'M' && response[0] != 'J') || (response[1] != 'S' && response[1] != 'o' && response[1] != 'i'))
             return UNKNOWN;
 
+        //Looks like we have a Megasquirt
         return result;
     }
 }

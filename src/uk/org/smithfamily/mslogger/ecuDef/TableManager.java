@@ -18,7 +18,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 /**
- * 
+ * Manages the tables of constants 
  *
  */
 public enum TableManager

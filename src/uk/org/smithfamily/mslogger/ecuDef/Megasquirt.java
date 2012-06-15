@@ -18,8 +18,8 @@ import android.os.*;
 import android.util.Log;
 
 /**
- * 
- * @author Seb
+ * Abstract base class for all ECU implementations
+ * @author dgs
  *
  */
 public abstract class Megasquirt
@@ -81,10 +81,10 @@ public abstract class Megasquirt
     private RebroadcastHandler handler;
 
     /**
-     * 
-     * @param i1
-     * @param name
-     * @return
+     * Shortcut function to access data tables.  Makes the INI->Java translation a little simpler
+     * @param i1 index into table
+     * @param name table name
+     * @return value from table
      */
     protected int table(int i1, String name)
     {
@@ -118,9 +118,9 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
-     * @param t
-     * @return
+     * Temperature unit conversion function
+     * @param t temp in F
+     * @return temp in C if CELSIUS is set, in F otherwise
      */
     protected double tempCvt(int t)
     {
@@ -135,7 +135,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Launch the ECU thread
      */
     public synchronized void start()
     {
@@ -149,7 +149,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Shut down the ECU thread
      */
     public synchronized void stop()
     {
@@ -166,7 +166,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Revert to initial state
      */
     public void reset()
     {
@@ -176,7 +176,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Output the current values to be logged
      */
     private void logValues()
     {
@@ -201,7 +201,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Shutdown the data connection to the MS
      */
     private void disconnect()
     {
@@ -217,7 +217,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Send a message to the user
      * @param msg
      */
     protected void sendMessage(String msg)
@@ -229,7 +229,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Send a status update to the rest of the application
      * @param action
      */
     private void broadcast(String action)
@@ -252,7 +252,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * How long have we been running?
      * @return
      */
     protected double timeNow()
@@ -261,7 +261,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Use reflection to extract a named value out of the subclass
      * @param channel
      * @return
      */
@@ -284,7 +284,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Flag the logging process to happen
      */
     public void startLogging()
     {
@@ -294,7 +294,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Stop the logging process
      */
     public void stopLogging()
     {
@@ -305,7 +305,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Take a wild stab at what this does.
      * @param v
      * @return
      */
@@ -315,7 +315,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Returns if a flag has been set in the application
      * @param name
      * @return
      */
@@ -355,7 +355,8 @@ public abstract class Megasquirt
     }
 
     /**
-     *
+     * The thread that handles all communications with the ECU.  This must be done in it's own thread
+     * as Android gets very picky about unresponsive UI threads
      */
     private class ECUThread extends Thread
     {
@@ -370,7 +371,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Kick the connection off
          */
         public void initialiseConnection()
         {
@@ -395,13 +396,14 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * The main loop of the connection to the ECU
          */
         public void run()
         {
             sendMessage("");
             DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
             initialiseConnection();
+            
             try
             {
                 Thread.sleep(500);
@@ -423,14 +425,18 @@ public abstract class Megasquirt
                     Connection.INSTANCE.disconnect();
                     return;
                 }
+                //Make sure everyone agrees on what flags are set
                 ApplicationSettings.INSTANCE.refreshFlags();
                 refreshFlags();
                 if (!constantsLoaded)
                 {
+                    //Only do this once so reconnects are quicker
                     loadConstants(simulated);
                     constantsLoaded = true;
                 }
                 running = true;
+                
+                //This is the actual work.  Outside influences will toggle 'running' when we want this to stop
                 while (running)
                 {
                     getRuntimeVars();
@@ -445,6 +451,8 @@ public abstract class Megasquirt
             }
             catch (ArithmeticException e)
             {
+                //If we get a maths error, we probably have loaded duff constants and hit a divide by zero
+                //force the constants to reload in case it was just a bad data read
                 DebugLogManager.INSTANCE.logException(e);
                 constantsLoaded = false;
             }
@@ -453,12 +461,13 @@ public abstract class Megasquirt
                 DebugLogManager.INSTANCE.logException(t);
                 throw (t);
             }
+            //We're on our way out, so drop the connection
             disconnect();
 
         }
 
         /**
-         * 
+         * Called by other threads to stop the comms
          */
         public void halt()
         {
@@ -466,7 +475,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Checks that the signature returned by the ECU is what we are expecting
          * @return
          * @throws IOException
          */
@@ -504,7 +513,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Get the current variables from the ECU
          * @throws IOException
          */
         private void getRuntimeVars() throws IOException
@@ -521,7 +530,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Call the subclass to calculate any expressions
          * @throws IOException
          */
         private void calculateValues() throws IOException
@@ -530,7 +539,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Read a page of constants from the ECU into a byte buffer.  MS1 uses a select/read combo, MS2 just does a read
          * @param pageBuffer
          * @param pageSelectCommand
          * @param pageReadCommand
@@ -553,7 +562,7 @@ public abstract class Megasquirt
         }
 
         /**
-         * 
+         * Gets the signature from the ECU
          * @param sigCommand
          * @return
          * @throws IOException
@@ -564,6 +573,12 @@ public abstract class Megasquirt
             String sig2 = "Not here";
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
             int d = getInterWriteDelay();
+            
+            /*
+             * We need to loop around until we get a constant result.  When a BT module connects, it can feed
+             * an initial 'CONNECT xyz' string into the ECU which confuses the hell out of it, and the first few
+             * interactions return garbage
+             */
             do
             {
                 byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d);
@@ -608,7 +623,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * helper method for subclasses
      * @param pageNo
      * @param pageOffset
      * @param pageSize
@@ -649,7 +664,7 @@ public abstract class Megasquirt
     }
 
     /**
-     * 
+     * Dumps a loaded page to SD card for analysis
      * @param pageNo
      * @param buffer
      */

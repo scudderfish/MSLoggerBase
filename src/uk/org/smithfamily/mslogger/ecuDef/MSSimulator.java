@@ -9,7 +9,7 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.content.res.AssetManager;
 
 /**
- *
+ * Replays a captured log file for testing purposes
  */
 public enum MSSimulator
 {
