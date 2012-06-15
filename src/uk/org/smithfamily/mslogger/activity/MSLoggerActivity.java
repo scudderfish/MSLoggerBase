@@ -243,7 +243,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (gauge5 != null)
                 gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
 
-            gestureDetector = new GestureDetector(new RotationDetector(this, gauge3));
+            gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
             OnTouchListener gestureListener = new View.OnTouchListener()
             {
                 public boolean onTouch(View v, MotionEvent event)

@@ -6,21 +6,22 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 /**
- * 
+ * Class that is used for interaction with gauges cluster
  * 
  */
-class RotationDetector extends GestureDetector.SimpleOnGestureListener
+class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
 {
     private final MSLoggerActivity msLoggerActivity;
     private MSGauge gauge;
     private float   dragStartDeg;
 
     /**
+     * Constructor
      * 
      * @param msLoggerActivity
      * @param gauge
      */
-    public RotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
+    public GaugeRotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
     {
         this.msLoggerActivity = msLoggerActivity;
         this.gauge = gauge;
@@ -59,6 +60,7 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
     }
 
     /**
+     * Event triggered when double tapping on a gauge
      * 
      * @param e
      */
@@ -94,7 +96,12 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         }
         float currentDeg = positionToAngle(e2.getX() / gauge.getWidth(), e2.getY() / gauge.getHeight());
 
-        gauge.setOffsetAngle(dragStartDeg - currentDeg);
+        // Make sure positionToAngle didn't return NaN
+        if (!Float.isNaN(currentDeg))
+        {       
+            gauge.setOffsetAngle(dragStartDeg - currentDeg);
+        }
+        
         gauge.invalidate();
 
         this.msLoggerActivity.scrolling = true;

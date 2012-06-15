@@ -16,7 +16,6 @@ import android.util.Log;
 /**
  * This class take care of the settings of the application. All these preferences can be found in the app
  * in the "Preferences" section (bottom left menu icon)
- * 
  */
 public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -96,7 +95,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Get the data directory on the SD card
+     * Get the data directory for the application
      * 
      */
     public File getDataDir()

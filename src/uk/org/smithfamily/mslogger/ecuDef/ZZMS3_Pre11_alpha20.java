@@ -1518,9 +1518,7 @@ public class ZZMS3_Pre11_alpha20 extends Megasquirt
             }
             
             pulseWidth = (pulseWidth1);
-            rpm = (int) ((MSUtils.getWord(ochBuffer, 6) + 0.0) * 1.000);        
-            DebugLogManager.INSTANCE.log(" rpm " + String.valueOf(rpm),Log.INFO);
-            
+            rpm = (int) ((MSUtils.getWord(ochBuffer, 6) + 0.0) * 1.000);                    
             advance = (double) ((MSUtils.getSignedWord(ochBuffer, 8) + 0.0) * 0.100);
             squirt = (int) ((MSUtils.getByte(ochBuffer, 10) + 0.0) * 1.000);
             firing1 = MSUtils.getBits(ochBuffer, 10, 0, 0, 0);
