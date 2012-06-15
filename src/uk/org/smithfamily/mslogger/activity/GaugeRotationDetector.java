@@ -5,21 +5,34 @@ import android.graphics.PointF;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-class RotationDetector extends GestureDetector.SimpleOnGestureListener
+/**
+ * Class that is used for interaction with gauges cluster
+ * 
+ */
+class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
 {
-    /**
-     * 
-     */
     private final MSLoggerActivity msLoggerActivity;
     private MSGauge gauge;
     private float   dragStartDeg;
 
-    public RotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
+    /**
+     * Constructor
+     * 
+     * @param msLoggerActivity
+     * @param gauge
+     */
+    public GaugeRotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
     {
         this.msLoggerActivity = msLoggerActivity;
         this.gauge = gauge;
     }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
     private float positionToAngle(float x, float y)
     {
         float radius = PointF.length((x - 0.5f), (y - 0.5f));
@@ -33,12 +46,24 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         }
     }
 
+    /**
+     * 
+     * @param e1
+     * @param e2
+     * @param velocityX
+     * @param velocityY
+     */
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
     {
         return false;
     }
 
+    /**
+     * Event triggered when double tapping on a gauge
+     * 
+     * @param e
+     */
     @Override
     public boolean onDoubleTap(MotionEvent e)
     {
@@ -48,6 +73,13 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         return true;
     }
 
+    /**
+     * 
+     * @param e1
+     * @param e2
+     * @param distanceX
+     * @param distanceY
+     */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
     {
@@ -64,7 +96,12 @@ class RotationDetector extends GestureDetector.SimpleOnGestureListener
         }
         float currentDeg = positionToAngle(e2.getX() / gauge.getWidth(), e2.getY() / gauge.getHeight());
 
-        gauge.setOffsetAngle(dragStartDeg - currentDeg);
+        // Make sure positionToAngle didn't return NaN
+        if (!Float.isNaN(currentDeg))
+        {       
+            gauge.setOffsetAngle(dragStartDeg - currentDeg);
+        }
+        
         gauge.invalidate();
 
         this.msLoggerActivity.scrolling = true;

@@ -7,6 +7,9 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.text.format.DateFormat;
 
+/**
+ *
+ */
 public enum DatalogManager
 {
 	INSTANCE;
@@ -17,11 +20,19 @@ public enum DatalogManager
 	private int		markCounter		= 0;
 	private long   logStart = System.currentTimeMillis();
 
+	/**
+	 * 
+	 * @return
+	 */
 	public synchronized String getAbsolutePath()
 	{
 		return absolutePath;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public synchronized String getFilename()
 	{
 		if (fileName == null)
@@ -31,6 +42,10 @@ public enum DatalogManager
 		return fileName;
 	}
 
+	/**
+	 * 
+	 * @param logRow
+	 */
 	public synchronized void write(String logRow)
 	{
 		if(!ApplicationSettings.INSTANCE.isWritable())
@@ -71,6 +86,9 @@ public enum DatalogManager
 		writer.println(logRow);
 	}
 
+	/**
+	 * 
+	 */
 	public synchronized void stopLog()
 	{
 		if (writer != null)
@@ -81,11 +99,18 @@ public enum DatalogManager
 		writer = null;
 	}
 
+	/**
+	 * 
+	 */
 	public void close()
 	{
 		stopLog();
 	}
 
+	/**
+	 * 
+	 * @param msg
+	 */
 	public void mark(String msg)
 	{
 		if(!ApplicationSettings.INSTANCE.isWritable())
@@ -104,11 +129,18 @@ public enum DatalogManager
 
 	}
 
+	/**
+	 * 
+	 */
 	public void mark()
 	{
 		mark("Manual");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
     public long getLogStart()
     {
         return logStart;

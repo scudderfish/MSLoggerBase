@@ -10,6 +10,9 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * 
+ */
 public class NumericIndicator extends TextView implements Indicator
 {
 	private float			min;
@@ -23,6 +26,12 @@ public class NumericIndicator extends TextView implements Indicator
 	private String			channel;
 	private boolean			disabled;
 
+	/**
+	 * 
+	 * @param context
+	 * @param attrs
+	 * @param defStyle
+	 */
 	public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
 	{
 		super(context, attrs, defStyle);
@@ -30,6 +39,11 @@ public class NumericIndicator extends TextView implements Indicator
 		setupDefaults(context);
 	}
 
+	/**
+	 * 
+	 * @param context
+	 * @param attrs
+	 */
 	public NumericIndicator(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
@@ -47,6 +61,10 @@ public class NumericIndicator extends TextView implements Indicator
 		setupFormat();
 	}
 
+	/**
+	 * 
+	 * @param context
+	 */
 	public NumericIndicator(Context context)
 	{
 		super(context);
@@ -55,6 +73,10 @@ public class NumericIndicator extends TextView implements Indicator
 		setupFormat();
 	}
 
+	/**
+	 * 
+	 * @param context
+	 */
 	private void setupDefaults(Context context)
 	{
 		min = 10;
@@ -63,7 +85,10 @@ public class NumericIndicator extends TextView implements Indicator
 		warningPoint = 16;
 		errorPoint = 17;
 	}
-
+	
+	/**
+	 * 
+	 */
 	private void setupFormat()
 	{
 		double range = Math.abs(this.max - this.min);
@@ -96,6 +121,10 @@ public class NumericIndicator extends TextView implements Indicator
 
 	}
 */
+	
+	/**
+	 * @param min
+	 */
 	public void setMin(float min)
 	{
 		this.min = min;
@@ -103,6 +132,9 @@ public class NumericIndicator extends TextView implements Indicator
 
 	}
 
+	/**
+	 * @param max
+	 */
 	public void setMax(float max)
 	{
 		this.max = max;
@@ -110,16 +142,25 @@ public class NumericIndicator extends TextView implements Indicator
 
 	}
 
+	/**
+	 * @param title
+	 */
 	public void setTitle(String title)
 	{
 		// No Op
 	}
 
+	/**
+	 * @param value
+	 */
 	public void setCurrentValue(double value)
 	{
 		this.value = (float) value;
 	}
 
+	/**
+	 * @param canvas
+	 */
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
@@ -142,16 +183,25 @@ public class NumericIndicator extends TextView implements Indicator
 		super.onDraw(canvas);
 	}
 
+	/**
+	 * @return 
+	 */
 	public String getChannel()
 	{
 		return channel;
 	}
 
+	/**
+	 * @param channel
+	 */
 	public void setChannel(String channel)
 	{
 		this.channel = channel;
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	protected void onAttachedToWindow()
 	{
@@ -161,6 +211,9 @@ public class NumericIndicator extends TextView implements Indicator
 
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	protected void onDetachedFromWindow()
 	{
@@ -170,6 +223,9 @@ public class NumericIndicator extends TextView implements Indicator
 
 	}
 
+	/**
+	 * @param disabled
+	 */
 	@Override
 	public void setDisabled(boolean disabled)
 	{
@@ -177,59 +233,75 @@ public class NumericIndicator extends TextView implements Indicator
 		this.postInvalidate();
 	}
 
+	/**
+	 * @param name
+	 */
     @Override
     public void setName(String name)
     {
         // TODO Auto-generated method stub
-        
     }
 
+    /**
+     * @param units
+     */
     @Override
     public void setUnits(String units)
     {
         // TODO Auto-generated method stub
-        
     }
 
+    /**
+     * @param lowD
+     */
     @Override
     public void setLowD(float lowD)
     {
         // TODO Auto-generated method stub
-        
     }
 
+    /**
+     * @param lowW
+     */
     @Override
     public void setLowW(float lowW)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub      
     }
 
+    /**
+     * @param hiW
+     */
     @Override
     public void setHiW(float hiW)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub     
     }
 
+    /**
+     * @param hiD
+     */
     @Override
     public void setHiD(float hiD)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub  
     }
 
+    /**
+     * @param vd
+     */
     @Override
     public void setVD(int vd)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub        
     }
 
+    /**
+     * @param ld
+     */
     @Override
     public void setLD(int ld)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub       
     }
 }

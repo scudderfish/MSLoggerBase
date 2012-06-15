@@ -8,6 +8,9 @@ import java.util.List;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.content.res.AssetManager;
 
+/**
+ *
+ */
 public enum MSSimulator
 {
 	INSTANCE;
@@ -24,6 +27,9 @@ public enum MSSimulator
 	private int record_pointer = 0;
 	
 	
+	/**
+	 * 
+	 */
 	MSSimulator()
 	{
 		AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
@@ -54,6 +60,10 @@ public enum MSSimulator
 
 	}
 
+	/**
+	 * 
+	 * @param ochBuffer
+	 */
 	public void getNextRTV(byte[] ochBuffer)
 	{
 		if(record_pointer >= records.size() )

@@ -3,11 +3,19 @@ package uk.org.smithfamily.mslogger.log;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * 
+ */
 public class FRDLogFileRecord
 {
     private byte[] buffer;
     private FRDLogFileBody body;
 
+    /**
+     * 
+     * @param body
+     * @param ochBuffer
+     */
     public FRDLogFileRecord(FRDLogFileBody body, byte[] ochBuffer)
     {
         this.body = body;
@@ -18,6 +26,12 @@ public class FRDLogFileRecord
 
     }
 
+    /**
+     * 
+     * @param body
+     * @param is
+     * @throws IOException
+     */
     public FRDLogFileRecord(FRDLogFileBody body, FileInputStream is) throws IOException
     {
         this.body = body;
@@ -26,10 +40,19 @@ public class FRDLogFileRecord
         is.read(buffer, 0, blockSize + 2);
     }
 
+    /**
+     * 
+     * @return
+     */
     public byte[] getBytes()
     {
         return buffer;
     }
+    
+    /**
+     * 
+     * @return
+     */
     public byte[] getOchBuffer()
     {
         int blockSize = body.getParent().getHeader().getBlockSize();

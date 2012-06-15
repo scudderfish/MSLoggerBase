@@ -17,17 +17,31 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+/**
+ * 
+ *
+ */
 public enum TableManager
 {
 	INSTANCE;
 
 	private Map<String, List<Integer>>	tables	= new HashMap<String, List<Integer>>();
 
+	/**
+	 * 
+	 * @param name
+	 */
 	public synchronized void flushTable(String name)
 	{
 		tables.remove(name);
 	}
 
+	/**
+	 * 
+	 * @param i1
+	 * @param name
+	 * @return
+	 */
 	public synchronized int table(int i1, String name)
 	{
 		List<Integer> table = tables.get(name);
@@ -41,6 +55,11 @@ public enum TableManager
 
 	}
 
+	/**
+	 * 
+	 * @param fileName
+	 * @param values
+	 */
 	private void readTable(String fileName, List<Integer> values)
 	{
 		values.clear();

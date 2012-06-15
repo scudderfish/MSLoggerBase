@@ -12,6 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ *
+ */
 public class ECUFingerprint implements Runnable
 {
 
@@ -21,6 +24,11 @@ public class ECUFingerprint implements Runnable
     private Handler             handler;
     private BluetoothAdapter    adapter;
 
+    /**
+     * 
+     * @param h
+     * @param mBluetoothAdapter
+     */
     public ECUFingerprint(Handler h, BluetoothAdapter mBluetoothAdapter)
     {
         this.adapter = mBluetoothAdapter;
@@ -28,6 +36,9 @@ public class ECUFingerprint implements Runnable
     }
 
 
+    /**
+     * 
+     */
     @Override
     public void run()
     {
@@ -56,12 +67,22 @@ public class ECUFingerprint implements Runnable
         
     }
 
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     private String getFingerprint() throws IOException
     {
    
         return fingerprint();
 
     }
+    
+    /**
+     * 
+     * @param msgStr
+     */
     private void sendStatus(String msgStr)
     {
         DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
@@ -75,6 +96,12 @@ public class ECUFingerprint implements Runnable
             handler.sendMessage(msg);
         }
     }
+    
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     private String fingerprint() throws IOException
     {
         sendStatus("Probing the ECU");
@@ -114,6 +141,10 @@ public class ECUFingerprint implements Runnable
         return sig;
     }
 
+    /**
+     * 
+     * @param d
+     */
     private void delay(int d)
     {
         try
@@ -126,6 +157,12 @@ public class ECUFingerprint implements Runnable
         }
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     * @throws BootException
+     */
     public static String processResponse(byte[] response) throws BootException
     {
         String result = new String(response);

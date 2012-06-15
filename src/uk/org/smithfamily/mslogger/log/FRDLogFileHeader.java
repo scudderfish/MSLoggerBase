@@ -6,6 +6,9 @@ import java.io.IOException;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 
+/**
+ *
+ */
 public class FRDLogFileHeader
 {
 
@@ -22,6 +25,10 @@ public class FRDLogFileHeader
 
     private int blockSize;
 
+    /**
+     * 
+     * @param frdLogFile
+     */
 	public FRDLogFileHeader(FRDLogFile frdLogFile)
 	{
 	    this.parent = frdLogFile;
@@ -45,6 +52,12 @@ public class FRDLogFileHeader
 
 	}
 
+	/**
+	 * 
+	 * @param frdLogFile
+	 * @param is
+	 * @throws IOException
+	 */
 	public FRDLogFileHeader(FRDLogFile frdLogFile,FileInputStream is) throws IOException
     {
         this.parent = frdLogFile;
@@ -57,6 +70,10 @@ public class FRDLogFileHeader
 	    blockSize = outputLength[0] << 8 + outputLength[1];
     }
 
+	/**
+	 * 
+	 * @return
+	 */
     public byte[] getHeaderRecord()
 	{
 		byte[] result = concatAll(fileFormat, formatVersion, timeStamp, firmware, beginIndex, outputLength);
@@ -65,36 +82,66 @@ public class FRDLogFileHeader
 
 	}
 
+    /**
+     * 
+     * @return
+     */
 	public byte[] getFileformat()
 	{
 		return fileFormat;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public byte[] getFormatversion()
 	{
 		return formatVersion;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public byte[] getTimeStamp()
 	{
 		return timeStamp;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public byte[] getFirmware()
 	{
 		return firmware;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public byte[] getBeginindex()
 	{
 		return beginIndex;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public byte[] getOutputlength()
 	{
 		return outputLength;
 	}
 
+	/**
+	 * 
+	 * @param first
+	 * @param rest
+	 * @return
+	 */
 	public static byte[] concatAll(byte[] first, byte[]... rest)
 	{
 		int totalLength = first.length;
@@ -113,16 +160,21 @@ public class FRDLogFileHeader
 		return result;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
     public FRDLogFile getParent()
     {
         return parent;
     }
 
-   
+    /**
+     * 
+     * @return
+     */
     public int getBlockSize()
     {
         return blockSize;
-    }
-
-   
+    }   
 }

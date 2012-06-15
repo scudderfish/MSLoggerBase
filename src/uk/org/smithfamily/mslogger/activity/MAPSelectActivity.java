@@ -3,9 +3,16 @@ package uk.org.smithfamily.mslogger.activity;
 import uk.org.smithfamily.mslogger.R;
 import android.os.Bundle;
 
+/**
+ * 
+ * 
+ */
 public class MAPSelectActivity extends DialogPreferenceActivity
 {
 
+    /**
+     * @param savedInstanceState
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{

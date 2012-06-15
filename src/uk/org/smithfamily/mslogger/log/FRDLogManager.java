@@ -11,6 +11,9 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+/**
+ *
+ */
 public enum FRDLogManager
 {
     INSTANCE;
@@ -22,11 +25,20 @@ public enum FRDLogManager
     private String absolutePath;
     private long                 startTime;
 
+    /**
+     * 
+     * @return
+     */
     public long getStartTime()
     {
         return startTime;
     }
 
+    /**
+     * 
+     * @param buffer
+     * @throws IOException
+     */
     public void write(byte[] buffer) throws IOException
     {
 		if(!ApplicationSettings.INSTANCE.isWritable())
@@ -45,6 +57,10 @@ public enum FRDLogManager
         os.write(body.getCurrentRecord().getBytes());
     }
 
+    /**
+     * 
+     * @throws IOException
+     */
     private void writeHeader() throws IOException
     {
 		if(!ApplicationSettings.INSTANCE.isWritable())
@@ -55,6 +71,10 @@ public enum FRDLogManager
         os.write(header.getHeaderRecord());
     }
 
+    /**
+     * 
+     * @throws FileNotFoundException
+     */
     private void createLogFile() throws FileNotFoundException
     {
 		if(!ApplicationSettings.INSTANCE.isWritable())
@@ -71,12 +91,19 @@ public enum FRDLogManager
         os = new BufferedOutputStream(new FileOutputStream(logFile));
     }
 
+    /**
+     * 
+     * @return
+     */
     public FRDLogFile getFRDLogFile()
     {
 
         return frdLog;
     }
 
+    /**
+     * 
+     */
     public void close()
     {
         try
@@ -97,11 +124,18 @@ public enum FRDLogManager
 
     }
 
+    /**
+     * 
+     */
     public void stopLog()
     {
         close();
     }
 
+    /**
+     * 
+     * @return
+     */
 	public String getAbsolutePath()
 	{
 		return absolutePath;

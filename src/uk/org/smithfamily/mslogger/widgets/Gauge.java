@@ -38,6 +38,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+/**
+ *
+ */
 public final class Gauge extends View implements Indicator
 {
     Handler                     h                      = new Handler();
@@ -150,6 +153,10 @@ public final class Gauge extends View implements Indicator
     private String channel;
     private boolean disabled;
 
+    /**
+     * 
+     * @param context
+     */
     public Gauge(Context context)
     {
         super(context);
@@ -157,18 +164,33 @@ public final class Gauge extends View implements Indicator
     }
 
     
+    /**
+     * 
+     * @param context
+     * @param attrs
+     */
     public Gauge(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init(context, attrs);
     }
 
+    /**
+     * 
+     * @param context
+     * @param attrs
+     * @param defStyle
+     */
     public Gauge(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         init(context, attrs);
     }
 
+    /**
+     * 
+     * @param state 
+     */
     @Override
     protected void onRestoreInstanceState(Parcelable state)
     {
@@ -184,6 +206,9 @@ public final class Gauge extends View implements Indicator
         lastDialMoveTime = bundle.getLong("lastDialMoveTime");
     }
 
+    /**
+     * 
+     */
     @Override
     protected Parcelable onSaveInstanceState()
     {
@@ -199,7 +224,13 @@ public final class Gauge extends View implements Indicator
         state.putLong("lastDialMoveTime", lastDialMoveTime);
         return state;
     }
-     private void init(Context context, AttributeSet attrs)
+    
+    /**
+     * 
+     * @param context
+     * @param attrs
+     */
+    private void init(Context context, AttributeSet attrs)
     {
         // Get the properties from the resource file.
         if (context != null && attrs != null)
@@ -238,6 +269,10 @@ public final class Gauge extends View implements Indicator
 
     }
 
+    /**
+     * 
+     * @param context
+     */
     private void init(Context context)
     {
         totalNotches = (int) ((scaleMaxValue - scaleMinValue) / incrementPerSmallNotch);
@@ -259,6 +294,10 @@ public final class Gauge extends View implements Indicator
         initDrawingTools(context);
     }
 
+    /**
+     * 
+     * @param context
+     */
     private void initDrawingTools(Context context)
     {
         rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
@@ -463,6 +502,12 @@ public final class Gauge extends View implements Indicator
         setMeasuredDimension(chosenDimension, chosenDimension);
     }
 
+    /**
+     * 
+     * @param mode
+     * @param size
+     * @return
+     */
     private int chooseDimension(int mode, int size)
     {
         if (mode == MeasureSpec.AT_MOST || mode == MeasureSpec.EXACTLY)
@@ -475,12 +520,19 @@ public final class Gauge extends View implements Indicator
         }
     }
 
-    // in case there is no size specified
+    /**
+     * in case there is no size specified
+     * @return
+     */
     private int getPreferredSize()
     {
         return 250;
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawRim(Canvas canvas)
     {
         // first, draw the metallic body
@@ -489,6 +541,10 @@ public final class Gauge extends View implements Indicator
         canvas.drawOval(rimRect, rimCirclePaint);
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawFace(Canvas canvas)
     {
         canvas.drawOval(faceRect, facePaint);
@@ -501,6 +557,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawBackground(Canvas canvas)
     {
         if (background == null)
@@ -513,6 +573,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawScale(Canvas canvas)
     {
         // Draw the circle
@@ -571,6 +635,10 @@ public final class Gauge extends View implements Indicator
         canvas.restore();
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawScaleRanges(Canvas canvas)
     {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
@@ -581,6 +649,10 @@ public final class Gauge extends View implements Indicator
         canvas.restore();
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawTitle(Canvas canvas)
     {
         // Use a vertical offset when printing the upper title. The upper and lower title
@@ -595,6 +667,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawHand(Canvas canvas)
     {
         if (!disabled && dialInitialized && !this.isInEditMode())
@@ -610,6 +686,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawGauge(Canvas canvas)
     {
         if (dialInitialized)
@@ -635,6 +715,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     private void drawBezel(Canvas canvas)
     {
         // Draw the bevel in which the value is draw.
@@ -643,9 +727,11 @@ public final class Gauge extends View implements Indicator
         canvas.restore();
     }
 
-    /*
+    /**
      * Translate a notch to a value for the scale. The notches are evenly spread across the scale, half of the notches on the left hand side and the other half on the right hand side. The raw value
      * calculation uses a constant so that each notch represents a value n + 2.
+     * 
+     * @param notch
      */
     private float notchToValue(int notch)
     {
@@ -654,6 +740,11 @@ public final class Gauge extends View implements Indicator
         return shiftedValue;
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
     private float valueToAngle(float value)
     {
         float scaleRange = scaleMaxValue - scaleMinValue;
@@ -662,6 +753,10 @@ public final class Gauge extends View implements Indicator
         return angle;
     }
 
+    /**
+     * 
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas)
     {
@@ -689,6 +784,14 @@ public final class Gauge extends View implements Indicator
         calculateCurrentValue();
     }
 
+    /**
+     * 
+     * @param w
+     * @param h
+     * @param oldw
+     * @param oldh
+     * 
+     */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
@@ -696,6 +799,9 @@ public final class Gauge extends View implements Indicator
         regenerateBackground();
     }
 
+    /**
+     * 
+     */
     private void regenerateBackground()
     {
         // free the old bitmap
@@ -722,7 +828,9 @@ public final class Gauge extends View implements Indicator
         }
     }
 
-    // Move the hand slowly to the new position.
+    /**
+     * Move the hand slowly to the new position.
+     */
     private void calculateCurrentValue()
     {
         if (!(Math.abs(currentValue - targetValue) > 0.01f))
@@ -766,6 +874,10 @@ public final class Gauge extends View implements Indicator
         }
     }
 
+    /**
+     * 
+     * @param value
+     */
     public void setValue(float value)
     {
         if (value < scaleMinValue)
@@ -779,76 +891,124 @@ public final class Gauge extends View implements Indicator
         invalidate(); // forces onDraw() to be called.
     }
 
+    /**
+     * @return
+     */
     public float getValue()
     {
         return targetValue;
     }
 
+    /**
+     * @return
+     */
     public float getScaleMinValue()
     {
         return scaleMinValue;
     }
 
+    /**
+     * 
+     * @param scaleMinValue
+     */
     public void setScaleMinValue(float scaleMinValue)
     {
         this.scaleMinValue = scaleMinValue;
     }
-
+    
+    /**
+     * @return
+     */
     public float getScaleMaxValue()
     {
         return scaleMaxValue;
     }
 
+    /**
+     * 
+     * @param scaleMaxValue
+     */
     public void setScaleMaxValue(float scaleMaxValue)
     {
         this.scaleMaxValue = scaleMaxValue;
     }
 
+    /**
+     * @return
+     */
     public String getUpperTitle()
     {
         return upperTitle;
     }
 
+    /**
+     * 
+     * @param upperTitle
+     */
     public void setUpperTitle(String upperTitle)
     {
         this.upperTitle = upperTitle;
     }
 
+    /**
+     * @return
+     */
     public String getUnitTitle()
     {
         return unitTitle;
     }
 
+    /**
+     * 
+     * @param unitTitle
+     */
     public void setUnitTitle(String unitTitle)
     {
         this.unitTitle = unitTitle;
     }
 
+    /**
+     * @return
+     */
     public float getCurrentValue()
     {
         return currentValue;
     }
 
+    /**
+     * 
+     * @param min
+     */
     public void setMin(float min)
     {
         this.scaleMinValue = min;
         this.rangeOkMinValue = min;
     }
 
+    /**
+     * 
+     * @param max
+     */
     public void setMax(float max)
     {
-
         this.scaleMaxValue = max;
-        this.rangeErrorMaxValue = max;
-        
+        this.rangeErrorMaxValue = max;        
     }
 
+    /**
+     * 
+     * @param title
+     */
     public void setTitle(String title)
     {
         this.upperTitle=title;
         
     }
 
+    /**
+     * 
+     * @param warn
+     */
     public void setWarningPoint(float warn)
     {
 
@@ -857,27 +1017,44 @@ public final class Gauge extends View implements Indicator
         
     }
 
+    /**
+     * 
+     * @param err
+     */
     public void setErrorPoint(float err)
     {
         this.rangeWarningMaxValue=err;
         this.rangeErrorMinValue=err;
     }
 
+    /**
+     * @param value
+     */
     public void setCurrentValue(double value)
     {
         setValue((float) value);
     }
 
+    /**
+     * @return
+     */
     public String getChannel()
     {
         return channel;
     }
 
+    /**
+     * 
+     * @param channel
+     */
     public void setChannel(String channel)
     {
         this.channel = channel;
     }
     
+    /**
+     * 
+     */
     @Override
     protected void onAttachedToWindow()
     {
@@ -886,7 +1063,10 @@ public final class Gauge extends View implements Indicator
         IndicatorManager.INSTANCE.registerIndicator(this);
 
     }
-
+    
+    /**
+     * 
+     */
     @Override
     protected void onDetachedFromWindow()
     {
@@ -896,7 +1076,10 @@ public final class Gauge extends View implements Indicator
 
     }
 
-
+    /**
+     * 
+     * @param disabled
+     */
 	@Override
 	public void setDisabled(boolean disabled)
 	{
@@ -904,7 +1087,10 @@ public final class Gauge extends View implements Indicator
 		
 	}
 
-
+    /**
+     * 
+     * @param name
+     */
     @Override
     public void setName(String name)
     {
@@ -912,7 +1098,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param units
+     */
     @Override
     public void setUnits(String units)
     {
@@ -920,7 +1109,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param lowD
+     */
     @Override
     public void setLowD(float lowD)
     {
@@ -928,7 +1120,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param loW
+     */
     @Override
     public void setLowW(float lowW)
     {
@@ -936,7 +1131,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param hiW
+     */
     @Override
     public void setHiW(float hiW)
     {
@@ -944,7 +1142,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param hiD
+     */
     @Override
     public void setHiD(float hiD)
     {
@@ -952,7 +1153,10 @@ public final class Gauge extends View implements Indicator
         
     }
 
-
+    /**
+     * 
+     * @param vd
+     */
     @Override
     public void setVD(int vd)
     {
@@ -961,6 +1165,10 @@ public final class Gauge extends View implements Indicator
     }
 
 
+    /**
+     * 
+     * @param ld
+     */
     @Override
     public void setLD(int ld)
     {
