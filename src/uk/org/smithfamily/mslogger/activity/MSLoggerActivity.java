@@ -3,10 +3,6 @@ package uk.org.smithfamily.mslogger.activity;
 import java.util.*;
 import java.util.Map.Entry;
 
-import uk.org.smithfamily.mslogger.*;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.widgets.*;
 import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
@@ -14,14 +10,19 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.*;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.*;
+
+import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.*;
+import uk.org.smithfamily.mslogger.widgets.*;
 
 /**
  * 
@@ -34,9 +35,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     TextView                       messages;
     public boolean                 connected;
     static private Boolean         ready                 = null;
-    private boolean                vanilla               = false;
-    private boolean                testDialogShown;
-    private int                    dataCount             = 0;
     private MSGauge                gauge1;
     private MSGauge                gauge2;
     private MSGauge                gauge3;
@@ -56,7 +54,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public void onCreate(Bundle savedInstanceState)
     {
         
-        vanilla = getPackageName().endsWith("vanilla");
         super.onCreate(savedInstanceState);
         checkSDCard();
         
@@ -360,37 +357,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
-        if (vanilla)
-        {
-            dataCount++;
-            if (dataCount > 500)
-            {
-                terminateTest();
-            }
-        }
     }
 
-    /**
-     * 
-     */
-    private void terminateTest()
-    {
-        DatalogManager.INSTANCE.mark(getString(R.string.connection_check_completed));
-        ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecu != null)
-        {
-            ecu.stop();
-        }
-        sendLogs();
-        indicatorManager.setDisabled(true);
-        if (!testDialogShown)
-        {
-            testDialogShown = true;
-            showDialog(1);
-        }
-    }
-
+ 
     /**
      * 
      * @param menu
@@ -717,75 +686,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
     }
 
-    /**
-     * 
-     * @param id
-     */
-    protected Dialog onCreateDialog(int id)
-    {
-        if (id == 0)
-        {
-            return new AlertDialog.Builder(this).setTitle(R.string.unlicensed_dialog_title).setMessage(R.string.unlicensed_dialog_body)
-                    .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=" + getPackageName()));
-                            startActivity(marketIntent);
-                        }
-                    }).setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            finish();
-                        }
-                    }).create();
-        }
-        else if (id == 1)
-        {
-            return new AlertDialog.Builder(this).setTitle(R.string.trial_dialog_title).setMessage(R.string.trial_dialog_body)
-                    .setPositiveButton(R.string.buy_button, new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri
-                                    .parse("http://market.android.com/details?id=uk.org.smithfamily.mslogger.chocolate"));
-                            startActivity(marketIntent);
-                        }
-                    }).setNegativeButton(R.string.cancel_buy_button, new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.cancel();
-                        }
-                    }).create();
-
-        }
-        else
-        {
-            return new AlertDialog.Builder(this).setTitle(R.string.sd_card_error).setMessage(R.string.cannot_access_the_sd_card_no_logs_will_be_taken).create();
-        }
-    }
-
-    /**
-     *
-     */
-    private class LicenceCheckTask extends AsyncTask<Void, Void, Void>
-    {
-
-        /**
-         * 
-         * @param params
-         */
-        @Override
-        protected Void doInBackground(Void... params)
-        {
-            return null;
-        }
-
-    }
-
-    /**
+     /**
      *
      */
     private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
@@ -851,10 +752,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             super.onPostExecute(result);
             finaliseInit();
-            if (!vanilla)
-            {
-                new LicenceCheckTask().execute((Void) null);
-            }
             ready = true;
         }
 
