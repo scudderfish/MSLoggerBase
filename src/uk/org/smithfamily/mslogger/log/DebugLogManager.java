@@ -10,6 +10,9 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.os.Environment;
 import android.text.format.DateFormat;
 
+/**
+ *
+ */
 public enum DebugLogManager
 {
     INSTANCE;
@@ -18,6 +21,10 @@ public enum DebugLogManager
     private FileWriter os;
     private String     absolutePath;
 
+    /**
+     * 
+     * @throws IOException
+     */
     private void createLogFile() throws IOException
     {
         if (!ApplicationSettings.INSTANCE.isWritable())
@@ -40,6 +47,11 @@ public enum DebugLogManager
 
     }
 
+    /**
+     * 
+     * @param s
+     * @param logLevel
+     */
     public synchronized void log(String s, int logLevel)
     {
         if (!checkLogLevel(logLevel))
@@ -67,11 +79,20 @@ public enum DebugLogManager
         }
     }
 
+    /**
+     * 
+     * @param logLevel
+     * @return
+     */
     private boolean checkLogLevel(int logLevel)
     {
         return (ApplicationSettings.INSTANCE.getLoggingLevel() <= logLevel);
     }
 
+    /**
+     * 
+     * @param ex
+     */
     public synchronized void logException(Exception ex)
     {
         if (!ApplicationSettings.INSTANCE.isWritable())
@@ -108,11 +129,21 @@ public enum DebugLogManager
         }
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getAbsolutePath()
     {
         return absolutePath;
     }
 
+    /**
+     * 
+     * @param msg
+     * @param result
+     * @param logLevel
+     */
     public void log(String msg, byte[] result, int logLevel)
     {
         if (!checkLogLevel(logLevel))

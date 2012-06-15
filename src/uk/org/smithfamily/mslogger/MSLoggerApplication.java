@@ -2,6 +2,10 @@ package uk.org.smithfamily.mslogger;
 
 import android.app.Application;
 
+/**
+ * 
+ * 
+ */
 public class MSLoggerApplication extends Application
 {
     public static final int GOT_SIG = 1052;
@@ -10,11 +14,13 @@ public class MSLoggerApplication extends Application
     public static final String MSG_ID = "msgId";
     public static final int PROBE_ECU = 1055;
     
+    /**
+     * 
+     */
     @Override
     public void onCreate()
     {
         super.onCreate();
         ApplicationSettings.INSTANCE.initialise(this);
-        
     }
 }

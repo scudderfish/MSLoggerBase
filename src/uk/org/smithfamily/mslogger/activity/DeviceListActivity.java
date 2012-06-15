@@ -47,6 +47,9 @@ public class DeviceListActivity extends Activity
     private Button scanButton;
     private ListView pairedListView;
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -104,6 +107,10 @@ public class DeviceListActivity extends Activity
 
         initPairedDevices();
     }
+    
+    /**
+     * 
+     */
     public void initPairedDevices()
     {
         mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
@@ -127,6 +134,10 @@ public class DeviceListActivity extends Activity
             mPairedDevicesArrayAdapter.add(noDevices);
         }
     }
+    
+    /**
+     * 
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -140,6 +151,9 @@ public class DeviceListActivity extends Activity
     }
 
 
+    /**
+     * 
+     */
     @Override
     protected void onDestroy()
     {
@@ -180,7 +194,9 @@ public class DeviceListActivity extends Activity
         mBtAdapter.startDiscovery();
     }
 
-    // The on-click listener for all devices in the ListViews
+    /**
+     *  The on-click listener for all devices in the ListViews
+     */
     private OnItemClickListener     mDeviceClickListener = new OnItemClickListener()
                                                          {
                                                              public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3)
@@ -212,8 +228,10 @@ public class DeviceListActivity extends Activity
                                                              }
                                                          };
 
-    // The BroadcastReceiver that listens for discovered devices and
-    // changes the title when discovery is finished
+    /** 
+     * The BroadcastReceiver that listens for discovered devices and
+     * changes the title when discovery is finished
+    */
     private final BroadcastReceiver mReceiver            = new BroadcastReceiver()
                                                          {
                                                              @Override

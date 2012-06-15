@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-
+/**
+ *
+ */
 public interface Indicator
 {
     public void setName(String name);

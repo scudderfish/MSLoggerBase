@@ -9,6 +9,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import android.content.Context;
+import android.util.Log;
 
 /*
  * Fingerprint : 1db6ae262e7189230ad3be8670eec0a1
@@ -1501,415 +1502,421 @@ public class ZZMS3_Pre11_alpha20 extends Megasquirt
     public void calculate(byte[] ochBuffer) throws IOException
     {
         try {
-        deadValue = (0);
-        if (CAN_COMMANDS)
-        {
+            deadValue = (0);
+
+            seconds = (int) ((MSUtils.getWord(ochBuffer, 0) + 0.0) * 1.000);
+            secl = (seconds % 256);
+            if (PW_4X)
+            {
+                pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 2) + 0.0) * 0.004);
+                pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 4) + 0.0) * 0.004);
+            }
+            else
+            {
+                pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 2) + 0.0) * 0.001);
+                pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 4) + 0.0) * 0.001);
+            }
+            
+            pulseWidth = (pulseWidth1);
+            rpm = (int) ((MSUtils.getWord(ochBuffer, 6) + 0.0) * 1.000);                    
+            advance = (double) ((MSUtils.getSignedWord(ochBuffer, 8) + 0.0) * 0.100);
+            squirt = (int) ((MSUtils.getByte(ochBuffer, 10) + 0.0) * 1.000);
+            firing1 = MSUtils.getBits(ochBuffer, 10, 0, 0, 0);
+            firing2 = MSUtils.getBits(ochBuffer, 10, 1, 1, 0);
+            sched1 = MSUtils.getBits(ochBuffer, 10, 2, 2, 0);
+            inj1 = MSUtils.getBits(ochBuffer, 10, 3, 3, 0);
+            sched2 = MSUtils.getBits(ochBuffer, 10, 4, 4, 0);
+            inj2 = MSUtils.getBits(ochBuffer, 10, 5, 5, 0);
+            engine = (int) ((MSUtils.getByte(ochBuffer, 11) + 0.0) * 1.000);
+            ready = MSUtils.getBits(ochBuffer, 11, 0, 0, 0);
+            crank = MSUtils.getBits(ochBuffer, 11, 1, 1, 0);
+            startw = MSUtils.getBits(ochBuffer, 11, 2, 2, 0);
+            warmup = MSUtils.getBits(ochBuffer, 11, 3, 3, 0);
+            tpsaccaen = MSUtils.getBits(ochBuffer, 11, 4, 4, 0);
+            tpsaccden = MSUtils.getBits(ochBuffer, 11, 5, 5, 0);
+            mapaccaen = MSUtils.getBits(ochBuffer, 11, 6, 6, 0);
+            mapaccden = MSUtils.getBits(ochBuffer, 11, 7, 7, 0);
+            if (NARROW_BAND_EGO)
+            {
+                afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.00489);
+                afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.00489);
+            }
+            else if (LAMBDA)
+            {
+                afrtgt1raw = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
+                afrtgt2raw = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
+            }
+            else
+            {
+                afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
+                afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
+            }
+            wbo2_en1 = (int) ((MSUtils.getByte(ochBuffer, 14) + 0.0) * 1.000);
+            wbo2_en2 = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.0) * 1.000);
+            barometer = (double) ((MSUtils.getSignedWord(ochBuffer, 16) + 0.0) * 0.100);
+            map = (double) ((MSUtils.getSignedWord(ochBuffer, 18) + 0.0) * 0.100);
+            if (CELSIUS)
+            {
+                mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + -320.0) * 0.05555);
+                coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + -320.0) * 0.05555);
+            }
+            else
+            {
+                mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + 0.0) * 0.100);
+                coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + 0.0) * 0.100);
+            }
+            tps = (double) ((MSUtils.getSignedWord(ochBuffer, 24) + 0.0) * 0.100);
+            throttle = (tps);
+            batteryVoltage = (double) ((MSUtils.getSignedWord(ochBuffer, 26) + 0.0) * 0.100);
+            afr1_old = (double) ((MSUtils.getSignedWord(ochBuffer, 28) + 0.0) * 0.100);
+            afr2_old = (double) ((MSUtils.getSignedWord(ochBuffer, 30) + 0.0) * 0.100);
+            knock = (double) ((MSUtils.getSignedWord(ochBuffer, 32) + 0.0) * 0.100);
+            egoCorrection1 = (double) ((MSUtils.getSignedWord(ochBuffer, 34) + 0.0) * 0.1000);
+            egoCorrection = ((egoCorrection1 + egoCorrection2) / 2);
+            egoCorrection2 = (double) ((MSUtils.getSignedWord(ochBuffer, 36) + 0.0) * 0.1000);
+            airCorrection = (double) ((MSUtils.getSignedWord(ochBuffer, 38) + 0.0) * 0.1000);
+            warmupEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 40) + 0.0) * 1.000);
+            accelEnrich = (double) ((MSUtils.getSignedWord(ochBuffer, 42) + 0.0) * 0.100);
+            tpsfuelcut = (int) ((MSUtils.getSignedWord(ochBuffer, 44) + 0.0) * 1.000);
+            baroCorrection = (double) ((MSUtils.getSignedWord(ochBuffer, 46) + 0.0) * 0.1000);
+            gammaEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 48) + 0.0) * 1.000);
+            veCurr1 = (double) ((MSUtils.getSignedWord(ochBuffer, 50) + 0.0) * 0.1000);
+            veCurr2 = (double) ((MSUtils.getSignedWord(ochBuffer, 52) + 0.0) * 0.1000);
+            veCurr = (veCurr1);
+            iacstep = (int) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 1.000);
+            idleDC = (double) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 0.39063);
+            coldAdvDeg = (double) ((MSUtils.getSignedWord(ochBuffer, 56) + 0.0) * 0.100);
+            tpsDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 0.100);
+            mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
+            dwell = (double) ((MSUtils.getWord(ochBuffer, 62) + 0.0) * 0.1000);
+            mafmap = (double) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 0.1000);
+            fuelload = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
+            fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
+            portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
+            port0 = MSUtils.getBits(ochBuffer, 70, 0, 0, 0);
+            port1 = MSUtils.getBits(ochBuffer, 70, 1, 1, 0);
+            port2 = MSUtils.getBits(ochBuffer, 70, 2, 2, 0);
+            port3 = MSUtils.getBits(ochBuffer, 70, 3, 3, 0);
+            port4 = MSUtils.getBits(ochBuffer, 70, 4, 4, 0);
+            port5 = MSUtils.getBits(ochBuffer, 70, 5, 5, 0);
+            port6 = MSUtils.getBits(ochBuffer, 70, 6, 6, 0);
+            knockRetard = (double) ((MSUtils.getByte(ochBuffer, 71) + 0.0) * 0.1);
+            EAEFuelCorr1 = (int) ((MSUtils.getWord(ochBuffer, 72) + 0.0) * 1.0);
+            egoV = (double) ((MSUtils.getSignedWord(ochBuffer, 74) + 0.0) * 0.01);
+            egoV2 = (double) ((MSUtils.getSignedWord(ochBuffer, 76) + 0.0) * 0.01);
+            status1 = (int) ((MSUtils.getByte(ochBuffer, 78) + 0.0) * 1.0);
+            status2 = (int) ((MSUtils.getByte(ochBuffer, 79) + 0.0) * 1.0);
+            status3 = (int) ((MSUtils.getByte(ochBuffer, 80) + 0.0) * 1.0);
+            status4 = (int) ((MSUtils.getByte(ochBuffer, 81) + 0.0) * 1.0);
+            looptime = (int) ((MSUtils.getWord(ochBuffer, 82) + 0.0) * 1.0);
+            status5 = (int) ((MSUtils.getWord(ochBuffer, 84) + 0) * 1);
+            tpsADC = (int) ((MSUtils.getWord(ochBuffer, 86) + 0) * 1);
+            fuelload2 = (double) ((MSUtils.getWord(ochBuffer, 88) + 0.0) * 0.100);
+            ignload = (double) ((MSUtils.getSignedWord(ochBuffer, 90) + 0.0) * 0.100);
+            ignload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 92) + 0.0) * 0.100);
+            synccnt = (int) ((MSUtils.getByte(ochBuffer, 94) + 0) * 1);
+            timing_err = (int) ((MSUtils.getSignedByte(ochBuffer, 95) + 0) * 1);
+            wallfuel1 = (double) ((MSUtils.getLong(ochBuffer, 96) + 0.0) * 0.010);
+            wallfuel2 = (int) ((MSUtils.getLong(ochBuffer, 100) + 0.0) * 1.000);
+            sensor01 = (double) ((MSUtils.getSignedWord(ochBuffer, 104) + 0.0) * 0.1000);
+            sensor02 = (double) ((MSUtils.getSignedWord(ochBuffer, 106) + 0.0) * 0.1000);
+            sensor03 = (double) ((MSUtils.getSignedWord(ochBuffer, 108) + 0.0) * 0.1000);
+            sensor04 = (double) ((MSUtils.getSignedWord(ochBuffer, 110) + 0.0) * 0.1000);
+            sensor05 = (double) ((MSUtils.getSignedWord(ochBuffer, 112) + 0.0) * 0.1000);
+            sensor06 = (double) ((MSUtils.getSignedWord(ochBuffer, 114) + 0.0) * 0.1000);
+            sensor07 = (double) ((MSUtils.getSignedWord(ochBuffer, 116) + 0.0) * 0.1000);
+            sensor08 = (double) ((MSUtils.getSignedWord(ochBuffer, 118) + 0.0) * 0.1000);
+            sensor09 = (double) ((MSUtils.getSignedWord(ochBuffer, 120) + 0.0) * 0.1000);
+            sensor10 = (double) ((MSUtils.getSignedWord(ochBuffer, 122) + 0.0) * 0.1000);
+            sensor11 = (double) ((MSUtils.getSignedWord(ochBuffer, 124) + 0.0) * 0.1000);
+            sensor12 = (double) ((MSUtils.getSignedWord(ochBuffer, 126) + 0.0) * 0.1000);
+            sensor13 = (double) ((MSUtils.getSignedWord(ochBuffer, 128) + 0.0) * 0.1000);
+            sensor14 = (double) ((MSUtils.getSignedWord(ochBuffer, 130) + 0.0) * 0.1000);
+            sensor15 = (double) ((MSUtils.getSignedWord(ochBuffer, 132) + 0.0) * 0.1000);
+            sensor16 = (double) ((MSUtils.getSignedWord(ochBuffer, 134) + 0.0) * 0.1000);
+            canin1_8 = (int) ((MSUtils.getByte(ochBuffer, 136) + 0.0) * 1.000);
+            canout1_8 = (int) ((MSUtils.getByte(ochBuffer, 137) + 0.0) * 1.000);
+            canout9_16 = (int) ((MSUtils.getByte(ochBuffer, 138) + 0.0) * 1.000);
+            boostduty = (int) ((MSUtils.getByte(ochBuffer, 139) + 0.0) * 1.0);
+            if (PW_4X)
+            {
+                n2o_addfuel = (double) ((MSUtils.getSignedWord(ochBuffer, 140) + 0) * 0.004);
+            }
+            else
+            {
+                n2o_addfuel = (double) ((MSUtils.getSignedWord(ochBuffer, 140) + 0) * 0.001);
+            }
+            n2o_retard = (double) ((MSUtils.getSignedWord(ochBuffer, 142) + 0) * 0.1);
+            if (PW_4X)
+            {
+                pwseq1 = (double) ((MSUtils.getWord(ochBuffer, 144) + 0) * 0.004);
+                pwseq2 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0) * 0.004);
+                pwseq3 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0) * 0.004);
+                pwseq4 = (double) ((MSUtils.getWord(ochBuffer, 150) + 0) * 0.004);
+                pwseq5 = (double) ((MSUtils.getWord(ochBuffer, 152) + 0) * 0.004);
+                pwseq6 = (double) ((MSUtils.getWord(ochBuffer, 154) + 0) * 0.004);
+                pwseq7 = (double) ((MSUtils.getWord(ochBuffer, 156) + 0) * 0.004);
+                pwseq8 = (double) ((MSUtils.getWord(ochBuffer, 158) + 0) * 0.004);
+                pwseq9 = (double) ((MSUtils.getWord(ochBuffer, 160) + 0) * 0.004);
+                pwseq10 = (double) ((MSUtils.getWord(ochBuffer, 162) + 0) * 0.004);
+                pwseq11 = (double) ((MSUtils.getWord(ochBuffer, 164) + 0) * 0.004);
+                pwseq12 = (double) ((MSUtils.getWord(ochBuffer, 166) + 0) * 0.004);
+                pwseq13 = (double) ((MSUtils.getWord(ochBuffer, 168) + 0) * 0.004);
+                pwseq14 = (double) ((MSUtils.getWord(ochBuffer, 170) + 0) * 0.004);
+                pwseq15 = (double) ((MSUtils.getWord(ochBuffer, 172) + 0) * 0.004);
+                pwseq16 = (double) ((MSUtils.getWord(ochBuffer, 174) + 0) * 0.004);
+            }
+            else
+            {
+                pwseq1 = (double) ((MSUtils.getWord(ochBuffer, 144) + 0) * 0.001);
+                pwseq2 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0) * 0.001);
+                pwseq3 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0) * 0.001);
+                pwseq4 = (double) ((MSUtils.getWord(ochBuffer, 150) + 0) * 0.001);
+                pwseq5 = (double) ((MSUtils.getWord(ochBuffer, 152) + 0) * 0.001);
+                pwseq6 = (double) ((MSUtils.getWord(ochBuffer, 154) + 0) * 0.001);
+                pwseq7 = (double) ((MSUtils.getWord(ochBuffer, 156) + 0) * 0.001);
+                pwseq8 = (double) ((MSUtils.getWord(ochBuffer, 158) + 0) * 0.001);
+                pwseq9 = (double) ((MSUtils.getWord(ochBuffer, 160) + 0) * 0.001);
+                pwseq10 = (double) ((MSUtils.getWord(ochBuffer, 162) + 0) * 0.001);
+                pwseq11 = (double) ((MSUtils.getWord(ochBuffer, 164) + 0) * 0.001);
+                pwseq12 = (double) ((MSUtils.getWord(ochBuffer, 166) + 0) * 0.001);
+                pwseq13 = (double) ((MSUtils.getWord(ochBuffer, 168) + 0) * 0.001);
+                pwseq14 = (double) ((MSUtils.getWord(ochBuffer, 170) + 0) * 0.001);
+                pwseq15 = (double) ((MSUtils.getWord(ochBuffer, 172) + 0) * 0.001);
+                pwseq16 = (double) ((MSUtils.getWord(ochBuffer, 174) + 0) * 0.001);
+            }
+            nitrous1_duty = (int) ((MSUtils.getByte(ochBuffer, 176) + 0) * 1);
+            nitrous2_duty = (int) ((MSUtils.getByte(ochBuffer, 177) + 0) * 1);
+            if (CELSIUS)
+            {
+                egt1 = (double) ((MSUtils.getSignedWord(ochBuffer, 178) + -320) * 0.05555);
+                egt2 = (double) ((MSUtils.getSignedWord(ochBuffer, 180) + -320) * 0.05555);
+                egt3 = (double) ((MSUtils.getSignedWord(ochBuffer, 182) + -320) * 0.05555);
+                egt4 = (double) ((MSUtils.getSignedWord(ochBuffer, 184) + -320) * 0.05555);
+                egt5 = (double) ((MSUtils.getSignedWord(ochBuffer, 186) + -320) * 0.05555);
+                egt6 = (double) ((MSUtils.getSignedWord(ochBuffer, 188) + -320) * 0.05555);
+                egt7 = (double) ((MSUtils.getSignedWord(ochBuffer, 190) + -320) * 0.05555);
+                egt8 = (double) ((MSUtils.getSignedWord(ochBuffer, 192) + -320) * 0.05555);
+                egt9 = (double) ((MSUtils.getSignedWord(ochBuffer, 194) + -320) * 0.05555);
+                egt10 = (double) ((MSUtils.getSignedWord(ochBuffer, 196) + -320) * 0.05555);
+                egt11 = (double) ((MSUtils.getSignedWord(ochBuffer, 198) + -320) * 0.05555);
+                egt12 = (double) ((MSUtils.getSignedWord(ochBuffer, 200) + -320) * 0.05555);
+                egt13 = (double) ((MSUtils.getSignedWord(ochBuffer, 202) + -320) * 0.05555);
+                egt14 = (double) ((MSUtils.getSignedWord(ochBuffer, 204) + -320) * 0.05555);
+                egt15 = (double) ((MSUtils.getSignedWord(ochBuffer, 206) + -320) * 0.05555);
+                egt16 = (double) ((MSUtils.getSignedWord(ochBuffer, 208) + -320) * 0.05555);
+            }
+            else
+            {
+                egt1 = (double) ((MSUtils.getSignedWord(ochBuffer, 178) + 0) * 0.1);
+                egt2 = (double) ((MSUtils.getSignedWord(ochBuffer, 180) + 0) * 0.1);
+                egt3 = (double) ((MSUtils.getSignedWord(ochBuffer, 182) + 0) * 0.1);
+                egt4 = (double) ((MSUtils.getSignedWord(ochBuffer, 184) + 0) * 0.1);
+                egt5 = (double) ((MSUtils.getSignedWord(ochBuffer, 186) + 0) * 0.1);
+                egt6 = (double) ((MSUtils.getSignedWord(ochBuffer, 188) + 0) * 0.1);
+                egt7 = (double) ((MSUtils.getSignedWord(ochBuffer, 190) + 0) * 0.1);
+                egt8 = (double) ((MSUtils.getSignedWord(ochBuffer, 192) + 0) * 0.1);
+                egt9 = (double) ((MSUtils.getSignedWord(ochBuffer, 194) + 0) * 0.1);
+                egt10 = (double) ((MSUtils.getSignedWord(ochBuffer, 196) + 0) * 0.1);
+                egt11 = (double) ((MSUtils.getSignedWord(ochBuffer, 198) + 0) * 0.1);
+                egt12 = (double) ((MSUtils.getSignedWord(ochBuffer, 200) + 0) * 0.1);
+                egt13 = (double) ((MSUtils.getSignedWord(ochBuffer, 202) + 0) * 0.1);
+                egt14 = (double) ((MSUtils.getSignedWord(ochBuffer, 204) + 0) * 0.1);
+                egt15 = (double) ((MSUtils.getSignedWord(ochBuffer, 206) + 0) * 0.1);
+                egt16 = (double) ((MSUtils.getSignedWord(ochBuffer, 208) + 0) * 0.1);
+            }
+            maf = (double) ((MSUtils.getWord(ochBuffer, 210) + 0.0) * 0.010);
+            canpwmin0 = (int) ((MSUtils.getWord(ochBuffer, 212) + 0.0) * 1.000);
+            canpwmin1 = (int) ((MSUtils.getWord(ochBuffer, 214) + 0.0) * 1.000);
+            canpwmin2 = (int) ((MSUtils.getWord(ochBuffer, 216) + 0.0) * 1.000);
+            canpwmin3 = (int) ((MSUtils.getWord(ochBuffer, 218) + 0.0) * 1.000);
+            fuelflow = (int) ((MSUtils.getWord(ochBuffer, 220) + 0.0) * 1);
+            fuelcons = (int) ((MSUtils.getWord(ochBuffer, 222) + 0.0) * 1);
+            EAEFuelCorr2 = (int) ((MSUtils.getWord(ochBuffer, 224) + 0.0) * 1.0);
+            syncreason = (int) ((MSUtils.getByte(ochBuffer, 226) + 0.0) * 1.0);
+            sd_status = (int) ((MSUtils.getByte(ochBuffer, 227) + 0.0) * 1.0);
+            eaeload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 228) + 0.0) * 0.1000);
+            afrload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 230) + 0.0) * 0.1000);
+            gear = (int) ((MSUtils.getByte(ochBuffer, 232) + 0) * 1);
+            status6 = (int) ((MSUtils.getByte(ochBuffer, 233) + 0.0) * 1.0);
+            rpmdot = (double) ((MSUtils.getSignedWord(ochBuffer, 234) + 0) * 10);
+            vss1dot = (double) ((MSUtils.getSignedWord(ochBuffer, 236) + 0) * 0.1);
+            vss2dot = (double) ((MSUtils.getSignedWord(ochBuffer, 238) + 0) * 0.1);
+            accelx = (double) ((MSUtils.getSignedWord(ochBuffer, 240) + 0) * 0.001);
+            accely = (double) ((MSUtils.getSignedWord(ochBuffer, 242) + 0) * 0.001);
+            accelz = (double) ((MSUtils.getSignedWord(ochBuffer, 244) + 0) * 0.001);
+            duty_pwm_a = (int) ((MSUtils.getByte(ochBuffer, 246) + 0) * 1);
+            duty_pwm_b = (int) ((MSUtils.getByte(ochBuffer, 247) + 0) * 1);
+            duty_pwm_c = (int) ((MSUtils.getByte(ochBuffer, 248) + 0) * 1);
+            duty_pwm_d = (int) ((MSUtils.getByte(ochBuffer, 249) + 0) * 1);
+            duty_pwm_e = (int) ((MSUtils.getByte(ochBuffer, 250) + 0) * 1);
+            duty_pwm_f = (int) ((MSUtils.getByte(ochBuffer, 251) + 0) * 1);
+            afr1 = (double) ((MSUtils.getByte(ochBuffer, 252) + 0.0) * 0.1);
+            afr2 = (double) ((MSUtils.getByte(ochBuffer, 253) + 0.0) * 0.1);
+            afr3 = (double) ((MSUtils.getByte(ochBuffer, 254) + 0.0) * 0.1);
+            afr4 = (double) ((MSUtils.getByte(ochBuffer, 255) + 0.0) * 0.1);
+            afr5 = (double) ((MSUtils.getByte(ochBuffer, 256) + 0.0) * 0.1);
+            afr6 = (double) ((MSUtils.getByte(ochBuffer, 257) + 0.0) * 0.1);
+            afr7 = (double) ((MSUtils.getByte(ochBuffer, 258) + 0.0) * 0.1);
+            afr8 = (double) ((MSUtils.getByte(ochBuffer, 259) + 0.0) * 0.1);
+            afr9 = (double) ((MSUtils.getByte(ochBuffer, 260) + 0.0) * 0.1);
+            afr10 = (double) ((MSUtils.getByte(ochBuffer, 261) + 0.0) * 0.1);
+            afr11 = (double) ((MSUtils.getByte(ochBuffer, 262) + 0.0) * 0.1);
+            afr12 = (double) ((MSUtils.getByte(ochBuffer, 263) + 0.0) * 0.1);
+            afr13 = (double) ((MSUtils.getByte(ochBuffer, 264) + 0.0) * 0.1);
+            afr14 = (double) ((MSUtils.getByte(ochBuffer, 265) + 0.0) * 0.1);
+            afr15 = (double) ((MSUtils.getByte(ochBuffer, 266) + 0.0) * 0.1);
+            afr16 = (double) ((MSUtils.getByte(ochBuffer, 267) + 0.0) * 0.1);
+            egov1 = (double) ((MSUtils.getWord(ochBuffer, 268) + 0.0) * 0.00489);
+            egov2 = (double) ((MSUtils.getWord(ochBuffer, 270) + 0.0) * 0.00489);
+            egov3 = (double) ((MSUtils.getWord(ochBuffer, 272) + 0.0) * 0.00489);
+            egov4 = (double) ((MSUtils.getWord(ochBuffer, 274) + 0.0) * 0.00489);
+            egov5 = (double) ((MSUtils.getWord(ochBuffer, 276) + 0.0) * 0.00489);
+            egov6 = (double) ((MSUtils.getWord(ochBuffer, 278) + 0.0) * 0.00489);
+            egov7 = (double) ((MSUtils.getWord(ochBuffer, 280) + 0.0) * 0.00489);
+            egov8 = (double) ((MSUtils.getWord(ochBuffer, 282) + 0.0) * 0.00489);
+            egov9 = (double) ((MSUtils.getWord(ochBuffer, 284) + 0.0) * 0.00489);
+            egov10 = (double) ((MSUtils.getWord(ochBuffer, 286) + 0.0) * 0.00489);
+            egov11 = (double) ((MSUtils.getWord(ochBuffer, 288) + 0.0) * 0.00489);
+            egov12 = (double) ((MSUtils.getWord(ochBuffer, 290) + 0.0) * 0.00489);
+            egov13 = (double) ((MSUtils.getWord(ochBuffer, 292) + 0.0) * 0.00489);
+            egov14 = (double) ((MSUtils.getWord(ochBuffer, 294) + 0.0) * 0.00489);
+            egov15 = (double) ((MSUtils.getWord(ochBuffer, 296) + 0.0) * 0.00489);
+            egov16 = (double) ((MSUtils.getWord(ochBuffer, 298) + 0.0) * 0.00489);
+            egocor1 = (double) ((MSUtils.getSignedWord(ochBuffer, 300) + 0.0) * 0.1000);
+            egocor2 = (double) ((MSUtils.getSignedWord(ochBuffer, 302) + 0.0) * 0.1000);
+            egocor3 = (double) ((MSUtils.getSignedWord(ochBuffer, 304) + 0.0) * 0.1000);
+            egocor4 = (double) ((MSUtils.getSignedWord(ochBuffer, 306) + 0.0) * 0.1000);
+            egocor5 = (double) ((MSUtils.getSignedWord(ochBuffer, 308) + 0.0) * 0.1000);
+            egocor6 = (double) ((MSUtils.getSignedWord(ochBuffer, 310) + 0.0) * 0.1000);
+            egocor7 = (double) ((MSUtils.getSignedWord(ochBuffer, 312) + 0.0) * 0.1000);
+            egocor8 = (double) ((MSUtils.getSignedWord(ochBuffer, 314) + 0.0) * 0.1000);
+            egocor9 = (double) ((MSUtils.getSignedWord(ochBuffer, 316) + 0.0) * 0.1000);
+            egocor10 = (double) ((MSUtils.getSignedWord(ochBuffer, 318) + 0.0) * 0.1000);
+            egocor11 = (double) ((MSUtils.getSignedWord(ochBuffer, 320) + 0.0) * 0.1000);
+            egocor12 = (double) ((MSUtils.getSignedWord(ochBuffer, 322) + 0.0) * 0.1000);
+            egocor13 = (double) ((MSUtils.getSignedWord(ochBuffer, 324) + 0.0) * 0.1000);
+            egocor14 = (double) ((MSUtils.getSignedWord(ochBuffer, 326) + 0.0) * 0.1000);
+            egocor15 = (double) ((MSUtils.getSignedWord(ochBuffer, 328) + 0.0) * 0.1000);
+            egocor16 = (double) ((MSUtils.getSignedWord(ochBuffer, 330) + 0.0) * 0.1000);
+            stream_level = (int) ((MSUtils.getByte(ochBuffer, 332) + 0) * 1);
+            water_duty = (int) ((MSUtils.getByte(ochBuffer, 333) + 0) * 1);
+            dwell_trl = (double) ((MSUtils.getWord(ochBuffer, 334) + 0.0) * 0.1000);
+            vss1_real = (int) ((MSUtils.getSignedWord(ochBuffer, 336) + 0.0) * 1);
+            vss2_real = (int) ((MSUtils.getSignedWord(ochBuffer, 338) + 0.0) * 1);
+            ss1 = (int) ((MSUtils.getSignedWord(ochBuffer, 340) + 0.0) * 1.000);
+            ss2 = (int) ((MSUtils.getSignedWord(ochBuffer, 342) + 0.0) * 1.000);
+            nitrous_timer = (double) ((MSUtils.getWord(ochBuffer, 344) + 0) * 0.001);
+            sd_filenum = (int) ((MSUtils.getWord(ochBuffer, 346) + 0) * 1);
+            sd_error = (int) ((MSUtils.getByte(ochBuffer, 348) + 0) * 1);
+            sd_phase = (int) ((MSUtils.getByte(ochBuffer, 349) + 0) * 1);
+            boostduty2 = (int) ((MSUtils.getByte(ochBuffer, 350) + 0.0) * 1.0);
+            status7 = (int) ((MSUtils.getByte(ochBuffer, 351) + 0.0) * 1.0);
+            vvt_ang1 = (double) ((MSUtils.getSignedWord(ochBuffer, 352) + 0.0) * 0.100);
+            vvt_ang2 = (double) ((MSUtils.getSignedWord(ochBuffer, 354) + 0.0) * 0.100);
+            vvt_ang3 = (double) ((MSUtils.getSignedWord(ochBuffer, 356) + 0.0) * 0.100);
+            vvt_ang4 = (double) ((MSUtils.getSignedWord(ochBuffer, 358) + 0.0) * 0.100);
+            inj_timing_pri = (double) ((MSUtils.getSignedWord(ochBuffer, 360) + 0.0) * 0.100);
+            inj_timing_sec = (double) ((MSUtils.getSignedWord(ochBuffer, 362) + 0.0) * 0.100);
+            vvt_target1 = (double) ((MSUtils.getSignedWord(ochBuffer, 364) + 0.0) * 0.100);
+            vvt_target2 = (double) ((MSUtils.getSignedWord(ochBuffer, 366) + 0.0) * 0.100);
+            vvt_target3 = (double) ((MSUtils.getSignedWord(ochBuffer, 368) + 0.0) * 0.100);
+            vvt_target4 = (double) ((MSUtils.getSignedWord(ochBuffer, 370) + 0.0) * 0.100);
+            vvt_duty1 = (double) ((MSUtils.getByte(ochBuffer, 372) + 0.0) * 0.39063);
+            vvt_duty2 = (double) ((MSUtils.getByte(ochBuffer, 373) + 0.0) * 0.39063);
+            vvt_duty3 = (double) ((MSUtils.getByte(ochBuffer, 374) + 0.0) * 0.39063);
+            vvt_duty4 = (double) ((MSUtils.getByte(ochBuffer, 375) + 0.0) * 0.39063);
+            fuel_pct = (double) ((MSUtils.getSignedWord(ochBuffer, 376) + 0.0) * 0.1000);
+            if (CELSIUS)
+            {
+                fuel_temp = (double) ((MSUtils.getSignedWord(ochBuffer, 378) + -320) * 0.05555);
+            }
+            else
+            {
+                fuel_temp = (double) ((MSUtils.getSignedWord(ochBuffer, 378) + 0) * 0.1);
+            }
+            accDecEnrich = (((accelEnrich + (tpsaccden) != 0) ? tpsfuelcut : 100));
+            time = (timeNow());
+            rpm100 = (rpm / 100.0);
+            altDiv1 = (((alternate) != 0) ? 2 : 1);
+            altDiv2 = (((alternate) != 0) ? 2 : 1);
+            cycleTime1 = (60000.0 / rpm * (2.0 - (twoStroke & 1)));
+            nSquirts1 = (nCylinders / divider);
+            dutyCycle1 = (100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
+            cycleTime2 = (60000.0 / rpm * (2.0 - (twoStroke & 1)));
+            nSquirts2 = (nCylinders / divider);
+            dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
+            if (NARROW_BAND_EGO)
+            {
+                egoVoltage = (egoV);
+                afr1err = (egov1 - afrtgt1);
+                afr2err = (egov2 - afrtgt2);
+            }
+            else if (LAMBDA)
+            {
+                lambda1 = (afr1 / stoich);
+                lambda2 = (afr2 / stoich);
+                lambda3 = (afr3 / stoich);
+                lambda4 = (afr4 / stoich);
+                lambda5 = (afr5 / stoich);
+                lambda6 = (afr6 / stoich);
+                lambda7 = (afr7 / stoich);
+                lambda8 = (afr8 / stoich);
+                egoVoltage = (lambda1);
+                afrtgt1 = (afrtgt1raw / stoich * (egoType == 2 ? 1 : 0));
+                afrtgt2 = (afrtgt2raw / stoich * (egoType == 2 ? 1 : 0));
+                afr1err = ((afr1 - afrtgt1raw) / stoich * (egoType == 2 ? 1 : 0));
+                afr2err = ((afr2 - afrtgt2raw) / stoich * (egoType == 2 ? 1 : 0));
+            }
+            else
+            {
+                egoVoltage = (afr1);
+                afr1err = (afr1 - afrtgt1);
+                afr2err = (afr2 - afrtgt2);
+            }
+            pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
+            pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
+            pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
+            pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
+            pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
+            pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0))
+                    + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
+            df_temp = (0);
+            df_press = (0);
+            boostbar = ((map - barometer) / 101.33);
+            boostpsig = ((map - barometer) * 0.1450);
+            if (MPH)
+            {
+                vss1 = (vss1_real * 0.22369);
+                vss2 = (vss2_real * 0.22369);
+            }
+            else
+            {
+                vss1 = (vss1_real * 0.36);
+                vss2 = (vss2_real * 0.36);
+            }
+            
+            economy_l_km = 0;
+            if (vss1_real > 0) 
+            {
+                economy_l_km = (fuelflow / (vss1_real * 6));
+            }
+            economy_mpg_us = 0;
+            economy_mpg_uk = 0;
+            if (economy_l_km > 0)
+            {
+                economy_mpg_us = ((2.361 / economy_l_km));
+                economy_mpg_uk = ((2.825 / economy_l_km));
+            }        
         }
-        else
-        {
-        }
-        seconds = (int) ((MSUtils.getWord(ochBuffer, 0) + 0.0) * 1.000);
-        secl = (seconds % 256);
-        if (PW_4X)
-        {
-            pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 2) + 0.0) * 0.004);
-            pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 4) + 0.0) * 0.004);
-        }
-        else
-        {
-            pulseWidth1 = (double) ((MSUtils.getWord(ochBuffer, 2) + 0.0) * 0.001);
-            pulseWidth2 = (double) ((MSUtils.getWord(ochBuffer, 4) + 0.0) * 0.001);
-        }
-        pulseWidth = (pulseWidth1);
-        rpm = (int) ((MSUtils.getWord(ochBuffer, 6) + 0.0) * 1.000);
-        advance = (double) ((MSUtils.getSignedWord(ochBuffer, 8) + 0.0) * 0.100);
-        squirt = (int) ((MSUtils.getByte(ochBuffer, 10) + 0.0) * 1.000);
-        firing1 = MSUtils.getBits(ochBuffer, 10, 0, 0, 0);
-        firing2 = MSUtils.getBits(ochBuffer, 10, 1, 1, 0);
-        sched1 = MSUtils.getBits(ochBuffer, 10, 2, 2, 0);
-        inj1 = MSUtils.getBits(ochBuffer, 10, 3, 3, 0);
-        sched2 = MSUtils.getBits(ochBuffer, 10, 4, 4, 0);
-        inj2 = MSUtils.getBits(ochBuffer, 10, 5, 5, 0);
-        engine = (int) ((MSUtils.getByte(ochBuffer, 11) + 0.0) * 1.000);
-        ready = MSUtils.getBits(ochBuffer, 11, 0, 0, 0);
-        crank = MSUtils.getBits(ochBuffer, 11, 1, 1, 0);
-        startw = MSUtils.getBits(ochBuffer, 11, 2, 2, 0);
-        warmup = MSUtils.getBits(ochBuffer, 11, 3, 3, 0);
-        tpsaccaen = MSUtils.getBits(ochBuffer, 11, 4, 4, 0);
-        tpsaccden = MSUtils.getBits(ochBuffer, 11, 5, 5, 0);
-        mapaccaen = MSUtils.getBits(ochBuffer, 11, 6, 6, 0);
-        mapaccden = MSUtils.getBits(ochBuffer, 11, 7, 7, 0);
-        if (NARROW_BAND_EGO)
-        {
-            afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.00489);
-            afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.00489);
-        }
-        else if (LAMBDA)
-        {
-            afrtgt1raw = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
-            afrtgt2raw = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
-        }
-        else
-        {
-            afrtgt1 = (double) ((MSUtils.getByte(ochBuffer, 12) + 0.0) * 0.1);
-            afrtgt2 = (double) ((MSUtils.getByte(ochBuffer, 13) + 0.0) * 0.1);
-        }
-        wbo2_en1 = (int) ((MSUtils.getByte(ochBuffer, 14) + 0.0) * 1.000);
-        wbo2_en2 = (int) ((MSUtils.getByte(ochBuffer, 15) + 0.0) * 1.000);
-        barometer = (double) ((MSUtils.getSignedWord(ochBuffer, 16) + 0.0) * 0.100);
-        map = (double) ((MSUtils.getSignedWord(ochBuffer, 18) + 0.0) * 0.100);
-        if (CELSIUS)
-        {
-            mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + -320.0) * 0.05555);
-            coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + -320.0) * 0.05555);
-        }
-        else
-        {
-            mat = (double) ((MSUtils.getSignedWord(ochBuffer, 20) + 0.0) * 0.100);
-            coolant = (double) ((MSUtils.getSignedWord(ochBuffer, 22) + 0.0) * 0.100);
-        }
-        tps = (double) ((MSUtils.getSignedWord(ochBuffer, 24) + 0.0) * 0.100);
-        throttle = (tps);
-        batteryVoltage = (double) ((MSUtils.getSignedWord(ochBuffer, 26) + 0.0) * 0.100);
-        afr1_old = (double) ((MSUtils.getSignedWord(ochBuffer, 28) + 0.0) * 0.100);
-        afr2_old = (double) ((MSUtils.getSignedWord(ochBuffer, 30) + 0.0) * 0.100);
-        knock = (double) ((MSUtils.getSignedWord(ochBuffer, 32) + 0.0) * 0.100);
-        egoCorrection1 = (double) ((MSUtils.getSignedWord(ochBuffer, 34) + 0.0) * 0.1000);
-        egoCorrection = ((egoCorrection1 + egoCorrection2) / 2);
-        egoCorrection2 = (double) ((MSUtils.getSignedWord(ochBuffer, 36) + 0.0) * 0.1000);
-        airCorrection = (double) ((MSUtils.getSignedWord(ochBuffer, 38) + 0.0) * 0.1000);
-        warmupEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 40) + 0.0) * 1.000);
-        accelEnrich = (double) ((MSUtils.getSignedWord(ochBuffer, 42) + 0.0) * 0.100);
-        tpsfuelcut = (int) ((MSUtils.getSignedWord(ochBuffer, 44) + 0.0) * 1.000);
-        baroCorrection = (double) ((MSUtils.getSignedWord(ochBuffer, 46) + 0.0) * 0.1000);
-        gammaEnrich = (int) ((MSUtils.getSignedWord(ochBuffer, 48) + 0.0) * 1.000);
-        veCurr1 = (double) ((MSUtils.getSignedWord(ochBuffer, 50) + 0.0) * 0.1000);
-        veCurr2 = (double) ((MSUtils.getSignedWord(ochBuffer, 52) + 0.0) * 0.1000);
-        veCurr = (veCurr1);
-        iacstep = (int) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 1.000);
-        idleDC = (double) ((MSUtils.getSignedWord(ochBuffer, 54) + 0.0) * 0.39063);
-        coldAdvDeg = (double) ((MSUtils.getSignedWord(ochBuffer, 56) + 0.0) * 0.100);
-        tpsDOT = (double) ((MSUtils.getSignedWord(ochBuffer, 58) + 0.0) * 0.100);
-        mapDOT = (int) ((MSUtils.getSignedWord(ochBuffer, 60) + 0.0) * 1.000);
-        dwell = (double) ((MSUtils.getWord(ochBuffer, 62) + 0.0) * 0.1000);
-        mafmap = (double) ((MSUtils.getSignedWord(ochBuffer, 64) + 0.0) * 0.1000);
-        fuelload = (double) ((MSUtils.getSignedWord(ochBuffer, 66) + 0.0) * 0.100);
-        fuelCorrection = (int) ((MSUtils.getSignedWord(ochBuffer, 68) + 0.0) * 1.000);
-        portStatus = (int) ((MSUtils.getByte(ochBuffer, 70) + 0.0) * 1.000);
-        port0 = MSUtils.getBits(ochBuffer, 70, 0, 0, 0);
-        port1 = MSUtils.getBits(ochBuffer, 70, 1, 1, 0);
-        port2 = MSUtils.getBits(ochBuffer, 70, 2, 2, 0);
-        port3 = MSUtils.getBits(ochBuffer, 70, 3, 3, 0);
-        port4 = MSUtils.getBits(ochBuffer, 70, 4, 4, 0);
-        port5 = MSUtils.getBits(ochBuffer, 70, 5, 5, 0);
-        port6 = MSUtils.getBits(ochBuffer, 70, 6, 6, 0);
-        knockRetard = (double) ((MSUtils.getByte(ochBuffer, 71) + 0.0) * 0.1);
-        EAEFuelCorr1 = (int) ((MSUtils.getWord(ochBuffer, 72) + 0.0) * 1.0);
-        egoV = (double) ((MSUtils.getSignedWord(ochBuffer, 74) + 0.0) * 0.01);
-        egoV2 = (double) ((MSUtils.getSignedWord(ochBuffer, 76) + 0.0) * 0.01);
-        status1 = (int) ((MSUtils.getByte(ochBuffer, 78) + 0.0) * 1.0);
-        status2 = (int) ((MSUtils.getByte(ochBuffer, 79) + 0.0) * 1.0);
-        status3 = (int) ((MSUtils.getByte(ochBuffer, 80) + 0.0) * 1.0);
-        status4 = (int) ((MSUtils.getByte(ochBuffer, 81) + 0.0) * 1.0);
-        looptime = (int) ((MSUtils.getWord(ochBuffer, 82) + 0.0) * 1.0);
-        status5 = (int) ((MSUtils.getWord(ochBuffer, 84) + 0) * 1);
-        tpsADC = (int) ((MSUtils.getWord(ochBuffer, 86) + 0) * 1);
-        fuelload2 = (double) ((MSUtils.getWord(ochBuffer, 88) + 0.0) * 0.100);
-        ignload = (double) ((MSUtils.getSignedWord(ochBuffer, 90) + 0.0) * 0.100);
-        ignload2 = (double) ((MSUtils.getSignedWord(ochBuffer, 92) + 0.0) * 0.100);
-        synccnt = (int) ((MSUtils.getByte(ochBuffer, 94) + 0) * 1);
-        timing_err = (int) ((MSUtils.getSignedByte(ochBuffer, 95) + 0) * 1);
-        wallfuel1 = (double) ((MSUtils.getLong(ochBuffer, 96) + 0.0) * 0.010);
-        wallfuel2 = (int) ((MSUtils.getLong(ochBuffer, 100) + 0.0) * 1.000);
-        sensor01 = (double) ((MSUtils.getSignedWord(ochBuffer, 104) + 0.0) * 0.1000);
-        sensor02 = (double) ((MSUtils.getSignedWord(ochBuffer, 106) + 0.0) * 0.1000);
-        sensor03 = (double) ((MSUtils.getSignedWord(ochBuffer, 108) + 0.0) * 0.1000);
-        sensor04 = (double) ((MSUtils.getSignedWord(ochBuffer, 110) + 0.0) * 0.1000);
-        sensor05 = (double) ((MSUtils.getSignedWord(ochBuffer, 112) + 0.0) * 0.1000);
-        sensor06 = (double) ((MSUtils.getSignedWord(ochBuffer, 114) + 0.0) * 0.1000);
-        sensor07 = (double) ((MSUtils.getSignedWord(ochBuffer, 116) + 0.0) * 0.1000);
-        sensor08 = (double) ((MSUtils.getSignedWord(ochBuffer, 118) + 0.0) * 0.1000);
-        sensor09 = (double) ((MSUtils.getSignedWord(ochBuffer, 120) + 0.0) * 0.1000);
-        sensor10 = (double) ((MSUtils.getSignedWord(ochBuffer, 122) + 0.0) * 0.1000);
-        sensor11 = (double) ((MSUtils.getSignedWord(ochBuffer, 124) + 0.0) * 0.1000);
-        sensor12 = (double) ((MSUtils.getSignedWord(ochBuffer, 126) + 0.0) * 0.1000);
-        sensor13 = (double) ((MSUtils.getSignedWord(ochBuffer, 128) + 0.0) * 0.1000);
-        sensor14 = (double) ((MSUtils.getSignedWord(ochBuffer, 130) + 0.0) * 0.1000);
-        sensor15 = (double) ((MSUtils.getSignedWord(ochBuffer, 132) + 0.0) * 0.1000);
-        sensor16 = (double) ((MSUtils.getSignedWord(ochBuffer, 134) + 0.0) * 0.1000);
-        canin1_8 = (int) ((MSUtils.getByte(ochBuffer, 136) + 0.0) * 1.000);
-        canout1_8 = (int) ((MSUtils.getByte(ochBuffer, 137) + 0.0) * 1.000);
-        canout9_16 = (int) ((MSUtils.getByte(ochBuffer, 138) + 0.0) * 1.000);
-        boostduty = (int) ((MSUtils.getByte(ochBuffer, 139) + 0.0) * 1.0);
-        if (PW_4X)
-        {
-            n2o_addfuel = (double) ((MSUtils.getSignedWord(ochBuffer, 140) + 0) * 0.004);
-        }
-        else
-        {
-            n2o_addfuel = (double) ((MSUtils.getSignedWord(ochBuffer, 140) + 0) * 0.001);
-        }
-        n2o_retard = (double) ((MSUtils.getSignedWord(ochBuffer, 142) + 0) * 0.1);
-        if (PW_4X)
-        {
-            pwseq1 = (double) ((MSUtils.getWord(ochBuffer, 144) + 0) * 0.004);
-            pwseq2 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0) * 0.004);
-            pwseq3 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0) * 0.004);
-            pwseq4 = (double) ((MSUtils.getWord(ochBuffer, 150) + 0) * 0.004);
-            pwseq5 = (double) ((MSUtils.getWord(ochBuffer, 152) + 0) * 0.004);
-            pwseq6 = (double) ((MSUtils.getWord(ochBuffer, 154) + 0) * 0.004);
-            pwseq7 = (double) ((MSUtils.getWord(ochBuffer, 156) + 0) * 0.004);
-            pwseq8 = (double) ((MSUtils.getWord(ochBuffer, 158) + 0) * 0.004);
-            pwseq9 = (double) ((MSUtils.getWord(ochBuffer, 160) + 0) * 0.004);
-            pwseq10 = (double) ((MSUtils.getWord(ochBuffer, 162) + 0) * 0.004);
-            pwseq11 = (double) ((MSUtils.getWord(ochBuffer, 164) + 0) * 0.004);
-            pwseq12 = (double) ((MSUtils.getWord(ochBuffer, 166) + 0) * 0.004);
-            pwseq13 = (double) ((MSUtils.getWord(ochBuffer, 168) + 0) * 0.004);
-            pwseq14 = (double) ((MSUtils.getWord(ochBuffer, 170) + 0) * 0.004);
-            pwseq15 = (double) ((MSUtils.getWord(ochBuffer, 172) + 0) * 0.004);
-            pwseq16 = (double) ((MSUtils.getWord(ochBuffer, 174) + 0) * 0.004);
-        }
-        else
-        {
-            pwseq1 = (double) ((MSUtils.getWord(ochBuffer, 144) + 0) * 0.001);
-            pwseq2 = (double) ((MSUtils.getWord(ochBuffer, 146) + 0) * 0.001);
-            pwseq3 = (double) ((MSUtils.getWord(ochBuffer, 148) + 0) * 0.001);
-            pwseq4 = (double) ((MSUtils.getWord(ochBuffer, 150) + 0) * 0.001);
-            pwseq5 = (double) ((MSUtils.getWord(ochBuffer, 152) + 0) * 0.001);
-            pwseq6 = (double) ((MSUtils.getWord(ochBuffer, 154) + 0) * 0.001);
-            pwseq7 = (double) ((MSUtils.getWord(ochBuffer, 156) + 0) * 0.001);
-            pwseq8 = (double) ((MSUtils.getWord(ochBuffer, 158) + 0) * 0.001);
-            pwseq9 = (double) ((MSUtils.getWord(ochBuffer, 160) + 0) * 0.001);
-            pwseq10 = (double) ((MSUtils.getWord(ochBuffer, 162) + 0) * 0.001);
-            pwseq11 = (double) ((MSUtils.getWord(ochBuffer, 164) + 0) * 0.001);
-            pwseq12 = (double) ((MSUtils.getWord(ochBuffer, 166) + 0) * 0.001);
-            pwseq13 = (double) ((MSUtils.getWord(ochBuffer, 168) + 0) * 0.001);
-            pwseq14 = (double) ((MSUtils.getWord(ochBuffer, 170) + 0) * 0.001);
-            pwseq15 = (double) ((MSUtils.getWord(ochBuffer, 172) + 0) * 0.001);
-            pwseq16 = (double) ((MSUtils.getWord(ochBuffer, 174) + 0) * 0.001);
-        }
-        nitrous1_duty = (int) ((MSUtils.getByte(ochBuffer, 176) + 0) * 1);
-        nitrous2_duty = (int) ((MSUtils.getByte(ochBuffer, 177) + 0) * 1);
-        if (CELSIUS)
-        {
-            egt1 = (double) ((MSUtils.getSignedWord(ochBuffer, 178) + -320) * 0.05555);
-            egt2 = (double) ((MSUtils.getSignedWord(ochBuffer, 180) + -320) * 0.05555);
-            egt3 = (double) ((MSUtils.getSignedWord(ochBuffer, 182) + -320) * 0.05555);
-            egt4 = (double) ((MSUtils.getSignedWord(ochBuffer, 184) + -320) * 0.05555);
-            egt5 = (double) ((MSUtils.getSignedWord(ochBuffer, 186) + -320) * 0.05555);
-            egt6 = (double) ((MSUtils.getSignedWord(ochBuffer, 188) + -320) * 0.05555);
-            egt7 = (double) ((MSUtils.getSignedWord(ochBuffer, 190) + -320) * 0.05555);
-            egt8 = (double) ((MSUtils.getSignedWord(ochBuffer, 192) + -320) * 0.05555);
-            egt9 = (double) ((MSUtils.getSignedWord(ochBuffer, 194) + -320) * 0.05555);
-            egt10 = (double) ((MSUtils.getSignedWord(ochBuffer, 196) + -320) * 0.05555);
-            egt11 = (double) ((MSUtils.getSignedWord(ochBuffer, 198) + -320) * 0.05555);
-            egt12 = (double) ((MSUtils.getSignedWord(ochBuffer, 200) + -320) * 0.05555);
-            egt13 = (double) ((MSUtils.getSignedWord(ochBuffer, 202) + -320) * 0.05555);
-            egt14 = (double) ((MSUtils.getSignedWord(ochBuffer, 204) + -320) * 0.05555);
-            egt15 = (double) ((MSUtils.getSignedWord(ochBuffer, 206) + -320) * 0.05555);
-            egt16 = (double) ((MSUtils.getSignedWord(ochBuffer, 208) + -320) * 0.05555);
-        }
-        else
-        {
-            egt1 = (double) ((MSUtils.getSignedWord(ochBuffer, 178) + 0) * 0.1);
-            egt2 = (double) ((MSUtils.getSignedWord(ochBuffer, 180) + 0) * 0.1);
-            egt3 = (double) ((MSUtils.getSignedWord(ochBuffer, 182) + 0) * 0.1);
-            egt4 = (double) ((MSUtils.getSignedWord(ochBuffer, 184) + 0) * 0.1);
-            egt5 = (double) ((MSUtils.getSignedWord(ochBuffer, 186) + 0) * 0.1);
-            egt6 = (double) ((MSUtils.getSignedWord(ochBuffer, 188) + 0) * 0.1);
-            egt7 = (double) ((MSUtils.getSignedWord(ochBuffer, 190) + 0) * 0.1);
-            egt8 = (double) ((MSUtils.getSignedWord(ochBuffer, 192) + 0) * 0.1);
-            egt9 = (double) ((MSUtils.getSignedWord(ochBuffer, 194) + 0) * 0.1);
-            egt10 = (double) ((MSUtils.getSignedWord(ochBuffer, 196) + 0) * 0.1);
-            egt11 = (double) ((MSUtils.getSignedWord(ochBuffer, 198) + 0) * 0.1);
-            egt12 = (double) ((MSUtils.getSignedWord(ochBuffer, 200) + 0) * 0.1);
-            egt13 = (double) ((MSUtils.getSignedWord(ochBuffer, 202) + 0) * 0.1);
-            egt14 = (double) ((MSUtils.getSignedWord(ochBuffer, 204) + 0) * 0.1);
-            egt15 = (double) ((MSUtils.getSignedWord(ochBuffer, 206) + 0) * 0.1);
-            egt16 = (double) ((MSUtils.getSignedWord(ochBuffer, 208) + 0) * 0.1);
-        }
-        maf = (double) ((MSUtils.getWord(ochBuffer, 210) + 0.0) * 0.010);
-        canpwmin0 = (int) ((MSUtils.getWord(ochBuffer, 212) + 0.0) * 1.000);
-        canpwmin1 = (int) ((MSUtils.getWord(ochBuffer, 214) + 0.0) * 1.000);
-        canpwmin2 = (int) ((MSUtils.getWord(ochBuffer, 216) + 0.0) * 1.000);
-        canpwmin3 = (int) ((MSUtils.getWord(ochBuffer, 218) + 0.0) * 1.000);
-        fuelflow = (int) ((MSUtils.getWord(ochBuffer, 220) + 0.0) * 1);
-        fuelcons = (int) ((MSUtils.getWord(ochBuffer, 222) + 0.0) * 1);
-        EAEFuelCorr2 = (int) ((MSUtils.getWord(ochBuffer, 224) + 0.0) * 1.0);
-        syncreason = (int) ((MSUtils.getByte(ochBuffer, 226) + 0.0) * 1.0);
-        sd_status = (int) ((MSUtils.getByte(ochBuffer, 227) + 0.0) * 1.0);
-        eaeload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 228) + 0.0) * 0.1000);
-        afrload1 = (double) ((MSUtils.getSignedWord(ochBuffer, 230) + 0.0) * 0.1000);
-        gear = (int) ((MSUtils.getByte(ochBuffer, 232) + 0) * 1);
-        status6 = (int) ((MSUtils.getByte(ochBuffer, 233) + 0.0) * 1.0);
-        rpmdot = (double) ((MSUtils.getSignedWord(ochBuffer, 234) + 0) * 10);
-        vss1dot = (double) ((MSUtils.getSignedWord(ochBuffer, 236) + 0) * 0.1);
-        vss2dot = (double) ((MSUtils.getSignedWord(ochBuffer, 238) + 0) * 0.1);
-        accelx = (double) ((MSUtils.getSignedWord(ochBuffer, 240) + 0) * 0.001);
-        accely = (double) ((MSUtils.getSignedWord(ochBuffer, 242) + 0) * 0.001);
-        accelz = (double) ((MSUtils.getSignedWord(ochBuffer, 244) + 0) * 0.001);
-        duty_pwm_a = (int) ((MSUtils.getByte(ochBuffer, 246) + 0) * 1);
-        duty_pwm_b = (int) ((MSUtils.getByte(ochBuffer, 247) + 0) * 1);
-        duty_pwm_c = (int) ((MSUtils.getByte(ochBuffer, 248) + 0) * 1);
-        duty_pwm_d = (int) ((MSUtils.getByte(ochBuffer, 249) + 0) * 1);
-        duty_pwm_e = (int) ((MSUtils.getByte(ochBuffer, 250) + 0) * 1);
-        duty_pwm_f = (int) ((MSUtils.getByte(ochBuffer, 251) + 0) * 1);
-        afr1 = (double) ((MSUtils.getByte(ochBuffer, 252) + 0.0) * 0.1);
-        afr2 = (double) ((MSUtils.getByte(ochBuffer, 253) + 0.0) * 0.1);
-        afr3 = (double) ((MSUtils.getByte(ochBuffer, 254) + 0.0) * 0.1);
-        afr4 = (double) ((MSUtils.getByte(ochBuffer, 255) + 0.0) * 0.1);
-        afr5 = (double) ((MSUtils.getByte(ochBuffer, 256) + 0.0) * 0.1);
-        afr6 = (double) ((MSUtils.getByte(ochBuffer, 257) + 0.0) * 0.1);
-        afr7 = (double) ((MSUtils.getByte(ochBuffer, 258) + 0.0) * 0.1);
-        afr8 = (double) ((MSUtils.getByte(ochBuffer, 259) + 0.0) * 0.1);
-        afr9 = (double) ((MSUtils.getByte(ochBuffer, 260) + 0.0) * 0.1);
-        afr10 = (double) ((MSUtils.getByte(ochBuffer, 261) + 0.0) * 0.1);
-        afr11 = (double) ((MSUtils.getByte(ochBuffer, 262) + 0.0) * 0.1);
-        afr12 = (double) ((MSUtils.getByte(ochBuffer, 263) + 0.0) * 0.1);
-        afr13 = (double) ((MSUtils.getByte(ochBuffer, 264) + 0.0) * 0.1);
-        afr14 = (double) ((MSUtils.getByte(ochBuffer, 265) + 0.0) * 0.1);
-        afr15 = (double) ((MSUtils.getByte(ochBuffer, 266) + 0.0) * 0.1);
-        afr16 = (double) ((MSUtils.getByte(ochBuffer, 267) + 0.0) * 0.1);
-        egov1 = (double) ((MSUtils.getWord(ochBuffer, 268) + 0.0) * 0.00489);
-        egov2 = (double) ((MSUtils.getWord(ochBuffer, 270) + 0.0) * 0.00489);
-        egov3 = (double) ((MSUtils.getWord(ochBuffer, 272) + 0.0) * 0.00489);
-        egov4 = (double) ((MSUtils.getWord(ochBuffer, 274) + 0.0) * 0.00489);
-        egov5 = (double) ((MSUtils.getWord(ochBuffer, 276) + 0.0) * 0.00489);
-        egov6 = (double) ((MSUtils.getWord(ochBuffer, 278) + 0.0) * 0.00489);
-        egov7 = (double) ((MSUtils.getWord(ochBuffer, 280) + 0.0) * 0.00489);
-        egov8 = (double) ((MSUtils.getWord(ochBuffer, 282) + 0.0) * 0.00489);
-        egov9 = (double) ((MSUtils.getWord(ochBuffer, 284) + 0.0) * 0.00489);
-        egov10 = (double) ((MSUtils.getWord(ochBuffer, 286) + 0.0) * 0.00489);
-        egov11 = (double) ((MSUtils.getWord(ochBuffer, 288) + 0.0) * 0.00489);
-        egov12 = (double) ((MSUtils.getWord(ochBuffer, 290) + 0.0) * 0.00489);
-        egov13 = (double) ((MSUtils.getWord(ochBuffer, 292) + 0.0) * 0.00489);
-        egov14 = (double) ((MSUtils.getWord(ochBuffer, 294) + 0.0) * 0.00489);
-        egov15 = (double) ((MSUtils.getWord(ochBuffer, 296) + 0.0) * 0.00489);
-        egov16 = (double) ((MSUtils.getWord(ochBuffer, 298) + 0.0) * 0.00489);
-        egocor1 = (double) ((MSUtils.getSignedWord(ochBuffer, 300) + 0.0) * 0.1000);
-        egocor2 = (double) ((MSUtils.getSignedWord(ochBuffer, 302) + 0.0) * 0.1000);
-        egocor3 = (double) ((MSUtils.getSignedWord(ochBuffer, 304) + 0.0) * 0.1000);
-        egocor4 = (double) ((MSUtils.getSignedWord(ochBuffer, 306) + 0.0) * 0.1000);
-        egocor5 = (double) ((MSUtils.getSignedWord(ochBuffer, 308) + 0.0) * 0.1000);
-        egocor6 = (double) ((MSUtils.getSignedWord(ochBuffer, 310) + 0.0) * 0.1000);
-        egocor7 = (double) ((MSUtils.getSignedWord(ochBuffer, 312) + 0.0) * 0.1000);
-        egocor8 = (double) ((MSUtils.getSignedWord(ochBuffer, 314) + 0.0) * 0.1000);
-        egocor9 = (double) ((MSUtils.getSignedWord(ochBuffer, 316) + 0.0) * 0.1000);
-        egocor10 = (double) ((MSUtils.getSignedWord(ochBuffer, 318) + 0.0) * 0.1000);
-        egocor11 = (double) ((MSUtils.getSignedWord(ochBuffer, 320) + 0.0) * 0.1000);
-        egocor12 = (double) ((MSUtils.getSignedWord(ochBuffer, 322) + 0.0) * 0.1000);
-        egocor13 = (double) ((MSUtils.getSignedWord(ochBuffer, 324) + 0.0) * 0.1000);
-        egocor14 = (double) ((MSUtils.getSignedWord(ochBuffer, 326) + 0.0) * 0.1000);
-        egocor15 = (double) ((MSUtils.getSignedWord(ochBuffer, 328) + 0.0) * 0.1000);
-        egocor16 = (double) ((MSUtils.getSignedWord(ochBuffer, 330) + 0.0) * 0.1000);
-        stream_level = (int) ((MSUtils.getByte(ochBuffer, 332) + 0) * 1);
-        water_duty = (int) ((MSUtils.getByte(ochBuffer, 333) + 0) * 1);
-        dwell_trl = (double) ((MSUtils.getWord(ochBuffer, 334) + 0.0) * 0.1000);
-        vss1_real = (int) ((MSUtils.getSignedWord(ochBuffer, 336) + 0.0) * 1);
-        vss2_real = (int) ((MSUtils.getSignedWord(ochBuffer, 338) + 0.0) * 1);
-        ss1 = (int) ((MSUtils.getSignedWord(ochBuffer, 340) + 0.0) * 1.000);
-        ss2 = (int) ((MSUtils.getSignedWord(ochBuffer, 342) + 0.0) * 1.000);
-        nitrous_timer = (double) ((MSUtils.getWord(ochBuffer, 344) + 0) * 0.001);
-        sd_filenum = (int) ((MSUtils.getWord(ochBuffer, 346) + 0) * 1);
-        sd_error = (int) ((MSUtils.getByte(ochBuffer, 348) + 0) * 1);
-        sd_phase = (int) ((MSUtils.getByte(ochBuffer, 349) + 0) * 1);
-        boostduty2 = (int) ((MSUtils.getByte(ochBuffer, 350) + 0.0) * 1.0);
-        status7 = (int) ((MSUtils.getByte(ochBuffer, 351) + 0.0) * 1.0);
-        vvt_ang1 = (double) ((MSUtils.getSignedWord(ochBuffer, 352) + 0.0) * 0.100);
-        vvt_ang2 = (double) ((MSUtils.getSignedWord(ochBuffer, 354) + 0.0) * 0.100);
-        vvt_ang3 = (double) ((MSUtils.getSignedWord(ochBuffer, 356) + 0.0) * 0.100);
-        vvt_ang4 = (double) ((MSUtils.getSignedWord(ochBuffer, 358) + 0.0) * 0.100);
-        inj_timing_pri = (double) ((MSUtils.getSignedWord(ochBuffer, 360) + 0.0) * 0.100);
-        inj_timing_sec = (double) ((MSUtils.getSignedWord(ochBuffer, 362) + 0.0) * 0.100);
-        vvt_target1 = (double) ((MSUtils.getSignedWord(ochBuffer, 364) + 0.0) * 0.100);
-        vvt_target2 = (double) ((MSUtils.getSignedWord(ochBuffer, 366) + 0.0) * 0.100);
-        vvt_target3 = (double) ((MSUtils.getSignedWord(ochBuffer, 368) + 0.0) * 0.100);
-        vvt_target4 = (double) ((MSUtils.getSignedWord(ochBuffer, 370) + 0.0) * 0.100);
-        vvt_duty1 = (double) ((MSUtils.getByte(ochBuffer, 372) + 0.0) * 0.39063);
-        vvt_duty2 = (double) ((MSUtils.getByte(ochBuffer, 373) + 0.0) * 0.39063);
-        vvt_duty3 = (double) ((MSUtils.getByte(ochBuffer, 374) + 0.0) * 0.39063);
-        vvt_duty4 = (double) ((MSUtils.getByte(ochBuffer, 375) + 0.0) * 0.39063);
-        fuel_pct = (double) ((MSUtils.getSignedWord(ochBuffer, 376) + 0.0) * 0.1000);
-        if (CELSIUS)
-        {
-            fuel_temp = (double) ((MSUtils.getSignedWord(ochBuffer, 378) + -320) * 0.05555);
-        }
-        else
-        {
-            fuel_temp = (double) ((MSUtils.getSignedWord(ochBuffer, 378) + 0) * 0.1);
-        }
-        accDecEnrich = (((accelEnrich + (tpsaccden) != 0) ? tpsfuelcut : 100));
-        time = (timeNow());
-        rpm100 = (rpm / 100.0);
-        altDiv1 = (((alternate) != 0) ? 2 : 1);
-        altDiv2 = (((alternate) != 0) ? 2 : 1);
-        cycleTime1 = (60000.0 / rpm * (2.0 - (twoStroke & 1)));
-        nSquirts1 = (nCylinders / divider);
-        dutyCycle1 = (100.0 * nSquirts1 / altDiv1 * pulseWidth1 / cycleTime1);
-        cycleTime2 = (60000.0 / rpm * (2.0 - (twoStroke & 1)));
-        nSquirts2 = (nCylinders / divider);
-        dutyCycle2 = (100.0 * nSquirts2 / altDiv2 * pulseWidth2 / cycleTime2);
-        if (NARROW_BAND_EGO)
-        {
-            egoVoltage = (egoV);
-            afr1err = (egov1 - afrtgt1);
-            afr2err = (egov2 - afrtgt2);
-        }
-        else if (LAMBDA)
-        {
-            lambda1 = (afr1 / stoich);
-            lambda2 = (afr2 / stoich);
-            lambda3 = (afr3 / stoich);
-            lambda4 = (afr4 / stoich);
-            lambda5 = (afr5 / stoich);
-            lambda6 = (afr6 / stoich);
-            lambda7 = (afr7 / stoich);
-            lambda8 = (afr8 / stoich);
-            egoVoltage = (lambda1);
-            afrtgt1 = (afrtgt1raw / stoich * (egoType == 2 ? 1 : 0));
-            afrtgt2 = (afrtgt2raw / stoich * (egoType == 2 ? 1 : 0));
-            afr1err = ((afr1 - afrtgt1raw) / stoich * (egoType == 2 ? 1 : 0));
-            afr2err = ((afr2 - afrtgt2raw) / stoich * (egoType == 2 ? 1 : 0));
-        }
-        else
-        {
-            egoVoltage = (afr1);
-            afr1err = (afr1 - afrtgt1);
-            afr2err = (afr2 - afrtgt2);
-        }
-        pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
-        pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
-        pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
-        pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
-        pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
-        pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map * 100 / (barometer + (100 * (barometer == 0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0))
-                + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
-        df_temp = (0);
-        df_press = (0);
-        boostbar = ((map - barometer) / 101.33);
-        boostpsig = ((map - barometer) * 0.1450);
-        if (MPH)
-        {
-            vss1 = (vss1_real * 0.22369);
-            vss2 = (vss2_real * 0.22369);
-        }
-        else
-        {
-            vss1 = (vss1_real * 0.36);
-            vss2 = (vss2_real * 0.36);
-        }
-        economy_l_km = (fuelflow / (vss1_real * 6));
-        economy_mpg_us = ((2.361 / economy_l_km));
-        economy_mpg_uk = ((2.825 / economy_l_km));
-        }
-        catch (Exception e) 
-        {
-            DebugLogManager.INSTANCE.logException(e);
+        catch (Exception exception) 
+        {            
+            DebugLogManager.INSTANCE.log("Exception in calculate", Log.ERROR);
         }
     }
 
@@ -4174,238 +4181,12 @@ public class ZZMS3_Pre11_alpha20 extends Megasquirt
         dualfuel_sec = MSUtils.getBits(pageBuffer, 955, 0, 1, 0);
         ITB_load_mappoint = (double) ((MSUtils.getSignedWord(pageBuffer, 956) + 0.0) * 0.1);
         ITB_load_idletpsthresh = (double) ((MSUtils.getSignedWord(pageBuffer, 958) + 0.0) * 0.1);
-        if (CELSIUS)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
+       
         user_value1 = (int) ((MSUtils.getWord(pageBuffer, 958) + 0.0) * 1.0);
         user_value2 = (int) ((MSUtils.getWord(pageBuffer, 960) + 0.0) * 1.0);
         user_conf0 = MSUtils.getBits(pageBuffer, 962, 0, 0, 0);
         user_conf1 = MSUtils.getBits(pageBuffer, 962, 1, 2, 0);
-        if (LAMBDA)
-        {
-        }
-        else
-        {
-        }
-        if (MPH)
-        {
-        }
-        else
-        {
-        }
-        if (LAMBDA)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (PW_4X)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (PW_4X)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (MPH)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        if (CELSIUS)
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
-        else
-        {
-            if (EXPANDED_CLT_TEMP)
-            {
-            }
-            else
-            {
-            }
-        }
+      
         als_opt_fc = MSUtils.getBits(pageBuffer, 336, 0, 0, 0);
         als_opt_sc = MSUtils.getBits(pageBuffer, 336, 1, 1, 0);
         als_opt_idle = MSUtils.getBits(pageBuffer, 336, 2, 2, 0);
@@ -4440,6 +4221,7 @@ public class ZZMS3_Pre11_alpha20 extends Megasquirt
         {
             als_maxmat = (double) ((MSUtils.getSignedWord(pageBuffer, 596) + 0.0) * 0.1);
         }
+        
         vvt_onoff_ang = (double) ((MSUtils.getSignedWord(pageBuffer, 598) + 0.0) * 0.1);
         vvt_opt1_on = MSUtils.getBits(pageBuffer, 600, 0, 1, 0);
         vvt_opt1_dir_intake = MSUtils.getBits(pageBuffer, 600, 2, 2, 0);
@@ -4496,6 +4278,7 @@ public class ZZMS3_Pre11_alpha20 extends Megasquirt
         {
             tclu_vssmin = (double) ((MSUtils.getWord(pageBuffer, 932) + 0.0) * 0.36);
         }
+        
         tclu_tpsmin = (double) ((MSUtils.getSignedWord(pageBuffer, 934) + 0.0) * 0.1);
         tclu_tpsmax = (double) ((MSUtils.getSignedWord(pageBuffer, 936) + 0.0) * 0.1);
         tclu_mapmin = (double) ((MSUtils.getWord(pageBuffer, 938) + 0.0) * 0.1);

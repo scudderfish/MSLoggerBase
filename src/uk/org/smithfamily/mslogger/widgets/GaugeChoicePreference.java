@@ -6,8 +6,16 @@ import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 
+/**
+ *
+ */
 public class GaugeChoicePreference extends ListPreference
 {
+    /**
+     * 
+     * @param context
+     * @param attrs
+     */
 	public GaugeChoicePreference(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
@@ -29,6 +37,11 @@ public class GaugeChoicePreference extends ListPreference
 		setEntryValues(entryValues);
 	}
 
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c)
 	{
 		List<T> list = new ArrayList<T>(c);
@@ -36,6 +49,10 @@ public class GaugeChoicePreference extends ListPreference
 		return list;
 	}
 
+	/**
+	 * 
+	 * @param context
+	 */
 	public GaugeChoicePreference(Context context)
 	{
 		this(context, null);

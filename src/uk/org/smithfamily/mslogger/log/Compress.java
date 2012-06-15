@@ -10,6 +10,9 @@ import java.util.zip.ZipOutputStream;
 
 import android.util.Log;
 
+/**
+ * Utility class that compress a list of datalog into a zip format file
+ */
 public class Compress
 {
     private static final int BUFFER = 2048;
@@ -17,12 +20,23 @@ public class Compress
     private List<String>     _files;
     private String           _zipFile;
 
+    /**
+     * Constructor
+     * 
+     * @param files     The array of file names to compress
+     * @param zipFile   The resulting zip file name
+     */
     public Compress(List<String> files, String zipFile)
     {
         _files = files;
         _zipFile = zipFile;
     }
 
+    /**
+     * Main method that compress the datalogs into a zip file
+     * It will create the zip file at the specified destination
+     * Datalogs file will stay intact
+     */
     public void zip()
     {
         try

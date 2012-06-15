@@ -8,8 +8,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+/**
+ *
+ */
 public class EmailManager
 {
+    /**
+     * 
+     * @param context
+     * @param emailTo
+     * @param emailCC
+     * @param subject
+     * @param emailText
+     * @param filePaths
+     */
     public static void email(Context context, String emailTo, String emailCC, String subject, String emailText, List<String> filePaths)
     {
         List<String> actualFiles = new ArrayList<String>();

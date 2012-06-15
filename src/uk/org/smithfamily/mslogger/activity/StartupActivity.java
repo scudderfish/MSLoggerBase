@@ -12,6 +12,10 @@ import android.content.Intent;
 import android.os.*;
 import android.widget.TextView;
 
+/**
+ * 
+ * 
+ */
 public class StartupActivity extends Activity
 {
     private static final int SELECT_EGO        = 1;
@@ -41,7 +45,9 @@ public class StartupActivity extends Activity
     private BluetoothAdapter mBluetoothAdapter;
     private TextView         msgBox;
 
-    /** Called when the activity is first created. */
+    /**
+     *  Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -52,6 +58,7 @@ public class StartupActivity extends Activity
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        // Bluetooth is not supported on this Android device
         if (mBluetoothAdapter == null)
         {
             finishDialogNoBluetooth();
@@ -59,17 +66,23 @@ public class StartupActivity extends Activity
         }
 
         boolean bluetoothOK = mBluetoothAdapter.isEnabled();
-        if (!bluetoothOK)
+        
+        // Bluetooth is enabled, we can start!
+        if (bluetoothOK)
+        {
+            initSequence();
+        }
+        // Bluetooth is not enabled, request the user to enable it
+        else
         {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        else
-        {
-            initSequence();
-        }
     }
 
+    /**
+     * Initialise the sequence of prompt to the user to select all his preferences
+     */
     private void initSequence()
     {
         if (ApplicationSettings.INSTANCE.getPref("maptype") == null)
@@ -110,19 +123,27 @@ public class StartupActivity extends Activity
 
     }
 
+    /**
+     *  Start the activity to prompt the user for his email address
+     */
     private void selectEmail()
     {
         Intent i = new Intent(this, EmailSelectActivity.class);
         startActivityForResult(i, SELECT_EMAIL);
-
     }
 
+    /**
+     *  Start the activity to prompt the user for his EGO device
+     */
     private void selectEGO()
     {
         Intent i = new Intent(this, EGOSelectActivity.class);
         startActivityForResult(i, SELECT_EGO);
     }
 
+    /**
+     *  Start the activity to prompt the user for his MAP sensor
+     */
     private void selectMAP()
     {
         Intent i = new Intent(this, MAPSelectActivity.class);
@@ -130,12 +151,21 @@ public class StartupActivity extends Activity
 
     }
 
+    /**
+     * 
+     * @param msg
+     */
     public void showMessage(Message msg)
     {
         String text = msg.getData().getString(MSLoggerApplication.MSG_ID);
         msgBox.setText(text);
     }
 
+    /**
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         switch (requestCode)
@@ -172,9 +202,15 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     * @param sig
+     */
     public void checkSig(String sig)
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuForSig(sig);
+        
+        // ECU is not supported by MSLogger
         if (ecu == null)
         {
             unrecognisedEcu(sig);
@@ -192,12 +228,18 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * 
+     */
     private void startFingerprint()
     {
         Thread t = new Thread(new ECUFingerprint(mHandler, mBluetoothAdapter));
         t.start();
     }
 
+    /**
+     * It was determinated that the android device don't support Bluetooth, so we tell the user
+     */
     public void finishDialogNoBluetooth()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -213,6 +255,12 @@ public class StartupActivity extends Activity
         alert.show();
     }
 
+    /**
+     * It was determinated that the Megasquirt ECU detected is not supported by MSLogger, ask the user if he want
+     * to tell the developer about it
+     * 
+     * @param sig
+     */
     private void unrecognisedEcu(final String sig)
     {
         if (isFinishing())
@@ -242,6 +290,11 @@ public class StartupActivity extends Activity
         }
     }
 
+    /**
+     * Construct the email to send to the developer about the unrecognised firmware signature
+     * 
+     * @param sig The signature of the unsupported firmware
+     */
     private void constructEmail(String sig)
     {
         EmailManager.email(this, "dave@mslogger.co.uk", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + sig

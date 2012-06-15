@@ -8,12 +8,18 @@ import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
 
+/**
+ *
+ */
 public enum GaugeRegister
 {
     INSTANCE;
     private Map<String, GaugeDetails> details       = new HashMap<String, GaugeDetails>();
     private static final String       GAUGE_DETAILS = "gaugedetails";
 
+    /**
+     * 
+     */
     public void resetAll()
     {
         for (String name : details.keySet())
@@ -36,6 +42,10 @@ public enum GaugeRegister
         }
     }
 
+    /**
+     * 
+     * @param gaugeDetails
+     */
     public void addGauge(GaugeDetails gaugeDetails)
     {
         if (details.containsKey(gaugeDetails.getName()))
@@ -55,6 +65,10 @@ public enum GaugeRegister
         details.put(gaugeDetails.getName(), gaugeDetails);
     }
 
+    /**
+     * 
+     * @param nme
+     */
     public void reset(String nme)
     {
         GaugeDetails gd = details.get(nme);
@@ -75,21 +89,38 @@ public enum GaugeRegister
         }
     }
 
+    /**
+     * 
+     * @param nme
+     * @return
+     */
     public GaugeDetails getGaugeDetails(String nme)
     {
         return details.get(nme);
     }
 
+    /**
+     * 
+     * @return
+     */
     public Set<String> getGaugeNames()
     {
         return details.keySet();
     }
 
+    /**
+     * 
+     */
     public void flush()
     {
         details = new HashMap<String, GaugeDetails>();
     }
 
+    /**
+     * 
+     * @param gd
+     * @return
+     */
     private GaugeDetails loadDetails(GaugeDetails gd)
     {
         try
@@ -128,6 +159,11 @@ public enum GaugeRegister
         return null;
     }
 
+    /**
+     * 
+     * @param gd
+     * @return
+     */
     private File getFileStore(GaugeDetails gd)
     {
         String name = getStoreName(gd);
@@ -137,6 +173,10 @@ public enum GaugeRegister
         return input;
     }
 
+    /**
+     * 
+     * @param gd
+     */
     public void persistDetails(GaugeDetails gd)
     {
         try
@@ -156,6 +196,11 @@ public enum GaugeRegister
         }
     }
 
+    /**
+     * 
+     * @param gd
+     * @return
+     */
     private String getStoreName(GaugeDetails gd)
     {
         return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName() + "." + gd.getName();
