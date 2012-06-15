@@ -275,7 +275,7 @@ public class StartupActivity extends Activity
                 constructEmail(sig);
             }
 
-        }).setNegativeButton(R.string.cancel_buy_button, new DialogInterface.OnClickListener()
+        }).setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int which)
             {
