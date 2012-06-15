@@ -3,7 +3,7 @@ package uk.org.smithfamily.mslogger;
 import android.app.Application;
 
 /**
- * 
+ * Hook class to allow initialisation actions.  Originally used to initialise ACRA and Bugsense
  * 
  */
 public class MSLoggerApplication extends Application
@@ -15,7 +15,7 @@ public class MSLoggerApplication extends Application
     public static final int PROBE_ECU = 1055;
     
     /**
-     * 
+     * Do application initialisation work
      */
     @Override
     public void onCreate()
