@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger.log;
 
 /**
+ * FRD log file class including an header and body
+ * 
  * See http://www.efianalytics.com/TunerStudio/formattedRawDatalog.html
  */
 public class FRDLogFile 

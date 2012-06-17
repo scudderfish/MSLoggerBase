@@ -13,7 +13,7 @@ import android.os.*;
 import android.widget.TextView;
 
 /**
- * 
+ * Activity that is used on startup to prompt the user about his Megasquirt info, as well as detecting his firmware
  * 
  */
 public class StartupActivity extends Activity
@@ -23,6 +23,9 @@ public class StartupActivity extends Activity
     private static final int SELECT_EMAIL      = 3;
     private static final int REQUEST_ENABLE_BT = 0;
 
+    /**
+     *
+     */
     private class StartupHandler extends Handler
     {
 
@@ -113,7 +116,6 @@ public class StartupActivity extends Activity
         }
         else
         {
-
             Intent intent = new Intent();
 
             setResult(Activity.RESULT_OK, intent);

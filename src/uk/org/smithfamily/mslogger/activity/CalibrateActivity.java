@@ -8,6 +8,7 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
@@ -18,8 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
- * 
- * 
+ * Activity that calibrate the TPS of the Megasquirt
  */
 public class CalibrateActivity extends Activity
 {
@@ -95,6 +95,7 @@ public class CalibrateActivity extends Activity
 		{
 			maxTPS = raw;
 		}
+		
 		minValView.setText(Integer.toString(minTPS));
 		curValView.setText(Integer.toString(raw));
 		maxValView.setText(Integer.toString(maxTPS));
@@ -126,8 +127,7 @@ public class CalibrateActivity extends Activity
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DebugLogManager.INSTANCE.logException(e);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class CalibrateActivity extends Activity
 		{
 			return 100;
 		}
+		
 		return (x - minTPS) * 100 / (maxTPS - minTPS);
-
 	}
 }
