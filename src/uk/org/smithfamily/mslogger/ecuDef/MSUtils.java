@@ -29,7 +29,6 @@ public class MSUtils
      */
     public static int getWord(byte[] ochBuffer, int i)
     {
-
         return (getByte(ochBuffer,i) * 256 + getByte(ochBuffer,i+1));
     }
 
@@ -72,7 +71,6 @@ public class MSUtils
      */
     public static int getSignedByte(byte[] ochBuffer, int i)
     {
-
         int x = getByte(ochBuffer, i);
         if (x > 127)
         {
