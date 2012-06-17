@@ -107,7 +107,7 @@ public class CalibrateActivity extends Activity
 	 */
 	private void saveValues()
 	{
-		File  dataFile=new File(ApplicationSettings.INSTANCE.getDataDir(),THROTTLEFACTOR_INC);
+		File dataFile = new File(ApplicationSettings.INSTANCE.getDataDir(),THROTTLEFACTOR_INC);
 		
 		try
 		{
@@ -117,7 +117,7 @@ public class CalibrateActivity extends Activity
 			
 			pw.println(header);
 			
-			for(int x=0;x<256;x++)
+			for (int x = 0; x < 256; x++)
 			{
 				pw.println(String.format("\tDB\t%3dT\t; %3d", getPercentage(x),x));
 			}

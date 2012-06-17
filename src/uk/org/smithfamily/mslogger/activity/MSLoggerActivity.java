@@ -461,9 +461,34 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         checkBTDeviceSet();
         int itemId = item.getItemId();
-        if (itemId == R.id.preferences)
+        if (itemId == R.id.forceConnection)
+        {
+            toggleConnection();
+            return true;
+        }
+        else if (itemId == R.id.gaugeEditing)
+        {
+            toggleEditing();
+            return true;
+        }
+        else if (itemId == R.id.forceLogging)
+        {
+            toggleLogging();
+            return true;
+        }
+        else if (itemId == R.id.manageDatalogs)
+        {
+            openManageDatalogs();
+            return true;
+        }
+        else if (itemId == R.id.preferences)
         {
             openPreferences();
+            return true;
+        }        
+        else if (itemId == R.id.resetGauges)
+        {
+            resetGuages();
             return true;
         }
         else if (itemId == R.id.calibrate)
@@ -476,29 +501,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             showAbout();
             return true;
         }
-        else if (itemId == R.id.gaugeEditing)
-        {
-            toggleEditing();
-            return true;
-        }
-        else if (itemId == R.id.forceConnection)
-        {
-            toggleConnection();
-            return true;
-        }
         else if (itemId == R.id.quit)
         {
             quit();
-            return true;
-        }
-        else if (itemId == R.id.forceLogging)
-        {
-            toggleLogging();
-            return true;
-        }
-        else if (itemId == R.id.resetGauges)
-        {
-            resetGuages();
             return true;
         }
         else
@@ -601,7 +606,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Open an about dialog
      */
     private void showAbout()
     {
@@ -633,7 +638,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Open the calibrate TPS activity
      */
     private void openCalibrateTPS()
     {
@@ -642,7 +647,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Open the manage datalogs activity
+     */
+    private void openManageDatalogs()
+    {
+        Intent lauchManageDatalogs = new Intent(this, ManageDatalogsActivity.class);
+        startActivity(lauchManageDatalogs);        
+    }
+    
+    /**
+     * Open the preferences activity
      */
     private void openPreferences()
     {
