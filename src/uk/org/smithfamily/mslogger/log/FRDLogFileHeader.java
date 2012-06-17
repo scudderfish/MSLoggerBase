@@ -7,7 +7,9 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 
 /**
+ * Header of a FRD log file
  *
+ * See http://www.efianalytics.com/TunerStudio/formattedRawDatalog.html
  */
 public class FRDLogFileHeader
 {

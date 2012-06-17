@@ -8,8 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * 
- * 
+ * Helper class used for GPS location
  */
 public enum GPSLocationManager implements LocationListener
 {
@@ -19,8 +18,7 @@ public enum GPSLocationManager implements LocationListener
 	private LocationManager	locationManager	= null;
 
 	/**
-	 * 
-	 * @return
+	 * @return Last known location object
 	 */
 	synchronized public Location getLastKnownLocation()
 	{
@@ -29,7 +27,6 @@ public enum GPSLocationManager implements LocationListener
 
 	/**
 	 * Start the location service
-	 * 
 	 */
 	synchronized public void start()
 	{
@@ -52,7 +49,6 @@ public enum GPSLocationManager implements LocationListener
 
 	/**
 	 * Stop the location service
-	 * 
 	 */
 	synchronized public void stop()
 	{
@@ -81,7 +77,7 @@ public enum GPSLocationManager implements LocationListener
     /**
      * Triggered when the location change
      * 
-     * @param location
+     * @param location The new location
      */
 	@Override
 	public void onLocationChanged(Location location)
@@ -91,29 +87,31 @@ public enum GPSLocationManager implements LocationListener
 	}
 
 	/**
-     * @param provider
+     * @param provider The provider that was disabled
      */
 	@Override
 	public void onProviderDisabled(String provider)
 	{
 
 	}
-
-	@Override
+	
 	/**
-	 * @param provider
+	 * @param provider The provider that was enabled
 	 */
+	@Override
 	public void onProviderEnabled(String provider)
 	{
 	}
 
-	@Override
+	
 	/**
+	 * Triggered when a status change
 	 * 
-	 * @param provider
-	 * @param status
-	 * @param extras
+	 * @param provider The provider
+	 * @param status   The new status
+	 * @param extras   Other useful information
 	 */
+	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras)
 	{
 		if (status == LocationProvider.OUT_OF_SERVICE)

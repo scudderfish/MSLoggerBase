@@ -34,7 +34,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 /**
- *
+ * Activity used to display a datalog file in a graph format to the user
  */
 public class ViewDatalogActivity extends Activity
 {
@@ -49,7 +49,7 @@ public class ViewDatalogActivity extends Activity
     public static final int BACK_FROM_DATALOG_FIELDS = 1;
     
     /**
-     * 
+     * On creation of the activity, we bind click events and launch the datalog reading function in a different thread
      */
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,7 +75,7 @@ public class ViewDatalogActivity extends Activity
         new readLogFileInBackground().execute((Void) null);
     }
     
-    /*
+    /**
      * Method called when the datalog fields have changed to refresh the graph
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -124,7 +124,8 @@ public class ViewDatalogActivity extends Activity
                 String[] lineSplit;
                 
                 // Read every line of the file into the line-variable, on line at the time
-                while ((line = buffreader.readLine()) != null) {
+                while ((line = buffreader.readLine()) != null)
+                {
                     if (nbLine > 0)
                     {                    
                         lineSplit = line.split("\t");    
@@ -387,14 +388,14 @@ public class ViewDatalogActivity extends Activity
     }
     
     /**
-     *
+     * AsyncTask that is used to read datalog in a background task while the UI can keep updating
      */
     private class readLogFileInBackground extends AsyncTask<Void, Void, Void>
     {
         private ProgressDialog dialog = new ProgressDialog(ViewDatalogActivity.this);
         
         /**
-         * 
+         * This is executed before doInBackground
          */
         protected void onPreExecute()
         {
@@ -403,8 +404,7 @@ public class ViewDatalogActivity extends Activity
         }
         
         /**
-         * 
-         * @param result
+         * @param result This is executed after doInBackground and the result is returned in result
          */
         @Override
         protected void onPostExecute(Void result)
@@ -416,14 +416,13 @@ public class ViewDatalogActivity extends Activity
         }
 
         /**
+         * This is the main function that is executed in another thread 
          * 
-         * @param params
+         * @param params Parameters of the task
          */
         @Override
         protected Void doInBackground(Void... params)
-        {
-            
-            
+        {            
             Bundle b = getIntent().getExtras();
             String datalog = b.getString("datalog");
             

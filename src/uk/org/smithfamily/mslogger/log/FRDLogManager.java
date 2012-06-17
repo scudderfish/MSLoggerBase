@@ -44,8 +44,7 @@ public enum FRDLogManager
 		if(!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
-		}
-		
+		}		
 
         if (os == null)
         {
@@ -97,7 +96,6 @@ public enum FRDLogManager
      */
     public FRDLogFile getFRDLogFile()
     {
-
         return frdLog;
     }
 
@@ -121,7 +119,6 @@ public enum FRDLogManager
 
         os = null;
         logFile = null;
-
     }
 
     /**
