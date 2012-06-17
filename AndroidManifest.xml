@@ -59,6 +59,9 @@
         </activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.CalibrateActivity" >
         </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.ManageDatalogsActivity"></activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.ViewDatalogActivity"></activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.DatalogFieldsActivity"></activity>
     </application>
 
 </manifest>

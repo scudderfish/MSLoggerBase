@@ -75,4 +75,5 @@
 	<string name="cancel_button">Cancel</string>
 	<string name="workaround">Use alternate connection method</string>
 	<string name="log_level">Logging Level</string>
+	<string name="manageDatalogs">Manage Datalogs</string>
 </resources>

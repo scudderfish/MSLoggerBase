@@ -96,7 +96,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Get the data directory for the application
-     * 
      */
     public File getDataDir()
     {
@@ -105,7 +104,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Get the context where the application settings are used
-     * 
      */
     public Context getContext()
     {
@@ -114,7 +112,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Get the hertz of the Android device
-     * 
      */
     public int getHertz()
     {
@@ -123,7 +120,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Get the current ECU definition
-     * 
      */
     public synchronized Megasquirt getEcuDefinition()
     {
@@ -132,7 +128,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Get the MAC address of the Bluetooth device
-     *
      */
     public synchronized String getBluetoothMac()
     {
@@ -438,5 +433,37 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         String value = prefs.getString("loglevel", null);
         return value == null ? 6 : Integer.valueOf(value);
+    }
+    
+    /**
+     * @return
+     */
+    public String[] getDatalogFields()
+    {
+        String datalogFields = prefs.getString("datalogfields","Time\tRPM\tMAP\tAFR\tMAT\tCLT\tBatt\tIACstep");
+        
+        return datalogFields.split("\t");
+    }
+    
+    /**
+     * @param datalogFields
+     */
+    public void setDatalogFields(String[] datalogFields)
+    {
+        String output = "";
+        
+        if (datalogFields.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(datalogFields[0]);
+            
+            for (int i = 1; i < datalogFields.length; i++) {
+                sb.append("\t");
+                sb.append(datalogFields[i]);
+            }
+            
+            output = sb.toString();
+        }
+            
+        setPref("datalogfields",output);
     }
 }
