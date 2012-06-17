@@ -48,7 +48,7 @@ public enum DatalogManager
 	 */
 	public synchronized void write(String logRow)
 	{
-		if(!ApplicationSettings.INSTANCE.isWritable())
+		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
 		}
@@ -62,7 +62,7 @@ public enum DatalogManager
 			try
 			{
                 
-			    if(!logFile.exists())
+			    if (!logFile.exists())
 	            { 
 			        writer = new PrintWriter(new FileWriter(logFile));
 	            	Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
@@ -113,7 +113,7 @@ public enum DatalogManager
 	 */
 	public void mark(String msg)
 	{
-		if(!ApplicationSettings.INSTANCE.isWritable())
+		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
 		}

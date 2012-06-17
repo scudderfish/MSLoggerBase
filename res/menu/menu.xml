@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/preferences" android:icon="@android:drawable/ic_menu_preferences"
-		android:title="@string/Preferences" />
-	<item android:id="@+id/gaugeEditing" android:title="@string/EnableGaugeEdit" />
-	<item android:id="@+id/forceConnection" android:title="@string/connect" />
+	
+	
+	<item android:id="@+id/forceConnection" android:title="@string/connect" /><item android:id="@+id/gaugeEditing" android:title="@string/EnableGaugeEdit" />
 	<item android:id="@+id/forceLogging" android:title="@string/start_logging" />
-	<item android:id="@+id/quit" android:title="@string/quit" android:icon="@drawable/ic_menu_quit"/>
+	<item android:id="@+id/manageDatalogs" android:title="@string/manageDatalogs" android:icon="@drawable/ic_menu_datalogs"/><item android:id="@+id/preferences" android:icon="@android:drawable/ic_menu_preferences" android:title="@string/Preferences" />
+	
 	<item android:id="@+id/resetGauges" android:title="@string/ResetGauges" />
 		
 	<item android:id="@+id/calibrate" android:title="@string/CalibrateTPS" />
-	<item android:id="@+id/about" android:title="@string/about" />
+	<item android:id="@+id/about" android:title="@string/about" /><item android:id="@+id/quit" android:title="@string/quit" android:icon="@drawable/ic_menu_quit" />
 </menu>
