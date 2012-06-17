@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
+ * Body of a FRD log file
  *
+ * See http://www.efianalytics.com/TunerStudio/formattedRawDatalog.html
  */
 public class FRDLogFileBody
 {

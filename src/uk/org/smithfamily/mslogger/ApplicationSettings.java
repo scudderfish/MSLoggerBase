@@ -136,9 +136,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Set the MAC address of the current Bluetooth device
-     * 
-     * @param m
+     * @param Set the MAC address of the current Bluetooth device
      */
     public synchronized void setBluetoothMac(String m)
     {
@@ -175,21 +173,23 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         settings.put(name, val);
         return val;
     }
-
-    @Override
+    
     /**
      * Triggered whenever the prefenrece change to reset MAC address and settings
      * 
      * @param sharedPreferences
      * @param key
-     * 
      */
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         bluetoothMac = null;
         settings = new HashMap<String, Boolean>();
     }
 
+    /**
+     * If bluetooth device is not the default one, a bluetooth device has been selected
+     */
     public boolean btDeviceSelected()
     {
         return !MISSING_VALUE.equals(getBluetoothMac());
@@ -197,7 +197,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Return true if preference that automatically send email with datalog is enabled, false otherwise
-     *
      */
     public boolean emailEnabled()
     {
@@ -205,9 +204,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Return the current email to send datalog to 
-     * 
-     * @return
+     * @return The current email to send datalog to 
      */
     public String getEmailDestination()
     {
@@ -241,10 +238,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
     
     /**
+     * Helper function to set or get a preference
      * 
-     * @param name
-     * @param def
-     * @return
+     * @param name  The name of the preference
+     * @param def   The value of the preference
+     * @return      Return the current value in preference
      */
     public String getOrSetPref(String name, String def)
     {
@@ -258,6 +256,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
     
     /**
+     * Helper function to save a string in preference
      * 
      * @param name
      * @param value
@@ -436,7 +435,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
     
     /**
-     * @return
+     * @return Datalog fields used in the datalog viewer
      */
     public String[] getDatalogFields()
     {
@@ -446,7 +445,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
     
     /**
-     * @param datalogFields
+     * @param datalogFields Datalog fields to be view in the datalog viewer
      */
     public void setDatalogFields(String[] datalogFields)
     {

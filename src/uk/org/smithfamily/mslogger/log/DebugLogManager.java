@@ -11,7 +11,7 @@ import android.os.Environment;
 import android.text.format.DateFormat;
 
 /**
- *
+ * Class that is used to help debugging. Will log the specified log level to a log file that can be sent by users to developers
  */
 public enum DebugLogManager
 {
@@ -22,7 +22,7 @@ public enum DebugLogManager
     private String     absolutePath;
 
     /**
-     * 
+     * Create the log file where the log will be saved
      * @throws IOException
      */
     private void createLogFile() throws IOException
@@ -48,17 +48,19 @@ public enum DebugLogManager
     }
 
     /**
+     * Main function to write in the log file
      * 
-     * @param s
-     * @param logLevel
+     * @param s         The log to write
+     * @param logLevel  The level of log
      */
     public synchronized void log(String s, int logLevel)
     {
+        // Make sure the user want to save a log of that level
         if (!checkLogLevel(logLevel))
         {
             return;
-
         }
+        // Make sure we have write permission
         if (!ApplicationSettings.INSTANCE.isWritable())
         {
             return;
@@ -80,9 +82,10 @@ public enum DebugLogManager
     }
 
     /**
+     * Check if the user preference is set to accept the specified log level
      * 
-     * @param logLevel
-     * @return
+     * @param logLevel   The specified log level of the user
+     * @return           true if log is accepted, false otherwise
      */
     private boolean checkLogLevel(int logLevel)
     {
@@ -90,11 +93,13 @@ public enum DebugLogManager
     }
 
     /**
+     * Log exception into the log file
      * 
-     * @param ex
+     * @param ex    The exception to log
      */
     public synchronized void logException(Exception ex)
     {
+        // Make sure we have write permission
         if (!ApplicationSettings.INSTANCE.isWritable())
         {
             return;
@@ -130,8 +135,7 @@ public enum DebugLogManager
     }
 
     /**
-     * 
-     * @return
+     * @return The absolute path to the log file
      */
     public String getAbsolutePath()
     {
@@ -139,18 +143,19 @@ public enum DebugLogManager
     }
 
     /**
+     * This helper function can be used to log a bytes array to log, prefixed by the specified message
      * 
-     * @param msg
-     * @param result
-     * @param logLevel
+     * @param msg       Log to be saved
+     * @param result    Bytes to be saved after the log
+     * @param logLevel  The log level
      */
     public void log(String msg, byte[] result, int logLevel)
     {
         if (!checkLogLevel(logLevel))
         {
             return;
-
         }
+        
         StringBuffer b = new StringBuffer(msg);
         for (int i = 0; i < result.length; i++)
         {

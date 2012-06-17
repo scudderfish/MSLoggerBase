@@ -747,7 +747,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         protected void onPostExecute(Void unused)
         {
             dialog.dismiss();
-            initGauges();
+            
+            Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+            if (ecuDefinition != null)
+            {
+                initGauges();
+            }
         }
     }
 
