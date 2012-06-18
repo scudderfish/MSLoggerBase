@@ -425,18 +425,21 @@ public abstract class Megasquirt
                     Connection.INSTANCE.disconnect();
                     return;
                 }
-                //Make sure everyone agrees on what flags are set
+                
+                // Make sure everyone agrees on what flags are set
                 ApplicationSettings.INSTANCE.refreshFlags();
                 refreshFlags();
                 if (!constantsLoaded)
                 {
-                    //Only do this once so reconnects are quicker
+                    // Only do this once so reconnects are quicker
                     loadConstants(simulated);
                     constantsLoaded = true;
+                    
+                    sendMessage("Connected to " + getTrueSignature());
                 }
                 running = true;
                 
-                //This is the actual work.  Outside influences will toggle 'running' when we want this to stop
+                // This is the actual work.  Outside influences will toggle 'running' when we want this to stop
                 while (running)
                 {
                     getRuntimeVars();
