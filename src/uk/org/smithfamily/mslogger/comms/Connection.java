@@ -420,8 +420,15 @@ public enum Connection
         {
             result[i++] = b;
         }
+                
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
-        sendStatus("Recieved '" + new String(result) + "'");
+        
+        String status = new String(result);
+        if (!status.equals(""))
+        {
+            sendStatus("Recieved '" + status + "'");
+        }
+        
         return result;
     }
 
