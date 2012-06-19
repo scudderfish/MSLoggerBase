@@ -4,6 +4,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
+import android.graphics.Path.FillType;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +30,7 @@ public class MSGauge extends View implements Indicator
     private int                ld          = 0;
     private double             value       = 2500;
     private double             pi          = Math.PI;
-    private double             offsetAngle = 0;
+    private double             offsetAngle = 45;
     final float                scale       = getResources().getDisplayMetrics().density;
     private Paint              titlePaint;
     private Paint              valuePaint;
@@ -43,7 +44,7 @@ public class MSGauge extends View implements Indicator
     private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
-    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
+    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
     
     /**
      * 
@@ -206,35 +207,35 @@ public class MSGauge extends View implements Indicator
         facePaint.setStyle(Paint.Style.FILL);
         facePaint.setColor(Color.BLACK);
         facePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-
-        float cx = 0.5f;
+        
         titlePaint = new Paint();
         titlePaint.setColor(Color.WHITE);
-        titlePaint.setTextSize((float) ((cx / 5.0) / scale));
         titlePaint.setTextAlign(Paint.Align.CENTER);
         titlePaint.setFlags(anti_alias_flag);
+        titlePaint.setAntiAlias(true);
 
         valuePaint = new Paint();
         valuePaint.setColor(Color.WHITE);
-        valuePaint.setTextSize((cx / 4) / scale);
+        valuePaint.setTextSize(0.1f);
         valuePaint.setTextAlign(Paint.Align.CENTER);
         valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setAntiAlias(true);
+        
         pointerPaint = new Paint();
         pointerPaint.setColor(Color.WHITE);
         pointerPaint.setAntiAlias(true);
-        pointerPaint.setStrokeWidth(cx / 48.0f);
+        pointerPaint.setStrokeWidth((0.5f / 48.0f));
         pointerPaint.setStyle(Style.FILL_AND_STROKE);
         pointerPaint.setFlags(anti_alias_flag);
+        pointerPaint.setAntiAlias(true);
+        
         scalePaint = new Paint();
-        // scalePaint.setStyle(Paint.Style.STROKE);
         scalePaint.setColor(Color.WHITE);
-        // scalePaint.setStrokeWidth(0.005f);
-        // scalePaint.setAntiAlias(true);
-        scalePaint.setTextSize((cx / 8) / scale);
-        // scalePaint.setTypeface(Typeface.SANS_SERIF);
-        // scalePaint.setTextScaleX(0.8f);
+        scalePaint.setAntiAlias(true);
+        scalePaint.setTextSize(0.05f);
         scalePaint.setTextAlign(Paint.Align.CENTER);
         scalePaint.setFlags(anti_alias_flag);
+        scalePaint.setAntiAlias(true);
     }
 
     /**
@@ -243,9 +244,12 @@ public class MSGauge extends View implements Indicator
      */
     private void drawTitle(Canvas canvas)
     {
+        titlePaint.setTextSize(0.07f);
         titlePaint.setColor(getFgColour());
         canvas.drawText(title, 0.5f, 0.25f, titlePaint);
-        canvas.drawText(units, 0.5f, 0.35f, titlePaint);
+        
+        titlePaint.setTextSize(0.05f);
+        canvas.drawText(units, 0.5f, 0.32f, titlePaint);
     }
 
     /**
@@ -278,8 +282,7 @@ public class MSGauge extends View implements Indicator
      */
     private void drawPointer(Canvas canvas)
     {
-        float radius = 0.42f;
-        float back_radius=0.042f;
+        float back_radius = 0.042f;
                 
         double range = 270.0 / (max - min);
         double pointerValue = value;
@@ -291,18 +294,24 @@ public class MSGauge extends View implements Indicator
         {
             pointerValue = max;
         }
-        double angle = (pointerValue - min) * range + offsetAngle;
-        double rads = angle * pi / 180.0;
-        float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
-        float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
-        float bx = (float) (0.5f + back_radius * Math.cos(rads - pi / 2.0));
-        float by = (float) (0.5f + back_radius * Math.sin(rads - pi / 2.0));
         
         pointerPaint.setColor(getFgColour());
 
-        canvas.drawCircle(0.5f,0.5f,back_radius/2.0f, pointerPaint);
-        canvas.drawLine(bx, by, x, y, pointerPaint);
-        // canvas.drawText(Integer.toString((int) val), x, y, scalePaint);
+        canvas.drawCircle(0.5f,0.5f,back_radius / 2.0f, pointerPaint);
+        
+        Path pointerPath = new Path(); // X Y
+        pointerPath.setFillType(FillType.EVEN_ODD);
+
+        pointerPath.moveTo(0.5f, 0.1f);                     // 0.500, 0.100
+        pointerPath.lineTo(0.5f + 0.010f, 0.5f + 0.05f);    // 0.501, 0.505
+        pointerPath.lineTo(0.5f - 0.010f, 0.5f + 0.05f);    // 0.499, 0.505
+        pointerPath.lineTo(0.5f, 0.1f);                     // 0.500, 0.100
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        
+        double angle = ((pointerValue - min) * range + offsetAngle) - 180;
+        canvas.rotate((float) angle, 0.5f, 0.5f);
+        canvas.drawPath(pointerPath, pointerPaint);
+        canvas.restore();
     }
 
     /**
@@ -316,22 +325,21 @@ public class MSGauge extends View implements Indicator
         double range = (max - min);
         double tenpower = Math.floor(Math.log10(range));
         double scalefactor = Math.pow(10, tenpower);
-        //double maxprimarydigit = Math.ceil(max / scalefactor);
-        double gaugeMax = max;// maxprimarydigit * scalefactor;
 
-        //double minprimarydigit = Math.ceil(min / scalefactor);
-        double gaugeMin = min;// minprimarydigit * scalefactor;
-        // gaugeMin = Math.min(0, gaugeMin);
+        double gaugeMax = max;
+        double gaugeMin = min;
 
         double gaugeRange = gaugeMax - gaugeMin;
 
         double step = scalefactor;
 
         while ((gaugeRange / step) < 10)
+        {
             step = step / 2;
+        }
+        
         for (double val = gaugeMin; val <= gaugeMax; val += step)
         {
-
             float displayValue = (float) (Math.floor(val / Math.pow(10, -ld) + 0.5) * Math.pow(10, -ld));
 
             String text;
@@ -344,7 +352,7 @@ public class MSGauge extends View implements Indicator
             {
                 text = Float.toString(displayValue);
             }
-            // text = text.substring(0, (text.length() - ld)-1);
+
             double anglerange = 270.0 / gaugeRange;
             double angle = (val - gaugeMin) * anglerange + offsetAngle;
             double rads = angle * pi / 180.0;
@@ -407,7 +415,7 @@ public class MSGauge extends View implements Indicator
      */
     private void drawFace(Canvas canvas)
     {
-        if(isInEditMode())
+        if (isInEditMode())
         {
             facePaint.setColor(Color.RED);
             
