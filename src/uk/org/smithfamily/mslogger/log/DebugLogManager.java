@@ -39,7 +39,7 @@ public enum DebugLogManager
         {
             Date now = new Date();
 
-            String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".log";
+            String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".txt";
             logFile = new File(dir, fileName);
         }
         absolutePath = logFile.getAbsolutePath();
