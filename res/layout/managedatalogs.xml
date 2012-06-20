@@ -26,39 +26,32 @@
         android:layout_height="0px"
         android:layout_weight="1"
         android:stackFromBottom="true" />
-
+
 	<LinearLayout
-	    android:id="@+id/linearLayout1"
-	    android:layout_width="match_parent"
+	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:orientation="vertical" >
+	    android:orientation="horizontal" >
 
-		<LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="horizontal" >
+	    <Button
+	        android:id="@+id/view"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/view" />
 
-		    <Button
-		        android:id="@+id/view"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="View" />
+	    <Button
+	        android:id="@+id/send_by_email"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/email" />
 
-		    <Button
-		        android:id="@+id/send_by_email"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="Email" />
-
-		    <Button
-		        android:id="@+id/delete"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="Delete" />
-		</LinearLayout>
-    </LinearLayout>
+	    <Button
+	        android:id="@+id/delete"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/delete" />
+	</LinearLayout>
 
 </LinearLayout>

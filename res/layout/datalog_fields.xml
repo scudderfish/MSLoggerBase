@@ -26,31 +26,24 @@
         android:layout_height="0px"
         android:layout_weight="1"
         android:stackFromBottom="true" />
-
+
 	<LinearLayout
-	    android:id="@+id/linearLayout1"
-	    android:layout_width="match_parent"
+	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:orientation="vertical" >
+	    android:orientation="horizontal" >
+	    <Button
+	        android:id="@+id/ok"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/bt_ok" />
 
-		<LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="horizontal" >
-		    <Button
-		        android:id="@+id/ok"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="OK" />
-
-		    <Button
-		        android:id="@+id/cancel"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="Cancel" />
-		</LinearLayout>
-    </LinearLayout>
+	    <Button
+	        android:id="@+id/cancel"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/bt_cancel" />
+	</LinearLayout>
 
 </LinearLayout>

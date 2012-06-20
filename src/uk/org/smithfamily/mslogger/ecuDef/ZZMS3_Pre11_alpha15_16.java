@@ -2496,25 +2496,25 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
         {
             if (EXPANDED_CLT_TEMP)
             {
-                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 230, -100, -100, 170, 200, 0, 0, 0));
             }
             else
             {
-                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡C", -40, 150, -100, -100, 95, 105, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°C", -40, 150, -100, -100, 95, 105, 0, 0, 0));
             }
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "¡C", -40, 110, -15, 0, 95, 100, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°C", -40, 110, -15, 0, 95, 100, 0, 0, 0));
         }
         else
         {
             if (EXPANDED_CLT_TEMP)
             {
-                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 450, -100, -100, 350, 400, 0, 0, 0));
             }
             else
             {
-                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "¡F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
+                GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge", "coolant", coolant, "Coolant Temp", "°F", -40, 300, -100, -100, 200, 220, 0, 0, 0));
             }
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "¡F", -40, 215, 0, 30, 200, 210, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge", "mat", mat, "Manifold Air Temp", "°F", -40, 215, 0, 30, 200, 210, 0, 0, 0));
         }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter", "batteryVoltage", batteryVoltage, "Battery Voltage", "volts", 7, 21, 8, 9, 15, 16, 2, 2, 0));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer", "rpm", rpm, "Engine Speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0, 0));
@@ -2556,11 +2556,11 @@ public class ZZMS3_Pre11_alpha15_16 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcompsn", "fuel_pct", fuel_pct, "Ethanol Percentage", "%", 0, 100, -1, -1, 85, 101, 0, 0, 0));
         if (CELSIUS)
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge", "fuel_temp", fuel_temp, "Fuel Temp", "¡C", -40, 110, -100, -100, 95, 105, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge", "fuel_temp", fuel_temp, "Fuel Temp", "°C", -40, 110, -100, -100, 95, 105, 0, 0, 0));
         }
         else
         {
-            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge", "fuel_temp", fuel_temp, "Fuel Temp", "¡F", -40, 240, -100, -100, 200, 220, 0, 0, 0));
+            GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge", "fuel_temp", fuel_temp, "Fuel Temp", "°F", -40, 240, -100, -100, 200, 220, 0, 0, 0));
         }
         if (NARROW_BAND_EGO)
         {

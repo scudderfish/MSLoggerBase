@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:text="Select Fields to View" />
+            android:text="@string/select_fields_to_view" />
     </RelativeLayout>
 
 </LinearLayout>
