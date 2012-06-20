@@ -39,7 +39,9 @@ import android.util.Log;
 import android.view.View;
 
 /**
- *
+ * *** WARNING ***
+ * THIS CLASS IS HERE FOR REFERENCE ONLY! IT IS CURRENTLY NOT USED IN THE APP
+ * *** WARNING ***
  */
 public final class Gauge extends View implements Indicator
 {

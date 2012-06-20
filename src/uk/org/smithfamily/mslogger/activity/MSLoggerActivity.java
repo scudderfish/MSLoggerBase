@@ -386,12 +386,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         if (gaugeEditEnabled)
         {
             editItem.setIcon(R.drawable.ic_menu_disable_gauge_editing);
-            editItem.setTitle(R.string.DisableGaugeEdit);
+            editItem.setTitle(R.string.disable_gauge_edit);
         }
         else
         {
             editItem.setIcon(R.drawable.ic_menu_enable_gauge_editing);
-            editItem.setTitle(R.string.EnableGaugeEdit);
+            editItem.setTitle(R.string.enable_gauge_edit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
         if (ecuDefinition != null && ecuDefinition.isRunning())
