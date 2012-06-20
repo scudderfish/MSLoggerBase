@@ -392,7 +392,7 @@ public class Normaliser
 			String ld = m.group(12);
 
 			String g = String.format(
-					"GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,0));",
+					"GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));",
 					name, channel, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
 			String gd = String
 					.format("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
