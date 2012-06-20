@@ -70,6 +70,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         registerEcu(new ZZMS2Extra310(context));
         registerEcu(new ZZMS2Extra311mb_v12(context));
         registerEcu(new ZZMS2ExtraSerial312(context));
+        registerEcu(new ZZMS2ExtraSerialGS26(context));
         registerEcu(new ZZMS3_Format_0221002(context));
         registerEcu(new ZZMS3_Format_0095002_102(context));
         registerEcu(new ZZMS3_Pre11_alpha15_16(context));
