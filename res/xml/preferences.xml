@@ -36,7 +36,7 @@
             android:title="@string/temp_unit" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/AppSettings" >
+    <PreferenceCategory android:title="@string/app_settings" >
 
         <EditTextPreference
             android:defaultValue="@string/app_name"

@@ -9,11 +9,15 @@ import android.preference.ListPreference;
 import android.util.AttributeSet;
 
 /**
- *
  * Borrowed from http://stackoverflow.com/questions/2936919/is-it-possible-to-load-listpreference-items-from-an-adapter
  */
 public class BluetoothDevicePreference extends ListPreference
 {
+    /**
+     * 
+     * @param context
+     * @param attrs
+     */
     public BluetoothDevicePreference(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -36,6 +40,10 @@ public class BluetoothDevicePreference extends ListPreference
         }
     }
 
+    /**
+     * 
+     * @param context
+     */
     public BluetoothDevicePreference(Context context)
     {
         this(context, null);

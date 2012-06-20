@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="about">About</string>
-	<string name="aboutText"></string>
     <string name="app_name">MSLogger</string>
     <string name="start_logging">Start Logging</string>
     <string name="stop_logging">Stop Logging</string>
-    <string name="Preferences">Preferences</string>
+    <string name="preferences">Preferences</string>
     <string name="connecting">Connecting</string>
     <string name="connected">Connected</string>
 	<string name="disconnected">Disconnected</string>
 	<string name="cannot_connect">Cannot connect to Megasquirt.</string>
 	<string name="interrupted">Initialisation interrupted</string>
-	<string name="AppSettings">AppSettings</string>
+	<string name="app_settings">AppSettings</string>
 	<string name="megasquirt">Megasquirt</string>
 	<string name="hertz">Hertz</string>
 	<string name="quit">Quit</string>
@@ -25,13 +24,13 @@
 	<string name="data_log_directory">Data Log Directory</string>
 	<string name="mslogger_is_running">MSLogger is running</string>
 	<string name="logging_to">Logging to %s</string>
-	<string name="CalibrateTPS">Calibrate TPS</string>
+	<string name="calibrate_tps">Calibrate TPS</string>
 	<string name="ResetGauges">Reset Gauges</string>
 	<string name="connect">Connect</string>
 	<string name="disconnect">Disconnect</string>
 	<string name="please_select">Please select your Bluetooth device in Preferences</string>
-	<string name="EnableGaugeEdit">Enable Gauge Editing</string>
-	<string name="DisableGaugeEdit">Disable Gauge Editing</string>
+	<string name="enable_gauge_edit">Enable Gauge Editing</string>
+	<string name="disable_gauge_edit">Disable Gauge Editing</string>
 	<string name="autoconnect">Enable autoconnect</string>
 	<string name="autoconnect_summary">Automatically manage the connection to the ECU</string>
 	<string name="autolog">Enable autologging</string>
@@ -61,6 +60,9 @@
     <string name="sd_card_error">SD Card Error</string>
     
     <string name="bt_ok">OK</string>
+    <string name="bt_cancel">Cancel</string>
+    <string name="bt_reset">Reset</string>
+    
     <string name="no_bt">Bluetooth not available.  The application will close.</string>
     <string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Devices</string>
@@ -71,9 +73,31 @@
 	<string name="none_found">None found</string>
 	<string name="please_wait">Please Wait</string>
 	<string name="identifying">Identifying your ECU</string>
-	<string name="unrecognised_ecu">I don\'t recognise your ECU, would you like to email the developer about this?</string>
-	<string name="cancel_button">Cancel</string>
+	<string name="unrecognised_ecu">I don\'t recognise your ECU, would you like to email the developer about this?</string>	
 	<string name="workaround">Use alternate connection method</string>
 	<string name="log_level">Logging Level</string>
-	<string name="manageDatalogs">Manage Datalogs</string>
+	<string name="manage_datalogs">Manage Datalogs</string>
+	
+	<!-- Edit gauge -->
+	<string name="channel">Channel</string>
+	<string name="offset_angle">Offset Angle</string>
+	<string name="label_decimal_places">Label Decimal Places</string>
+	<string name="value_decimal_places">Value Decimal Places</string>	
+	<string name="high_danger">High Danger</string>
+	<string name="high_warning">High Warning</string>
+	<string name="low_warning">Low Warning</string>
+	<string name="low_danger">Low Danger</string>
+	<string name="max_value">Max Value</string>
+	<string name="min_value">Min Value</string>
+	<string name="name">Name</string>
+	<string name="title">Title</string>
+	<string name="units">Units</string>
+	
+	<!-- View Datalog -->
+	<string name="select_fields_to_view">Select Fields to View</string>
+	
+	<!-- Manage Datalogs -->
+	<string name="view">View</string>
+	<string name="email">Email</string>
+	<string name="delete">Delete</string>
 </resources>

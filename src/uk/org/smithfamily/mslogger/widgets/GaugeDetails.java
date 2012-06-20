@@ -81,20 +81,20 @@ public class GaugeDetails implements Externalizable
     
     /**
      * 
-     * @param name
-     * @param channel
-     * @param iniCheck
-     * @param title
-     * @param units
-     * @param min
-     * @param max
+     * @param name      The name of the gauge
+     * @param channel   The channel of the gauge
+     * @param iniCheck  unused
+     * @param title     The main title of the gauge
+     * @param units     The units of the gauge
+     * @param min       The minimum value that will be dispalyed
+     * @param max       The maximum value that will be dispalyed
      * @param loD
      * @param loW
      * @param hiW
      * @param hiD
      * @param vd
      * @param ld
-     * @param offsetAngle
+     * @param offsetAngle   The offset angle of the scale on the gauge
      */
     public GaugeDetails(String name, String channel, double iniCheck, String title, String units, double min, double max, double loD, double loW,
             double hiW, double hiD, int vd, int ld, double offsetAngle)
