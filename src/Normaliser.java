@@ -232,6 +232,12 @@ public class Normaliser
 		{
 			String values = StringUtils.remove(pageSizesM.group(1), ' ');
 			String[] list = values.split(",");
+			
+			for (int i = 0; i < list.length; i++)
+			{
+			    list[i] = list[i].trim();
+			}
+			
 			pageSizes = new ArrayList<String>(Arrays.asList(list));
 		}
 
@@ -591,7 +597,7 @@ public class Normaliser
 
 	private static void outputPackageAndIncludes(PrintWriter writer)
 	{
-		writer.println("package uk.org.smithfamily.mslogger.ecuDef.gen;");
+		writer.println("package uk.org.smithfamily.mslogger.ecuDef;");
 		writer.println("");
 		writer.println("import java.io.IOException;");
 		writer.println("import java.util.*;");
