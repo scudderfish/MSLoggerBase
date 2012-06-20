@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.os.Environment;
-import android.text.format.DateFormat;
 
 /**
  * Class that is used to help debugging. Will log the specified log level to a log file that can be sent by users to developers
@@ -20,6 +18,7 @@ public enum DebugLogManager
     private File       logFile;
     private FileWriter os;
     private String     absolutePath;
+    private final int  MAX_LOG_FILE_SIZE_THRESHOLD = 5120; // (1024 * 5)B = 5120KB = 5MB
 
     /**
      * Create the log file where the log will be saved
@@ -35,16 +34,22 @@ public enum DebugLogManager
         File dir = new File(Environment.getExternalStorageDirectory(), "MSLogger");
         dir.mkdirs();
 
+        boolean append = true;
+        
         if (logFile == null)
         {
-            Date now = new Date();
-
-            String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".txt";
+            String fileName = "debugLog.txt";
             logFile = new File(dir, fileName);
         }
+        
+        // If log file have reached threshold, don't append to it, overwrite it instead
+        if (logFile.length() >= MAX_LOG_FILE_SIZE_THRESHOLD) 
+        {
+            append = false;
+        }
+        
         absolutePath = logFile.getAbsolutePath();
-        os = new FileWriter(logFile, true);
-
+        os = new FileWriter(logFile, append);
     }
 
     /**
