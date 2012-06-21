@@ -100,23 +100,30 @@ public class ManageDatalogsActivity  extends ListActivity {
         delete.setOnClickListener(new OnClickListener () {
             @Override
             public void onClick(View v) {
-                // Create array of datalogs path to send
+                // Create array of datalogs path to delete
+                List<String> datalogsToDelete = new ArrayList<String>();
+                
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
                 for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
                 {
                     if (datalogsList.isItemChecked(i))
                     {
-                        // Physically delete the file
-                        File fileToDelete = new File(datalogDirectory + "/" + datalogsList.getItemAtPosition(i).toString());
-                        fileToDelete.delete();
-                        
-                        // Clear the adapter
-                        mDatalogsArrayAdapter.clear();
-                        
-                        // Refill datalogs listview
-                        fillDatalogsListView();
+                        datalogsToDelete.add(datalogsList.getItemAtPosition(i).toString());
                     }
                 }
+                
+                for (String datalogFilename : datalogsToDelete)
+                {                    
+                    // Physically delete the file
+                    File fileToDelete = new File(datalogDirectory + "/" + datalogFilename);
+                    fileToDelete.delete();
+                }
+                                
+                // Clear the adapter
+                mDatalogsArrayAdapter.clear();
+                
+                // Refill datalogs listview
+                fillDatalogsListView();
             }            
         });
         

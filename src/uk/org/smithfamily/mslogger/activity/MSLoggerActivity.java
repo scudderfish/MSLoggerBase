@@ -526,7 +526,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (shouldBeLogging)
+        if (ecu != null && ecu.isLogging())
         {
             ecu.stopLogging();
             sendLogs();
