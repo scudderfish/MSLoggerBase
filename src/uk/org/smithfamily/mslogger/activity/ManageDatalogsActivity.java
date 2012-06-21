@@ -147,7 +147,6 @@ public class ManageDatalogsActivity  extends ListActivity {
         
         if (datalogs.length > 0)
         {        
-            System.out.println("hehe2");
             for (File datalog : datalogs)
             {                         
                 mDatalogsArrayAdapter.add(datalog.getName());
@@ -163,6 +162,11 @@ public class ManageDatalogsActivity  extends ListActivity {
         {            
             noDatalogMessage.setVisibility(View.VISIBLE);
             datalogsList.setVisibility(View.GONE);
+            
+            // Make the three bottom buttons dissapear too
+            view.setVisibility(View.GONE);
+            sendByEmail.setVisibility(View.GONE);
+            delete.setVisibility(View.GONE);
         }
     }
     
