@@ -35,7 +35,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Boolean                 autoConnectOverride = null;
 
     private Map<String, Boolean>    settings            = new HashMap<String, Boolean>();
-    private Boolean                 loggingOverride     = null;
     private BluetoothAdapter        defaultAdapter;
     private boolean                 writable;
     private Map<String, Megasquirt> sigMap;
