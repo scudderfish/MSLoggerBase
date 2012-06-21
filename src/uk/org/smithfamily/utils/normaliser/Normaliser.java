@@ -534,6 +534,10 @@ public class Normaliser
         Map<String,String> vars = new TreeMap<String,String>();
         vars.putAll(runtimeVars);
         vars.putAll(evalVars);
+        for(String c : constantVars.keySet())
+        {
+            vars.remove(c);
+        }
         writer.println("//Variables");
         for (String name : vars.keySet())
         {
@@ -895,8 +899,17 @@ public class Normaliser
 
                 TAB+"@Override\n" + 
                 TAB+"public int getCurrentTPS()\n" + 
-                TAB+"{\n" + 
-                TAB+TAB+"return (int)tpsADC;\n" + 
+                TAB+"{\n";
+                if(runtimeVars.containsKey("tpsADC"))
+                {
+                    overrides += TAB+TAB+"return (int)tpsADC;\n"; 
+                }
+                else
+                {
+                    overrides += TAB+TAB+"return 0;\n";
+                }
+        
+                 overrides +=
                 TAB+"}\n" +
 
                 TAB+"@Override\n" + 
@@ -1043,7 +1056,16 @@ public class Normaliser
         }
         else if (ochGetCommandM.matches())
         {
-            ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'" + ochGetCommandM.group(1) + "'};";
+            String och = ochGetCommandM.group(1);
+            if (och.length() > 1)
+            {
+                och=HexStringToBytes(och,0,0,0);
+            }
+            else
+            {
+                och="'"+och+"'";
+            }
+            ochGetCommandStr = "byte [] ochGetCommand = new byte[]{"+och+"};";
         }
         else if (ochBlockSizeM.matches())
         {
