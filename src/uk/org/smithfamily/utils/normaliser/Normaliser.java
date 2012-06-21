@@ -125,6 +125,8 @@ public class Normaliser
 
         while ((line = br.readLine()) != null)
         {
+            line += "; junk";
+            line = StringUtils.trim(line).split(";")[0];
             line = line.trim();
             if (line.startsWith("#include "))
             {
@@ -235,7 +237,7 @@ public class Normaliser
         Matcher pageM = Patterns.page.matcher(line);
         if (pageM.matches())
         {
-            currentPage = Integer.parseInt(pageM.group(1));
+            currentPage = Integer.parseInt(pageM.group(1).trim());
             return;
         }
         Matcher pageSizesM = Patterns.pageSize.matcher(line);
@@ -267,19 +269,14 @@ public class Normaliser
         Matcher blockReadTimeoutM = Patterns.blockReadTimeout.matcher(line);
         if (blockReadTimeoutM.matches())
         {
-            blockReadTimeoutVal = Integer.parseInt(blockReadTimeoutM.group(1));
+            blockReadTimeoutVal = Integer.parseInt(blockReadTimeoutM.group(1).trim());
             return;
         }
         Matcher pageActivationDelayM = Patterns.pageActivationDelay.matcher(line);
         if (pageActivationDelayM.matches())
         {
-            pageActivationDelayVal = Integer.parseInt(pageActivationDelayM.group(1));
+            pageActivationDelayVal = Integer.parseInt(pageActivationDelayM.group(1).trim());
             return;
-        }
-        if (line.contains("mapProportion4"))
-        {
-            @SuppressWarnings("unused")
-            int x = 1;
         }
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher constantM = Patterns.constantScalar.matcher(line);
@@ -289,7 +286,7 @@ public class Normaliser
             String name = constantM.group(1);
             String classtype = constantM.group(2);
             String type = constantM.group(3);
-            int offset = Integer.parseInt(constantM.group(4));
+            int offset = Integer.parseInt(constantM.group(4).trim());
             String units = constantM.group(5);
             String scaleText = constantM.group(6);
             String translateText = constantM.group(7);
@@ -319,7 +316,7 @@ public class Normaliser
             String name = constantSimpleM.group(1);
             String classtype = constantSimpleM.group(2);
             String type = constantSimpleM.group(3);
-            int offset = Integer.parseInt(constantSimpleM.group(4));
+            int offset = Integer.parseInt(constantSimpleM.group(4).trim());
             String units = constantSimpleM.group(5);
             double scale = Double.parseDouble(constantSimpleM.group(6));
             double translate = Double.parseDouble(constantSimpleM.group(7));
@@ -344,7 +341,7 @@ public class Normaliser
             String start = bitsM.group(4);
             String end = bitsM.group(5);
 
-            Constant c = new Constant(currentPage, name, "bits", "", Integer.parseInt(offset), "[" + start + ":" + end + "]", "", 1, 0, 0, 0, 0);
+            Constant c = new Constant(currentPage, name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", 1, 0, 0, 0, 0);
             constantVars.put(name, "int");
             constants.add(c);
 
@@ -638,7 +635,7 @@ public class Normaliser
             if (c.getPage() != pageNo)
             {
                 pageNo = c.getPage();
-                int pageSize = Integer.parseInt(pageSizes.get(pageNo - 1));
+                int pageSize = Integer.parseInt(pageSizes.get(pageNo - 1).trim());
                 String activateCommand = null;
                 if (pageNo - 1 < pageActivateCommands.size())
                 {
@@ -927,8 +924,10 @@ public class Normaliser
         else if (exprM.matches())
         {
             String name = exprM.group(1);
-            if ("egoVoltage".equals(name))
+            if ("pwma_load".equals(name))
             {
+                //Hook to hang a break point on
+                @SuppressWarnings("unused")
                 int x = 1;
             }
             String expression = deBinary(exprM.group(2).trim());
@@ -947,6 +946,11 @@ public class Normaliser
                     expression = "((" + test + ") != 0 ) ? " + values;
                 }
                 // System.out.println("AFTER  : " + expression + "\n");
+            }
+            //MS3 expression hell
+            if(expression.contains("*")  && expression.contains("=="))
+            {
+                expression = convertC2JavaBoolean(expression);
             }
             definition = name + " = (" + expression + ");";
             runtime.add(definition);
@@ -975,6 +979,21 @@ public class Normaliser
         {
             System.out.println(line);
         }
+    }
+
+    private static String convertC2JavaBoolean(String expression)
+    {
+        Matcher matcher = Patterns.booleanConvert.matcher(expression);
+        StringBuffer result = new StringBuffer(expression.length());
+        while (matcher.find())
+        {
+          matcher.appendReplacement(result, "");
+          result.append(matcher.group(1)+ " ? 1 : 0)");
+        }
+        matcher.appendTail(result);
+        expression = result.toString();
+        return expression;
+        
     }
 
     private static String deBinary(String group)
@@ -1067,7 +1086,7 @@ public class Normaliser
         {
             definition += "Signed";
         }
-        int size = Integer.parseInt(dataType.substring(1));
+        int size = Integer.parseInt(dataType.substring(1).trim());
         switch (size)
         {
         case 8:

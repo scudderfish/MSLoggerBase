@@ -1884,6 +1884,7 @@ public class Msns_extra29y extends Megasquirt
         {
         VEFixValue = (double)((MSUtils.getByte(pageBuffer,182) + 9.0) * 0.965);
         }
+        pageBuffer = loadPage(7,0,189,new byte[]{80,6},new byte[]{86});
         if (NARROW_BAND_EGO)
         {
         }
@@ -2026,6 +2027,7 @@ public class Msns_extra29y extends Megasquirt
         outeoffv = (double)((MSUtils.getByte(pageBuffer,175) + 0.0) * 0.352);
         outfoffs = MSUtils.getBits(pageBuffer,176,0,2,0);
         outfoffv = (double)((MSUtils.getByte(pageBuffer,177) + 0.0) * 0.352);
+        pageBuffer = loadPage(8,0,189,new byte[]{80,7},new byte[]{86});
         if (MPXH6300A)
         {
         }
@@ -2035,6 +2037,7 @@ public class Msns_extra29y extends Megasquirt
         else
         {
         }
+        pageBuffer = loadPage(9,0,189,new byte[]{80,16},new byte[]{86});
         idle_dc_lo = (int)((MSUtils.getByte(pageBuffer,0) + 0.0) * 1.0);
         idleperiod = (int)((MSUtils.getByte(pageBuffer,1) + 0.0) * 1.0);
         idlecrankdc = (int)((MSUtils.getByte(pageBuffer,2) + 0.0) * 1.0);

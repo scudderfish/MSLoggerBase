@@ -34,7 +34,7 @@ public class MS2Extra310 extends Megasquirt
         EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
     }
     byte[] queryCommand=new byte[]{'Q'};
-    String signature="MS2Extra Serial310 \0";
+    String signature="MS2Extra Serial310 ";
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 169;
     private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));

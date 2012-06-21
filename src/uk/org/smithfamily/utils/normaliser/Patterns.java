@@ -35,4 +35,5 @@ public class Patterns
     // private static Pattern constantArray = Pattern
     // .compile("\\s*(\\w*)\\s*=\\s*(\\w*)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*(.*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
 
+    static Pattern booleanConvert = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
 }
