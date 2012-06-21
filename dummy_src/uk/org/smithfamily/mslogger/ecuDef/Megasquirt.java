@@ -102,7 +102,7 @@ public abstract class Megasquirt
      * How long have we been running?
      * @return
      */
-    protected double timeNow()
+    protected int timeNow()
     {
         return 0;
     }
