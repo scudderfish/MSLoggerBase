@@ -13,7 +13,7 @@ public class Normaliser
 {
     enum Section
     {
-        None, Header, Expressions, Gauges, Logs, FrontPage, Constants
+        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions
     }
 
     private static final String        TAB          = "    ";
@@ -25,6 +25,8 @@ public class Normaliser
     private static Map<String, String> runtimeVars;
     private static Map<String, String> evalVars;
     private static Map<String, String> constantVars;
+    private static Map<String, String> pcVars;  
+    private static List<String>         defaults;
     private static Set<String>         flags;
     private static String              fingerprintSource;
     private static ArrayList<String>   gaugeDoc;
@@ -90,6 +92,8 @@ public class Normaliser
         runtimeVars = new HashMap<String, String>();
         evalVars = new HashMap<String, String>();
         constantVars = new HashMap<String, String>();
+        pcVars = new HashMap<String,String>();
+        defaults = new ArrayList<String>();
         constants = new ArrayList<Constant>();
         flags = new HashSet<String>();
         gaugeDef = new ArrayList<String>();
@@ -164,6 +168,14 @@ public class Normaliser
             {
                 currentSection = Section.Constants;
             }
+            else if (line.trim().equals("[PcVariables]"))
+            {
+                currentSection = Section.PcVariables;
+            }
+            else if (line.trim().equals("[ConstantsExtensions]"))
+            {
+                currentSection = Section.ConstantsExtensions;
+            }
             else if (line.trim().startsWith("["))
             {
                 currentSection = Section.None;
@@ -190,6 +202,12 @@ public class Normaliser
             case Constants:
                 processConstants(line);
                 break;
+            case PcVariables:
+                processPcVariables(line);
+                break;
+            case ConstantsExtensions:
+                processConstantsExtensions(line);
+                break;
             }
 
         }
@@ -197,6 +215,31 @@ public class Normaliser
         {
             writeFile(className);
         }
+    }
+
+    private static void processConstantsExtensions(String line)
+    {
+        if(line.contains("defaultValue"))
+        {
+            String statement="";
+            String[] definition = line.split("=")[1].split(",");
+            if(definition[1].contains("\""))
+            {
+                statement="String ";
+            }
+            else
+            {
+                statement="int ";
+            }
+            statement+=definition[0]+" = "+definition[1]+";";
+            defaults.add(statement);
+        }
+        
+    }
+
+    private static void processPcVariables(String line)
+    {
+        
     }
 
     /**
@@ -404,6 +447,8 @@ public class Normaliser
 
             String g = String.format("GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));", name,
                     channel, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
+            
+            g=g.replace("{", "").replace("}", "");
             String gd = String
                     .format("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
                             name, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
@@ -470,6 +515,11 @@ public class Normaliser
         for (String name : flags)
         {
             writer.println(TAB + "boolean " + name + ";");
+        }
+        writer.println("//Defaults");
+        for(String d : defaults)
+        {
+            writer.println(TAB+d);
         }
         Map<String,String> vars = new TreeMap<String,String>();
         vars.putAll(runtimeVars);
