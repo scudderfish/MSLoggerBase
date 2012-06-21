@@ -38,6 +38,7 @@ public class Normaliser
     private static int                 currentPage  = 0;
     private static ArrayList<Constant> constants;
     private static ArrayList<String>   pageSizes;
+    private static ArrayList<String>    pageIdentifiers;
     private static ArrayList<String>   pageActivateCommands;
     private static ArrayList<String>   pageReadCommands;
     private static Section             currentSection;
@@ -100,6 +101,7 @@ public class Normaliser
         gaugeDoc = new ArrayList<String>();
         defaultGauges = new ArrayList<String>();
         pageActivateCommands = new ArrayList<String>();
+        pageIdentifiers=new ArrayList<String>();
         fingerprintSource = "";
         currentPage = 0;
         constants = new ArrayList<Constant>();
@@ -289,6 +291,14 @@ public class Normaliser
             String values = StringUtils.remove(pageSizesM.group(1), ' ');
             String[] list = values.split(",");
             pageSizes = new ArrayList<String>(Arrays.asList(list));
+        }
+        Matcher pageIdentifersM=Patterns.pageIdentifier.matcher(line);
+        if(pageIdentifersM.matches())
+        {
+            String values = StringUtils.remove(pageIdentifersM.group(1), ' ');
+            values = StringUtils.remove(values, '"');
+            String[] list = values.split(",");
+            pageIdentifiers = new ArrayList<String>(Arrays.asList(list));
         }
 
         Matcher pageActivateM = Patterns.pageActivate.matcher(line);
@@ -739,20 +749,28 @@ public class Normaliser
         if (activate != null)
         {
 
-            activate = processStringToBytes(activate, pageOffset, pageSize);
+            activate = processStringToBytes(activate, pageOffset, pageSize,pageNo);
         }
         if (read != null)
         {
-            read = processStringToBytes(read, pageOffset, pageSize);
+            read = processStringToBytes(read, pageOffset, pageSize,pageNo);
         }
         writer.println(TAB + TAB + String.format("pageBuffer = loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
 
     }
 
-    private static String processStringToBytes(String s, int offset, int count)
+    private static String processStringToBytes(String s, int offset, int count, int pageNo)
     {
-        String digits = "0123456789abcdef";
         String ret = "new byte[]{";
+        
+        ret += HexStringToBytes(s,offset,count,pageNo);
+
+        ret += "}";
+        return ret;
+    }
+    private static String HexStringToBytes(String s, int offset, int count, int pageNo)
+    {
+       String ret="";
         boolean first = true;
 
         for (int p = 0; p < s.length(); p++)
@@ -764,21 +782,8 @@ public class Normaliser
             switch (c)
             {
             case '\\':
-                p++;
-                c = s.charAt(p);
-                assert c == 'x';
-                p++;
-                c = s.charAt(p);
-                c = Character.toLowerCase(c);
-                int val = 0;
-                int digit = digits.indexOf(c);
-                val = digit * 16;
-                p++;
-                c = s.charAt(p);
-                c = Character.toLowerCase(c);
-                digit = digits.indexOf(c);
-                val = val + digit;
-                ret += val;
+                ret+=HexByteToDec(s.substring(p));
+                p=p+3;;
                 break;
 
             case '%':
@@ -792,9 +797,16 @@ public class Normaliser
                 {
                     ret += bytes(offset);
                 }
-                else
+                else if (c=='c')
                 {
                     ret += bytes(count);
+                }
+                else if (c=='i')
+                {
+                    String identifier = pageIdentifiers.get(pageNo-1);
+                    identifier=identifier.replace("$tsCanId", "x00");
+                    
+                    ret+= HexStringToBytes(identifier,offset,count,pageNo);
                 }
                 break;
 
@@ -804,9 +816,28 @@ public class Normaliser
             }
             first = false;
         }
-
-        ret += "}";
         return ret;
+    }
+
+    private static int HexByteToDec(String s)
+    {
+        String digits = "0123456789abcdef";
+        int i = 0;
+        char c=s.charAt(i++);
+        assert c == '\\';
+        c=s.charAt(i++);
+        assert c=='x';
+        c=s.charAt(i++);
+        c = Character.toLowerCase(c);
+        int val = 0;
+        int digit = digits.indexOf(c);
+        val = digit * 16;
+        c=s.charAt(i++);
+        c = Character.toLowerCase(c);
+        digit = digits.indexOf(c);
+        val = val + digit;
+        return val;
+
     }
 
     private static String bytes(int val)

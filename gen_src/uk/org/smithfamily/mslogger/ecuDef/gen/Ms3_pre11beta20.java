@@ -2933,7 +2933,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         if (USE_CRC_DATA_CHECK)
         {
         }
-        pageBuffer = loadPage(1,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(1,0,1024,null,new byte[]{114,0,4,0,0,4,0});
         nCylinders = MSUtils.getBits(pageBuffer,0,0,4,0);
         no_skip_pulses = (int)((MSUtils.getByte(pageBuffer,1) + 0.0) * 1.0);
         ICIgnCapture = MSUtils.getBits(pageBuffer,2,0,0,0);
@@ -3889,7 +3889,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         }
         idleve_delay = (int)((MSUtils.getByte(pageBuffer,1022) + 0.0) * 1.0);
         ac_idleup_cl_lockout_mapadder = (double)((MSUtils.getByte(pageBuffer,1023) + 0.0) * 0.1);
-        pageBuffer = loadPage(2,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(2,0,1024,null,new byte[]{114,0,5,0,0,4,0});
         testmodelock = (int)((MSUtils.getWord(pageBuffer,0) + 0.0) * 1.0);
         testop_0 = (int)((MSUtils.getByte(pageBuffer,0) + 0.0) * 1.0);
         testop_coil = MSUtils.getBits(pageBuffer,2,0,1,0);
@@ -4359,7 +4359,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         dualfuel_press_sens = MSUtils.getBits(pageBuffer,945,0,3,0);
         ITB_load_mappoint = (double)((MSUtils.getSignedWord(pageBuffer,956) + 0.0) * 0.1);
         ITB_load_idletpsthresh = (double)((MSUtils.getSignedWord(pageBuffer,958) + 0.0) * 0.1);
-        pageBuffer = loadPage(3,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(3,0,1024,null,new byte[]{114,0,8,0,0,4,0});
         if (CELSIUS)
         {
         }
@@ -4454,14 +4454,14 @@ public class Ms3_pre11beta20 extends Megasquirt
         user_value2 = (int)((MSUtils.getWord(pageBuffer,960) + 0.0) * 1.0);
         user_conf0 = MSUtils.getBits(pageBuffer,962,0,0,0);
         user_conf1 = MSUtils.getBits(pageBuffer,962,1,2,0);
-        pageBuffer = loadPage(4,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(4,0,1024,null,new byte[]{114,0,9,0,0,4,0});
         if (LAMBDA)
         {
         }
         else
         {
         }
-        pageBuffer = loadPage(5,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(5,0,1024,null,new byte[]{114,0,10,0,0,4,0});
         if (MPH)
         {
         }
@@ -4486,7 +4486,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         else
         {
         }
-        pageBuffer = loadPage(6,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(6,0,1024,null,new byte[]{114,0,11,0,0,4,0});
         if (CELSIUS)
         {
         }
@@ -4499,7 +4499,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         else
         {
         }
-        pageBuffer = loadPage(10,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(10,0,1024,null,new byte[]{114,0,19,0,0,4,0});
         if (CELSIUS)
         {
         if (EXPANDED_CLT_TEMP)
@@ -4536,7 +4536,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         else
         {
         }
-        pageBuffer = loadPage(11,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(11,0,1024,null,new byte[]{114,0,21,0,0,4,0});
         if (CELSIUS)
         {
         }
@@ -4549,7 +4549,7 @@ public class Ms3_pre11beta20 extends Megasquirt
         else
         {
         }
-        pageBuffer = loadPage(14,0,1024,null,new byte[]{114,4,0,0,0,4,0});
+        pageBuffer = loadPage(14,0,1024,null,new byte[]{114,0,24,0,0,4,0});
         als_opt_fc = MSUtils.getBits(pageBuffer,336,0,0,0);
         als_opt_sc = MSUtils.getBits(pageBuffer,336,1,1,0);
         als_opt_idle = MSUtils.getBits(pageBuffer,336,2,2,0);

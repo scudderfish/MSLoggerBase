@@ -25,6 +25,7 @@ public class Patterns
     // private static Pattern nPages =
     // Pattern.compile("\\s*nPages\\s*=\\s*(\\d*)");
     static Pattern pageSize            = Pattern.compile("\\s*pageSize\\s*=\\s*(.*)");
+    static Pattern pageIdentifier      = Pattern.compile("\\s*pageIdentifier\\s*=\\s*(.*)");
     static Pattern pageActivate        = Pattern.compile("\\s*pageActivate\\s*=\\s*(.*)");
     static Pattern pageReadCommand     = Pattern.compile("\\s*pageReadCommand\\s*=\\s*(.*)");
 
@@ -35,5 +36,5 @@ public class Patterns
     // private static Pattern constantArray = Pattern
     // .compile("\\s*(\\w*)\\s*=\\s*(\\w*)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*(.*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
 
-    static Pattern booleanConvert = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
+    static Pattern booleanConvert      = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
 }
