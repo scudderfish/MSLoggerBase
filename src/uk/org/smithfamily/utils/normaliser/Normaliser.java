@@ -471,16 +471,13 @@ public class Normaliser
         {
             writer.println(TAB + "boolean " + name + ";");
         }
-        writer.println("//Runtime vars");
-        for (String name : runtimeVars.keySet())
+        Map<String,String> vars = new TreeMap<String,String>();
+        vars.putAll(runtimeVars);
+        vars.putAll(evalVars);
+        writer.println("//Variables");
+        for (String name : vars.keySet())
         {
-            String type = getType(name, runtimeVars);
-            writer.println(TAB + type + " " + name + ";");
-        }
-        writer.println("\n//eval vars");
-        for (String name : evalVars.keySet())
-        {
-            String type = getType(name, evalVars);
+            String type = getType(name, vars);
             writer.println(TAB + type + " " + name + ";");
         }
         writer.println("\n//Constants");
