@@ -97,6 +97,7 @@
 	<string name="select_fields_to_view">Select Fields to View</string>
 	
 	<!-- Manage Datalogs -->
+	<string name="no_datalog_found">It looks like the application haven\'t saved any datalog yet. You can connect to a Megasquirt ECU, start datalogging and come back here after.</string>
 	<string name="view">View</string>
 	<string name="email">Email</string>
 	<string name="delete">Delete</string>
