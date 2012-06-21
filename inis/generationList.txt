@@ -1,0 +1,2 @@
+# List of ECU firmware INI files to generate classes for
+msns-extra.29y.ini

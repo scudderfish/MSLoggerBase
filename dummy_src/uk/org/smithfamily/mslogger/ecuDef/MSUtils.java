@@ -1,4 +1,4 @@
-
+package uk.org.smithfamily.mslogger.ecuDef;
 public class MSUtils
 {
     public static int getLong(byte[] ochBuffer, int i)

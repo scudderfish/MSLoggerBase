@@ -1,99 +1,172 @@
-
+package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import android.content.Context;
+
+/**
+ * Abstract base class for all ECU implementations
+ * @author dgs
+ *
+ */
 public abstract class Megasquirt
 {
-	public abstract Set<String> getSignature();
+    static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
-	public abstract byte[] getOchCommand();
 
-	public abstract byte[] getSigCommand();
+    public static final String NEW_DATA          = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
 
-	public abstract void loadConstants(boolean simulated) throws IOException;
+    public static final String CONNECTED         = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
+    public static final String DISCONNECTED      = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
 
-	public abstract void calculate(byte[] ochBuffer) throws IOException;
+    protected Context          context;
 
-	public abstract String getLogHeader();
+    public abstract Set<String> getSignature();
 
-	public abstract String getLogRow();
+    public abstract byte[] getOchCommand();
 
-	public abstract int getBlockSize();
+    public abstract byte[] getSigCommand();
 
-	public abstract int getSigSize();
+    public abstract void loadConstants(boolean simulated) throws IOException;
 
-	public abstract int getPageActivationDelay();
+    public abstract void calculate(byte[] ochBuffer) throws IOException;
 
-	public abstract int getInterWriteDelay();
+    public abstract String getLogHeader();
 
-	public abstract int getCurrentTPS();
+    public abstract String getLogRow();
 
-	public abstract void initGauges();
+    public abstract int getBlockSize();
 
-	public abstract String[] defaultGauges();
+    public abstract int getSigSize();
 
-	private byte[]	ochBuffer;
+    public abstract int getPageActivationDelay();
 
-	private boolean	logging;
-	private boolean	constantsLoaded;
-	private boolean	signatureChecked;
-	private String	trueSignature	= "Unknown";
+    public abstract int getInterWriteDelay();
 
-	private boolean	running;
+    public abstract int getCurrentTPS();
 
-	private Context	context;
+    public abstract void initGauges();
 
-	protected int table(int i1, String name)
-	{
-		return 1;
-	}
+    public abstract String[] defaultGauges();
 
-	protected double tempCvt(int t)
-	{
-		if (isSet("CELSIUS"))
-		{
-			return (t - 32.0) * 5.0 / 9.0;
-		}
-		else
-		{
-			return t;
-		}
-	}
+    public abstract void refreshFlags();
 
-	public Megasquirt(Context c)
-	{
-		this.context = c;
-	}
+    private String             trueSignature = "Unknown";
+    private volatile boolean   running;
 
-	protected double timeNow()
-	{
-		return (System.currentTimeMillis()) / 1000.0;
-	}
-	protected double round(double v)
-	{
-		return Math.floor(v * 100 + .5) / 100;
-	}
-
-	protected boolean isSet(String name)
-	{
-		return true;
-	}
-	protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
-	{
-	}
-    protected byte[] loadPage(int PageNo,int pageOffset, int pageSize, byte[] select, byte[] read)
+    /**
+     * Shortcut function to access data tables.  Makes the INI->Java translation a little simpler
+     * @param i1 index into table
+     * @param name table name
+     * @return value from table
+     */
+    protected int table(int i1, String name)
     {
-		return read;
+        return 0;
     }
-	public String getTrueSignature()
-	{
-		return trueSignature;
-	}
 
-	public boolean isRunning()
-	{
-		return running;
-	}
+    protected int table(double d, String name)
+    {
+        return 0;
+    }
+
+    /**
+     * Temperature unit conversion function
+     * @param t temp in F
+     * @return temp in C if CELSIUS is set, in F otherwise
+     */
+    protected double tempCvt(int t)
+    {
+        if (isSet("CELSIUS"))
+        {
+            return (t - 32.0) * 5.0 / 9.0;
+        }
+        else
+        {
+            return t;
+        }
+    }
+
+    /**
+     * 
+     * @param c
+     */
+    public Megasquirt(Context c)
+    {
+        this.context = c;
+    }
+
+    /**
+     * How long have we been running?
+     * @return
+     */
+    protected double timeNow()
+    {
+        return 0;
+    }
+
+    /**
+     * Use reflection to extract a named value out of the subclass
+     * @param channel
+     * @return
+     */
+    public double getValue(String channel)
+    {
+
+        double value = 0;
+        return value;
+    }
+    /**
+     * Take a wild stab at what this does.
+     * @param v
+     * @return
+     */
+    protected double round(double v)
+    {
+        return Math.floor(v * 100 + .5) / 100;
+    }
+
+    /**
+     * Returns if a flag has been set in the application
+     * @param name
+     * @return
+     */
+    protected boolean isSet(String name)
+    {
+        return false;
+    }
+
+    public String getTrueSignature()
+    {
+        return trueSignature;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isRunning()
+    {
+        return running;
+    }
+
+    /**
+     * helper method for subclasses
+     * @param pageNo
+     * @param pageOffset
+     * @param pageSize
+     * @param select
+     * @param read
+     * @return
+     */
+    protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
+    {
+
+        byte[] buffer = new byte[pageSize];
+        return buffer;
+    }
+
+
 }

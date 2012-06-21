@@ -1,3 +1,4 @@
+package uk.org.smithfamily.mslogger.widgets;
 
 public enum GaugeRegister
 {

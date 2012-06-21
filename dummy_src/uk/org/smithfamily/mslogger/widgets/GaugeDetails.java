@@ -1,4 +1,4 @@
-
+package uk.org.smithfamily.mslogger.widgets;
 public class GaugeDetails
 {
 

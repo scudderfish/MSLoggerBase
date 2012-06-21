@@ -1,3 +1,4 @@
+package uk.org.smithfamily.utils.normaliser;
 public class Constant
 {
 
