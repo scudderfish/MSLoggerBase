@@ -14,7 +14,9 @@ public class Normaliser
     enum Section
     {
         None, Header, Expressions, Gauges, Logs, FrontPage, Constants
-    };
+    }
+
+    private static final String        TAB          = "    ";
 
     private static List<String>        runtime      = new ArrayList<String>();
     private static List<String>        logHeader    = new ArrayList<String>();
@@ -41,10 +43,12 @@ public class Normaliser
     private static int                 blockReadTimeoutVal;
     private static int                 pageActivationDelayVal;
     private static Set<String>         alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
-    private static Set<String>         alwaysDouble = new HashSet<String>(
-                                                            Arrays.asList(new String[] { "pulseWidth", "throttle", "accDecEnrich", "accDecEnrichPcnt",
-            "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time", "egoVoltage", "egoVoltage2", "egoCorrection", "veCurr","lambda", "TargetLambda"}));
+    private static Set<String>         alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle", "accDecEnrich",
+            "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time", "egoVoltage", "egoVoltage2", "egoCorrection", "veCurr",
+            "lambda", "TargetLambda"               }));
     private static File                outputDirectory;
+
+    private static int                 indent       = 0;
 
     /**
      * @param args
@@ -62,9 +66,9 @@ public class Normaliser
 
         while ((line = br.readLine()) != null)
         {
-            if(!line.startsWith("#"))
+            if (!line.startsWith("#"))
             {
-                preProcess(f.getParent(),line);
+                preProcess(f.getParent(), line);
             }
         }
     }
@@ -73,7 +77,7 @@ public class Normaliser
      * Initialise our stores to start a new class definition
      * 
      * @param filename
-     * @param line 
+     * @param line
      * @throws IOException
      */
     private static void preProcess(String directory, String filename) throws IOException
@@ -97,19 +101,19 @@ public class Normaliser
         constants = new ArrayList<Constant>();
         currentSection = Section.None;
 
-        File f = new File(directory,filename);
+        File f = new File(directory, filename);
         if (f.isDirectory())
             return;
 
         className = f.getName();
-        process(f,false);
+        process(f, false);
     }
 
     /**
      * Iterate over the file to read it
      * 
      * @param f
-     * @param subRead 
+     * @param subRead
      * @throws IOException
      */
     private static void process(File f, boolean subRead) throws IOException
@@ -187,7 +191,7 @@ public class Normaliser
             }
 
         }
-        if(!subRead)
+        if (!subRead)
         {
             writeFile(className);
         }
@@ -209,7 +213,7 @@ public class Normaliser
         {
             String fileName = importFileM.group(1);
             File imported = new File(parentFile.getAbsoluteFile().getParentFile(), fileName);
-            process(imported,true);
+            process(imported, true);
         }
 
     }
@@ -272,10 +276,10 @@ public class Normaliser
             pageActivationDelayVal = Integer.parseInt(pageActivationDelayM.group(1));
             return;
         }
-        if(line.contains("mapProportion4"))
+        if (line.contains("mapProportion4"))
         {
             @SuppressWarnings("unused")
-            int x=1;
+            int x = 1;
         }
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher constantM = Patterns.constantScalar.matcher(line);
@@ -437,18 +441,18 @@ public class Normaliser
         System.out.println(fingerprint + " : " + className);
 
         outputPackageAndIncludes(writer);
-        
+
         writer.println("/*");
         writer.println("Fingerprint : " + fingerprint);
         writer.println("*/");
 
         writer.println("public class " + className + " extends Megasquirt\n{");
         outputConstructor(writer, className);
-        writer.println(queryCommandStr);
-        writer.println(signatureStr);
-        writer.println(ochGetCommandStr);
-        writer.println(ochBlockSizeStr);
-        writer.println("private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));");
+        writer.println(TAB + queryCommandStr);
+        writer.println(TAB + signatureStr);
+        writer.println(TAB + ochGetCommandStr);
+        writer.println(TAB + ochBlockSizeStr);
+        writer.println(TAB + "private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));");
         outputGlobalVars(writer);
         outputRTCalcs(writer);
         outputLogInfo(writer);
@@ -468,37 +472,37 @@ public class Normaliser
         writer.println("//Flags");
         for (String name : flags)
         {
-            writer.println("boolean " + name + ";");
+            writer.println(TAB + "boolean " + name + ";");
         }
         writer.println("//Runtime vars");
         for (String name : runtimeVars.keySet())
         {
             String type = getType(name, runtimeVars);
-            writer.println(type + " " + name + ";");
+            writer.println(TAB + type + " " + name + ";");
         }
         writer.println("\n//eval vars");
         for (String name : evalVars.keySet())
         {
             String type = getType(name, evalVars);
-            writer.println(type + " " + name + ";");
+            writer.println(TAB + type + " " + name + ";");
         }
         writer.println("\n//Constants");
         for (String name : constantVars.keySet())
         {
             String type = getType(name, constantVars);
-            writer.println(type + " " + name + ";");
+            writer.println(TAB + type + " " + name + ";");
         }
         writer.println("\n");
-        writer.println("private String[] defaultGauges = {");
+        writer.println(TAB + "private String[] defaultGauges = {");
         boolean first = true;
         for (String dg : defaultGauges)
         {
             if (!first)
-                writer.print(",");
+                writer.println(",");
             first = false;
-            writer.println("\"" + dg + "\"");
+            writer.print(TAB + TAB + "\"" + dg + "\"");
         }
-        writer.println("};");
+        writer.println("\n"+TAB + "};");
 
     }
 
@@ -520,60 +524,60 @@ public class Normaliser
     {
         writer.println("	@Override");
         writer.println("	public void calculate(byte[] ochBuffer) throws IOException");
-        writer.println("{");
+        writer.println("    {");
         for (String defn : runtime)
         {
-            writer.println(defn);
+            writer.println(TAB + TAB + defn);
             // System.out.println(defn);
         }
-        writer.println("}");
+        writer.println(TAB + "}");
     }
 
     private static void outputLogInfo(PrintWriter writer)
     {
-        writer.println("@Override");
-        writer.println("public String getLogHeader()");
-        writer.println("{");
-        writer.println("	StringBuffer b = new StringBuffer();");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public String getLogHeader()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "StringBuffer b = new StringBuffer();");
         for (String header : logHeader)
         {
-            writer.println(header);
+            writer.println(TAB + TAB + header);
         }
-        writer.println("b.append(MSUtils.getLocationLogHeader());");
-        writer.println("    return b.toString();\n}\n");
-        writer.println("@Override");
-        writer.println("public String getLogRow()");
-        writer.println("{");
-        writer.println("	StringBuffer b = new StringBuffer();");
+        writer.println(TAB + TAB + "b.append(MSUtils.getLocationLogHeader());");
+        writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public String getLogRow()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "StringBuffer b = new StringBuffer();");
 
         for (String record : logRecord)
         {
-            writer.println(record);
+            writer.println(TAB + TAB + record);
         }
-        writer.println("b.append(MSUtils.getLocationLogRow());");
-        writer.println("    return b.toString();\n}\n");
+        writer.println(TAB + TAB + "b.append(MSUtils.getLocationLogRow());");
+        writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
     }
 
     private static void outputGauges(PrintWriter writer)
     {
-        writer.println("@Override");
-        writer.println("public void initGauges()");
-        writer.println("{");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void initGauges()");
+        writer.println(TAB + "{");
         for (String gauge : gaugeDef)
         {
             boolean okToWrite = true;
-            if(gauge.contains("GaugeRegister"))
+            if (gauge.contains("GaugeRegister"))
             {
                 String[] parts = gauge.split(",");
                 String channel = parts[2];
-               okToWrite =runtimeVars.containsKey(channel) || evalVars.containsKey(channel);      
+                okToWrite = runtimeVars.containsKey(channel) || evalVars.containsKey(channel);
             }
-            if(okToWrite)
-            {    
-                writer.println(gauge);
+            if (okToWrite)
+            {
+                writer.println(TAB + TAB + gauge);
             }
         }
-        writer.println("\n}\n");
+        writer.println(TAB + "}\n");
     }
 
     @SuppressWarnings("unused")
@@ -590,19 +594,19 @@ public class Normaliser
 
     private static void outputConstructor(PrintWriter writer, String className)
     {
-        writer.println("public " + className + "(Context c)");
-        writer.println("{");
-        writer.println("    super(c);");
-        writer.println("    refreshFlags();");
-        writer.println(" }");
-        writer.println("@Override");
-        writer.println("public void refreshFlags()");
-        writer.println("{");
+        writer.println(TAB + "public " + className + "(Context c)");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "super(c);");
+        writer.println(TAB + TAB + "refreshFlags();");
+        writer.println(TAB + "}");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void refreshFlags()");
+        writer.println(TAB + "{");
         for (String flag : flags)
         {
-            writer.println("    " + flag + " = isSet(\"" + flag + "\");");
+            writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
         }
-        writer.println(" }");
+        writer.println(TAB + "}");
 
     }
 
@@ -624,10 +628,10 @@ public class Normaliser
 
     private static void outputLoadConstants(PrintWriter writer)
     {
-        writer.println("@Override");
-        writer.println("public void loadConstants(boolean simulated)");
-        writer.println("{");
-        writer.println("byte[] pageBuffer = null;");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void loadConstants(boolean simulated)");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "byte[] pageBuffer = null;");
         int pageNo = 0;
         for (Constant c : constants)
         {
@@ -674,16 +678,16 @@ public class Normaliser
                 {
                     def = getScalar("pageBuffer", constantVars.get(name), name, c.getType(), "" + c.getOffset(), "" + c.getScale(), "" + c.getTranslate());
                 }
-                writer.println(def);
+                writer.println(TAB + TAB + def);
             }
             else
             {
-                writer.println(name);
+                writer.println(TAB + TAB + name);
             }
 
         }
 
-        writer.println("}");
+        writer.println(TAB + "}");
     }
 
     private static void outputLoadPage(int pageNo, int pageOffset, int pageSize, String activate, String read, PrintWriter writer)
@@ -697,7 +701,7 @@ public class Normaliser
         {
             read = processStringToBytes(read, pageOffset, pageSize);
         }
-        writer.println(String.format("pageBuffer = loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
+        writer.println(TAB + TAB + String.format("pageBuffer = loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
 
     }
 
@@ -774,22 +778,57 @@ public class Normaliser
 
     private static void outputOverrides(PrintWriter writer)
     {
-        String overrides = "@Override\n" + "public Set<String> getSignature()\n" + "{\n" + "    return sigs;\n" + "}\n" + "@Override\n"
-                + "public byte[] getOchCommand()\n" + "{\n" + "    \n" + "    return this.ochGetCommand;\n" + "}\n" +
+        String overrides = TAB + "@Override\n" + 
+                TAB + "public Set<String> getSignature()\n" + 
+                TAB + "{\n" + 
+                TAB + TAB+"return sigs;\n" + "}\n" + 
+                TAB + "@Override\n" + 
+                TAB+"public byte[] getOchCommand()\n" + 
+                TAB+"{\n" +
+                TAB+TAB+"return this.ochGetCommand;\n" +
+                TAB+"}\n" +
 
-                "@Override\n" + "public byte[] getSigCommand()\n" + "{\n" + "    return this.queryCommand;\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public byte[] getSigCommand()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return this.queryCommand;\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public int getBlockSize()\n" + "{\n" + "    return this.ochBlockSize;\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public int getBlockSize()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return this.ochBlockSize;\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public int getSigSize()\n" + "{\n" + "    return signature.length();\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public int getSigSize()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return signature.length();\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public int getPageActivationDelay()\n" + "{\n" + "    return " + pageActivationDelayVal + ";\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public int getPageActivationDelay()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return " + pageActivationDelayVal + ";\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public int getInterWriteDelay()\n" + "{\n" + "    return " + blockReadTimeoutVal + ";\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public int getInterWriteDelay()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return " + blockReadTimeoutVal + ";\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public int getCurrentTPS()\n" + "{\n" + "   \n" + "    return (int)tpsADC;\n" + "}\n" +
+                TAB+"@Override\n" + 
+                TAB+"public int getCurrentTPS()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return (int)tpsADC;\n" + 
+                TAB+"}\n" +
 
-                "@Override\n" + "public String[] defaultGauges()\n" + "{\n" + "    return defaultGauges;\n" + "}\n";
+                TAB+"@Override\n" + 
+                TAB+"public String[] defaultGauges()\n" + 
+                TAB+"{\n" + 
+                TAB+TAB+"return defaultGauges;\n" + 
+                TAB+"}\n";
 
         writer.println(overrides);
     }
@@ -888,9 +927,9 @@ public class Normaliser
         else if (exprM.matches())
         {
             String name = exprM.group(1);
-            if("egoVoltage".equals(name))
+            if ("egoVoltage".equals(name))
             {
-                int x=1;
+                int x = 1;
             }
             String expression = deBinary(exprM.group(2).trim());
             Matcher ternaryM = Patterns.ternary.matcher(expression);
@@ -956,27 +995,26 @@ public class Normaliser
 
     private static boolean isFloatingExpression(String expression)
     {
-        boolean result= expression.contains(".");
-        if(result)
+        boolean result = expression.contains(".");
+        if (result)
         {
             return result;
         }
-        for(String var : runtimeVars.keySet())
+        for (String var : runtimeVars.keySet())
         {
-            if(expression.contains(var)  && runtimeVars.get(var).equals("double"))
+            if (expression.contains(var) && runtimeVars.get(var).equals("double"))
             {
                 result = true;
             }
         }
-        for(String var : evalVars.keySet())
+        for (String var : evalVars.keySet())
         {
-            if(expression.contains(var)  && evalVars.get(var).equals("double"))
+            if (expression.contains(var) && evalVars.get(var).equals("double"))
             {
                 result = true;
             }
         }
-        
-        
+
         return result;
     }
 
@@ -998,16 +1036,16 @@ public class Normaliser
         if (components[0].equals("#if"))
         {
             flags.add(flagName);
-            return ("if (" + flagName + ")\n{");
+            return ("if (" + flagName + ")\n        {");
         }
         if (components[0].equals("#elif"))
         {
             flags.add(flagName);
-            return ("}\nelse if (" + flagName + ")\n{");
+            return ("}\n        else if (" + flagName + ")\n        {");
         }
         if (components[0].equals("#else"))
         {
-            return ("}\nelse\n{");
+            return ("}\n        else\n        {");
         }
         if (components[0].equals("#endif"))
         {
