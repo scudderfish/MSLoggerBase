@@ -90,6 +90,10 @@ public abstract class Megasquirt
     {
         return TableManager.INSTANCE.table(i1, name);
     }
+    protected int table(double d1, String name)
+    {
+        return table((int)d1, name);
+    }
 
     /**
      * 
