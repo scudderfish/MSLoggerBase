@@ -171,7 +171,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void checkBTDeviceSet()
     {
-
         if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
             messages.setText(R.string.please_select);
@@ -191,16 +190,28 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
+            
             if (!gauge1.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            {
                 editor.putString("gauge1", gauge1.getName());
+            }
             if (!gauge2.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            {
                 editor.putString("gauge2", gauge2.getName());
+            }
             if (!gauge3.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            {
                 editor.putString("gauge3", gauge3.getName());
+            }
             if (!gauge4.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            {
                 editor.putString("gauge4", gauge4.getName());
+            }
             if (!gauge5.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            {
                 editor.putString("gauge5", gauge5.getName());
+            }
+            
             editor.commit();
         }
     }
@@ -230,16 +241,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
         gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
         if (gauge5 != null)
+        {
             gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
-
+        }
+        
         if (gaugeEditEnabled)
         {
             gauge1.setOnTouchListener(new GaugeTouchListener(gauge1));
             gauge2.setOnTouchListener(new GaugeTouchListener(gauge2));
             gauge4.setOnTouchListener(new GaugeTouchListener(gauge4));
             if (gauge5 != null)
+            {
                 gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
-
+            }
+            
             gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
             OnTouchListener gestureListener = new View.OnTouchListener()
             {
@@ -407,7 +422,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         MenuItem loggingItem = menu.findItem(R.id.forceLogging);
         loggingItem.setEnabled(ecuDefinition != null);
-        if (ApplicationSettings.INSTANCE.shouldBeLogging())
+                
+        if (ecuDefinition != null && ecuDefinition.isLogging())
         {
             loggingItem.setIcon(R.drawable.ic_menu_stop_logging);
             loggingItem.setTitle(R.string.stop_logging);
