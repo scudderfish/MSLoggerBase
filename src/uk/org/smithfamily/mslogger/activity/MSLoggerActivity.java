@@ -523,7 +523,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleLogging()
     {
-        boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         if (ecu != null && ecu.isLogging())
@@ -535,7 +534,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ecu.startLogging();
         }
-        ApplicationSettings.INSTANCE.setLoggingOverride(!shouldBeLogging);
     }
 
     /**
@@ -860,7 +858,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             String action = intent.getAction();
             Log.i(ApplicationSettings.TAG, "Received :" + action);
-            boolean shouldBeLogging = ApplicationSettings.INSTANCE.shouldBeLogging();
+            boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
             if (action.equals(Megasquirt.CONNECTED))
             {
@@ -868,7 +866,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                 DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(false);
-                if (shouldBeLogging && ecu != null)
+                if (autoLoggingEnabled && ecu != null)
                 {
                     ecu.startLogging();
                 }
@@ -877,7 +875,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             {
                 DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(true);
-                if (shouldBeLogging)
+                if (autoLoggingEnabled)
                 {
                     DatalogManager.INSTANCE.mark("Connection Lost");
                 }

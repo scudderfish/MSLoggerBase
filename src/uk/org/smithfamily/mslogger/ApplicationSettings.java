@@ -304,10 +304,9 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      * 
      * @return
      */
-    public boolean shouldBeLogging()
+    public boolean getAutoLogging()
     {
-        boolean shouldBeLogging = prefs.getBoolean("autolog", true);
-        return (loggingOverride == null || loggingOverride == true) && shouldBeLogging;
+        return prefs.getBoolean("autolog", true);
     }
 
     /**
