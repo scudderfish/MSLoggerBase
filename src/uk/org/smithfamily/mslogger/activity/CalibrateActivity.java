@@ -68,17 +68,18 @@ public class CalibrateActivity extends Activity
 		tpsDisplay = (ProgressBar) findViewById(R.id.TPSPosition);
 
 		IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
-		registerReceiver(new BroadcastReceiver()
-		{
-
-			@Override
-			public void onReceive(Context context, Intent intent)
-			{
-				int currentTPS = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentTPS();
-				updateWithRaw(currentTPS);
-			}
-		}, dataFilter);
-
+		this.registerReceiver(mReceiver, dataFilter);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	protected void onDestroy()
+	{
+	    super.onDestroy();
+	    
+	    this.unregisterReceiver(mReceiver);
 	}
 
 	/**
@@ -149,4 +150,15 @@ public class CalibrateActivity extends Activity
 		
 		return (x - minTPS) * 100 / (maxTPS - minTPS);
 	}
+	
+	private final BroadcastReceiver mReceiver = new BroadcastReceiver()
+                                                {
+                                            
+                                                    @Override
+                                                    public void onReceive(Context context, Intent intent)
+                                                    {
+                                                        int currentTPS = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentTPS();
+                                                        updateWithRaw(currentTPS);
+                                                    }
+                                                };
 }
