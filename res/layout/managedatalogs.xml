@@ -17,9 +17,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="right"
     android:orientation="vertical" >
-
+    
+     <TextView
+         android:id="@+id/no_datalog_found"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="@string/no_datalog_found"
+         android:textAppearance="?android:attr/textAppearanceMedium"
+         android:visibility="gone" />
+ 
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"

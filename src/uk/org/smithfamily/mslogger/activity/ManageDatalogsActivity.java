@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * Activity class used to manage datalogs
@@ -130,21 +132,38 @@ public class ManageDatalogsActivity  extends ListActivity {
         datalogsList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         datalogsList.setItemsCanFocus(true);
         
+        TextView noDatalogMessage = (TextView) findViewById(R.id.no_datalog_found);
+        
         mDatalogsArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice);        
         File datalogDirectory = ApplicationSettings.INSTANCE.getDataDir();
 
-        File[] datalogs = datalogDirectory.listFiles();
-               
-        for (File datalog : datalogs)
-        {            
-            // Make sure it's an MSL file
-            if (datalog.getAbsolutePath().endsWith("msl"))
-            {               
-                mDatalogsArrayAdapter.add(datalog.getName());
+        class DatalogFilter implements FilenameFilter {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".msl");
             }
         }
-                
-        datalogsList.setAdapter(mDatalogsArrayAdapter);
+        
+        File[] datalogs = datalogDirectory.listFiles(new DatalogFilter());
+        
+        if (datalogs.length > 0)
+        {        
+            System.out.println("hehe2");
+            for (File datalog : datalogs)
+            {                         
+                mDatalogsArrayAdapter.add(datalog.getName());
+            }
+                    
+            datalogsList.setAdapter(mDatalogsArrayAdapter);
+            
+            noDatalogMessage.setVisibility(View.GONE);
+            datalogsList.setVisibility(View.VISIBLE);
+        }
+        // No datalog found, showing message instead
+        else
+        {            
+            noDatalogMessage.setVisibility(View.VISIBLE);
+            datalogsList.setVisibility(View.GONE);
+        }
     }
     
     /**
