@@ -1,6 +1,47 @@
 # List of ECU firmware INI files to generate classes for
-#msns-extra.29y.ini
+#
+#PICsquirt.ini
+#megasquirt-I.ini
+#megasquirt-II.2.86.ini
+#megasquirt-II.2.88.ini
+#megasquirt-II.2.885.ini
+#megasquirt-II.2.886.ini
+#megasquirt-II.ini
+#megasquirt-II_3760.ini
+#megasquirt-II_v2905.ini
+#megasquirt-I_B&G_2.0-3.0.ini
+#megasquirt-I_B&G_2.0.ini
+#megasquirt-ii.ms2extra.ini
+#megatuneDT.ini
+#megatuneGood.ini
+#ms2Extra303r.ini
 #ms2extra.2.1p.ini
 #ms2extra.2.1q.ini
-#MS2Extra310.ini
-ms3-pre1.1beta20.ini
+#ms2extra_2.1.0.d.ini
+#ms2extra_3.03s.ini
+#ms2extra_3.03u.ini
+#ms3-pre1.1beta20.ini
+#ms3-pre1.1rc1.ini
+#ms3.ini
+#ms3VeAnalyzeMaps.ini
+#ms3scratch.ini
+#msextra-hr.ini
+#msns-extra.029q-29w.ini
+#msns-extra.29y.ini
+#msns-extra.ini
+GPIO_MShift_2109.ini
+MS2Extra Rel 2.0.1.ini
+MS2Extra Rev 1.0.2.ini
+MS2Extra311mb_v12.ini
+MS2Extra310.ini
+MS2ExtraSerial312a.ini
+MS3 Format 0221.002.ini
+MS3Format0095.002_1.0.2.ini
+MSExtra format hr_10.ini
+MSExtra format hr_11.ini
+MSExtra format hr_11d.ini
+#MS_ECU.ini - cranky
+#MSnEDIS-mod.ini - cranky
+#MSnS.ini - cranky
+#megasquirt-I.ini
+
