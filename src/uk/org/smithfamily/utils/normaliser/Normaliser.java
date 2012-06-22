@@ -105,6 +105,8 @@ public class Normaliser
         fingerprintSource = "";
         currentPage = 0;
         constants = new ArrayList<Constant>();
+        //Default for those who don't define it.  I'm looking at you megasquirt-I.ini!
+        ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
         currentSection = Section.None;
 
         File f = new File(directory, filename);
@@ -434,6 +436,7 @@ public class Normaliser
         }
 
         Matcher sigM = Patterns.signature.matcher(line);
+        Matcher sigByteM = Patterns.byteSignature.matcher(line);
         if (sigM.matches())
         {
             String tmpsig = sigM.group(1);
@@ -443,6 +446,12 @@ public class Normaliser
             }
             signatureStr = "String signature=\"" + tmpsig + "\";";
         }
+        else if (sigByteM.matches())
+        {
+            String b = sigByteM.group(1).trim();
+            signatureStr = "String signature=\"\"+(byte)" + b + ";";
+        }
+        
     }
 
     private static void processGaugeEntry(String line)
@@ -491,7 +500,7 @@ public class Normaliser
         className = StringUtils.remove(className, "ini");
         className = StringUtils.replace(className, " ", "_");
         className = StringUtils.replace(className, "-", "_");
-
+        className = StringUtils.replace(className, "&", "_");
         String classFile = "";
 
         String directory = outputDirectory.getAbsolutePath() + File.separator + "gen_src/uk/org/smithfamily/mslogger/ecuDef/gen/";
@@ -544,9 +553,9 @@ public class Normaliser
         Map<String,String> vars = new TreeMap<String,String>();
         vars.putAll(runtimeVars);
         vars.putAll(evalVars);
-        for(String c : constantVars.keySet())
+        for (String v : vars.keySet())
         {
-            vars.remove(c);
+            constantVars.remove(v);
         }
         writer.println("//Variables");
         for (String name : vars.keySet())
@@ -1035,6 +1044,7 @@ public class Normaliser
             }
             String expression = deBinary(exprM.group(2).trim());
             Matcher ternaryM = Patterns.ternary.matcher(expression);
+            Matcher boolAsIntM = Patterns.boolAsInt.matcher(expression);
             if (ternaryM.matches())
             {
                 // System.out.println("BEFORE : " + expression);
@@ -1050,8 +1060,7 @@ public class Normaliser
                 }
                 // System.out.println("AFTER  : " + expression + "\n");
             }
-            //MS3 expression hell
-            if(expression.contains("*")  && expression.contains("=="))
+           if(expression.contains("*")  && expression.contains("=="))
             {
                 expression = convertC2JavaBoolean(expression);
             }
@@ -1193,6 +1202,10 @@ public class Normaliser
 
     private static String getScalar(String bufferName, String javaType, String name, String dataType, String offset, String scale, String numOffset)
     {
+        if(javaType == null)
+        {
+            javaType = "int";
+        }
         String definition = name + " = (" + javaType + ")((MSUtils.get";
         if (dataType.startsWith("S"))
         {

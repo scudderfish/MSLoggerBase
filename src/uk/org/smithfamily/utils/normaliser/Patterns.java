@@ -16,10 +16,11 @@ public class Patterns
 
     static Pattern queryCommand        = Pattern.compile("\\s*queryCommand\\s*=\\s*\"(.*)\".*");
     static Pattern signature           = Pattern.compile("\\s*signature\\s*=\\s*\"(.*)\".*");
+    static Pattern byteSignature       = Pattern.compile("\\s*signature\\s*=\\s*(\\d*).*");
     static Pattern ochGetCommand       = Pattern.compile("\\s*ochGetCommand\\s*=\\s*\"(.*)\".*");
     static Pattern ochBlockSize        = Pattern.compile("\\s*ochBlockSize\\s*=\\s*(\\d*).*");
     static Pattern pageActivationDelay = Pattern.compile("\\s*pageActivationDelay\\s*=\\s*(\\d*).*");
-    static Pattern interWriteDelay    = Pattern.compile("\\s*interWriteDelay\\s*=\\s*(\\d*).*");
+    static Pattern interWriteDelay     = Pattern.compile("\\s*interWriteDelay\\s*=\\s*(\\d*).*");
     static Pattern defaultGauge        = Pattern.compile("\\s*gauge\\d\\s*=\\s*(\\w*)");
     static Pattern page                = Pattern.compile("\\s*page\\s*=\\s*(\\d*)");
     // private static Pattern nPages =
@@ -37,4 +38,5 @@ public class Patterns
     // .compile("\\s*(\\w*)\\s*=\\s*(\\w*)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*(.*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
 
     static Pattern booleanConvert      = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
+    static Pattern boolAsInt           = Pattern.compile("(.*\\(.*?[<>=].*?\\))(.*?[\\*/].*)");
 }
