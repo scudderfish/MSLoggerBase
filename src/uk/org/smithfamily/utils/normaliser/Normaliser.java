@@ -555,11 +555,11 @@ public class Normaliser
 
         writer.println("public class " + className + " extends Megasquirt\n{");
         outputConstructor(writer, className);
+        writer.println(TAB+"private Map<String,Double> fields = new HashMap<String,Double>();");
         writer.println(TAB + queryCommandStr);
         writer.println(TAB + signatureDeclaration);
         writer.println(TAB + ochGetCommandStr);
         writer.println(TAB + ochBlockSizeStr);
-        writer.println(TAB + "private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));");
         outputGlobalVars(writer);
         outputRTCalcs(writer);
         outputLogInfo(writer);
@@ -569,12 +569,31 @@ public class Normaliser
 
         outputOverrides(writer);
         outputLoadConstants(writer);
+        outputGeneratePacket(writer);
         writer.println("\n}\n");
 
         writer.close();
     }
 
-    private static void outputGlobalVars(PrintWriter writer)
+    private static void outputGeneratePacket(PrintWriter writer)
+	{
+		writer.println(TAB+"@Override");
+		writer.println(TAB+"public DataPacket getDataPacket()");
+		writer.println(TAB+"{");
+		Set<String> allVars = new TreeSet<String>();
+		allVars.addAll(runtimeVars.keySet());
+		allVars.addAll(evalVars.keySet());
+		//allVars.addAll(constantVars.keySet());
+		for(String var : allVars)
+		{
+			writer.println(TAB+TAB+"fields.put(\""+var+"\",(double)"+var+");");
+		}
+		writer.println(TAB+TAB+"return new DataPacket(fields,ochBuffer);");
+		writer.println(TAB+"};");
+		
+	}
+
+	private static void outputGlobalVars(PrintWriter writer)
     {
         writer.println("//Flags");
         for (String name : flags)
@@ -732,8 +751,7 @@ public class Normaliser
         writer.println("");
         writer.println("import android.content.Context;");
         writer.println("");
-        writer.println("import uk.org.smithfamily.mslogger.ecuDef.MSUtils;");
-        writer.println("import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;");
+        writer.println("import uk.org.smithfamily.mslogger.ecuDef.*;");
         writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeDetails;");
         writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeRegister;");
 
@@ -914,7 +932,7 @@ public class Normaliser
 
     private static void outputOverrides(PrintWriter writer)
     {
-        String overrides = TAB + "@Override\n" + TAB + "public Set<String> getSignature()\n" + TAB + "{\n" + TAB + TAB + "return sigs;\n" + "}\n" + TAB
+        String overrides = TAB + "@Override\n" + TAB + "public String getSignature()\n" + TAB + "{\n" + TAB + TAB + "return signature;\n" + "}\n" + TAB
                 + "@Override\n" + TAB + "public byte[] getOchCommand()\n" + TAB + "{\n" + TAB + TAB + "return this.ochGetCommand;\n" + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public byte[] getSigCommand()\n" + TAB + "{\n" + TAB + TAB + "return this.queryCommand;\n" + TAB + "}\n" +
