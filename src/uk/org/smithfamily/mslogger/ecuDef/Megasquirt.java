@@ -259,9 +259,9 @@ public abstract class Megasquirt
      * How long have we been running?
      * @return
      */
-    protected double timeNow()
+    protected int timeNow()
     {
-        return (System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0;
+        return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
     }
 
     /**
@@ -579,7 +579,7 @@ public abstract class Megasquirt
             String sig1 = "NoSigReadYet";
             String sig2 = "Not here";
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
-            int d = getInterWriteDelay();
+            int d = Math.max(getInterWriteDelay(),100);
             
             /*
              * We need to loop around until we get a constant result.  When a BT module connects, it can feed
