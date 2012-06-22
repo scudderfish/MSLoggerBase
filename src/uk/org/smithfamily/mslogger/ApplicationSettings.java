@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
@@ -77,7 +78,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         registerEcu(new ZZMSExtra_format_hr_10(context));
         registerEcu(new ZZMSExtra_format_hr_11(context));
         registerEcu(new ZZMSExtra_format_hr_11d(context));
-        registerEcu(new ZZMS1Extra29y(context));
+        registerEcu(new Msns_extra29y(context));
     }
 
     /**
