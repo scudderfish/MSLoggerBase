@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
 import uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
@@ -38,7 +39,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Map<String, Boolean>    settings            = new HashMap<String, Boolean>();
     private BluetoothAdapter        defaultAdapter;
     private boolean                 writable;
-    private Map<String, Megasquirt> sigMap;
     
     /**
      * Initialise all preferences
@@ -56,45 +56,9 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir", context.getString(R.string.app_name)));
         dataDir.mkdirs();
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
-        sigMap = new HashMap<String, Megasquirt>();
-
-        registerEcu(new ZZGPIO_MShift_2110(context));
-        registerEcu(new ZZJimstim21(context));
-        registerEcu(new ZZMegasquirt_I_BG_20_30(context));
-        registerEcu(new ZZMegasquirt_II_3760(context));
-        registerEcu(new ZZMegasquirt_II_v2905(context));
-        registerEcu(new ZZMegasquirt_II286(context));
-        registerEcu(new ZZMS2Extra_Rel_201(context));
-        registerEcu(new ZZMS2Extra_Rev_102(context));
-        registerEcu(new ZZMS2Extra210(context));
-        registerEcu(new ZZMS2Extra310(context));
-        registerEcu(new ZZMS2Extra311mb_v12(context));
-        registerEcu(new ZZMS2ExtraSerial312(context));
-        registerEcu(new ZZMS2ExtraSerialGS26(context));
-        registerEcu(new ZZMS3_Format_0221002(context));
-        registerEcu(new ZZMS3_Format_0095002_102(context));
-        registerEcu(new ZZMS3_Pre11_alpha15_16(context));
-        registerEcu(new ZZMS3_Pre11_alpha20(context));
-        registerEcu(new ZZMSExtra_format_hr_10(context));
-        registerEcu(new ZZMSExtra_format_hr_11(context));
-        registerEcu(new ZZMSExtra_format_hr_11d(context));
-        registerEcu(new Msns_extra29y(context));
     }
 
-    /**
-     * Register an ECU file by creating a signature map of all supported signatures by the Megasquirt ECU definition Java class
-     * 
-     * @param ecu Instance of Megasquirt ECU definition Java class
-     */
-    private void registerEcu(Megasquirt ecu)
-    {
-        Set<String> sigs = ecu.getSignature();
-        for (String sig : sigs)
-        {
-            sigMap.put(sig, ecu);
-        }
-    }
-
+    
     /**
      * Get the data directory for the application
      */
@@ -353,7 +317,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      */
     public Megasquirt getEcuForSig(String sig)
     {
-        return sigMap.get(sig);
+        return ECURegistry.INSTANCE.getECU(sig, context);
     }
 
     /**
@@ -398,18 +362,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         editor.putBoolean("workaround", state);
         editor.commit();
         DebugLogManager.INSTANCE.log("set BTWorkaround to "+state,Log.ASSERT);
-    }
-
-    /**
-     * Reset all ECUs
-     */
-    public void resetECUs()
-    {
-        for(Entry<String, Megasquirt> e : sigMap.entrySet())
-        {
-            e.getValue().reset();
-        }
-        
     }
 
     /**

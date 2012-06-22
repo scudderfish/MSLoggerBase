@@ -570,8 +570,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             ecu.stop();
         }
         sendLogs();
-        ApplicationSettings.INSTANCE.resetECUs();
-
+        ecu.reset();
+      
         this.finish();
     }
 
