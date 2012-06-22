@@ -384,8 +384,11 @@ public enum Connection
                     throw new IOException("end of stream attempting to read");
                 }
                 read += numRead;
+                DebugLogManager.INSTANCE.log("readBytes[] : target = "+target+" read so far :" +read, Log.DEBUG);
             }
             reaper.cancel();
+            DebugLogManager.INSTANCE.log("readBytes[]",bytes, Log.DEBUG);
+            
         }
         catch (IOException e)
         {

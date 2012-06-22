@@ -161,10 +161,14 @@ public enum DebugLogManager
             return;
         }
         
-        StringBuffer b = new StringBuffer(msg);
+        StringBuffer b = new StringBuffer(msg).append("\n");
         for (int i = 0; i < result.length; i++)
         {
             b.append(String.format(" %02x", result[i]));
+            if((i+1) % 40 == 0)
+            {
+                b.append("\n");
+            }
         }
         log(b.toString(), logLevel);
     }
