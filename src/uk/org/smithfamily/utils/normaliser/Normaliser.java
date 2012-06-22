@@ -534,12 +534,12 @@ public class Normaliser
         writer.println("//Flags");
         for (String name : flags)
         {
-            writer.println(TAB + "boolean " + name + ";");
+            writer.println(TAB + "public boolean " + name + ";");
         }
         writer.println("//Defaults");
         for(String d : defaults)
         {
-            writer.println(TAB+d);
+            writer.println(TAB+"public "+d);
         }
         Map<String,String> vars = new TreeMap<String,String>();
         vars.putAll(runtimeVars);
@@ -552,13 +552,13 @@ public class Normaliser
         for (String name : vars.keySet())
         {
             String type = getType(name, vars);
-            writer.println(TAB + type + " " + name + ";");
+            writer.println(TAB +"public "+ type + " " + name + ";");
         }
         writer.println("\n//Constants");
         for (String name : constantVars.keySet())
         {
             String type = getType(name, constantVars);
-            writer.println(TAB + type + " " + name + ";");
+            writer.println(TAB + "public "+type + " " + name + ";");
         }
         writer.println("\n");
         writer.println(TAB + "private String[] defaultGauges = {");

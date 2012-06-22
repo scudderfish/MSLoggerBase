@@ -27,7 +27,7 @@
 #ms3scratch.ini
 #msextra-hr.ini
 #msns-extra.029q-29w.ini
-#msns-extra.29y.ini
+#
 #msns-extra.ini
 GPIO_MShift_2109.ini
 MS2Extra Rel 2.0.1.ini
@@ -45,3 +45,4 @@ MSExtra format hr_11d.ini
 #MSnS.ini - cranky
 #megasquirt-I.ini
 ms3-pre1.1beta20.ini
+msns-extra.29y.ini
