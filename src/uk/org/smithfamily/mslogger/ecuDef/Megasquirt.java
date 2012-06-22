@@ -40,7 +40,7 @@ public abstract class Megasquirt
 
     protected Context          context;
 
-    public abstract Set<String> getSignature();
+    public abstract String getSignature();
 
     public abstract byte[] getOchCommand();
 
@@ -69,6 +69,8 @@ public abstract class Megasquirt
     public abstract String[] defaultGauges();
 
     public abstract void refreshFlags();
+    
+    public abstract DataPacket getDataPacket();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -76,7 +78,7 @@ public abstract class Megasquirt
     private ECUThread          ecuThread;
     private volatile boolean   running;
 
-    private byte[]             ochBuffer;
+    protected byte[]             ochBuffer;
 
     private RebroadcastHandler handler;
 
@@ -244,6 +246,14 @@ public abstract class Megasquirt
         context.sendBroadcast(broadcast);
 
     }
+    private void broadcast(DataPacket p)
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(NEW_DATA);
+        broadcast.putExtra(NEW_DATA, p);
+        context.sendBroadcast(broadcast);
+
+    }
 
     /**
      * 
@@ -370,8 +380,8 @@ public abstract class Megasquirt
          */
         public ECUThread()
         {
-            Set<String> sigs = Megasquirt.this.getSignature();
-            setName("ECUThread:" + sigs.iterator().next());
+            String sig = Megasquirt.this.getSignature();
+            setName("ECUThread:" + sig);
         }
 
         /**
@@ -449,7 +459,8 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
-                    broadcast(NEW_DATA);
+                    DataPacket packet = getDataPacket();
+                    broadcast(packet);
                 }
             }
             catch (IOException e)
@@ -498,10 +509,10 @@ public abstract class Megasquirt
             {
                 byte[] sigCommand = getSigCommand();
                 sendMessage("Verifying MS");
-                Set<String> signatures = Megasquirt.this.getSignature();
+                String signature = Megasquirt.this.getSignature();
 
                 msSig = getSignature(sigCommand);
-                verified = signatures.contains(msSig);
+                verified = signature.equals(msSig);
                 if (verified)
                 {
                     trueSignature = msSig;
