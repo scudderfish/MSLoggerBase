@@ -20,7 +20,7 @@
 #ms2extra_2.1.0.d.ini
 #ms2extra_3.03s.ini
 #ms2extra_3.03u.ini
-#ms3-pre1.1beta20.ini
+#
 #ms3-pre1.1rc1.ini
 #ms3.ini
 #ms3VeAnalyzeMaps.ini
@@ -44,4 +44,4 @@ MSExtra format hr_11d.ini
 #MSnEDIS-mod.ini - cranky
 #MSnS.ini - cranky
 #megasquirt-I.ini
-
+ms3-pre1.1beta20.ini

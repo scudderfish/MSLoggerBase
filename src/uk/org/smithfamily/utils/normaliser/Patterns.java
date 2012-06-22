@@ -19,7 +19,7 @@ public class Patterns
     static Pattern ochGetCommand       = Pattern.compile("\\s*ochGetCommand\\s*=\\s*\"(.*)\".*");
     static Pattern ochBlockSize        = Pattern.compile("\\s*ochBlockSize\\s*=\\s*(\\d*).*");
     static Pattern pageActivationDelay = Pattern.compile("\\s*pageActivationDelay\\s*=\\s*(\\d*).*");
-    static Pattern blockReadTimeout    = Pattern.compile("\\s*blockReadTimeout\\s*=\\s*(\\d*).*");
+    static Pattern interWriteDelay    = Pattern.compile("\\s*interWriteDelay\\s*=\\s*(\\d*).*");
     static Pattern defaultGauge        = Pattern.compile("\\s*gauge\\d\\s*=\\s*(\\w*)");
     static Pattern page                = Pattern.compile("\\s*page\\s*=\\s*(\\d*)");
     // private static Pattern nPages =

@@ -43,7 +43,7 @@ public class Normaliser
     private static ArrayList<String>   pageReadCommands;
     private static Section             currentSection;
     private static String              className;
-    private static int                 blockReadTimeoutVal;
+    private static int                 interWriteDelay;
     private static int                 pageActivationDelayVal;
     private static Set<String>         alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String>         alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle", "accDecEnrich",
@@ -131,9 +131,6 @@ public class Normaliser
 
         while ((line = br.readLine()) != null)
         {
-            line += "; junk";
-            line = StringUtils.trim(line).split(";")[0];
-            line = line.trim();
             if (line.startsWith("#include "))
             {
                 handleImport(line, f);
@@ -219,8 +216,18 @@ public class Normaliser
         }
     }
 
+    private static String removeComments(String line)
+    {
+        line += "; junk";
+        line = StringUtils.trim(line).split(";")[0];
+        line = line.trim();
+        return line;
+    }
+
     private static void processConstantsExtensions(String line)
     {
+        line = removeComments(line);
+        
         if(line.contains("defaultValue"))
         {
             String statement="";
@@ -272,8 +279,7 @@ public class Normaliser
      */
     private static void processConstants(String line)
     {
-        line += "; junk";
-        line = StringUtils.trim(line).split(";")[0];
+        line = removeComments(line);
         if (StringUtils.isEmpty(line))
         {
             return;
@@ -319,10 +325,10 @@ public class Normaliser
             pageReadCommands = new ArrayList<String>(Arrays.asList(list));
         }
 
-        Matcher blockReadTimeoutM = Patterns.blockReadTimeout.matcher(line);
-        if (blockReadTimeoutM.matches())
+        Matcher interWriteDelayM = Patterns.interWriteDelay.matcher(line);
+        if (interWriteDelayM.matches())
         {
-            blockReadTimeoutVal = Integer.parseInt(blockReadTimeoutM.group(1).trim());
+            interWriteDelay = Integer.parseInt(interWriteDelayM.group(1).trim());
             return;
         }
         Matcher pageActivationDelayM = Patterns.pageActivationDelay.matcher(line);
@@ -409,6 +415,8 @@ public class Normaliser
 
     private static void processFrontPage(String line)
     {
+        line = removeComments(line);
+        
         Matcher dgM = Patterns.defaultGauge.matcher(line);
         if (dgM.matches())
         {
@@ -439,6 +447,8 @@ public class Normaliser
 
     private static void processGaugeEntry(String line)
     {
+        line = removeComments(line);
+        
         Matcher m = Patterns.gauge.matcher(line);
         if (m.matches())
         {
@@ -894,7 +904,7 @@ public class Normaliser
                 TAB+"@Override\n" + 
                 TAB+"public int getInterWriteDelay()\n" + 
                 TAB+"{\n" + 
-                TAB+TAB+"return " + blockReadTimeoutVal + ";\n" + 
+                TAB+TAB+"return " + interWriteDelay + ";\n" + 
                 TAB+"}\n" +
 
                 TAB+"@Override\n" + 
@@ -943,6 +953,8 @@ public class Normaliser
 
     private static void processLogEntry(String line)
     {
+        line = removeComments(line);
+        
         Matcher logM = Patterns.log.matcher(line);
         if (logM.matches())
         {
@@ -966,8 +978,8 @@ public class Normaliser
     private static void processExpr(String line)
     {
         String definition = null;
-        line += "; junk";
-        line = StringUtils.trim(line).split(";")[0];
+        line = removeComments(line);
+        
         line = StringUtils.replace(line, "timeNow", "timeNow()");
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher scalarM = Patterns.scalar.matcher(line);
