@@ -126,11 +126,14 @@ public enum Connection
      */
     public synchronized void connect() throws IOException
     {
+    	DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
+        
         if (currentState != ConnectionState.STATE_NONE)
         {
             return;
         }
         setState(ConnectionState.STATE_CONNECTING);
+        DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
         remote = adapter.getRemoteDevice(btAddr);
         getSocket(remote);
 
@@ -138,6 +141,8 @@ public enum Connection
 
         try
         {
+        	DebugLogManager.INSTANCE.log("connect() : Attempting connection", Log.DEBUG);
+            
             socket.connect();
         }
         catch (IOException e)
@@ -177,6 +182,8 @@ public enum Connection
         if (mmInStream != null && mmOutStream != null)
         {
             setState(ConnectionState.STATE_CONNECTED);
+            DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
+            
         }
         else
         {
@@ -213,6 +220,8 @@ public enum Connection
      */
     private synchronized void checkConnection() throws IOException
     {
+    	DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
+        
         if (currentState == ConnectionState.STATE_NONE)
         {
             boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
@@ -238,13 +247,14 @@ public enum Connection
      */
     private void delay(int d)
     {
-        try
+        DebugLogManager.INSTANCE.log("Sleeping for "+d+"ms", Log.DEBUG);
+    	try
         {
             Thread.sleep(d);
         }
         catch (InterruptedException e)
         {
-            // Swallow
+        	DebugLogManager.INSTANCE.log("sleep was interrupted", Log.DEBUG);
         }
     }
 
@@ -261,6 +271,7 @@ public enum Connection
      */
     public synchronized void tearDown()
     {
+    	DebugLogManager.INSTANCE.log("tearDown()", Log.DEBUG);
         if (mmInStream != null)
         {
             try
@@ -442,6 +453,7 @@ public enum Connection
      */
     public void flushAll() throws IOException
     {
+    	DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
         checkConnection();
 
         mmOutStream.flush();
@@ -475,6 +487,8 @@ public enum Connection
      */
     public synchronized void disconnect()
     {
+    	DebugLogManager.INSTANCE.log("disconnect()", Log.DEBUG);
+        
         tearDown();
     }
 }

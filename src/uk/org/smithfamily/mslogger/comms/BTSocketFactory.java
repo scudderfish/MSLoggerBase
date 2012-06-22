@@ -8,6 +8,7 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 /**
  * Bluetooth class that create the socket with the Bluetooth device on the Megasquirt
@@ -25,6 +26,8 @@ public class BTSocketFactory
 	 */
 	public static BluetoothSocket getSocket(BluetoothDevice device) throws Exception
 	{
+		DebugLogManager.INSTANCE.log("getSocket()", Log.DEBUG);
+        
 		BluetoothSocket tmp = null;
 		if (ApplicationSettings.INSTANCE.isBTWorkaround())
 		{
@@ -43,6 +46,8 @@ public class BTSocketFactory
 		{
 			try
 			{
+				DebugLogManager.INSTANCE.log("getSocket().standard", Log.DEBUG);
+		        
 				tmp = device.createRfcommSocketToServiceRecord(RFCOMM_UUID);
 			}
 			catch (IOException e)
@@ -77,6 +82,8 @@ public class BTSocketFactory
 	 */
 	private static BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
 	{
+		DebugLogManager.INSTANCE.log("createWorkaroundSocket()", Log.DEBUG);
+        
 		Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
 		BluetoothSocket tmp = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
 		return tmp;
