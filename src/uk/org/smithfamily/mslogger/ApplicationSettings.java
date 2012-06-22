@@ -307,17 +307,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         return prefs.getBoolean("autolog", true);
     }
-
-    /**
-     * 
-     * @param b
-     */
-    public void setLoggingOverride(boolean b)
-    {
-        this.loggingOverride = b;
-
-    }
-
+    
     /**
      * 
      * @return
