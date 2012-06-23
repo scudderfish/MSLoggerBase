@@ -1,15 +1,16 @@
 package uk.org.smithfamily.mslogger;
 
 import java.io.File;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
-import uk.org.smithfamily.mslogger.ecuDef.*;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
-import uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
