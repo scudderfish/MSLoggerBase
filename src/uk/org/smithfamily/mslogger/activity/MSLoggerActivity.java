@@ -525,14 +525,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null && ecu.isLogging())
-        {
-            ecu.stopLogging();
-            sendLogs();
-        }
-        else
-        {
-            ecu.startLogging();
+        if (ecu != null) {
+            if (ecu.isLogging())
+            {
+                ecu.stopLogging();
+                sendLogs();
+            }
+            else
+            {
+                ecu.startLogging();
+            }
         }
     }
 
@@ -569,9 +571,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ecu.stop();
         }
+
         sendLogs();
-        ecu.reset();
-      
+
+        if (ecu != null)
+        {
+            ecu.reset();
+        }
+
         this.finish();
     }
 
