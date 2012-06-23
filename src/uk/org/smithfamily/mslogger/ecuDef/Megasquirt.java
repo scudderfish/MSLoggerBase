@@ -1,7 +1,6 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -274,28 +273,6 @@ public abstract class Megasquirt
         return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
     }
 
-    /**
-     * Use reflection to extract a named value out of the subclass
-     * @param channel
-     * @return
-     */
-    public double getValue(String channel)
-    {
-
-        double value = 0;
-        Class<?> c = this.getClass();
-        try
-        {
-            Field f = c.getDeclaredField(channel);
-            value = f.getDouble(this);
-        }
-        catch (Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channel, Log.ERROR);
-            Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
-        }
-        return value;
-    }
 
     /**
      * Flag the logging process to happen
