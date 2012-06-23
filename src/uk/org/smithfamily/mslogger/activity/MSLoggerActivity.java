@@ -569,9 +569,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             ecu.stop();
         }
+
         sendLogs();
-        ecu.reset();
-      
+
+        if (ecu != null)
+        {
+            ecu.reset();
+        }
+
         this.finish();
     }
 
