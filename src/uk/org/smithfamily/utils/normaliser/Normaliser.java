@@ -26,7 +26,6 @@ public class Normaliser
     private static Map<String, String> runtimeVars;
     private static Map<String, String> evalVars;
     private static Map<String, String> constantVars;
-    private static Map<String, String> pcVars;
     private static List<String>        defaults;
     private static Set<String>         flags;
     private static String              fingerprintSource;
@@ -51,8 +50,6 @@ public class Normaliser
             "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time", "egoVoltage", "egoVoltage2", "egoCorrection", "veCurr",
             "lambda", "TargetLambda"               }));
     private static File                outputDirectory;
-
-    private static int                 indent       = 0;
 
     private static String              classSignature;
 
@@ -126,7 +123,6 @@ public class Normaliser
         runtimeVars = new HashMap<String, String>();
         evalVars = new HashMap<String, String>();
         constantVars = new HashMap<String, String>();
-        pcVars = new HashMap<String, String>();
         defaults = new ArrayList<String>();
         constants = new ArrayList<Constant>();
         flags = new HashSet<String>();
@@ -1067,7 +1063,6 @@ public class Normaliser
             }
             String expression = deBinary(exprM.group(2).trim());
             Matcher ternaryM = Patterns.ternary.matcher(expression);
-            Matcher boolAsIntM = Patterns.boolAsInt.matcher(expression);
             if (ternaryM.matches())
             {
                 // System.out.println("BEFORE : " + expression);

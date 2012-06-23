@@ -1,8 +1,6 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.io.IOException;
 
 import android.content.Context;
 
@@ -14,8 +12,7 @@ import android.content.Context;
  */
 public abstract class Megasquirt
 {
-	static Timer connectionWatcher = new Timer("ConnectionWatcher", true);
-
+	
 	public static final String NEW_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
 
 	public static final String CONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
@@ -54,9 +51,6 @@ public abstract class Megasquirt
 	public abstract void refreshFlags();
 
 	public abstract DataPacket getDataPacket();
-
-	private String trueSignature = "Unknown";
-	private volatile boolean running;
 	protected byte[] ochBuffer;
 
 	/**
@@ -153,7 +147,7 @@ public abstract class Megasquirt
 
 	public String getTrueSignature()
 	{
-		return trueSignature;
+		return "DUMMY";
 	}
 
 	/**
@@ -162,7 +156,7 @@ public abstract class Megasquirt
 	 */
 	public boolean isRunning()
 	{
-		return running;
+		return false;
 	}
 
 	/**
