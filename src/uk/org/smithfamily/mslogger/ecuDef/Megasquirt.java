@@ -1,7 +1,6 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -434,7 +433,10 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
+                    long start = System.currentTimeMillis();
                     DataPacket packet = getDataPacket();
+                    long stop = System.currentTimeMillis();
+                    DebugLogManager.INSTANCE.log("Packet took "+(stop-start)+"ms to generate",Log.INFO);
                     broadcast(packet);
                 }
             }
