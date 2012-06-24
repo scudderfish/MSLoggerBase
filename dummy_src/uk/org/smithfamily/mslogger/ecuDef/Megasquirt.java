@@ -48,10 +48,15 @@ public abstract class Megasquirt
 
 	public abstract String[] defaultGauges();
 
-	public abstract void refreshFlags();
+    public abstract void refreshFlags();
 
-	public abstract DataPacket getDataPacket();
+    public abstract boolean isCRC32Protocol();
+
+    public abstract DataPacket getDataPacket();
 	protected byte[] ochBuffer;
+
+    private String             trueSignature = "Unknown";
+    private volatile boolean   running;
 
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
