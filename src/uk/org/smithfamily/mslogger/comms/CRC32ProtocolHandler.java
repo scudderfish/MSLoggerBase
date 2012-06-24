@@ -32,6 +32,10 @@ public class CRC32ProtocolHandler
 
 	public static byte[] unwrap(byte[] wrapped)
 	{
+		if(wrapped.length < 7)// Bail out
+		{
+			return wrapped;
+		}
 		byte[] naked = new byte[wrapped.length - 7];
 		System.arraycopy(wrapped, 3, naked, 0,wrapped.length-7);
 		return naked;
