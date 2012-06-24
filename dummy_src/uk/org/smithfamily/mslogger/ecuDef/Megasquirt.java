@@ -52,6 +52,8 @@ public abstract class Megasquirt
     public abstract String[] defaultGauges();
 
     public abstract void refreshFlags();
+    
+    public abstract boolean isCRC32Protocol();
 
     private String             trueSignature = "Unknown";
     private volatile boolean   running;

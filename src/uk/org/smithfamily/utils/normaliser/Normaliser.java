@@ -36,6 +36,7 @@ public class Normaliser
     private static String              ochGetCommandStr;
     private static String              ochBlockSizeStr;
     private static ArrayList<String>   defaultGauges;
+    private static boolean 			   isCRC32Protocol;
     private static int                 currentPage  = 0;
     private static ArrayList<Constant> constants;
     private static ArrayList<String>   pageSizes;
@@ -137,6 +138,7 @@ public class Normaliser
         pageIdentifiers = new ArrayList<String>();
         fingerprintSource = "";
         currentPage = 0;
+        isCRC32Protocol = false;
         constants = new ArrayList<Constant>();
         // Default for those who don't define it. I'm looking at you megasquirt-I.ini!
         ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
@@ -319,7 +321,10 @@ public class Normaliser
         {
             return;
         }
-
+        if(line.contains("messageEnvelopeFormat"))
+        {
+        	isCRC32Protocol = line.contains("msEnvelope_1.0");
+        }
         Matcher pageM = Patterns.page.matcher(line);
         if (pageM.matches())
         {
@@ -927,6 +932,7 @@ public class Normaliser
                 + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getInterWriteDelay()\n" + TAB + "{\n" + TAB + TAB + "return " + interWriteDelay + ";\n" + TAB + "}\n" +
+                TAB + "@Override\n" + TAB + "public boolean isCRC32Protocol()\n" + TAB + "{\n" + TAB + TAB + "return " +isCRC32Protocol + ";\n" + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getCurrentTPS()\n" + TAB + "{\n";
         if (runtimeVars.containsKey("tpsADC"))
