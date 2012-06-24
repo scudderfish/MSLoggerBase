@@ -357,7 +357,7 @@ public enum Connection
     {
         writeCommand(cmd, d,isCRC32);
 
-        byte[] result = readBytes();
+        byte[] result = readBytes(isCRC32);
         return result;
     }
 
@@ -438,7 +438,7 @@ public enum Connection
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
      */
-    public byte[] readBytes() throws IOException
+    public byte[] readBytes(boolean isCRC32) throws IOException
     {
         checkConnection();
 
@@ -458,6 +458,14 @@ public enum Connection
                 
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
         
+        if(isCRC32)
+        {
+        	if(!CRC32ProtocolHandler.check(result))
+        	{
+        		throw new IOException("CRC32 check failed");
+        	}
+        	result = CRC32ProtocolHandler.unwrap(result);
+        }
         String status = new String(result);
         if (!status.equals(""))
         {
