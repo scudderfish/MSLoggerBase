@@ -114,7 +114,7 @@ public class ECUFingerprint implements Runnable
         // IF we don't get it in 20 goes, we're not talking to a Megasquirt
         while (i++ < 20)
         {
-            byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500);
+            byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500,false);
 
             try
             {
@@ -124,7 +124,7 @@ public class ECUFingerprint implements Runnable
                 }
                 else
                 {
-                    response = Connection.INSTANCE.writeAndRead(probeCommand2, 500);
+                    response = Connection.INSTANCE.writeAndRead(probeCommand2, 500,false);
                     if (response != null && response.length > 1)
                     {
                         sig = processResponse(response);
@@ -138,7 +138,7 @@ public class ECUFingerprint implements Runnable
                 /* My ECU also occasionally goes to a Boot> prompt on start up (dodgy electrics) so if we see that, force 
                 * the ECU to start.
                 */
-                response = Connection.INSTANCE.writeAndRead(bootCommand, 500);
+                response = Connection.INSTANCE.writeAndRead(bootCommand, 500,false);
             }
         }
         sendStatus(sig);

@@ -2229,6 +2229,11 @@ public class MS3Format0095002_102 extends Megasquirt
         return 1;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return (int)tpsADC;

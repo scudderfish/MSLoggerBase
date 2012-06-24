@@ -1111,6 +1111,11 @@ public class Ms2Extra303r extends Megasquirt
         return 5;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return (int)tpsADC;

@@ -680,6 +680,11 @@ public class Megasquirt_II288 extends Megasquirt
         return 0;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return 0;
