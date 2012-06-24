@@ -1125,6 +1125,11 @@ public class Ms2extra_303s extends Megasquirt
         return 5;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return (int)tpsADC;

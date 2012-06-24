@@ -2017,6 +2017,11 @@ public class Ms3 extends Megasquirt
         return 3;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return (int)tpsADC;

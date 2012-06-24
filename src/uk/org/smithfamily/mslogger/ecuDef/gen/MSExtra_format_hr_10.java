@@ -1136,6 +1136,11 @@ public class MSExtra_format_hr_10 extends Megasquirt
         return 0;
     }
     @Override
+    public boolean isCRC32Protocol()
+    {
+        return false;
+    }
+    @Override
     public int getCurrentTPS()
     {
         return (int)tpsADC;

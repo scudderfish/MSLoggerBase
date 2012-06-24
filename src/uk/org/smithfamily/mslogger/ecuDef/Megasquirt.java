@@ -2,16 +2,14 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Set;
+import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.Connection;
-import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.log.*;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.*;
@@ -27,8 +25,6 @@ public abstract class Megasquirt
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
-
-    protected BluetoothSocket  sock;
 
     private BluetoothAdapter   mAdapter;
 
@@ -69,6 +65,8 @@ public abstract class Megasquirt
     public abstract String[] defaultGauges();
 
     public abstract void refreshFlags();
+    
+    public abstract boolean isCRC32Protocol();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -331,7 +329,7 @@ public abstract class Megasquirt
     /**
      *
      */
-    private class RebroadcastHandler extends Handler
+    private static class RebroadcastHandler extends Handler
     {
         private Megasquirt ecu;
 

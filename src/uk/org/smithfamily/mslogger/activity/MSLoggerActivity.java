@@ -906,7 +906,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     /**
      *
      */
-    private class MarkListener implements OnTouchListener
+    private static class MarkListener implements OnTouchListener
     {
         private LinearLayout layout;
 
