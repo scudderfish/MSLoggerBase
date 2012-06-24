@@ -320,21 +320,6 @@ public enum Connection
      */
     public void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
     {
-        checkConnection();
-        int dreckCount = mmInStream.available();
-        if (dreckCount > 0)
-        {
-            DebugLogManager.INSTANCE.log("Found " + dreckCount + " bytes of dreck", Log.DEBUG);
-            StringBuffer b = new StringBuffer();
-            b.append("Dreck:");
-            while (dreckCount > 0)
-            {
-                int i = mmInStream.read();
-                b.append(String.format("%02x ", i));
-                dreckCount = mmInStream.available();
-            }
-            DebugLogManager.INSTANCE.log(b.toString(), Log.DEBUG);
-        }
         if(isCRC32)
         {
         	command = CRC32ProtocolHandler.wrap(command);
@@ -355,6 +340,7 @@ public enum Connection
      */
     public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException
     {
+        checkConnection();
         writeCommand(cmd, d,isCRC32);
 
         byte[] result = readBytes(isCRC32);
@@ -371,6 +357,7 @@ public enum Connection
      */
     public void writeAndRead(byte[] cmd, byte[] result, int d,boolean isCRC32) throws IOException
     {
+        checkConnection();
         writeCommand(cmd, d,isCRC32);
 
         readBytes(result,isCRC32);
@@ -384,7 +371,6 @@ public enum Connection
      */
     public void readBytes(byte[] bytes,boolean isCRC32) throws IOException
     {
-        checkConnection();
         TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
         int target = bytes.length;
@@ -440,8 +426,6 @@ public enum Connection
      */
     public byte[] readBytes(boolean isCRC32) throws IOException
     {
-        checkConnection();
-
         List<Byte> read = new ArrayList<Byte>();
 
         while (mmInStream.available() > 0)
