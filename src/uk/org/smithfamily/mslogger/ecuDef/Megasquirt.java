@@ -530,7 +530,7 @@ public abstract class Megasquirt
                 return;
             }
             int d = getInterWriteDelay();
-            Connection.INSTANCE.writeAndRead(getOchCommand(), ochBuffer, d);
+            Connection.INSTANCE.writeAndRead(getOchCommand(), ochBuffer, d,isCRC32Protocol());
             // Debug.stopMethodTracing();
         }
 
@@ -557,13 +557,13 @@ public abstract class Megasquirt
             int delay = getPageActivationDelay();
             if (pageSelectCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageSelectCommand, delay);
+                Connection.INSTANCE.writeCommand(pageSelectCommand, delay,isCRC32Protocol());
             }
             if (pageReadCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageReadCommand, delay);
+                Connection.INSTANCE.writeCommand(pageReadCommand, delay,isCRC32Protocol());
             }
-            Connection.INSTANCE.readBytes(pageBuffer);
+            Connection.INSTANCE.readBytes(pageBuffer,isCRC32Protocol());
         }
 
         /**
@@ -586,7 +586,7 @@ public abstract class Megasquirt
              */
             do
             {
-                byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d);
+                byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d,isCRC32Protocol());
                 if (!sig2.equals(ECUFingerprint.UNKNOWN))
                 {
                     sig1 = sig2;
