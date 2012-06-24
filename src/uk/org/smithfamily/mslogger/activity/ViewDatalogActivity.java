@@ -106,75 +106,80 @@ public class ViewDatalogActivity extends Activity
 
             if (instream != null)
             {
-                // Prepare the file for reading
-                InputStreamReader inputreader = new InputStreamReader(instream);
-                BufferedReader buffreader = new BufferedReader(inputreader);
-
-                int nbLine = 0;
-                headers = new String[] {};
-                data = new ArrayList<List<Double>>();
-                
-                // Initialise list
-                for (int i = 0; i < fieldsToKeep.length; i++)
-                {
-                    data.add(new ArrayList<Double>());
-                }
-                
-                String line;
-                String[] lineSplit;
-                
-                // Read every line of the file into the line-variable, on line at the time
-                while ((line = buffreader.readLine()) != null)
-                {
-                    if (nbLine > 0)
-                    {                    
-                        lineSplit = line.split("\t");    
-                        
-                        if (nbLine == 1) 
-                        {
-                            headers = lineSplit;
-                            int k = 0;
-                            
-                            for (int i = 0; i < headers.length; i++)
-                            {
-                                for (int j = 0; j < fieldsToKeep.length; j++)
-                                {
-                                    if (headers[i].equals(fieldsToKeep[j])) 
-                                    {
-                                        indexOfFieldsToKeep[k++] = i;
-                                    }
-                                }
-                            }
-                            
-                            completeHeaders = headers;
-                            headers = fieldsToKeep;
-                        }
-                        else
-                        {     
-                            // Skip MARK and empty line
-                            if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
-                            {
-                                
-                            }
-                            else
-                            {
-                                double[] dataFieldsToKeep = new double[fieldsToKeep.length];
-                                for (int i = 0; i < indexOfFieldsToKeep.length; i++)
-                                {
-                                    double currentValue = 0;
-                                    if (lineSplit.length > indexOfFieldsToKeep[i])
-                                    {                                    
-                                        currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
-                                    }
-                                    
-                                    dataFieldsToKeep[i] = currentValue;
-                                    data.get(i).add(dataFieldsToKeep[i]);
-                                }
-                            }
-                        }
+                try {
+                    // Prepare the file for reading
+                    InputStreamReader inputreader = new InputStreamReader(instream);
+                    BufferedReader buffreader = new BufferedReader(inputreader);
+    
+                    int nbLine = 0;
+                    headers = new String[] {};
+                    data = new ArrayList<List<Double>>();
+                    
+                    // Initialise list
+                    for (int i = 0; i < fieldsToKeep.length; i++)
+                    {
+                        data.add(new ArrayList<Double>());
                     }
                     
-                    nbLine++;
+                    String line;
+                    String[] lineSplit;
+                    
+                    // Read every line of the file into the line-variable, on line at the time
+                    while ((line = buffreader.readLine()) != null)
+                    {
+                        if (nbLine > 0)
+                        {                    
+                            lineSplit = line.split("\t");    
+                            
+                            if (nbLine == 1) 
+                            {
+                                headers = lineSplit;
+                                int k = 0;
+                                
+                                for (int i = 0; i < headers.length; i++)
+                                {
+                                    for (int j = 0; j < fieldsToKeep.length; j++)
+                                    {
+                                        if (headers[i].equals(fieldsToKeep[j])) 
+                                        {
+                                            indexOfFieldsToKeep[k++] = i;
+                                        }
+                                    }
+                                }
+                                
+                                completeHeaders = headers;
+                                headers = fieldsToKeep;
+                            }
+                            else
+                            {     
+                                // Skip MARK and empty line
+                                if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    double[] dataFieldsToKeep = new double[fieldsToKeep.length];
+                                    for (int i = 0; i < indexOfFieldsToKeep.length; i++)
+                                    {
+                                        double currentValue = 0;
+                                        if (lineSplit.length > indexOfFieldsToKeep[i])
+                                        {                                    
+                                            currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
+                                        }
+                                        
+                                        dataFieldsToKeep[i] = currentValue;
+                                        data.get(i).add(dataFieldsToKeep[i]);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        nbLine++;
+                    }
+                }
+                finally {
+                    instream.close();
                 }
             }
         }

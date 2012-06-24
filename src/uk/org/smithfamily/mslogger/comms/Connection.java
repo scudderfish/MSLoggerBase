@@ -387,11 +387,13 @@ public enum Connection
         checkConnection();
         TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
+        
         int target = bytes.length;
-        if(isCRC32)
+        if (isCRC32)
         {
         	target += 7;
         }
+        
         byte[] buffer = new byte[target];
         int read = 0;
         try
@@ -408,12 +410,13 @@ public enum Connection
             }
             reaper.cancel();
             DebugLogManager.INSTANCE.log("readBytes[]",buffer, Log.DEBUG);
-            if(isCRC32)
+            if (isCRC32)
             {
-            	if(!CRC32ProtocolHandler.check(buffer))
+            	if (!CRC32ProtocolHandler.check(buffer))
             	{
             		throw new IOException("CRC32 check failed");
             	}
+            	
             	byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
             	System.arraycopy(actual, 0, bytes, 0, bytes.length);
             }
@@ -449,6 +452,7 @@ public enum Connection
             byte b = (byte) mmInStream.read();
             read.add(b);
         }
+        
         byte[] result = new byte[read.size()];
         int i = 0;
         for (Byte b : read)
@@ -458,9 +462,9 @@ public enum Connection
                 
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
         
-        if(isCRC32)
+        if (isCRC32)
         {
-        	if(!CRC32ProtocolHandler.check(result))
+        	if (!CRC32ProtocolHandler.check(result))
         	{
         		throw new IOException("CRC32 check failed");
         	}
