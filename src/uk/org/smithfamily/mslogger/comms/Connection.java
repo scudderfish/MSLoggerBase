@@ -318,7 +318,7 @@ public enum Connection
      * @param d         Delay to wait after sending command
      * @throws IOException
      */
-    public void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
+    public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
     {
         checkConnection();
         int dreckCount = mmInStream.available();
