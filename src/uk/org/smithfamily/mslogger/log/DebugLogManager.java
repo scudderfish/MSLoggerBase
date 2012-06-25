@@ -77,7 +77,7 @@ public enum DebugLogManager
                 createLogFile();
 
             long now = System.currentTimeMillis();
-            os.write(String.format("%tc:%tL:%s:%s\n", now, now, Thread.currentThread().getName(), s));
+            os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), s));
             os.flush();
         }
         catch (IOException e)

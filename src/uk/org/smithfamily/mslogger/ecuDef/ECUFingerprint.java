@@ -114,7 +114,7 @@ public class ECUFingerprint implements Runnable
         // IF we don't get it in 20 goes, we're not talking to a Megasquirt
         while (i++ < 20)
         {
-            byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500,false);
+            byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500, false);
 
             try
             {
@@ -124,7 +124,7 @@ public class ECUFingerprint implements Runnable
                 }
                 else
                 {
-                    response = Connection.INSTANCE.writeAndRead(probeCommand2, 500,false);
+                    response = Connection.INSTANCE.writeAndRead(probeCommand2, 500, false);
                     if (response != null && response.length > 1)
                     {
                         sig = processResponse(response);
@@ -174,20 +174,22 @@ public class ECUFingerprint implements Runnable
         {
             throw new BootException();
         }
+        
         if (response == null)
             return UNKNOWN;
 
-        //Early ECUs only respond with one byte
+        // Early ECUs only respond with one byte
         if (response.length == 1 && response[0] != 20)
             return UNKNOWN;
 
-        if(response.length <= 1)
+        if (response.length <= 1)
             return UNKNOWN;
-        //Examine the first few bytes and see if it smells of one of the things an MS may say to us.
+        
+        // Examine the first few bytes and see if it smells of one of the things an MS may say to us.
         if ((response[0] != 'M' && response[0] != 'J') || (response[1] != 'S' && response[1] != 'o' && response[1] != 'i'))
             return UNKNOWN;
 
-        //Looks like we have a Megasquirt
+        // Looks like we have a Megasquirt
         return result;
     }
 }
