@@ -593,7 +593,7 @@ public abstract class Megasquirt
                 }
                 try
                 {
-                    sig2 = new String(ECUFingerprint.processResponse(buf));
+                    sig2 = ECUFingerprint.processResponse(buf);
                 }
                 catch (BootException e)
                 {
