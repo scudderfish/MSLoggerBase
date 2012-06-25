@@ -47,6 +47,7 @@
 				android:layout_width="match_parent" 
 				android:text="" 
 				android:layout_height="0dip" 
-				android:id="@+id/messages" />
+				android:id="@+id/messages"
+				android:layout_margin="4dip" />
 			</LinearLayout>
 </LinearLayout>
