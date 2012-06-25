@@ -495,7 +495,7 @@ public abstract class Megasquirt
             else
             {
                 byte[] sigCommand = getSigCommand();
-                sendMessage("Verifying MS");
+                sendMessage("Verifying MegaSquirt signature");
                 Set<String> signatures = Megasquirt.this.getSignature();
 
                 msSig = getSignature(sigCommand);

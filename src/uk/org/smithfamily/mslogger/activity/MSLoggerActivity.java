@@ -1,28 +1,54 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
-import android.app.*;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.GPSLocationManager;
+import uk.org.smithfamily.mslogger.MSLoggerApplication;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.EmailManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
+import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
+import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.R;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.*;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.*;
+import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.*;
-
-import uk.org.smithfamily.mslogger.*;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.widgets.*;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * 
@@ -735,7 +761,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         protected void onPreExecute()
         {
             dialog = new ProgressDialog(MSLoggerActivity.this);
-            dialog.setMessage(getString(R.string.ResetGauges));
+            dialog.setMessage(getString(R.string.reset_gauges));
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
             dialog.show();
@@ -884,7 +910,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 indicatorManager.setDisabled(true);
                 if (autoLoggingEnabled)
                 {
-                    DatalogManager.INSTANCE.mark("Connection Lost");
+                    DatalogManager.INSTANCE.mark("Connection lost");
+                }
+                
+                messages.setText(R.string.disconnected_from_ms);    
+                
+                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+                if (ecu != null && ecu.isRunning())
+                {
+                    ecu.stop();
                 }
             }
  
