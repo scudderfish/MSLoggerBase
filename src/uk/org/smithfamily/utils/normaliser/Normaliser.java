@@ -465,7 +465,7 @@ public class Normaliser
         Matcher queryM = Patterns.queryCommand.matcher(line);
         if (queryM.matches())
         {
-            queryCommandStr = "byte[] queryCommand=new byte[]{'" + queryM.group(1) + "'};";
+            queryCommandStr = "byte[] queryCommand = new byte[]{'" + queryM.group(1) + "'};";
             return;
         }
 
@@ -479,13 +479,13 @@ public class Normaliser
                 tmpsig += "\\0";
             }
             classSignature = tmpsig;
-            signatureDeclaration = "String signature=\"" + tmpsig + "\";";
+            signatureDeclaration = "String signature = \"" + tmpsig + "\";";
         }
         else if (sigByteM.matches())
         {
             String b = sigByteM.group(1).trim();
             classSignature = "" + (byte) (Integer.parseInt(b));
-            signatureDeclaration = "String signature=\"\"+(byte)" + b + ";";
+            signatureDeclaration = "String signature = \"\"+(byte)" + b + ";";
         }
 
     }
