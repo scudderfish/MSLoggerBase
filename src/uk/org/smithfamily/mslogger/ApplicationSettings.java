@@ -147,7 +147,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      * @param key
      */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    public synchronized void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         bluetoothMac = null;
         settings = new HashMap<String, Boolean>();
@@ -325,7 +325,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      * 
      * @param ecu
      */
-    public void setEcu(Megasquirt ecu)
+    public synchronized void setEcu(Megasquirt ecu)
     {
         ecuDefinition = ecu;
 

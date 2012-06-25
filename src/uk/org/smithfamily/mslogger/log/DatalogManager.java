@@ -111,7 +111,7 @@ public enum DatalogManager
 	 * 
 	 * @param msg
 	 */
-	public void mark(String msg)
+	public synchronized void mark(String msg)
 	{
 		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
