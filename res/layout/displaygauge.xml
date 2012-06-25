@@ -8,8 +8,7 @@
 	>
 
 	<LinearLayout android:orientation="vertical" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent" >
-
-	   	    <LinearLayout 
+	   <LinearLayout 
 			android:layout_height="0px" android:layout_width="fill_parent"
 			android:layout_weight="75">
 
@@ -18,7 +17,6 @@
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
 		</LinearLayout>
-	        	        
 	    
 	    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="25">
 	        <uk.org.smithfamily.mslogger.widgets.MSGauge
@@ -36,18 +34,22 @@
 				android:focusableInTouchMode="true" android:layout_weight="1" />
 			
 	    </LinearLayout>
+	</LinearLayout>
 	
-
-	        
-	        
-</LinearLayout>
-			<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
-<LinearLayout android:orientation="vertical" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
-			<TextView android:layout_weight="1" 
-				android:layout_width="match_parent" 
-				android:text="" 
-				android:layout_height="0dip" 
-				android:id="@+id/messages"
-				android:layout_margin="4dip" />
-			</LinearLayout>
+	<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
+	<LinearLayout android:orientation="vertical" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
+		<TextView android:layout_weight="1" 
+			android:layout_width="match_parent" 
+			android:text="" 
+			android:layout_height="0dip" 
+			android:id="@+id/messages"
+			android:layout_margin="4dip" />
+		<TextView android:layout_weight="1" 
+			android:layout_width="0dip" 
+			android:text="" 
+			android:layout_height="wrap_content" 
+			android:id="@+id/RPS" 
+			android:layout_margin="4dip"
+			android:gravity="right" />
+	</LinearLayout>
 </LinearLayout>

@@ -58,7 +58,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 {
     private BroadcastReceiver      updateReceiver        = new Reciever();
     private IndicatorManager       indicatorManager;
-    TextView                       messages;
+    private TextView               messages;
+    private TextView               rps;
     public boolean                 connected;
     static private Boolean         ready                 = null;
     private MSGauge                gauge1;
@@ -96,6 +97,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         dumpPreferences();
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
+        rps = (TextView) findViewById(R.id.RPS);
 
         findGauges();
         SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
@@ -354,12 +356,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
+        
         IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
         registerReceiver(updateReceiver, disconnectedFilter);
+        
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
+        
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
+        
+        IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
+        registerReceiver(updateReceiver, rpsFilter);
+        
         registered = true;
     }
 
@@ -904,7 +913,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     ecu.startLogging();
                 }
             }
-            if (action.equals(Megasquirt.DISCONNECTED))
+            else if (action.equals(Megasquirt.DISCONNECTED))
             {
                 DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(true);
@@ -914,26 +923,31 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
                 
                 messages.setText(R.string.disconnected_from_ms);    
+                rps.setText("");
                 
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
                 if (ecu != null && ecu.isRunning())
                 {
                     ecu.stop();
                 }
-            }
- 
-            if (action.equals(Megasquirt.NEW_DATA))
+            } 
+            else if (action.equals(Megasquirt.NEW_DATA))
             {
                 processData();
             }
-            if (action.equals(ApplicationSettings.GENERAL_MESSAGE))
+            else if (action.equals(ApplicationSettings.GENERAL_MESSAGE))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
                 messages.setText(msg);
                 DebugLogManager.INSTANCE.log("Message : " + msg,Log.INFO);
             }
-
+            else if (action.equals(ApplicationSettings.RPS_MESSAGE))
+            {
+                String RPS = intent.getStringExtra(ApplicationSettings.RPS);
+                
+                rps.setText(RPS + " reads / second");
+            }  
         }
     }
 
