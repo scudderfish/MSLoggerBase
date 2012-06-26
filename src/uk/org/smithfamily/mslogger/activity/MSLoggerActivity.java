@@ -98,6 +98,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         setContentView(R.layout.displaygauge);
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);
+        
+        /* 
+         * Get status message from saved instance, for example when
+         * switching from landscape to portrait mode
+        */
+        if (savedInstanceState != null) 
+        {
+            if (!savedInstanceState.getString("status_message").equals(""))
+            {
+                messages.setText(savedInstanceState.getString("status_message"));
+            }
+            
+            if (!savedInstanceState.getString("rps_message").equals(""))
+            {
+                rps.setText(savedInstanceState.getString("rps_message"));
+            }
+        }
 
         findGauges();
         SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
@@ -115,6 +132,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putString("status_message", messages.getText().toString());
+        outState.putString("rps_message", rps.getText().toString());
+    }
+    
     /**
      * 
      */
