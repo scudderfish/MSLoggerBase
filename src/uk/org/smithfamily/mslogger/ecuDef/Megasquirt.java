@@ -1,13 +1,8 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
@@ -460,7 +455,10 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
+                    long start = System.currentTimeMillis();
                     DataPacket packet = getDataPacket();
+                    long stop = System.currentTimeMillis();
+                    DebugLogManager.INSTANCE.log("Packet took "+(stop-start)+"ms to generate",Log.INFO);
                     broadcast(packet);
                     
                     readCounter++;
