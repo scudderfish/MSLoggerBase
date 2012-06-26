@@ -29,6 +29,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public static final String      MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
     public static final String      ECU_CHANGED         = "uk.org.smithfamily.mslogger.ECU_CHANGED";
     public static final String      TAG                 = "uk.org.smithfamily.mslogger";
+    public static final String      RPS_MESSAGE         = "uk.org.smithfamily.mslogger.RPS_MESSAGE";
+    public static final String      RPS                 = "uk.org.smithfamily.mslogger.RPS";
     private Context                 context;
     private File                    dataDir;
     private int                     hertz;
