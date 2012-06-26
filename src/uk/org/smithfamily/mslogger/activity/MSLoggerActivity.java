@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
+import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.DataPacket;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -18,7 +20,6 @@ import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import uk.org.smithfamily.mslogger.widgets.MSGauge;
-import uk.org.smithfamily.mslogger.R;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -46,13 +47,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.*;
-
-import uk.org.smithfamily.mslogger.*;
-import uk.org.smithfamily.mslogger.ecuDef.DataPacket;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.widgets.*;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * 
