@@ -133,7 +133,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
         
         outState.putString("status_message", messages.getText().toString());
