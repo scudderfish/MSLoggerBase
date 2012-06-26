@@ -13,6 +13,7 @@ import java.util.Random;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.SeriesSelection;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -27,6 +28,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -106,75 +108,86 @@ public class ViewDatalogActivity extends Activity
 
             if (instream != null)
             {
-                // Prepare the file for reading
-                InputStreamReader inputreader = new InputStreamReader(instream);
-                BufferedReader buffreader = new BufferedReader(inputreader);
-
-                int nbLine = 0;
-                headers = new String[] {};
-                data = new ArrayList<List<Double>>();
-                
-                // Initialise list
-                for (int i = 0; i < fieldsToKeep.length; i++)
-                {
-                    data.add(new ArrayList<Double>());
-                }
-                
-                String line;
-                String[] lineSplit;
-                
-                // Read every line of the file into the line-variable, on line at the time
-                while ((line = buffreader.readLine()) != null)
-                {
-                    if (nbLine > 0)
-                    {                    
-                        lineSplit = line.split("\t");    
-                        
-                        if (nbLine == 1) 
-                        {
-                            headers = lineSplit;
-                            int k = 0;
-                            
-                            for (int i = 0; i < headers.length; i++)
-                            {
-                                for (int j = 0; j < fieldsToKeep.length; j++)
-                                {
-                                    if (headers[i].equals(fieldsToKeep[j])) 
-                                    {
-                                        indexOfFieldsToKeep[k++] = i;
-                                    }
-                                }
-                            }
-                            
-                            completeHeaders = headers;
-                            headers = fieldsToKeep;
-                        }
-                        else
-                        {     
-                            // Skip MARK and empty line
-                            if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
-                            {
-                                
-                            }
-                            else
-                            {
-                                double[] dataFieldsToKeep = new double[fieldsToKeep.length];
-                                for (int i = 0; i < indexOfFieldsToKeep.length; i++)
-                                {
-                                    double currentValue = 0;
-                                    if (lineSplit.length > indexOfFieldsToKeep[i])
-                                    {                                    
-                                        currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
-                                    }
-                                    
-                                    dataFieldsToKeep[i] = currentValue;
-                                    data.get(i).add(dataFieldsToKeep[i]);
-                                }
-                            }
-                        }
+                try {
+                    // Prepare the file for reading
+                    InputStreamReader inputreader = new InputStreamReader(instream);
+                    BufferedReader buffreader = new BufferedReader(inputreader);
+    
+                    int nbLine = 0;
+                    headers = new String[] {};
+                    data = new ArrayList<List<Double>>();
+                    
+                    // Initialise list
+                    for (int i = 0; i < fieldsToKeep.length; i++)
+                    {
+                        data.add(new ArrayList<Double>());
                     }
                     
-                    nbLine++;
+                    String line;
+                    String[] lineSplit;
+                    
+                    long timeStart = System.currentTimeMillis();
+                    
+                    // Read every line of the file into the line-variable, on line at the time
+                    while ((line = buffreader.readLine()) != null)
+                    {
+                        if (nbLine > 0)
+                        {                    
+                            lineSplit = line.split("\t");    
+                            
+                            if (nbLine == 1) 
+                            {
+                                headers = lineSplit;
+                                int k = 0;
+                                
+                                for (int i = 0; i < headers.length; i++)
+                                {
+                                    for (int j = 0; j < fieldsToKeep.length; j++)
+                                    {
+                                        if (headers[i].equals(fieldsToKeep[j])) 
+                                        {
+                                            indexOfFieldsToKeep[k++] = i;
+                                        }
+                                    }
+                                }
+                                
+                                completeHeaders = headers;
+                                headers = fieldsToKeep;
+                            }
+                            else
+                            {     
+                                // Skip MARK and empty line
+                                if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    double[] dataFieldsToKeep = new double[fieldsToKeep.length];
+                                    for (int i = 0; i < indexOfFieldsToKeep.length; i++)
+                                    {
+                                        double currentValue = 0;
+                                        if (lineSplit.length > indexOfFieldsToKeep[i])
+                                        {                                    
+                                            currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
+                                        }
+                                        
+                                        dataFieldsToKeep[i] = currentValue;
+                                        data.get(i).add(dataFieldsToKeep[i]);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        nbLine++;
+                    }
+                    
+                    long timeEnd = System.currentTimeMillis();
+                    
+                    DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+                }
+                finally {
+                    instream.close();
                 }
             }
         }
@@ -196,6 +209,8 @@ public class ViewDatalogActivity extends Activity
         double minXaxis = 0;
         double maxXaxis = data.get(0).size();
         
+        long timeStart = System.currentTimeMillis();
+        
         // Assuming first column of datalog is time for X axis
         double[] xValues = new double[(int)maxXaxis];        
         for (int i = 0; i < maxXaxis; i++)
@@ -207,7 +222,7 @@ public class ViewDatalogActivity extends Activity
         String[] titles = new String[headers.length - 1];        
         for (int i = 1; i < headers.length; i++)
         {
-            titles[i-1] = headers[i];
+            titles[i - 1] = headers[i];
         }
 
         List<double[]> x = new ArrayList<double[]>();
@@ -248,6 +263,10 @@ public class ViewDatalogActivity extends Activity
             maxColumns.add(max);
         }
         
+        long timeEnd = System.currentTimeMillis();
+        
+        DebugLogManager.INSTANCE.log("Prepared value and found min/max value of each columns in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+        
         for (int i = 1; i < data.size(); i++)
         {
             List<Double> row = data.get(i);
@@ -268,12 +287,28 @@ public class ViewDatalogActivity extends Activity
         renderer.setYLabels(10);
         renderer.setPanLimits(new double[] { minXaxis,maxXaxis,0,100 });
         renderer.setShowLabels(false);
+        renderer.setClickEnabled(true);
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 
         if (mChartView == null)
         {
-            mChartView = ChartFactory.getLineChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);
+            mChartView = ChartFactory.getLineChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);     
+            /*mChartView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
+                    if (seriesSelection == null)
+                    {
+                        System.out.println("Nothing was clicked");
+                    }
+                    else
+                    {
+                        System.out.println("Chart element data point index " + seriesSelection.getPointIndex() + " was clicked" + " point value=" + seriesSelection.getValue());
+                    }
+                }
+            });*/
+            
             layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         }
         else

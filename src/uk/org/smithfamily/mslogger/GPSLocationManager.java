@@ -20,7 +20,7 @@ public enum GPSLocationManager implements LocationListener
 	/**
 	 * @return Last known location object
 	 */
-	synchronized public Location getLastKnownLocation()
+	public synchronized Location getLastKnownLocation()
 	{
 		return lastLocation;
 	}
@@ -28,7 +28,7 @@ public enum GPSLocationManager implements LocationListener
 	/**
 	 * Start the location service
 	 */
-	synchronized public void start()
+	public synchronized void start()
 	{
 		locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
 		Criteria c = new Criteria();
@@ -50,7 +50,7 @@ public enum GPSLocationManager implements LocationListener
 	/**
 	 * Stop the location service
 	 */
-	synchronized public void stop()
+	public synchronized void stop()
 	{
 
 		if (locationManager != null)
@@ -80,10 +80,9 @@ public enum GPSLocationManager implements LocationListener
      * @param location The new location
      */
 	@Override
-	public void onLocationChanged(Location location)
+	public synchronized void onLocationChanged(Location location)
 	{
 		lastLocation = location;
-
 	}
 
 	/**

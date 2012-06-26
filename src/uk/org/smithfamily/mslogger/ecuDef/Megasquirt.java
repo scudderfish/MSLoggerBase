@@ -1,17 +1,27 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.text.DecimalFormat;
+import java.util.Set;
+import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.Connection;
-import uk.org.smithfamily.mslogger.log.*;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 /**
@@ -230,6 +240,21 @@ public abstract class Megasquirt
         broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
         context.sendBroadcast(broadcast);
     }
+    
+    /**
+     * Send the reads per second to be displayed on the screen
+     * 
+     * @param RPS the current reads per second value
+     */
+    private void sendRPS(double RPS)
+    {
+        DecimalFormat decimalFormat = new DecimalFormat("#.0");
+        
+        Intent broadcast = new Intent();
+        broadcast.setAction(ApplicationSettings.RPS_MESSAGE);
+        broadcast.putExtra(ApplicationSettings.RPS, decimalFormat.format(RPS));
+        context.sendBroadcast(broadcast);
+    }
 
     /**
      * Send a status update to the rest of the application
@@ -241,7 +266,6 @@ public abstract class Megasquirt
         broadcast.setAction(action);
         // broadcast.putExtra(LOCATION, location);
         context.sendBroadcast(broadcast);
-
     }
     private void broadcast(DataPacket p)
     {
@@ -397,10 +421,9 @@ public abstract class Megasquirt
             {
                 Thread.sleep(500);
             }
-            catch (InterruptedException e1)
+            catch (InterruptedException e)
             {
-
-                e1.printStackTrace();
+                DebugLogManager.INSTANCE.logException(e);
             }
             try
             {
@@ -428,6 +451,9 @@ public abstract class Megasquirt
                 }
                 running = true;
                 
+                long lastRpsTime = 0;
+                double readCounter = 0;
+                
                 // This is the actual work.  Outside influences will toggle 'running' when we want this to stop
                 while (running)
                 {
@@ -436,6 +462,22 @@ public abstract class Megasquirt
                     logValues();
                     DataPacket packet = getDataPacket();
                     broadcast(packet);
+                    
+                    readCounter++;
+                    
+                    long delay = System.currentTimeMillis() - lastRpsTime;
+                    if (delay > 1000)
+                    {
+                        double RPS = readCounter / delay * 1000;
+                        readCounter = 0;
+                        lastRpsTime = System.currentTimeMillis();
+                        
+                        if (RPS > 0)
+                        {
+                            sendRPS(RPS);
+                        }
+                    }
+
                 }
             }
             catch (IOException e)
@@ -581,7 +623,7 @@ public abstract class Megasquirt
                 }
                 try
                 {
-                    sig2 = new String(ECUFingerprint.processResponse(buf));
+                    sig2 = ECUFingerprint.processResponse(buf);
                 }
                 catch (BootException e)
                 {

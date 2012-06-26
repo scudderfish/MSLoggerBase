@@ -7,10 +7,12 @@ import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -116,7 +118,12 @@ public class ManageDatalogsActivity  extends ListActivity {
                 {                    
                     // Physically delete the file
                     File fileToDelete = new File(datalogDirectory + "/" + datalogFilename);
-                    fileToDelete.delete();
+                    boolean deleteResult = fileToDelete.delete();
+                    
+                    if (!deleteResult)
+                    {
+                        DebugLogManager.INSTANCE.log("Couldn't delete " + datalogDirectory + "/" + datalogFilename,Log.ERROR);
+                    }
                 }
                                 
                 // Clear the adapter

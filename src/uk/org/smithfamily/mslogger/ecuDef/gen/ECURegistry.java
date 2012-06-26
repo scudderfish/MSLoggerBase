@@ -45,6 +45,7 @@ public enum ECURegistry
         registerEcu(Ms2extra_210d.class,"MS2Extra Rel 2.1.0q\0");
         registerEcu(Ms2extra_303s.class,"MS2Extra Rel 3.0.3s\0");
         registerEcu(Ms2extra_303u.class,"MS2Extra Rel 3.0.3s\0");
+        registerEcu(MS2Extra_SerialGS26.class,"MS2Extra SerialGS26\0");
         registerEcu(Ms3.class,"MS3 Format 0081.001\0");
         registerEcu(Ms3_pre11beta20.class,"MS3 Format 0233.003\0");
         registerEcu(Ms3_pre11rc1.class,"MS3 Format 0238.002\0");

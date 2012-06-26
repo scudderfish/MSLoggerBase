@@ -38,7 +38,7 @@ public class DeviceListActivity extends Activity
     private static final int REQUEST_ENABLE_BT = 0;
 
     // Return Intent extra
-    public static String         EXTRA_DEVICE_ADDRESS = "device_address";
+    public static final String         EXTRA_DEVICE_ADDRESS = "device_address";
 
     // Member fields
     private BluetoothAdapter     mBtAdapter;
