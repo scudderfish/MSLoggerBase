@@ -41,3 +41,5 @@ MSExtra format hr_11d.ini
 megasquirt-I.ini
 ms3-pre1.1beta20.ini
 msns-extra.29y.ini
+MS2Extra SerialGS26.ini
+
