@@ -46,9 +46,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
+
+import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.ecuDef.DataPacket;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.*;
+import uk.org.smithfamily.mslogger.widgets.*;
 
 /**
  * 
@@ -75,6 +79,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private static final int       SHOW_PREFS            = 124230;
 
     private boolean                registered;
+	public DataPacket currentData;
 
     /** Called when the activity is first created. */
     @Override
@@ -421,11 +426,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             for (Indicator i : indicators)
             {
                 String channelName = i.getChannel();
-                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-                if (channelName != null && ecu != null)
+                if (channelName != null)
                 {
-                    double value = ecu.getValue(channelName);
-                    i.setCurrentValue(value);
+                    Double value = currentData.getFields().get(channelName);
+                    if(value !=null)
+                    {
+                    	i.setCurrentValue(value);
+                    }
                 }
                 else
                 {
@@ -959,6 +966,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             } 
             else if (action.equals(Megasquirt.NEW_DATA))
             {
+            	currentData = (DataPacket) intent.getSerializableExtra(Megasquirt.NEW_DATA);
                 processData();
             }
             else if (action.equals(ApplicationSettings.GENERAL_MESSAGE))

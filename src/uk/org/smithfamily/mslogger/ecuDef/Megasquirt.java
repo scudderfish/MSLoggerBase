@@ -1,13 +1,8 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
@@ -45,7 +40,7 @@ public abstract class Megasquirt
 
     protected Context          context;
 
-    public abstract Set<String> getSignature();
+    public abstract String getSignature();
 
     public abstract byte[] getOchCommand();
 
@@ -76,6 +71,8 @@ public abstract class Megasquirt
     public abstract void refreshFlags();
     
     public abstract boolean isCRC32Protocol();
+  
+    public abstract DataPacket getDataPacket();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -83,7 +80,7 @@ public abstract class Megasquirt
     private ECUThread          ecuThread;
     private volatile boolean   running;
 
-    private byte[]             ochBuffer;
+    protected byte[]             ochBuffer;
 
     private RebroadcastHandler handler;
 
@@ -265,6 +262,14 @@ public abstract class Megasquirt
         // broadcast.putExtra(LOCATION, location);
         context.sendBroadcast(broadcast);
     }
+    private void broadcast(DataPacket p)
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(NEW_DATA);
+        broadcast.putExtra(NEW_DATA, p);
+        context.sendBroadcast(broadcast);
+
+    }
 
     /**
      * 
@@ -285,28 +290,6 @@ public abstract class Megasquirt
         return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
     }
 
-    /**
-     * Use reflection to extract a named value out of the subclass
-     * @param channel
-     * @return
-     */
-    public double getValue(String channel)
-    {
-
-        double value = 0;
-        Class<?> c = this.getClass();
-        try
-        {
-            Field f = c.getDeclaredField(channel);
-            value = f.getDouble(this);
-        }
-        catch (Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channel, Log.ERROR);
-            Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
-        }
-        return value;
-    }
 
     /**
      * Flag the logging process to happen
@@ -391,8 +374,8 @@ public abstract class Megasquirt
          */
         public ECUThread()
         {
-            Set<String> sigs = Megasquirt.this.getSignature();
-            setName("ECUThread:" + sigs.iterator().next());
+            String sig = Megasquirt.this.getSignature();
+            setName("ECUThread:" + sig);
         }
 
         /**
@@ -472,7 +455,11 @@ public abstract class Megasquirt
                     getRuntimeVars();
                     calculateValues();
                     logValues();
-                    broadcast(NEW_DATA);
+                    long start = System.currentTimeMillis();
+                    DataPacket packet = getDataPacket();
+                    long stop = System.currentTimeMillis();
+                    DebugLogManager.INSTANCE.log("Packet took "+(stop-start)+"ms to generate",Log.INFO);
+                    broadcast(packet);
                     
                     readCounter++;
                     
@@ -536,11 +523,11 @@ public abstract class Megasquirt
             else
             {
                 byte[] sigCommand = getSigCommand();
-                sendMessage("Verifying MegaSquirt signature");
-                Set<String> signatures = Megasquirt.this.getSignature();
+                sendMessage("Verifying MS");
+                String signature = Megasquirt.this.getSignature();
 
                 msSig = getSignature(sigCommand);
-                verified = signatures.contains(msSig);
+                verified = signature.equals(msSig);
                 if (verified)
                 {
                     trueSignature = msSig;

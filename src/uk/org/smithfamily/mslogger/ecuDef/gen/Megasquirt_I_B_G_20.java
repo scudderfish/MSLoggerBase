@@ -5,13 +5,13 @@ import java.util.*;
 
 import android.content.Context;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 /*
 Fingerprint : 10fb6c32e0e433db99dae59eb43cf2f7
 */
+@SuppressWarnings("unused")
 public class Megasquirt_I_B_G_20 extends Megasquirt
 {
     public Megasquirt_I_B_G_20(Context c)
@@ -42,116 +42,116 @@ public class Megasquirt_I_B_G_20 extends Megasquirt
         AEM_NON_LINEAR = isSet("AEM_NON_LINEAR");
         WB_UNKNOWN = isSet("WB_UNKNOWN");
     }
+    private Map<String,Double> fields = new HashMap<String,Double>();
     byte[] queryCommand=new byte[]{'Q'};
     String signature=""+(byte)20;
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 22;
-    private Set<String> sigs = new HashSet<String>(Arrays.asList(new String[] { signature }));
 //Flags
-    public boolean DIYWB_NON_LINEAR;
-    public boolean INNOVATE_0_5_LINEAR;
-    public boolean NGK_AFX;
-    public boolean CELSIUS;
-    public boolean DYNOJET_LINEAR;
-    public boolean ZEITRONIX_NON_LINEAR;
-    public boolean TECHEDGE_LINEAR;
-    public boolean WB_1_0_LINEAR;
-    public boolean NARROW_BAND_EGO;
-    public boolean FAST_WIDEBAND_O2;
-    public boolean ALPHA_N;
-    public boolean SPEED_DENSITY;
-    public boolean AEM_LINEAR;
-    public boolean INNOVATE_1_2_LINEAR;
-    public boolean MPX4250;
-    public boolean AIR_FLOW_METER;
-    public boolean INNOVATE_LC1_DEFAULT;
-    public boolean AEM_NON_LINEAR;
-    public boolean WB_UNKNOWN;
+    private boolean DIYWB_NON_LINEAR;
+    private boolean INNOVATE_0_5_LINEAR;
+    private boolean NGK_AFX;
+    private boolean CELSIUS;
+    private boolean DYNOJET_LINEAR;
+    private boolean ZEITRONIX_NON_LINEAR;
+    private boolean TECHEDGE_LINEAR;
+    private boolean WB_1_0_LINEAR;
+    private boolean NARROW_BAND_EGO;
+    private boolean FAST_WIDEBAND_O2;
+    private boolean ALPHA_N;
+    private boolean SPEED_DENSITY;
+    private boolean AEM_LINEAR;
+    private boolean INNOVATE_1_2_LINEAR;
+    private boolean MPX4250;
+    private boolean AIR_FLOW_METER;
+    private boolean INNOVATE_LC1_DEFAULT;
+    private boolean AEM_NON_LINEAR;
+    private boolean WB_UNKNOWN;
 //Defaults
 //Variables
-    public double TargetAFR;
-    public double TargetLambda;
-    public double accDecEnrich;
-    public int accelEnrich;
-    public double afr;
-    public double afrTargetV;
-    public int afrtarget;
-    public int airCorrection;
-    public int altDiv;
-    public int baroADC;
-    public int baroCorrection;
-    public double barometer;
-    public int batADC;
-    public double batteryVoltage;
-    public int blank1;
-    public int blank2;
-    public int blank3;
-    public int cltADC;
-    public double coolant;
-    public double cycleTime;
-    public int deadValue;
-    public double dutyCycle;
-    public int egoADC;
-    public double egoCorrection;
-    public double egoVoltage;
-    public int engine;
-    public int gammaEnrich;
-    public double idleDC;
-    public double lambda;
-    public double map;
-    public int mapADC;
-    public double mat;
-    public int matADC;
-    public int nSquirts;
-    public double pulseWidth;
-    public int rpm;
-    public int rpm100;
-    public int secl;
-    public int squirt;
-    public double throttle;
-    public double time;
-    public int tpsADC;
-    public double veCurr;
-    public int warmupEnrich;
+    private double TargetAFR;
+    private double TargetLambda;
+    private double accDecEnrich;
+    private int accelEnrich;
+    private double afr;
+    private double afrTargetV;
+    private int afrtarget;
+    private int airCorrection;
+    private int altDiv;
+    private int baroADC;
+    private int baroCorrection;
+    private double barometer;
+    private int batADC;
+    private double batteryVoltage;
+    private int blank1;
+    private int blank2;
+    private int blank3;
+    private int cltADC;
+    private double coolant;
+    private double cycleTime;
+    private int deadValue;
+    private double dutyCycle;
+    private int egoADC;
+    private double egoCorrection;
+    private double egoVoltage;
+    private int engine;
+    private int gammaEnrich;
+    private double idleDC;
+    private double lambda;
+    private double map;
+    private int mapADC;
+    private double mat;
+    private int matADC;
+    private int nSquirts;
+    private double pulseWidth;
+    private int rpm;
+    private int rpm100;
+    private int secl;
+    private int squirt;
+    private double throttle;
+    private double time;
+    private int tpsADC;
+    private double veCurr;
+    private int warmupEnrich;
 
 //Constants
-    public int taeColdM;
-    public double egoRPM;
-    public double reqFuel;
-    public int nCylinders;
-    public int tdePct;
-    public int algorithm;
-    public double injOpen;
-    public double taeColdA;
-    public double taeTime;
-    public int egoType;
-    public double injOCfuel;
-    public int cltType;
-    public double egoSwitch;
-    public int asePct;
-    public int mapType;
-    public int egoDelta;
-    public int alternate;
-    public int baroCorr;
-    public int injPwmP;
-    public double primePulse;
-    public double crankCold;
-    public int divider;
-    public int twoStroke;
-    public int egoCount;
-    public double crankHot;
-    public int fastIdleT;
-    public int engineType;
-    public int egoTemp;
-    public double battFac;
-    public int nInjectors;
-    public int egoLimit;
-    public int aseCount;
-    public int rpmk;
-    public double tpsThresh;
-    public int injType;
-    public double injPwmT;
-    public int matType;
+    private int taeColdM;
+    private double egoRPM;
+    private double reqFuel;
+    private int nCylinders;
+    private int tdePct;
+    private int algorithm;
+    private double injOpen;
+    private double taeColdA;
+    private double taeTime;
+    private int egoType;
+    private double injOCfuel;
+    private int cltType;
+    private double egoSwitch;
+    private int asePct;
+    private int mapType;
+    private int egoDelta;
+    private int alternate;
+    private int baroCorr;
+    private int injPwmP;
+    private double primePulse;
+    private double crankCold;
+    private int divider;
+    private int twoStroke;
+    private int egoCount;
+    private double crankHot;
+    private int fastIdleT;
+    private int engineType;
+    private int egoTemp;
+    private double battFac;
+    private int nInjectors;
+    private int egoLimit;
+    private int aseCount;
+    private int rpmk;
+    private double tpsThresh;
+    private int injType;
+    private double injPwmT;
+    private int matType;
 
 
     private String[] defaultGauges = {
@@ -426,9 +426,9 @@ public class Megasquirt_I_B_G_20 extends Megasquirt
     }
 
     @Override
-    public Set<String> getSignature()
+    public String getSignature()
     {
-        return sigs;
+        return signature;
 }
     @Override
     public byte[] getOchCommand()
@@ -544,6 +544,55 @@ public class Megasquirt_I_B_G_20 extends Megasquirt
         egoSwitch = (double)((MSUtils.getByte(pageBuffer,122) + 0.0) * 0.0196);
         taeColdM = (int)((MSUtils.getByte(pageBuffer,123) + 0.0) * 1.0);
     }
+    @Override
+    public DataPacket getDataPacket()
+    {
+        fields.put("TargetAFR",(double)TargetAFR);
+        fields.put("TargetLambda",(double)TargetLambda);
+        fields.put("accDecEnrich",(double)accDecEnrich);
+        fields.put("accelEnrich",(double)accelEnrich);
+        fields.put("afr",(double)afr);
+        fields.put("afrTargetV",(double)afrTargetV);
+        fields.put("afrtarget",(double)afrtarget);
+        fields.put("airCorrection",(double)airCorrection);
+        fields.put("altDiv",(double)altDiv);
+        fields.put("baroADC",(double)baroADC);
+        fields.put("baroCorrection",(double)baroCorrection);
+        fields.put("barometer",(double)barometer);
+        fields.put("batADC",(double)batADC);
+        fields.put("batteryVoltage",(double)batteryVoltage);
+        fields.put("blank1",(double)blank1);
+        fields.put("blank2",(double)blank2);
+        fields.put("blank3",(double)blank3);
+        fields.put("cltADC",(double)cltADC);
+        fields.put("coolant",(double)coolant);
+        fields.put("cycleTime",(double)cycleTime);
+        fields.put("deadValue",(double)deadValue);
+        fields.put("dutyCycle",(double)dutyCycle);
+        fields.put("egoADC",(double)egoADC);
+        fields.put("egoCorrection",(double)egoCorrection);
+        fields.put("egoVoltage",(double)egoVoltage);
+        fields.put("engine",(double)engine);
+        fields.put("gammaEnrich",(double)gammaEnrich);
+        fields.put("idleDC",(double)idleDC);
+        fields.put("lambda",(double)lambda);
+        fields.put("map",(double)map);
+        fields.put("mapADC",(double)mapADC);
+        fields.put("mat",(double)mat);
+        fields.put("matADC",(double)matADC);
+        fields.put("nSquirts",(double)nSquirts);
+        fields.put("pulseWidth",(double)pulseWidth);
+        fields.put("rpm",(double)rpm);
+        fields.put("rpm100",(double)rpm100);
+        fields.put("secl",(double)secl);
+        fields.put("squirt",(double)squirt);
+        fields.put("throttle",(double)throttle);
+        fields.put("time",(double)time);
+        fields.put("tpsADC",(double)tpsADC);
+        fields.put("veCurr",(double)veCurr);
+        fields.put("warmupEnrich",(double)warmupEnrich);
+        return new DataPacket(fields,ochBuffer);
+    };
 
 }
 
