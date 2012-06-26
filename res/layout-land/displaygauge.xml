@@ -52,11 +52,18 @@
 	</LinearLayout>
 	<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
 	<LinearLayout android:orientation="horizontal" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
-	<TextView android:layout_weight="1" 
-		android:layout_width="0dip" 
-		android:text="" 
-		android:layout_height="wrap_content" 
-		android:id="@+id/messages" 
-		android:layout_margin="4dip" />
+		<TextView android:layout_weight="1" 
+			android:layout_width="0dip" 
+			android:text="" 
+			android:layout_height="wrap_content" 
+			android:id="@+id/messages" 
+			android:layout_margin="4dip" />
+		<TextView android:layout_weight="1" 
+			android:layout_width="0dip" 
+			android:text="" 
+			android:layout_height="wrap_content" 
+			android:id="@+id/RPS" 
+			android:layout_margin="4dip"
+			android:gravity="right" />
 	</LinearLayout>
 </LinearLayout>

@@ -13,6 +13,7 @@ import java.util.Random;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.SeriesSelection;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -27,6 +28,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -124,6 +126,8 @@ public class ViewDatalogActivity extends Activity
                     String line;
                     String[] lineSplit;
                     
+                    long timeStart = System.currentTimeMillis();
+                    
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
                     {
@@ -177,6 +181,10 @@ public class ViewDatalogActivity extends Activity
                         
                         nbLine++;
                     }
+                    
+                    long timeEnd = System.currentTimeMillis();
+                    
+                    DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
                 }
                 finally {
                     instream.close();
@@ -201,6 +209,8 @@ public class ViewDatalogActivity extends Activity
         double minXaxis = 0;
         double maxXaxis = data.get(0).size();
         
+        long timeStart = System.currentTimeMillis();
+        
         // Assuming first column of datalog is time for X axis
         double[] xValues = new double[(int)maxXaxis];        
         for (int i = 0; i < maxXaxis; i++)
@@ -212,7 +222,7 @@ public class ViewDatalogActivity extends Activity
         String[] titles = new String[headers.length - 1];        
         for (int i = 1; i < headers.length; i++)
         {
-            titles[i-1] = headers[i];
+            titles[i - 1] = headers[i];
         }
 
         List<double[]> x = new ArrayList<double[]>();
@@ -253,6 +263,10 @@ public class ViewDatalogActivity extends Activity
             maxColumns.add(max);
         }
         
+        long timeEnd = System.currentTimeMillis();
+        
+        DebugLogManager.INSTANCE.log("Prepared value and found min/max value of each columns in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+        
         for (int i = 1; i < data.size(); i++)
         {
             List<Double> row = data.get(i);
@@ -273,12 +287,28 @@ public class ViewDatalogActivity extends Activity
         renderer.setYLabels(10);
         renderer.setPanLimits(new double[] { minXaxis,maxXaxis,0,100 });
         renderer.setShowLabels(false);
+        renderer.setClickEnabled(true);
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 
         if (mChartView == null)
         {
-            mChartView = ChartFactory.getLineChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);
+            mChartView = ChartFactory.getLineChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);     
+            /*mChartView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
+                    if (seriesSelection == null)
+                    {
+                        System.out.println("Nothing was clicked");
+                    }
+                    else
+                    {
+                        System.out.println("Chart element data point index " + seriesSelection.getPointIndex() + " was clicked" + " point value=" + seriesSelection.getValue());
+                    }
+                }
+            });*/
+            
             layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         }
         else
