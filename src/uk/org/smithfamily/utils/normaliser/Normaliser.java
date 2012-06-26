@@ -554,6 +554,7 @@ public class Normaliser
         writer.println("Fingerprint : " + fingerprint);
         writer.println("*/");
 
+        writer.println("@SuppressWarnings(\"unused\")");
         writer.println("public class " + className + " extends Megasquirt\n{");
         outputConstructor(writer, className);
         writer.println(TAB+"private Map<String,Double> fields = new HashMap<String,Double>();");
@@ -599,12 +600,12 @@ public class Normaliser
         writer.println("//Flags");
         for (String name : flags)
         {
-            writer.println(TAB + "public boolean " + name + ";");
+            writer.println(TAB + "private boolean " + name + ";");
         }
         writer.println("//Defaults");
         for (String d : defaults)
         {
-            writer.println(TAB + "public " + d);
+            writer.println(TAB + "private " + d);
         }
         Map<String, String> vars = new TreeMap<String, String>();
         vars.putAll(runtimeVars);
@@ -617,13 +618,13 @@ public class Normaliser
         for (String name : vars.keySet())
         {
             String type = getType(name, vars);
-            writer.println(TAB + "public " + type + " " + name + ";");
+            writer.println(TAB + "private " + type + " " + name + ";");
         }
         writer.println("\n//Constants");
         for (String name : constantVars.keySet())
         {
             String type = getType(name, constantVars);
-            writer.println(TAB + "public " + type + " " + name + ";");
+            writer.println(TAB + "private " + type + " " + name + ";");
         }
         writer.println("\n");
         writer.println(TAB + "private String[] defaultGauges = {");
