@@ -37,7 +37,7 @@ public enum DatalogManager
 	{
 		if (fileName == null)
 		{
-			fileName = DateFormat.format("yyyyMMddkkmmss", new Date()).toString() + ".msl";
+			fileName = DateFormat.format("yyyy-MM-dd_kk.mm.ss", new Date()).toString() + ".msl";
 		}
 		return fileName;
 	}

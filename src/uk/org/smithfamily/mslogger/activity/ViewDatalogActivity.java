@@ -10,17 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.GraphicalView;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.SeriesSelection;
-import org.achartengine.model.TimeSeries;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
-
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.chart.ChartFactory;
+import uk.org.smithfamily.mslogger.chart.GraphicalView;
+import uk.org.smithfamily.mslogger.chart.chart.PointStyle;
+import uk.org.smithfamily.mslogger.chart.model.SeriesSelection;
+import uk.org.smithfamily.mslogger.chart.model.TimeSeries;
+import uk.org.smithfamily.mslogger.chart.model.XYMultipleSeriesDataset;
+import uk.org.smithfamily.mslogger.chart.renderer.XYMultipleSeriesRenderer;
+import uk.org.smithfamily.mslogger.chart.renderer.XYSeriesRenderer;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -281,13 +280,15 @@ public class ViewDatalogActivity extends Activity
             
             values.add(rowDouble);
         }
-        
+                
         XYMultipleSeriesRenderer renderer = buildRenderer(titles.length);
         setChartSettings(renderer, "", "", "", minXaxis, Math.min(100,maxXaxis), 0, 100, Color.GRAY, Color.LTGRAY);
-        renderer.setYLabels(10);
+        
         renderer.setPanLimits(new double[] { minXaxis,maxXaxis,0,100 });
         renderer.setShowLabels(false);
         renderer.setClickEnabled(true);
+        renderer.setShowGrid(true);
+        renderer.setZoomEnabled(true);
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 

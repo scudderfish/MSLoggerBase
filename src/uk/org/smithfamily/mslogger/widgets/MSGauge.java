@@ -16,7 +16,7 @@ public class MSGauge extends View implements Indicator
 {
     public static final String DEAD_GAUGE_NAME = "deadGauge";
     private int                diameter;
-    private String             name        = "RPM";
+    private String             name        = DEAD_GAUGE_NAME;
     private String             title       = "RPM";
     private String             channel     = "rpm";
     private String             units       = "";
