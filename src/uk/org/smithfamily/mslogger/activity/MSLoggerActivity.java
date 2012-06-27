@@ -416,6 +416,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     protected void processData()
     {
+	long start = System.currentTimeMillis();
         List<Indicator> indicators;
         if ((indicators = indicatorManager.getIndicators()) != null)
         {
@@ -437,6 +438,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
+	long stop = System.currentTimeMillis();
+	DebugLogManager.INSTANCE.log("MSLoggerActivity.processData() took "+(stop-start)+"ms",Log.INFO);
     }
 
  
