@@ -824,11 +824,13 @@ public abstract class XYChart extends AbstractChart {
         if (clickableAreas.get(seriesIndex) != null) {
           RectF rectangle;
           for (ClickableArea area : clickableAreas.get(seriesIndex)) {
-            rectangle = area.getRect();
-            if (rectangle != null && rectangle.contains(screenPoint.getX(), screenPoint.getY())) {
-              return new SeriesSelection(seriesIndex, pointIndex, area.getX(), area.getY());
+            if (area != null) {
+              rectangle = area.getRect();
+              if (rectangle != null && rectangle.contains(screenPoint.getX(), screenPoint.getY())) {
+                return new SeriesSelection(seriesIndex, pointIndex, area.getX(), area.getY());
+              }
+              pointIndex++;
             }
-            pointIndex++;
           }
         }
       }
