@@ -18,7 +18,7 @@
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:name="uk.org.smithfamily.mslogger.MSLoggerApplication" >
+        android:name=".MSLoggerApplication" >
        
 
         <activity
@@ -61,7 +61,7 @@
         </activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.ManageDatalogsActivity"></activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.ViewDatalogActivity"></activity>
-        <activity android:name="uk.org.smithfamily.mslogger.activity.DatalogFieldsActivity"></activity>
+        <activity android:name=".activity.DatalogFieldsActivity"></activity>
     </application>
 
 </manifest>

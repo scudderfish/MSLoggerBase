@@ -83,7 +83,7 @@ public enum FRDLogManager
 
         Date now = new Date();
 
-        String fileName = DateFormat.format("yyyyMMddkkmmss", now).toString() + ".frd";
+        String fileName = DateFormat.format("yyyy-MM-dd_kk.mm.ss", now).toString() + ".frd";
 
         logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
         absolutePath = logFile.getAbsolutePath();

@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.activity;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,8 @@ import uk.org.smithfamily.mslogger.log.EmailManager;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StatFs;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +28,8 @@ import android.widget.TextView;
  */
 public class ManageDatalogsActivity  extends ListActivity {
     
-    private ListView datalogsList;    
+    private ListView datalogsList;  
+    private TextView datalogsInfo;
     private ArrayAdapter<String> mDatalogsArrayAdapter;
     private Button view;
     private Button sendByEmail;
@@ -43,6 +47,8 @@ public class ManageDatalogsActivity  extends ListActivity {
         setContentView(R.layout.managedatalogs);
         
         setTitle("Manage Datalogs");
+        
+        datalogsInfo = (TextView) findViewById(R.id.datalogs_info);
         
         view = (Button) findViewById(R.id.view);
         view.setVisibility(View.GONE);
@@ -146,8 +152,6 @@ public class ManageDatalogsActivity  extends ListActivity {
         datalogsList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         datalogsList.setItemsCanFocus(true);
         
-        TextView noDatalogMessage = (TextView) findViewById(R.id.no_datalog_found);
-        
         mDatalogsArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice);        
         File datalogDirectory = ApplicationSettings.INSTANCE.getDataDir();
 
@@ -160,21 +164,46 @@ public class ManageDatalogsActivity  extends ListActivity {
         File[] datalogs = datalogDirectory.listFiles(new DatalogFilter());
         
         if (datalogs.length > 0)
-        {        
+        {                   
+            long datalogsSize = 0;
+            
             for (File datalog : datalogs)
             {                         
                 mDatalogsArrayAdapter.add(datalog.getName());
+                
+                datalogsSize += datalog.length();
             }
                     
             datalogsList.setAdapter(mDatalogsArrayAdapter);
             
-            noDatalogMessage.setVisibility(View.GONE);
             datalogsList.setVisibility(View.VISIBLE);
+            
+            // Datalogs stats
+            StatFs stat = new StatFs(ApplicationSettings.INSTANCE.getDataDir().getPath());
+
+            BigInteger blockCount = BigInteger.valueOf(stat.getBlockCount());
+            BigInteger blockSize = BigInteger.valueOf(stat.getBlockSize());
+            
+            long totalSize = blockCount.multiply(blockSize).longValue();
+            String datalogsSizeFormatted = Formatter.formatFileSize(this, datalogsSize);
+            String internalSizeFormatted = Formatter.formatFileSize(this, totalSize);
+            
+            String datalogText = "datalog";
+            String datalogUpperText = "Datalog";
+            if (datalogs.length == 0 || datalogs.length > 1)
+            {
+                datalogText += "s";
+                datalogUpperText += "s";
+            }
+            
+            datalogsInfo.setText("Currently " + datalogs.length + " " + datalogText + " / " + datalogUpperText + " size: " 
+                                              + datalogsSizeFormatted + " / " + internalSizeFormatted);
         }
         // No datalog found, showing message instead
         else
         {            
-            noDatalogMessage.setVisibility(View.VISIBLE);
+            datalogsInfo.setText(R.string.no_datalog_found);
+            
             datalogsList.setVisibility(View.GONE);
             
             // Make the three bottom buttons dissapear too
