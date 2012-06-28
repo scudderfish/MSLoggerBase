@@ -33,8 +33,8 @@ public class Ms2extra_303s extends Megasquirt
         EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MS2Extra Rel 3.0.3s\0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MS2Extra Rel 3.0.3s\0";
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 169;
 //Flags

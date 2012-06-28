@@ -28,8 +28,8 @@ public class Megasquirt_II2886 extends Megasquirt
         LAMBDA = isSet("LAMBDA");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MSII Rev 2.88600   \0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MSII Rev 2.88600   \0";
     byte [] ochGetCommand = new byte[]{97,0,6};
     int ochBlockSize = 112;
 //Flags

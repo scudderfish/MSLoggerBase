@@ -49,8 +49,8 @@ public class Msextra_hr extends Megasquirt
         MPXH6400A = isSet("MPXH6400A");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'S'};
-    String signature="MS/Extra format hr_10 **********";
+    byte[] queryCommand = new byte[]{'S'};
+    String signature = "MS/Extra format hr_10 **********";
     byte [] ochGetCommand = new byte[]{'R'};
     int ochBlockSize = 41;
 //Flags
