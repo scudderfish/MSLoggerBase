@@ -1,11 +1,15 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -166,11 +170,12 @@ public abstract class Megasquirt
             ecuThread.halt();
             ecuThread = null;
         }
+        
         running = false;
+        
         DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
-        // disconnect();
-        sendMessage("");
 
+        sendMessage(context.getString(R.string.disconnected_from_ms));
     }
 
     /**
@@ -422,6 +427,8 @@ public abstract class Megasquirt
             }
             try
             {
+                running = true;
+                
                 Connection.INSTANCE.connect();
                 Connection.INSTANCE.flushAll();
 
@@ -444,7 +451,7 @@ public abstract class Megasquirt
                     
                     sendMessage("Connected to " + getTrueSignature());
                 }
-                running = true;
+                
                 
                 long lastRpsTime = 0;
                 double readCounter = 0;
