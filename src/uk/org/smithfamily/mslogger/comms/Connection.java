@@ -454,11 +454,6 @@ public enum Connection
         	}
         	result = CRC32ProtocolHandler.unwrap(result);
         }
-        String status = new String(result);
-        if (!status.equals(""))
-        {
-            sendStatus("Recieved '" + status + "'");
-        }
         
         return result;
     }
@@ -485,7 +480,7 @@ public enum Connection
      * 
      * @param msgStr Message to be broadcasted
      */
-    private void sendStatus(String msgStr)
+    public void sendStatus(String msgStr)
     {
         DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
 

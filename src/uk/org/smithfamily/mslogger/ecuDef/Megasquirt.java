@@ -458,7 +458,7 @@ public abstract class Megasquirt
                     long start = System.currentTimeMillis();
                     DataPacket packet = getDataPacket();
                     long stop = System.currentTimeMillis();
-                    DebugLogManager.INSTANCE.log("Packet took "+(stop-start)+"ms to generate",Log.INFO);
+                    DebugLogManager.INSTANCE.log("Packet took " + (stop-start) + "ms to generate",Log.INFO);
                     broadcast(packet);
                     
                     readCounter++;
@@ -558,7 +558,7 @@ public abstract class Megasquirt
                 return;
             }
             int d = getInterWriteDelay();
-            Connection.INSTANCE.writeAndRead(getOchCommand(), ochBuffer, d,isCRC32Protocol());
+            Connection.INSTANCE.writeAndRead(getOchCommand(), ochBuffer, d, isCRC32Protocol());
             // Debug.stopMethodTracing();
         }
 
@@ -585,13 +585,13 @@ public abstract class Megasquirt
             int delay = getPageActivationDelay();
             if (pageSelectCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageSelectCommand, delay,isCRC32Protocol());
+                Connection.INSTANCE.writeCommand(pageSelectCommand, delay, isCRC32Protocol());
             }
             if (pageReadCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageReadCommand, delay,isCRC32Protocol());
+                Connection.INSTANCE.writeCommand(pageReadCommand, delay, isCRC32Protocol());
             }
-            Connection.INSTANCE.readBytes(pageBuffer,isCRC32Protocol());
+            Connection.INSTANCE.readBytes(pageBuffer, isCRC32Protocol());
         }
 
         /**
@@ -602,37 +602,40 @@ public abstract class Megasquirt
          */
         private String getSignature(byte[] sigCommand) throws IOException
         {
-            String sig1 = "NoSigReadYet";
-            String sig2 = "Not here";
-            DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
+            String signatureFromMS = "";
             int d = Math.max(getInterWriteDelay(),100);
             
+            DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);           
+            
             /*
-             * We need to loop around until we get a constant result.  When a BT module connects, it can feed
+             * We need to loop around until we get a valid result.  When a BT module connects, it can feed
              * an initial 'CONNECT xyz' string into the ECU which confuses the hell out of it, and the first few
              * interactions return garbage
              */
             do
             {
-                byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d,isCRC32Protocol());
-                if (!sig2.equals(ECUFingerprint.UNKNOWN))
-                {
-                    sig1 = sig2;
-                }
+                byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
+                
                 try
                 {
-                    sig2 = ECUFingerprint.processResponse(buf);
+                    signatureFromMS = ECUFingerprint.processResponse(buf);
                 }
                 catch (BootException e)
                 {
                     return "ECU needs a reboot!";
                 }
-                DebugLogManager.INSTANCE.log("Got a signature of " + sig2, Log.INFO);
+                
+                DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
 
                 Connection.INSTANCE.flushAll();
             }
-            while (!sig1.equals(sig2));
-            return sig1;
+            // We loop until we get a valid signature
+            while (signatureFromMS.equals(ECUFingerprint.UNKNOWN));
+            
+            // Notify the user of the signature we got
+            Connection.INSTANCE.sendStatus("Recieved '" + signatureFromMS + "'");
+            
+            return signatureFromMS;
         }
 
     }
