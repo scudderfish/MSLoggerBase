@@ -50,10 +50,10 @@ public enum Connection
 
     public enum ConnectionState
     {
-        STATE_NONE, STATE_CONNECTING, STATE_CONNECTED
+        STATE_DISCONNECTED, STATE_CONNECTING, STATE_CONNECTED
     };
 
-    private volatile ConnectionState currentState = ConnectionState.STATE_NONE;
+    private volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
     private Thread                   ownerThread;
 
     /**
@@ -95,10 +95,10 @@ public enum Connection
      */
     public synchronized void init(String btAddr, BluetoothAdapter adapter, Handler h)
     {
-        if (currentState != ConnectionState.STATE_NONE && !btAddr.equals(this.btAddr))
+        if (currentState != ConnectionState.STATE_DISCONNECTED && !btAddr.equals(this.btAddr))
         {
             tearDown();
-            setState(ConnectionState.STATE_NONE);
+            setState(ConnectionState.STATE_DISCONNECTED);
         }
         this.btAddr = btAddr;
         this.adapter = adapter;
@@ -128,7 +128,7 @@ public enum Connection
     {
     	DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
         
-        if (currentState != ConnectionState.STATE_NONE)
+        if (currentState != ConnectionState.STATE_DISCONNECTED)
         {
             return;
         }
@@ -188,7 +188,7 @@ public enum Connection
         else
         {
             DebugLogManager.INSTANCE.log("Failed to complete connection", Log.ERROR);
-            setState(ConnectionState.STATE_NONE);
+            setState(ConnectionState.STATE_DISCONNECTED);
             tearDown();
         }
         return;
@@ -222,7 +222,7 @@ public enum Connection
     {
     	DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
         
-        if (currentState == ConnectionState.STATE_NONE)
+        if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
             boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
             if (autoConnect)
@@ -308,7 +308,7 @@ public enum Connection
             }
             socket = null;
         }
-        setState(ConnectionState.STATE_NONE);
+        setState(ConnectionState.STATE_DISCONNECTED);
     }
 
     /**
