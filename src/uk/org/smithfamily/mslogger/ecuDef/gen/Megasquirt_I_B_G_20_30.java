@@ -43,8 +43,8 @@ public class Megasquirt_I_B_G_20_30 extends Megasquirt
         WB_UNKNOWN = isSet("WB_UNKNOWN");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature=""+(byte)20;
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = ""+(byte)20;
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 22;
 //Flags

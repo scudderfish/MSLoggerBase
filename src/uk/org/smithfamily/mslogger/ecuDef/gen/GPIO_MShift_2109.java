@@ -26,8 +26,8 @@ public class GPIO_MShift_2109 extends Megasquirt
         NOT_METRIC = isSet("NOT_METRIC");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MShift 2.109       \0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MShift 2.109       \0";
     byte [] ochGetCommand = new byte[]{97,0,6};
     int ochBlockSize = 61;
 //Flags

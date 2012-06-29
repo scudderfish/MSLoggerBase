@@ -49,8 +49,8 @@ public class Msns_extra029q_29w extends Megasquirt
         MPXH6400A = isSet("MPXH6400A");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'S'};
-    String signature="MSnS-extra format 029q *********";
+    byte[] queryCommand = new byte[]{'S'};
+    String signature = "MSnS-extra format 029q *********";
     byte [] ochGetCommand = new byte[]{'R'};
     int ochBlockSize = 39;
 //Flags

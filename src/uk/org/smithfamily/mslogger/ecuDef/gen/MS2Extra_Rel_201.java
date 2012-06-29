@@ -29,8 +29,8 @@ public class MS2Extra_Rel_201 extends Megasquirt
         TRIGLOG = isSet("TRIGLOG");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MS2Extra Rel 2.0.0 \0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MS2Extra Rel 2.0.0 \0";
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 153;
 //Flags
