@@ -55,9 +55,6 @@ public abstract class Megasquirt
     public abstract DataPacket getDataPacket();
 	protected byte[] ochBuffer;
 
-    private String             trueSignature = "Unknown";
-    private volatile boolean   running;
-
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
 	 * a little simpler
@@ -174,10 +171,8 @@ public abstract class Megasquirt
 	 * @param read
 	 * @return
 	 */
-	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize,
-			byte[] select, byte[] read)
+	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
 	{
-
 		byte[] buffer = new byte[pageSize];
 		return buffer;
 	}
