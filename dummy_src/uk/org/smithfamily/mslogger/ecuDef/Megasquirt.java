@@ -171,7 +171,8 @@ public abstract class Megasquirt
 	 * @param read
 	 * @return
 	 */
-	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read) {
+	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
+	{
 		byte[] buffer = new byte[pageSize];
 		return buffer;
 	}
