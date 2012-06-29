@@ -32,8 +32,8 @@ public class Megasquirt_II_3760 extends Megasquirt
         EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MSII Rev 3.76000   \0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MSII Rev 3.76000   \0";
     byte [] ochGetCommand = new byte[]{97,0,6};
     int ochBlockSize = 130;
 //Flags

@@ -49,8 +49,8 @@ public class MSExtra_format_hr_11d extends Megasquirt
         MPXH6400A = isSet("MPXH6400A");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'S'};
-    String signature="MS/Extra format hr_11d  ********";
+    byte[] queryCommand = new byte[]{'S'};
+    String signature = "MS/Extra format hr_11d  ********";
     byte [] ochGetCommand = new byte[]{'R'};
     int ochBlockSize = 42;
 //Flags
