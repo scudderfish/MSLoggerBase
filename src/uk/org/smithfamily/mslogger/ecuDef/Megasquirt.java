@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.Timer;
-import java.util.concurrent.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
