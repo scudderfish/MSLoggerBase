@@ -810,12 +810,24 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         rpm100 = (rpm / 100.0);
         altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
-        cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+        
+        cycleTime1 = 0;
+        if (rpm > 0)
+        {
+            cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+        }        
         nSquirts1 = (nCylinders/divider);
         dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
-        cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+        
+        cycleTime2 = 0;
+        if (rpm > 0) {
+            cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+        }
         nSquirts2 = (nCylinders/divider);
-        dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        dutyCycle2 = 0;
+        if (altDiv2 > 0 && cycleTime2 > 0) {
+            dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        }
         boostbar = ((map - barometer) / 101.33);
         boostpsig = ((map - barometer) * 0.1450);
         vacuum = ((barometer-map)*0.2953007);

@@ -128,15 +128,16 @@ public enum GaugeRegister
             File input = getFileStore(gd);
 
             // Make sure file exists before trying to read it
-            if (input.isFile()) {            
-                // Read from disk using FileInputStream.
-                FileInputStream f_in = new FileInputStream(input);
+            if (input.isFile()) {
+                // Read object using ObjectInputStream
+                ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(input));
     
-                // Read object using ObjectInputStream.
-                ObjectInputStream obj_in = new ObjectInputStream(f_in);
-    
-                // Read an object.
-                Object obj = obj_in.readObject();
+                // Read an object
+                Object obj = objIn.readObject();
+                
+                // Close the stream
+                objIn.close();
+                
                 if (obj instanceof GaugeDetails)
                 {    
                     return (GaugeDetails) obj;
