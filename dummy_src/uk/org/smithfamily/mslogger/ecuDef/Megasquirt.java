@@ -46,6 +46,9 @@ public abstract class Megasquirt
 
     public abstract boolean isCRC32Protocol();
 
+    public abstract DataPacket getDataPacket();
+	protected byte[] ochBuffer;
+
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
 	 * a little simpler
@@ -161,10 +164,8 @@ public abstract class Megasquirt
 	 * @param read
 	 * @return
 	 */
-	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize,
-			byte[] select, byte[] read)
+	protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
 	{
-
 		byte[] buffer = new byte[pageSize];
 		return buffer;
 	}
