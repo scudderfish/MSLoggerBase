@@ -141,7 +141,10 @@ public enum DebugLogManager
         ex.printStackTrace(pw);
         try
         {
-            os.flush();
+            if (os != null)
+            {
+                os.flush();
+            }
         }
         catch (IOException e)
         {
