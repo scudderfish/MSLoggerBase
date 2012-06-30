@@ -29,7 +29,7 @@ public class MSUtils
      */
     public static int getWord(byte[] ochBuffer, int i)
     {
-        return (getByte(ochBuffer,i) * 256 + getByte(ochBuffer,i+1));
+        return (ochBuffer[i] << 8) | getByte(ochBuffer,i + 1);
     }
 
     /**
