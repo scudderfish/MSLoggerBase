@@ -156,11 +156,18 @@ public enum Connection
             }
             catch (Exception e1)
             {
-                DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e1);
             }
             ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
             getSocket(remote);
-            socket.connect();
+            
+            try {
+                socket.connect();
+            }
+            catch (Exception e1)
+            {
+                DebugLogManager.INSTANCE.logException(e1);
+            }
         }
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -427,7 +434,7 @@ public enum Connection
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
      */
-    public synchronized byte[] readBytes(boolean isCRC32) throws IOException
+    public byte[] readBytes(boolean isCRC32) throws IOException
     {
         List<Byte> read = new ArrayList<Byte>();
 
@@ -463,7 +470,7 @@ public enum Connection
      * 
      * @throws IOException
      */
-    public synchronized void flushAll() throws IOException
+    public void flushAll() throws IOException
     {
     	DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
         checkConnection();
