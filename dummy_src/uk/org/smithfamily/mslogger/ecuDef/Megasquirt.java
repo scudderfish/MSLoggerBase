@@ -46,9 +46,7 @@ public abstract class Megasquirt
 
     public abstract boolean isCRC32Protocol();
 
-    public abstract DataPacket getDataPacket();
-	protected byte[] ochBuffer;
-
+    
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
 	 * a little simpler
