@@ -34,7 +34,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private IndicatorManager       indicatorManager;
     private TextView               messages;
     private TextView               rps;
-    public boolean                 connected;
     static private Boolean         ready                 = null;
     private MSGauge                gauge1;
     private MSGauge                gauge2;
