@@ -15,7 +15,6 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.chart.ChartFactory;
 import uk.org.smithfamily.mslogger.chart.GraphicalView;
 import uk.org.smithfamily.mslogger.chart.chart.PointStyle;
-import uk.org.smithfamily.mslogger.chart.model.SeriesSelection;
 import uk.org.smithfamily.mslogger.chart.model.TimeSeries;
 import uk.org.smithfamily.mslogger.chart.model.XYMultipleSeriesDataset;
 import uk.org.smithfamily.mslogger.chart.renderer.XYMultipleSeriesRenderer;

@@ -427,7 +427,7 @@ public enum Connection
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
      */
-    public byte[] readBytes(boolean isCRC32) throws IOException
+    public synchronized byte[] readBytes(boolean isCRC32) throws IOException
     {
         List<Byte> read = new ArrayList<Byte>();
 
@@ -463,7 +463,7 @@ public enum Connection
      * 
      * @throws IOException
      */
-    public void flushAll() throws IOException
+    public synchronized void flushAll() throws IOException
     {
     	DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
         checkConnection();
