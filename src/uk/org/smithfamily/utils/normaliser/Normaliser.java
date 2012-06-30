@@ -571,41 +571,24 @@ public class Normaliser
 
         outputOverrides(writer);
         outputLoadConstants(writer);
-        outputGeneratePacket(writer);
         writer.println("\n}\n");
 
         writer.close();
     }
 
-    private static void outputGeneratePacket(PrintWriter writer)
-	{
-		writer.println(TAB+"@Override");
-		writer.println(TAB+"public DataPacket getDataPacket()");
-		writer.println(TAB+"{");
-		Set<String> allVars = new TreeSet<String>();
-		allVars.addAll(runtimeVars.keySet());
-		allVars.addAll(evalVars.keySet());
-		//allVars.addAll(constantVars.keySet());
-		for(String var : allVars)
-		{
-			writer.println(TAB+TAB+"fields.put(\""+var+"\",(double)"+var+");");
-		}
-		writer.println(TAB+TAB+"return new DataPacket(fields,ochBuffer);");
-		writer.println(TAB+"};");
-		
-	}
+ 
 
 	private static void outputGlobalVars(PrintWriter writer)
     {
         writer.println("//Flags");
         for (String name : flags)
         {
-            writer.println(TAB + "private boolean " + name + ";");
+            writer.println(TAB + "public boolean " + name + ";");
         }
         writer.println("//Defaults");
         for (String d : defaults)
         {
-            writer.println(TAB + "private " + d);
+            writer.println(TAB + "public " + d);
         }
         Map<String, String> vars = new TreeMap<String, String>();
         vars.putAll(runtimeVars);
@@ -618,13 +601,13 @@ public class Normaliser
         for (String name : vars.keySet())
         {
             String type = getType(name, vars);
-            writer.println(TAB + "private " + type + " " + name + ";");
+            writer.println(TAB + "public " + type + " " + name + ";");
         }
         writer.println("\n//Constants");
         for (String name : constantVars.keySet())
         {
             String type = getType(name, constantVars);
-            writer.println(TAB + "private " + type + " " + name + ";");
+            writer.println(TAB + "public " + type + " " + name + ";");
         }
         writer.println("\n");
         writer.println(TAB + "private String[] defaultGauges = {");
@@ -657,7 +640,7 @@ public class Normaliser
     private static void outputRTCalcs(PrintWriter writer)
     {
         writer.println("	@Override");
-        writer.println("	public void calculate(byte[] ochBuffer) throws IOException");
+        writer.println("	public void calculate(byte[] ochBuffer)");
         writer.println("    {");
         for (String defn : runtime)
         {

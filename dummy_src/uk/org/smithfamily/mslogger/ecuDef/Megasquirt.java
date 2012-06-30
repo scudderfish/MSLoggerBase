@@ -13,12 +13,6 @@ import android.content.Context;
 public abstract class Megasquirt
 {
 	
-	public static final String NEW_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
-
-	public static final String CONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
-	public static final String DISCONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
-
-	protected Context context;
 
 	public abstract String getSignature();
 
@@ -51,12 +45,6 @@ public abstract class Megasquirt
     public abstract void refreshFlags();
 
     public abstract boolean isCRC32Protocol();
-
-    public abstract DataPacket getDataPacket();
-	protected byte[] ochBuffer;
-
-    private String             trueSignature = "Unknown";
-    private volatile boolean   running;
 
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
@@ -102,7 +90,6 @@ public abstract class Megasquirt
 	 */
 	public Megasquirt(Context c)
 	{
-		this.context = c;
 	}
 
 	/**
