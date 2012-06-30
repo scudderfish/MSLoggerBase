@@ -184,11 +184,13 @@ public enum GaugeRegister
             File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
             dir.mkdirs();
             File output = new File(dir, getStoreName(gd));
-            FileOutputStream f_out = new FileOutputStream(output);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+            FileOutputStream fOut = new FileOutputStream(output);
+            ObjectOutputStream objOut = new ObjectOutputStream(fOut);
 
-            obj_out.writeObject(gd);
+            objOut.writeObject(gd);
             details.put(gd.getName(), gd);
+            
+            objOut.close();
         }
         catch (IOException e)
         {
