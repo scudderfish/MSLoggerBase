@@ -4,8 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.Timer;
+import java.util.concurrent.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
@@ -17,16 +19,14 @@ import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 
 /**
  * Abstract base class for all ECU implementations
+ * 
  * @author dgs
- *
+ * 
  */
 public abstract class Megasquirt
 {
@@ -52,7 +52,7 @@ public abstract class Megasquirt
 
     public abstract void loadConstants(boolean simulated) throws IOException;
 
-    public abstract void calculate(byte[] ochBuffer) throws IOException;
+    public abstract void calculate(byte[] ochBuffer);
 
     public abstract String getLogHeader();
 
@@ -73,10 +73,8 @@ public abstract class Megasquirt
     public abstract String[] defaultGauges();
 
     public abstract void refreshFlags();
-    
+
     public abstract boolean isCRC32Protocol();
-  
-    public abstract DataPacket getDataPacket();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -84,23 +82,27 @@ public abstract class Megasquirt
     private ECUThread          ecuThread;
     private volatile boolean   running;
 
-    protected byte[]             ochBuffer;
+    // protected byte[] ochBuffer;
 
     private RebroadcastHandler handler;
 
     /**
-     * Shortcut function to access data tables.  Makes the INI->Java translation a little simpler
-     * @param i1 index into table
-     * @param name table name
+     * Shortcut function to access data tables. Makes the INI->Java translation a little simpler
+     * 
+     * @param i1
+     *            index into table
+     * @param name
+     *            table name
      * @return value from table
      */
     protected int table(int i1, String name)
     {
         return TableManager.INSTANCE.table(i1, name);
     }
+
     protected int table(double d1, String name)
     {
-        return table((int)d1, name);
+        return table((int) d1, name);
     }
 
     /**
@@ -131,7 +133,9 @@ public abstract class Megasquirt
 
     /**
      * Temperature unit conversion function
-     * @param t temp in F
+     * 
+     * @param t
+     *            temp in F
      * @return temp in C if CELSIUS is set, in F otherwise
      */
     protected double tempCvt(int t)
@@ -170,9 +174,9 @@ public abstract class Megasquirt
             ecuThread.halt();
             ecuThread = null;
         }
-        
+
         running = false;
-        
+
         DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
 
         sendMessage(context.getString(R.string.disconnected_from_ms));
@@ -191,7 +195,7 @@ public abstract class Megasquirt
     /**
      * Output the current values to be logged
      */
-    private void logValues()
+    private void logValues(byte[] buffer)
     {
 
         if (!isLogging())
@@ -200,7 +204,7 @@ public abstract class Megasquirt
         }
         try
         {
-            FRDLogManager.INSTANCE.write(ochBuffer);
+            FRDLogManager.INSTANCE.write(buffer);
             DatalogManager.INSTANCE.write(getLogRow());
 
         }
@@ -220,8 +224,8 @@ public abstract class Megasquirt
     {
         if (simulated)
             return;
-        DebugLogManager.INSTANCE.log("Disconnect",Log.INFO);
-        
+        DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
+
         Connection.INSTANCE.disconnect();
         DatalogManager.INSTANCE.mark("Disconnected");
         FRDLogManager.INSTANCE.close();
@@ -231,6 +235,7 @@ public abstract class Megasquirt
 
     /**
      * Send a message to the user
+     * 
      * @param msg
      */
     protected void sendMessage(String msg)
@@ -240,16 +245,17 @@ public abstract class Megasquirt
         broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
         context.sendBroadcast(broadcast);
     }
-    
+
     /**
      * Send the reads per second to be displayed on the screen
      * 
-     * @param RPS the current reads per second value
+     * @param RPS
+     *            the current reads per second value
      */
     private void sendRPS(double RPS)
     {
         DecimalFormat decimalFormat = new DecimalFormat("#.0");
-        
+
         Intent broadcast = new Intent();
         broadcast.setAction(ApplicationSettings.RPS_MESSAGE);
         broadcast.putExtra(ApplicationSettings.RPS, decimalFormat.format(RPS));
@@ -258,6 +264,7 @@ public abstract class Megasquirt
 
     /**
      * Send a status update to the rest of the application
+     * 
      * @param action
      */
     private void broadcast(String action)
@@ -267,11 +274,12 @@ public abstract class Megasquirt
         // broadcast.putExtra(LOCATION, location);
         context.sendBroadcast(broadcast);
     }
-    private void broadcast(DataPacket p)
+
+    private void broadcast()
     {
         Intent broadcast = new Intent();
         broadcast.setAction(NEW_DATA);
-        broadcast.putExtra(NEW_DATA, p);
+
         context.sendBroadcast(broadcast);
 
     }
@@ -288,13 +296,13 @@ public abstract class Megasquirt
 
     /**
      * How long have we been running?
+     * 
      * @return
      */
     protected int timeNow()
     {
         return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
     }
-
 
     /**
      * Flag the logging process to happen
@@ -319,6 +327,7 @@ public abstract class Megasquirt
 
     /**
      * Take a wild stab at what this does.
+     * 
      * @param v
      * @return
      */
@@ -329,6 +338,7 @@ public abstract class Megasquirt
 
     /**
      * Returns if a flag has been set in the application
+     * 
      * @param name
      * @return
      */
@@ -368,11 +378,35 @@ public abstract class Megasquirt
     }
 
     /**
-     * The thread that handles all communications with the ECU.  This must be done in it's own thread
-     * as Android gets very picky about unresponsive UI threads
+     * The thread that handles all communications with the ECU. This must be done in it's own thread as Android gets very picky about unresponsive UI threads
      */
     private class ECUThread extends Thread
     {
+        class Handshake
+        {
+            private byte[] buffer;
+
+            public void put(byte[] buf)
+            {
+                buffer = buf;
+                synchronized(this)
+                {
+                    notify();
+                }
+            }
+
+            public byte[] get() throws InterruptedException
+            {
+                synchronized (this)
+                {
+                    wait();
+                }
+                return buffer;
+            }
+        }
+
+        Handshake handshake         = new Handshake();
+        Thread    calculationThread = new CalculationThread();
 
         /**
          * 
@@ -381,6 +415,37 @@ public abstract class Megasquirt
         {
             String sig = Megasquirt.this.getSignature();
             setName("ECUThread:" + sig);
+            calculationThread.start();
+        }
+
+        private class CalculationThread extends Thread
+        {
+            public void run()
+            {
+                this.setName("CalculationThread");
+                try
+                {
+                    while (true)
+                    {
+                        byte[] buffer = handshake.get();
+//                        DebugLogManager.INSTANCE.log("Got a buffer", Log.INFO);
+//                        long start = System.currentTimeMillis();
+                        calculate(buffer);
+//                        long calc = System.currentTimeMillis();
+                        logValues(buffer);
+//                        long log = System.currentTimeMillis();
+//                        long gen = System.currentTimeMillis();
+                        broadcast();
+//                        long b = System.currentTimeMillis();
+//                        DebugLogManager.INSTANCE.log("Calculations done and broadcast : " + (calc - start) + "," + (log - calc) + "," + (gen - log) + ","
+//                                + (b - gen) + "," + (b - start), Log.INFO);
+                    }
+                }
+                catch (InterruptedException e)
+                {
+                    //Swallow, we're on our way out.
+                }
+            }
         }
 
         /**
@@ -388,8 +453,6 @@ public abstract class Megasquirt
          */
         public void initialiseConnection()
         {
-            ochBuffer = new byte[Megasquirt.this.getBlockSize()];
-
             if (!ApplicationSettings.INSTANCE.btDeviceSelected())
             {
                 sendMessage("Bluetooth device not selected");
@@ -413,97 +476,103 @@ public abstract class Megasquirt
          */
         public void run()
         {
-            sendMessage("");
-            DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
-            initialiseConnection();
-            
             try
             {
-                Thread.sleep(500);
-            }
-            catch (InterruptedException e)
-            {
-                DebugLogManager.INSTANCE.logException(e);
-            }
-            try
-            {
+                sendMessage("");
+                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
+                initialiseConnection();
+
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e)
+                {
+                    DebugLogManager.INSTANCE.logException(e);
+                }
+
                 running = true;
-                
-                Connection.INSTANCE.connect();
-                Connection.INSTANCE.flushAll();
 
-                if (!verifySignature())
+                try
                 {
-                    DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
+                    Connection.INSTANCE.connect();
+                    Connection.INSTANCE.flushAll();
 
-                    Connection.INSTANCE.disconnect();
-                    return;
-                }
-                
-                // Make sure everyone agrees on what flags are set
-                ApplicationSettings.INSTANCE.refreshFlags();
-                refreshFlags();
-                if (!constantsLoaded)
-                {
-                    // Only do this once so reconnects are quicker
-                    loadConstants(simulated);
-                    constantsLoaded = true;
-                    
-                    sendMessage("Connected to " + getTrueSignature());
-                }
-                
-                
-                long lastRpsTime = 0;
-                double readCounter = 0;
-                
-                // This is the actual work.  Outside influences will toggle 'running' when we want this to stop
-                while (running)
-                {
-                    getRuntimeVars();
-                    calculateValues();
-                    logValues();
-                    long start = System.currentTimeMillis();
-                    DataPacket packet = getDataPacket();
-                    long stop = System.currentTimeMillis();
-                    DebugLogManager.INSTANCE.log("Packet took " + (stop-start) + "ms to generate",Log.INFO);
-                    broadcast(packet);
-                    
-                    readCounter++;
-                    
-                    long delay = System.currentTimeMillis() - lastRpsTime;
-                    if (delay > 1000)
+                    if (!verifySignature())
                     {
-                        double RPS = readCounter / delay * 1000;
-                        readCounter = 0;
-                        lastRpsTime = System.currentTimeMillis();
-                        
-                        if (RPS > 0)
-                        {
-                            sendRPS(RPS);
-                        }
+                        DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
+
+                        Connection.INSTANCE.disconnect();
+                        return;
                     }
 
-                }
-            }
-            catch (IOException e)
-            {
-                DebugLogManager.INSTANCE.logException(e);
-            }
-            catch (ArithmeticException e)
-            {
-                //If we get a maths error, we probably have loaded duff constants and hit a divide by zero
-                //force the constants to reload in case it was just a bad data read
-                DebugLogManager.INSTANCE.logException(e);
-                constantsLoaded = false;
-            }
-            catch (RuntimeException t)
-            {
-                DebugLogManager.INSTANCE.logException(t);
-                throw (t);
-            }
-            //We're on our way out, so drop the connection
-            disconnect();
+                    // Make sure everyone agrees on what flags are set
+                    ApplicationSettings.INSTANCE.refreshFlags();
+                    refreshFlags();
+                    if (!constantsLoaded)
+                    {
+                        // Only do this once so reconnects are quicker
+                        loadConstants(simulated);
+                        constantsLoaded = true;
 
+                        sendMessage("Connected to " + getTrueSignature());
+                    }
+
+                    long lastRpsTime = 0;
+                    double readCounter = 0;
+
+                    // This is the actual work. Outside influences will toggle 'running' when we want this to stop
+                    while (running)
+                    {
+//                        DebugLogManager.INSTANCE.log("** START **", Log.INFO);
+//                        long start = System.currentTimeMillis();
+                        final byte[] buffer = getRuntimeVars();
+//                        long comms = System.currentTimeMillis();
+//                        DebugLogManager.INSTANCE.log("Comms took :" + (comms - start), Log.INFO);
+                        handshake.put(buffer);
+//                        long rt = System.currentTimeMillis();
+//                        DebugLogManager.INSTANCE.log("Sent RTVars for calculation : " + (comms - start) + "," + (rt - comms) + "," + (rt - start), Log.INFO);
+
+                        readCounter++;
+
+                        long delay = System.currentTimeMillis() - lastRpsTime;
+                        if (delay > 1000)
+                        {
+                            double RPS = readCounter / delay * 1000;
+                            readCounter = 0;
+                            lastRpsTime = System.currentTimeMillis();
+
+                            if (RPS > 0)
+                            {
+                                sendRPS(RPS);
+                            }
+                        }
+
+                    }
+                }
+                catch (IOException e)
+                {
+                    DebugLogManager.INSTANCE.logException(e);
+                }
+                catch (ArithmeticException e)
+                {
+                    // If we get a maths error, we probably have loaded duff constants and hit a divide by zero
+                    // force the constants to reload in case it was just a bad data read
+                    DebugLogManager.INSTANCE.logException(e);
+                    constantsLoaded = false;
+                }
+                catch (RuntimeException t)
+                {
+                    DebugLogManager.INSTANCE.logException(t);
+                    throw (t);
+                }
+                // We're on our way out, so drop the connection
+                disconnect();
+            }
+            finally
+            {
+                calculationThread.interrupt();
+            }
         }
 
         /**
@@ -516,6 +585,7 @@ public abstract class Megasquirt
 
         /**
          * Checks that the signature returned by the ECU is what we are expecting
+         * 
          * @return
          * @throws IOException
          */
@@ -554,32 +624,25 @@ public abstract class Megasquirt
 
         /**
          * Get the current variables from the ECU
+         * 
          * @throws IOException
          */
-        private void getRuntimeVars() throws IOException
+        private byte[] getRuntimeVars() throws IOException
         {
-            // Debug.startMethodTracing("getRuntimeVars");
+            byte[] buffer = new byte[Megasquirt.this.getBlockSize()];
             if (simulated)
             {
-                MSSimulator.INSTANCE.getNextRTV(ochBuffer);
-                return;
+                MSSimulator.INSTANCE.getNextRTV(buffer);
+                return buffer;
             }
             int d = getInterWriteDelay();
-            Connection.INSTANCE.writeAndRead(getOchCommand(), ochBuffer, d, isCRC32Protocol());
-            // Debug.stopMethodTracing();
+            Connection.INSTANCE.writeAndRead(getOchCommand(), buffer, d, isCRC32Protocol());
+            return buffer;
         }
 
         /**
-         * Call the subclass to calculate any expressions
-         * @throws IOException
-         */
-        private void calculateValues() throws IOException
-        {
-            calculate(ochBuffer);
-        }
-
-        /**
-         * Read a page of constants from the ECU into a byte buffer.  MS1 uses a select/read combo, MS2 just does a read
+         * Read a page of constants from the ECU into a byte buffer. MS1 uses a select/read combo, MS2 just does a read
+         * 
          * @param pageBuffer
          * @param pageSelectCommand
          * @param pageReadCommand
@@ -603,6 +666,7 @@ public abstract class Megasquirt
 
         /**
          * Gets the signature from the ECU
+         * 
          * @param sigCommand
          * @return
          * @throws IOException
@@ -610,19 +674,19 @@ public abstract class Megasquirt
         private String getSignature(byte[] sigCommand) throws IOException
         {
             String signatureFromMS = "";
-            int d = Math.max(getInterWriteDelay(),100);
-            
-            DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);           
-            
+            int d = Math.max(getInterWriteDelay(), 100);
+            Connection.INSTANCE.flushAll();
+
+            DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
+
             /*
-             * We need to loop around until we get a valid result.  When a BT module connects, it can feed
-             * an initial 'CONNECT xyz' string into the ECU which confuses the hell out of it, and the first few
-             * interactions return garbage
+             * We need to loop around until we get a valid result. When a BT module connects, it can feed an initial 'CONNECT xyz' string into the ECU which confuses the hell out of it, and the first
+             * few interactions return garbage
              */
             do
             {
                 byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
-                
+
                 try
                 {
                     signatureFromMS = ECUFingerprint.processResponse(buf);
@@ -631,17 +695,17 @@ public abstract class Megasquirt
                 {
                     return "ECU needs a reboot!";
                 }
-                
+
                 DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
 
                 Connection.INSTANCE.flushAll();
             }
             // We loop until we get a valid signature
             while (signatureFromMS.equals(ECUFingerprint.UNKNOWN));
-            
+
             // Notify the user of the signature we got
             Connection.INSTANCE.sendStatus("Recieved '" + signatureFromMS + "'");
-            
+
             return signatureFromMS;
         }
 
@@ -667,6 +731,7 @@ public abstract class Megasquirt
 
     /**
      * helper method for subclasses
+     * 
      * @param pageNo
      * @param pageOffset
      * @param pageSize
@@ -708,6 +773,7 @@ public abstract class Megasquirt
 
     /**
      * Dumps a loaded page to SD card for analysis
+     * 
      * @param pageNo
      * @param buffer
      */
@@ -742,6 +808,26 @@ public abstract class Megasquirt
         {
             DebugLogManager.INSTANCE.logException(e);
         }
+    }
+
+    public double getField(String channelName)
+    {
+        {
+            double value = 0;
+            Class<?> c = this.getClass();
+            try
+            {
+                Field f = c.getDeclaredField(channelName);
+                value = f.getDouble(this);
+            }
+            catch (Exception e)
+            {
+                DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+                Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
+            }
+            return value;
+        }
+
     }
 
 }

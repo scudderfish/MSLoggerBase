@@ -11,6 +11,7 @@ import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 /*
 Fingerprint : 4f81bf0d1a23453a73a23fe780d8880c
 */
+@SuppressWarnings("unused")
 public class MS2Extra_SerialGS26 extends Megasquirt
 {
     public MS2Extra_SerialGS26(Context c)
@@ -33,8 +34,8 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         EXPANDED_CLT_TEMP = isSet("EXPANDED_CLT_TEMP");
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
-    byte[] queryCommand=new byte[]{'Q'};
-    String signature="MS2Extra SerialGS26\0";
+    byte[] queryCommand = new byte[]{'Q'};
+    String signature = "MS2Extra SerialGS26\0";
     byte [] ochGetCommand = new byte[]{'A'};
     int ochBlockSize = 174;
 //Flags
@@ -664,7 +665,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         "injadv2Gauge"
     };
 	@Override
-	public void calculate(byte[] ochBuffer) throws IOException
+	public void calculate(byte[] ochBuffer)
     {
         deadValue = (0);
         if (CAN_COMMANDS)
@@ -2121,156 +2122,6 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         }
         tps_variation = (double)((MSUtils.getByte(pageBuffer,111) + 0.0) * 0.1);
     }
-    @Override
-    public DataPacket getDataPacket()
-    {
-        fields.put("EAEFuelCorr1",(double)EAEFuelCorr1);
-        fields.put("EAEFuelCorr2",(double)EAEFuelCorr2);
-        fields.put("accDecEnrich",(double)accDecEnrich);
-        fields.put("accelEnrich",(double)accelEnrich);
-        fields.put("adc6",(double)adc6);
-        fields.put("adc7",(double)adc7);
-        fields.put("advance",(double)advance);
-        fields.put("afr1",(double)afr1);
-        fields.put("afr2",(double)afr2);
-        fields.put("afrload1",(double)afrload1);
-        fields.put("afrtgt1",(double)afrtgt1);
-        fields.put("afrtgt2",(double)afrtgt2);
-        fields.put("airCorrection",(double)airCorrection);
-        fields.put("altDiv1",(double)altDiv1);
-        fields.put("altDiv2",(double)altDiv2);
-        fields.put("baroCorrection",(double)baroCorrection);
-        fields.put("barometer",(double)barometer);
-        fields.put("batt_targ",(double)batt_targ);
-        fields.put("batt_targ_follower",(double)batt_targ_follower);
-        fields.put("batteryVoltage",(double)batteryVoltage);
-        fields.put("boostbar",(double)boostbar);
-        fields.put("boostduty",(double)boostduty);
-        fields.put("boostpsig",(double)boostpsig);
-        fields.put("boostvac",(double)boostvac);
-        fields.put("cl_idle_targ_rpm",(double)cl_idle_targ_rpm);
-        fields.put("coldAdvDeg",(double)coldAdvDeg);
-        fields.put("coolant",(double)coolant);
-        fields.put("crank",(double)crank);
-        fields.put("cycleTime1",(double)cycleTime1);
-        fields.put("cycleTime2",(double)cycleTime2);
-        fields.put("deadValue",(double)deadValue);
-        fields.put("deltaT",(double)deltaT);
-        fields.put("dutyCycle1",(double)dutyCycle1);
-        fields.put("dutyCycle2",(double)dutyCycle2);
-        fields.put("dwell",(double)dwell);
-        fields.put("eaeload1",(double)eaeload1);
-        fields.put("egoCorrection",(double)egoCorrection);
-        fields.put("egoCorrection1",(double)egoCorrection1);
-        fields.put("egoCorrection2",(double)egoCorrection2);
-        fields.put("egoV",(double)egoV);
-        fields.put("egoV2",(double)egoV2);
-        fields.put("egoVoltage",(double)egoVoltage);
-        fields.put("egt6temp",(double)egt6temp);
-        fields.put("egt7temp",(double)egt7temp);
-        fields.put("engine",(double)engine);
-        fields.put("firing1",(double)firing1);
-        fields.put("firing2",(double)firing2);
-        fields.put("fuelCorrection",(double)fuelCorrection);
-        fields.put("fuelload",(double)fuelload);
-        fields.put("fuelload2",(double)fuelload2);
-        fields.put("gammaEnrich",(double)gammaEnrich);
-        fields.put("gpioadc0",(double)gpioadc0);
-        fields.put("gpioadc1",(double)gpioadc1);
-        fields.put("gpioadc2",(double)gpioadc2);
-        fields.put("gpioadc3",(double)gpioadc3);
-        fields.put("gpioadc4",(double)gpioadc4);
-        fields.put("gpioadc5",(double)gpioadc5);
-        fields.put("gpioadc6",(double)gpioadc6);
-        fields.put("gpioadc7",(double)gpioadc7);
-        fields.put("gpioport0",(double)gpioport0);
-        fields.put("gpioport1",(double)gpioport1);
-        fields.put("gpioport2",(double)gpioport2);
-        fields.put("gpiopwmin0",(double)gpiopwmin0);
-        fields.put("gpiopwmin1",(double)gpiopwmin1);
-        fields.put("gpiopwmin2",(double)gpiopwmin2);
-        fields.put("gpiopwmin3",(double)gpiopwmin3);
-        fields.put("iacstep",(double)iacstep);
-        fields.put("idleDC",(double)idleDC);
-        fields.put("idleupcnt",(double)idleupcnt);
-        fields.put("ignload",(double)ignload);
-        fields.put("ignload2",(double)ignload2);
-        fields.put("inj1",(double)inj1);
-        fields.put("inj2",(double)inj2);
-        fields.put("inj_adv1",(double)inj_adv1);
-        fields.put("inj_adv2",(double)inj_adv2);
-        fields.put("knock",(double)knock);
-        fields.put("knockRetard",(double)knockRetard);
-        fields.put("lambda1",(double)lambda1);
-        fields.put("lambda2",(double)lambda2);
-        fields.put("looptime",(double)looptime);
-        fields.put("maf",(double)maf);
-        fields.put("mafmap",(double)mafmap);
-        fields.put("map",(double)map);
-        fields.put("mapDOT",(double)mapDOT);
-        fields.put("mapaccaen",(double)mapaccaen);
-        fields.put("mapaccden",(double)mapaccden);
-        fields.put("mat",(double)mat);
-        fields.put("nSquirts1",(double)nSquirts1);
-        fields.put("nSquirts2",(double)nSquirts2);
-        fields.put("port0",(double)port0);
-        fields.put("port1",(double)port1);
-        fields.put("port2",(double)port2);
-        fields.put("port3",(double)port3);
-        fields.put("port4",(double)port4);
-        fields.put("port5",(double)port5);
-        fields.put("port6",(double)port6);
-        fields.put("portStatus",(double)portStatus);
-        fields.put("pulseWidth",(double)pulseWidth);
-        fields.put("pulseWidth1",(double)pulseWidth1);
-        fields.put("pulseWidth2",(double)pulseWidth2);
-        fields.put("pulseWidth3",(double)pulseWidth3);
-        fields.put("pulseWidth4",(double)pulseWidth4);
-        fields.put("pwmidle_cl_initialvalue_matorclt_follower",(double)pwmidle_cl_initialvalue_matorclt_follower);
-        fields.put("ready",(double)ready);
-        fields.put("rpm",(double)rpm);
-        fields.put("rpm100",(double)rpm100);
-        fields.put("rpm_target_error_follower",(double)rpm_target_error_follower);
-        fields.put("rpmdot",(double)rpmdot);
-        fields.put("sched1",(double)sched1);
-        fields.put("sched2",(double)sched2);
-        fields.put("secl",(double)secl);
-        fields.put("seconds",(double)seconds);
-        fields.put("squirt",(double)squirt);
-        fields.put("startw",(double)startw);
-        fields.put("status1",(double)status1);
-        fields.put("status2",(double)status2);
-        fields.put("status3",(double)status3);
-        fields.put("status4",(double)status4);
-        fields.put("status5",(double)status5);
-        fields.put("synccnt",(double)synccnt);
-        fields.put("syncreason",(double)syncreason);
-        fields.put("throttle",(double)throttle);
-        fields.put("time",(double)time);
-        fields.put("timing_err",(double)timing_err);
-        fields.put("tps",(double)tps);
-        fields.put("tpsADC",(double)tpsADC);
-        fields.put("tpsDOT",(double)tpsDOT);
-        fields.put("tpsaccaen",(double)tpsaccaen);
-        fields.put("tpsaccden",(double)tpsaccden);
-        fields.put("tpsfuelcut",(double)tpsfuelcut);
-        fields.put("user0",(double)user0);
-        fields.put("vacuum",(double)vacuum);
-        fields.put("veCurr",(double)veCurr);
-        fields.put("veCurr1",(double)veCurr1);
-        fields.put("veCurr2",(double)veCurr2);
-        fields.put("vetrim1curr",(double)vetrim1curr);
-        fields.put("vetrim2curr",(double)vetrim2curr);
-        fields.put("vetrim3curr",(double)vetrim3curr);
-        fields.put("vetrim4curr",(double)vetrim4curr);
-        fields.put("wallfuel1",(double)wallfuel1);
-        fields.put("wallfuel2",(double)wallfuel2);
-        fields.put("warmup",(double)warmup);
-        fields.put("warmupEnrich",(double)warmupEnrich);
-        fields.put("wbo2_en1",(double)wbo2_en1);
-        fields.put("wbo2_en2",(double)wbo2_en2);
-        return new DataPacket(fields,ochBuffer);
-    };
 
 }
 

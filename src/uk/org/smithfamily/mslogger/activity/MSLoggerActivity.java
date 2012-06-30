@@ -1,55 +1,28 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.GPSLocationManager;
-import uk.org.smithfamily.mslogger.MSLoggerApplication;
-import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.ecuDef.DataPacket;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.EmailManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
+import android.app.*;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
+
+import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.*;
+import uk.org.smithfamily.mslogger.widgets.*;
 
 /**
  * 
@@ -76,8 +49,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private static final int       SHOW_PREFS            = 124230;
 
     private boolean                registered;
-	public DataPacket currentData;
-
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -416,7 +388,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     protected void processData()
     {
-	long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         List<Indicator> indicators;
         if ((indicators = indicatorManager.getIndicators()) != null)
         {
@@ -426,11 +399,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 String channelName = i.getChannel();
                 if (channelName != null)
                 {
-                    Double value = currentData.getFields().get(channelName);
-                    if(value !=null)
-                    {
-                    	i.setCurrentValue(value);
-                    }
+                    double value = ecu.getField(channelName);
+                    i.setCurrentValue(value);
                 }
                 else
                 {
@@ -438,8 +408,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
-	long stop = System.currentTimeMillis();
-	DebugLogManager.INSTANCE.log("MSLoggerActivity.processData() took "+(stop-start)+"ms",Log.INFO);
+//	long stop = System.currentTimeMillis();
+//	DebugLogManager.INSTANCE.log("MSLoggerActivity.processData() took "+(stop-start)+"ms",Log.INFO);
     }
 
  
@@ -966,7 +936,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             } 
             else if (action.equals(Megasquirt.NEW_DATA))
             {
-            	currentData = (DataPacket) intent.getSerializableExtra(Megasquirt.NEW_DATA);
                 processData();
             }
             else if (action.equals(ApplicationSettings.GENERAL_MESSAGE))

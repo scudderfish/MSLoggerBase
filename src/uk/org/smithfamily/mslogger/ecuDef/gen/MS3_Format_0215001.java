@@ -12,9 +12,9 @@ import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 Fingerprint : e346026b1b7e52c09029675a20b1adcb
 */
 @SuppressWarnings("unused")
-public class MS3_Format_0221002 extends Megasquirt
+public class MS3_Format_0215001 extends Megasquirt
 {
-    public MS3_Format_0221002(Context c)
+    public MS3_Format_0215001(Context c)
     {
         super(c);
         refreshFlags();
