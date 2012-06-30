@@ -467,11 +467,29 @@ public class Megasquirt_II_3760 extends Megasquirt
         batteryVoltage = (double)((MSUtils.getSignedWord(ochBuffer,26) + 0.0) * 0.100);
         afr1 = (double)((MSUtils.getSignedWord(ochBuffer,28) + 0.0) * 0.100);
         afr2 = (double)((MSUtils.getSignedWord(ochBuffer,30) + 0.0) * 0.100);
-        lambda1 = (afr1 / 14.7);
-        lambda2 = (afr2 / 14.7);
+        try
+        {
+            lambda1 = (afr1 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda1 = 0;
+        }
+        try
+        {
+            lambda2 = (afr2 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         knock = (double)((MSUtils.getSignedWord(ochBuffer,32) + 0.0) * 0.010);
         egoCorrection1 = (int)((MSUtils.getSignedWord(ochBuffer,34) + 0.0) * 1.000);
-        egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        try
+        {
+            egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        }
+        catch (ArithmeticException e) {
+            egoCorrection = 0;
+        }
         egoCorrection2 = (int)((MSUtils.getSignedWord(ochBuffer,36) + 0.0) * 1.000);
         airCorrection = (int)((MSUtils.getSignedWord(ochBuffer,38) + 0.0) * 1.000);
         warmupEnrich = (int)((MSUtils.getSignedWord(ochBuffer,40) + 0.0) * 1.000);
@@ -530,29 +548,107 @@ public class Megasquirt_II_3760 extends Megasquirt
         ospare = (int)((MSUtils.getByte(ochBuffer,124) + 0.0) * 1.000);
         cksum = (int)((MSUtils.getByte(ochBuffer,125) + 0.0) * 1.000);
         deltaT = (int)((MSUtils.getLong(ochBuffer,126) + 0.0) * 1.000);
-        accDecEnrich = (((accEnrichMS + decEnrichMS)/pulseWidth1*100) + 100);
-        accDecEnrichPcnt = (((accelEnrich/pulseWidth1 + (tpsden ) != 0 ) ?  tpsfuelcut : accelEnrich/pulseWidth1*100));
-        accEnrichPcnt = (100 + (accelEnrich/pulseWidth1*100));
+        try
+        {
+            accDecEnrich = (((accEnrichMS + decEnrichMS)/pulseWidth1*100) + 100);
+        }
+        catch (ArithmeticException e) {
+            accDecEnrich = 0;
+        }
+        try
+        {
+            accDecEnrichPcnt = (((accelEnrich/pulseWidth1 + (tpsden ) != 0 ) ?  tpsfuelcut : accelEnrich/pulseWidth1*100));
+        }
+        catch (ArithmeticException e) {
+            accDecEnrichPcnt = 0;
+        }
+        try
+        {
+            accEnrichPcnt = (100 + (accelEnrich/pulseWidth1*100));
+        }
+        catch (ArithmeticException e) {
+            accEnrichPcnt = 0;
+        }
         accEnrichMS = (accelEnrich);
         decEnrichPcnt = ((((tpsden ) != 0 ) ?  tpsfuelcut : 100));
-        decEnrichMS = ((tpsfuelcut/100*pulseWidth1)-pulseWidth1);
+        try
+        {
+            decEnrichMS = ((tpsfuelcut/100*pulseWidth1)-pulseWidth1);
+        }
+        catch (ArithmeticException e) {
+            decEnrichMS = 0;
+        }
         time = (timeNow());
-        rpm100 = (rpm / 100.0);
+        try
+        {
+            rpm100 = (rpm / 100.0);
+        }
+        catch (ArithmeticException e) {
+            rpm100 = 0;
+        }
         altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
-        cycleTime1 = ((60000.0 / rpm) * (2.0-twoStroke));
-        cycleTime2 = ((60000.0 / rpm) * (2.0-twoStroke));
+        try
+        {
+            cycleTime1 = ((60000.0 / rpm) * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime1 = 0;
+        }
+        try
+        {
+            cycleTime2 = ((60000.0 / rpm) * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime2 = 0;
+        }
         if (MS2_SEQ)
         {
-        dutyCycle1 = ((100.0 * pulseWidth1) / (cycleTime1 / (2.0-ignmode)));
-        dutyCycle2 = ((100.0 * pulseWidth2) / (cycleTime2 / (2.0-ignmode)));
+        try
+        {
+            dutyCycle1 = ((100.0 * pulseWidth1) / (cycleTime1 / (2.0-ignmode)));
+        }
+        catch (ArithmeticException e) {
+            dutyCycle1 = 0;
+        }
+        try
+        {
+            dutyCycle2 = ((100.0 * pulseWidth2) / (cycleTime2 / (2.0-ignmode)));
+        }
+        catch (ArithmeticException e) {
+            dutyCycle2 = 0;
+        }
         }
         else
         {
-        nSquirts1 = (nCylinders/divider);
-        nSquirts2 = (nCylinders/divider);
-        dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
-        dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        try
+        {
+            nSquirts1 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts1 = 0;
+        }
+        try
+        {
+            nSquirts2 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts2 = 0;
+        }
+        try
+        {
+            dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle1 = 0;
+        }
+        try
+        {
+            dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle2 = 0;
+        }
         }
         if (NARROW_BAND_EGO)
         {
