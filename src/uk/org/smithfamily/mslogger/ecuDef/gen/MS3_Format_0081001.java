@@ -1247,11 +1247,29 @@ public class MS3_Format_0081001 extends Megasquirt
         batteryVoltage = (double)((MSUtils.getSignedWord(ochBuffer,26) + 0.0) * 0.100);
         afr1_old = (double)((MSUtils.getSignedWord(ochBuffer,28) + 0.0) * 0.100);
         afr2_old = (double)((MSUtils.getSignedWord(ochBuffer,30) + 0.0) * 0.100);
-        lambda1 = (afr1 / 14.7);
-        lambda2 = (afr2 / 14.7);
+        try
+        {
+            lambda1 = (afr1 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda1 = 0;
+        }
+        try
+        {
+            lambda2 = (afr2 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         knock = (double)((MSUtils.getSignedWord(ochBuffer,32) + 0.0) * 0.100);
         egoCorrection1 = (double)((MSUtils.getSignedWord(ochBuffer,34) + 0.0) * 0.1000);
-        egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        try
+        {
+            egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        }
+        catch (ArithmeticException e) {
+            egoCorrection = 0;
+        }
         egoCorrection2 = (double)((MSUtils.getSignedWord(ochBuffer,36) + 0.0) * 0.1000);
         airCorrection = (double)((MSUtils.getSignedWord(ochBuffer,38) + 0.0) * 0.1000);
         warmupEnrich = (int)((MSUtils.getSignedWord(ochBuffer,40) + 0.0) * 1.000);
@@ -1428,15 +1446,57 @@ public class MS3_Format_0081001 extends Megasquirt
         dwell_trl = (double)((MSUtils.getWord(ochBuffer,286) + 0.0) * 0.1000);
         accDecEnrich = (((accelEnrich + (tpsaccden ) != 0 ) ?  tpsfuelcut : 100));
         time = (timeNow());
-        rpm100 = (rpm / 100.0);
+        try
+        {
+            rpm100 = (rpm / 100.0);
+        }
+        catch (ArithmeticException e) {
+            rpm100 = 0;
+        }
         altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
-        cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
-        nSquirts1 = (nCylinders/divider);
-        dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
-        cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
-        nSquirts2 = (nCylinders/divider);
-        dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        try
+        {
+            cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime1 = 0;
+        }
+        try
+        {
+            nSquirts1 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts1 = 0;
+        }
+        try
+        {
+            dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle1 = 0;
+        }
+        try
+        {
+            cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime2 = 0;
+        }
+        try
+        {
+            nSquirts2 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts2 = 0;
+        }
+        try
+        {
+            dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle2 = 0;
+        }
         if (NARROW_BAND_EGO)
         {
         egoVoltage = (1.0-afr1*0.04883);
@@ -1456,14 +1516,56 @@ public class MS3_Format_0081001 extends Megasquirt
         }
         else
         {
-        l_per_km = (1 / (mpg * 1.609344 / 4.546));
+        try
+        {
+            l_per_km = (1 / (mpg * 1.609344 / 4.546));
         }
-        pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
-        pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
-        pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
-        pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
-        pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
-        pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
+        catch (ArithmeticException e) {
+            l_per_km = 0;
+        }
+        }
+        try
+        {
+            pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwma_load = 0;
+        }
+        try
+        {
+            pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwmb_load = 0;
+        }
+        try
+        {
+            pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwmc_load = 0;
+        }
+        try
+        {
+            pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwmd_load = 0;
+        }
+        try
+        {
+            pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwme_load = 0;
+        }
+        try
+        {
+            pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
+        }
+        catch (ArithmeticException e) {
+            pwmf_load = 0;
+        }
         df_temp = (0);
         df_press = (0);
     }

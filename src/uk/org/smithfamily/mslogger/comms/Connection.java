@@ -156,11 +156,18 @@ public enum Connection
             }
             catch (Exception e1)
             {
-                DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e1);
             }
             ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
             getSocket(remote);
-            socket.connect();
+            
+            try {
+                socket.connect();
+            }
+            catch (Exception e1)
+            {
+                DebugLogManager.INSTANCE.logException(e1);
+            }
         }
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -384,15 +391,17 @@ public enum Connection
         int read = 0;
         try
         {
-            while (read < target)
-            {
-                int numRead = mmInStream.read(buffer, read, target - read);
-                if (numRead == -1)
+            synchronized(this) {
+                while (read < target)
                 {
-                    throw new IOException("end of stream attempting to read");
+                    int numRead = mmInStream.read(buffer, read, target - read);
+                    if (numRead == -1)
+                    {
+                        throw new IOException("end of stream attempting to read");
+                    }
+                    read += numRead;
+                    DebugLogManager.INSTANCE.log("readBytes[] : target = "+target+" read so far :" +read, Log.DEBUG);
                 }
-                read += numRead;
-                DebugLogManager.INSTANCE.log("readBytes[] : target = "+target+" read so far :" +read, Log.DEBUG);
             }
             reaper.cancel();
             DebugLogManager.INSTANCE.log("readBytes[]",buffer, Log.DEBUG);
@@ -431,10 +440,12 @@ public enum Connection
     {
         List<Byte> read = new ArrayList<Byte>();
 
-        while (mmInStream.available() > 0)
-        {
-            byte b = (byte) mmInStream.read();
-            read.add(b);
+        synchronized(this) {
+            while (mmInStream.available() > 0)
+            {
+                byte b = (byte) mmInStream.read();
+                read.add(b);
+            }
         }
         
         byte[] result = new byte[read.size()];
@@ -463,7 +474,7 @@ public enum Connection
      * 
      * @throws IOException
      */
-    public void flushAll() throws IOException
+    public synchronized void flushAll() throws IOException
     {
     	DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
         checkConnection();

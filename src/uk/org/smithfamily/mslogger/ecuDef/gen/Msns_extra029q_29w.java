@@ -651,11 +651,35 @@ public class Msns_extra029q_29w extends Megasquirt
         tpsLast = (int)((MSUtils.getByte(ochBuffer,36) + 0) * 1.000);
         iTimeX = (int)((MSUtils.getByte(ochBuffer,37) + 0.000) * 1.000);
         bcDC = (double)((MSUtils.getByte(ochBuffer,38) + 0.000) * 0.3922);
-        accDecEnrich = ((((engine & 32) ) != 0 ) ?  100 : ((pulseWidth-injOpen1) / (pulseWidth-(accelEnrich / 10)-injOpen1) * 100));
-        batteryVoltage = (batADC / 255.0 * 30.0);
+        try
+        {
+            accDecEnrich = ((((engine & 32) ) != 0 ) ?  100 : ((pulseWidth-injOpen1) / (pulseWidth-(accelEnrich / 10)-injOpen1) * 100));
+        }
+        catch (ArithmeticException e) {
+            accDecEnrich = 0;
+        }
+        try
+        {
+            batteryVoltage = (batADC / 255.0 * 30.0);
+        }
+        catch (ArithmeticException e) {
+            batteryVoltage = 0;
+        }
         coolant = (tempCvt(table(cltADC, "thermfactor.inc")-40));
-        egoVoltage = (egoADC / 255.0 * 5.0);
-        ego2Voltage = (fuelADC / 255.0 * 5.0);
+        try
+        {
+            egoVoltage = (egoADC / 255.0 * 5.0);
+        }
+        catch (ArithmeticException e) {
+            egoVoltage = 0;
+        }
+        try
+        {
+            ego2Voltage = (fuelADC / 255.0 * 5.0);
+        }
+        catch (ArithmeticException e) {
+            ego2Voltage = 0;
+        }
         mat = (tempCvt(table(matADC, "matfactor.inc")-40));
         rpm = (rpm100*100);
         time = (timeNow());
@@ -669,122 +693,356 @@ public class Msns_extra029q_29w extends Megasquirt
         }
         if (NARROW_BAND_EGO)
         {
-        afr2 = (table(fuelADC, "NBafr100.inc") / 100.0);
-        lambda2 = (afr2    / 14.7);
+        try
+        {
+            afr2 = (table(fuelADC, "NBafr100.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            afr2 = 0;
+        }
+        try
+        {
+            lambda2 = (afr2    / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         }
         else if (ZEITRONIX_NON_LINEAR)
         {
-        lambda2 = (table(fuelADC, "WBafr100Zeit.inc") / 100.0);
+        try
+        {
+            lambda2 = (table(fuelADC, "WBafr100Zeit.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         afr2 = (lambda * 14.7);
         }
         else if (INNOVATE_LC1_DEFAULT)
         {
-        lambda2 = (fuelADC/255.0 + 0.5);
+        try
+        {
+            lambda2 = (fuelADC/255.0 + 0.5);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         afr2 = (lambda * 14.7);
         }
         else
         {
-        lambda2 = (table(fuelADC, "WBlambda100MOT.inc") / 100.0);
+        try
+        {
+            lambda2 = (table(fuelADC, "WBlambda100MOT.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         afr2 = (lambda2 * 14.7);
         }
         if (NARROW_BAND_EGO)
         {
-        afr = (table(egoADC,    "NBafr100.inc") / 100.0);
-        lambda = (afr / 14.7);
-        TargetAFR = (table(afrtarget, "NBafr100.inc") / 100.0);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            afr = (table(egoADC,    "NBafr100.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            afr = 0;
+        }
+        try
+        {
+            lambda = (afr / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            TargetAFR = (table(afrtarget, "NBafr100.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            TargetAFR = 0;
+        }
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (WB_1_0_LINEAR)
         {
-        lambda = (1.5 - 5.0 * egoADC/255.0);
-        afr = (1.5 - 5.0 * egoADC/255.0  * 14.7);
-        TargetLambda = (1.5 - 5.0 * afrtarget/255.0);
+        try
+        {
+            lambda = (1.5 - 5.0 * egoADC/255.0);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            afr = (1.5 - 5.0 * egoADC/255.0  * 14.7);
+        }
+        catch (ArithmeticException e) {
+            afr = 0;
+        }
+        try
+        {
+            TargetLambda = (1.5 - 5.0 * afrtarget/255.0);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         TargetAFR = (TargetLambda * 14.7);
         }
         else if (WB_UNKNOWN)
         {
         afr = (egoADC * 0.01961);
-        lambda = (afr / 14.7);
+        try
+        {
+            lambda = (afr / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (afrtarget * 0.01961);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (DIYWB_NON_LINEAR)
         {
-        lambda = (table(egoADC, "WBlambda100MOT.inc") / 100.0);
-        afr = ((table(egoADC, "WBlambda100MOT.inc") / 100.0 ) * 14.7);
-        TargetLambda = (table(afrtarget,"WBlambda100MOT.inc") / 100.0);
+        try
+        {
+            lambda = (table(egoADC, "WBlambda100MOT.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            afr = ((table(egoADC, "WBlambda100MOT.inc") / 100.0 ) * 14.7);
+        }
+        catch (ArithmeticException e) {
+            afr = 0;
+        }
+        try
+        {
+            TargetLambda = (table(afrtarget,"WBlambda100MOT.inc") / 100.0);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         TargetAFR = (TargetLambda * 14.7);
         }
         else if (DYNOJET_LINEAR)
         {
         afr = (egoADC    * 0.031373 + 10);
-        lambda = (afr / 14.7);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            lambda = (afr / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         TargetAFR = (afrtarget * 0.031373 + 10);
         }
         else if (TECHEDGE_LINEAR)
         {
         afr = (egoADC    * 0.039216 + 9);
-        lambda = (afr / 14.7);
+        try
+        {
+            lambda = (afr / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (afrtarget * 0.039216 + 9);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (INNOVATE_1_2_LINEAR)
         {
         afr = (egoADC    * 0.1961);
-        lambda = (afr       / 14.7);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (afrtarget * 0.1961);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (INNOVATE_0_5_LINEAR)
         {
         afr = (10 + (egoADC    * 0.039216));
-        lambda = (afr       / 14.7);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (10 + (afrtarget * 0.039216));
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (INNOVATE_LC1_DEFAULT)
         {
         afr = (7.35 + (egoADC    * 0.0589804));
-        lambda = (afr       / 14.7);
-        TargetLambda = (afrtarget/255.0 + 0.5);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            TargetLambda = (afrtarget/255.0 + 0.5);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         TargetAFR = (TargetLambda * 14.7);
         }
         else if (ZEITRONIX_NON_LINEAR)
         {
         afr = (table(egoVoltage,   "zeitronix.inc"));
-        lambda = (afr          / 14.7);
-        afrTargetV = (afrtarget*5/255);
+        try
+        {
+            lambda = (afr          / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
+        try
+        {
+            afrTargetV = (afrtarget*5/255);
+        }
+        catch (ArithmeticException e) {
+            afrTargetV = 0;
+        }
         TargetAFR = (table( afrTargetV ,"zeitronix.inc"));
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (AEM_LINEAR)
         {
         afr = (9.72 + (egoADC    * 0.038666));
-        lambda = (afr       / 14.7);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (9.72 + (afrtarget * 0.038666 ));
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (AEM_NON_LINEAR)
         {
         afr = (8.44350 + (egoADC    * (0.012541 + egoADC    * (0.000192111 + egoADC    * (-0.00000138363 + egoADC    * 0.00000000442977)))));
-        lambda = (afr       / 14.7);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = (8.44350 + (afrtarget * (0.0102541 + afrtarget * (0.000192111 + afrtarget * (-0.00000138363 + afrtarget * 0.00000000442977)))));
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (NGK_AFX)
         {
         afr = ((egoADC * 0.0270592) + 9);
-        lambda = (afr       / 14.7);
+        try
+        {
+            lambda = (afr       / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         TargetAFR = ((afrtarget * 0.0270592) + 9);
-        TargetLambda = (TargetAFR / 14.7);
+        try
+        {
+            TargetLambda = (TargetAFR / 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         else if (FAST_WIDEBAND_O2)
         {
-        lambda = (egoADC / 51);
+        try
+        {
+            lambda = (egoADC / 51);
+        }
+        catch (ArithmeticException e) {
+            lambda = 0;
+        }
         afr = (lambda * 14.7);
-        TargetAFR = ((afrtarget / 51) * 14.7);
-        TargetLambda = ((afrtarget / 51));
+        try
+        {
+            TargetAFR = ((afrtarget / 51) * 14.7);
+        }
+        catch (ArithmeticException e) {
+            TargetAFR = 0;
+        }
+        try
+        {
+            TargetLambda = ((afrtarget / 51));
+        }
+        catch (ArithmeticException e) {
+            TargetLambda = 0;
+        }
         }
         if (MPXH6300A)
         {
@@ -808,26 +1066,98 @@ public class Msns_extra029q_29w extends Megasquirt
         }
         throttle = (table(tpsADC,  "throttlefactor.inc"));
         advSpark = ((advance * 0.352)-10);
-        KnockAng = ((KnockAngle * 90 / 256));
+        try
+        {
+            KnockAng = ((KnockAngle * 90 / 256));
+        }
+        catch (ArithmeticException e) {
+            KnockAng = 0;
+        }
         KnockDeg = (-KnockAng);
-        CltIatAng = (CltIatAngle * 90 / 256);
+        try
+        {
+            CltIatAng = (CltIatAngle * 90 / 256);
+        }
+        catch (ArithmeticException e) {
+            CltIatAng = 0;
+        }
         CltIatDeg = ((CltIatAng < 45) ?  CltIatAng: -90 + CltIatAng);
-        fuelvolt = ((fuelADC < 1 ) ?  0.0 : fuelADC * (5/255) - 0.5);
-        fuelpress = ((fuelADC < 1 ) ?  0.0 : fuelvolt / 0.04 +1);
+        try
+        {
+            fuelvolt = ((fuelADC < 1 ) ?  0.0 : fuelADC * (5/255) - 0.5);
+        }
+        catch (ArithmeticException e) {
+            fuelvolt = 0;
+        }
+        try
+        {
+            fuelpress = ((fuelADC < 1 ) ?  0.0 : fuelvolt / 0.04 +1);
+        }
+        catch (ArithmeticException e) {
+            fuelpress = 0;
+        }
         altDiv1 = (((alternate1 ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate2 ) != 0 ) ?  2 : 1);
-        cycleTime1 = ((rpm < 100 ) ?  0 : 60000.0 / rpm * (2.0-twoStroke1));
-        nSquirts1 = (nCylinders1/divider1);
-        dutyCycle1 = ((rpm < 100 ) ?  0 : 100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
-        cycleTime2 = ((rpm < 100 ) ?  0 : 60000.0 / rpm * (2.0-twoStroke2));
-        nSquirts2 = (nCylinders2/divider2);
-        dutyCycle2 = ((rpm < 100 ) ?  0 : 100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        try
+        {
+            cycleTime1 = ((rpm < 100 ) ?  0 : 60000.0 / rpm * (2.0-twoStroke1));
+        }
+        catch (ArithmeticException e) {
+            cycleTime1 = 0;
+        }
+        try
+        {
+            nSquirts1 = (nCylinders1/divider1);
+        }
+        catch (ArithmeticException e) {
+            nSquirts1 = 0;
+        }
+        try
+        {
+            dutyCycle1 = ((rpm < 100 ) ?  0 : 100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle1 = 0;
+        }
+        try
+        {
+            cycleTime2 = ((rpm < 100 ) ?  0 : 60000.0 / rpm * (2.0-twoStroke2));
+        }
+        catch (ArithmeticException e) {
+            cycleTime2 = 0;
+        }
+        try
+        {
+            nSquirts2 = (nCylinders2/divider2);
+        }
+        catch (ArithmeticException e) {
+            nSquirts2 = 0;
+        }
+        try
+        {
+            dutyCycle2 = ((rpm < 100 ) ?  0 : 100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle2 = 0;
+        }
         Open_Time1 = (1.0);
         Open_Time2 = (1.0);
         InjectorRating1 = (100);
         InjectorRating2 = (100);
-        dutyCy1Real = ((rpm < 100 ) ?  0 : InjectorRating1*nSquirts1/altDiv1*(pulseWidth1-Open_Time1)/cycleTime1);
-        dutyCy2Real = ((rpm < 100 ) ?  0 : InjectorRating2*nSquirts2/altDiv2*(pulseWidth2-Open_Time2)/cycleTime2);
+        try
+        {
+            dutyCy1Real = ((rpm < 100 ) ?  0 : InjectorRating1*nSquirts1/altDiv1*(pulseWidth1-Open_Time1)/cycleTime1);
+        }
+        catch (ArithmeticException e) {
+            dutyCy1Real = 0;
+        }
+        try
+        {
+            dutyCy2Real = ((rpm < 100 ) ?  0 : InjectorRating2*nSquirts2/altDiv2*(pulseWidth2-Open_Time2)/cycleTime2);
+        }
+        catch (ArithmeticException e) {
+            dutyCy2Real = 0;
+        }
         veCurr = (veCurr1);
         pulseWidth = (pulseWidth1);
         YOffset = (182);
@@ -837,7 +1167,13 @@ public class Msns_extra029q_29w extends Megasquirt
         test = (mapDOT);
         test2 = (egtADC);
         iTimefull = ((iTimeX*65536)+ iTime);
-        RpmHitmp = ((iTimefull > 0 ) ?  (60000000 *(2.0-twoStroke1)) / (iTimefull * nCylinders1) : 0);
+        try
+        {
+            RpmHitmp = ((iTimefull > 0 ) ?  (60000000 *(2.0-twoStroke1)) / (iTimefull * nCylinders1) : 0);
+        }
+        catch (ArithmeticException e) {
+            RpmHitmp = 0;
+        }
         RpmHiRes = ((RpmHitmp > 20 ) ?  RpmHitmp : 0);
         vacuum = ((barometer-map)*0.2953007);
         boost = ((map < barometer ) ?  0.0 : (map-barometer)*0.1450377);
@@ -845,15 +1181,57 @@ public class Msns_extra029q_29w extends Megasquirt
         Speed = (70);
         fuelCC = (2168);
         squirtmul = ((divider1 < 2 ) ?  2 : divider1 < 3 ? 1 : divider1 < 5 ? 0.5 : divider1 < 9 ? 0.25 : divider1 < 17 ? 0.125 : 1);
-        squirts = ((alternate1 > 0 ) ?  rpm100 / 0.6 * squirtmul : rpm100 * 2 * squirtmul / 0.6);
+        try
+        {
+            squirts = ((alternate1 > 0 ) ?  rpm100 / 0.6 * squirtmul : rpm100 * 2 * squirtmul / 0.6);
+        }
+        catch (ArithmeticException e) {
+            squirts = 0;
+        }
         OpenWidth = (injOpen1 * 0.1);
-        CCpHr = ((pulseWidth < 1 ) ?  1 : (fuelCC/60) * ((pulseWidth - OpenWidth)/1000) * squirts * 3600);
-        mphTemp = ((fuelADC < 1 ) ?  0 : (fuelADC * Speed) /127.5);
+        try
+        {
+            CCpHr = ((pulseWidth < 1 ) ?  1 : (fuelCC/60) * ((pulseWidth - OpenWidth)/1000) * squirts * 3600);
+        }
+        catch (ArithmeticException e) {
+            CCpHr = 0;
+        }
+        try
+        {
+            mphTemp = ((fuelADC < 1 ) ?  0 : (fuelADC * Speed) /127.5);
+        }
+        catch (ArithmeticException e) {
+            mphTemp = 0;
+        }
         mph = ((mphTemp < 1 ) ?  0 : mphTemp);
-        USgph = (CCpHr / 3785);
-        USmpg = ((fuelADC < 1 ) ?  0 : mph < 1 ? 0 : mph / USgph);
-        gph = (CCpHr / 4546);
-        mpg = ((fuelADC < 1 ) ?  0 : mph < 1 ? 0 : mph / gph);
+        try
+        {
+            USgph = (CCpHr / 3785);
+        }
+        catch (ArithmeticException e) {
+            USgph = 0;
+        }
+        try
+        {
+            USmpg = ((fuelADC < 1 ) ?  0 : mph < 1 ? 0 : mph / USgph);
+        }
+        catch (ArithmeticException e) {
+            USmpg = 0;
+        }
+        try
+        {
+            gph = (CCpHr / 4546);
+        }
+        catch (ArithmeticException e) {
+            gph = 0;
+        }
+        try
+        {
+            mpg = ((fuelADC < 1 ) ?  0 : mph < 1 ? 0 : mph / gph);
+        }
+        catch (ArithmeticException e) {
+            mpg = 0;
+        }
         Cd = (0.33);
         Mass = (1050);
         Crr = (18);
@@ -862,7 +1240,13 @@ public class Msns_extra029q_29w extends Megasquirt
         DiffRa = (3.31);
         floodclear = ((tpsADC > 200 ) ?  1 : 0);
         tpsDOTTY = (((mapProportion4 ) != 0 ) ?  0 : (tpsADC - tpsLast) * 0.19);
-        mapDOTTY = (((mapProportion4 ) != 0 ) ?  (mapADC - tpsLast) / 0.1 : 0);
+        try
+        {
+            mapDOTTY = (((mapProportion4 ) != 0 ) ?  (mapADC - tpsLast) / 0.1 : 0);
+        }
+        catch (ArithmeticException e) {
+            mapDOTTY = 0;
+        }
         tpsDOT = ((tpsDOTTY < 0 ) ?  0 : tpsDOTTY);
         mapDOT = ((mapDOTTY < 0 ) ?  0 : mapDOTTY);
         Timeroll = (portc & 4);

@@ -718,11 +718,29 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         batteryVoltage = (double)((MSUtils.getSignedWord(ochBuffer,26) + 0.0) * 0.100);
         afr1 = (double)((MSUtils.getSignedWord(ochBuffer,28) + 0.0) * 0.100);
         afr2 = (double)((MSUtils.getSignedWord(ochBuffer,30) + 0.0) * 0.100);
-        lambda1 = (afr1 / 14.7);
-        lambda2 = (afr2 / 14.7);
+        try
+        {
+            lambda1 = (afr1 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda1 = 0;
+        }
+        try
+        {
+            lambda2 = (afr2 / 14.7);
+        }
+        catch (ArithmeticException e) {
+            lambda2 = 0;
+        }
         knock = (double)((MSUtils.getSignedWord(ochBuffer,32) + 0.0) * 0.100);
         egoCorrection1 = (double)((MSUtils.getSignedWord(ochBuffer,34) + 0.0) * 0.1000);
-        egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        try
+        {
+            egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
+        }
+        catch (ArithmeticException e) {
+            egoCorrection = 0;
+        }
         egoCorrection2 = (double)((MSUtils.getSignedWord(ochBuffer,36) + 0.0) * 0.1000);
         airCorrection = (int)((MSUtils.getSignedWord(ochBuffer,38) + 0.0) * 1.000);
         warmupEnrich = (int)((MSUtils.getSignedWord(ochBuffer,40) + 0.0) * 1.000);
@@ -807,16 +825,64 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         batt_targ = (double)((MSUtils.getSignedWord(ochBuffer,172) + 0) * 0.1);
         accDecEnrich = (((accelEnrich + (tpsaccden ) != 0 ) ?  tpsfuelcut : 100));
         time = (timeNow());
-        rpm100 = (rpm / 100.0);
+        try
+        {
+            rpm100 = (rpm / 100.0);
+        }
+        catch (ArithmeticException e) {
+            rpm100 = 0;
+        }
         altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
-        cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
-        nSquirts1 = (nCylinders/divider);
-        dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
-        cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
-        nSquirts2 = (nCylinders/divider);
-        dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
-        boostbar = ((map - barometer) / 101.33);
+        try
+        {
+            cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime1 = 0;
+        }
+        try
+        {
+            nSquirts1 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts1 = 0;
+        }
+        try
+        {
+            dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle1 = 0;
+        }
+        try
+        {
+            cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+        }
+        catch (ArithmeticException e) {
+            cycleTime2 = 0;
+        }
+        try
+        {
+            nSquirts2 = (nCylinders/divider);
+        }
+        catch (ArithmeticException e) {
+            nSquirts2 = 0;
+        }
+        try
+        {
+            dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
+        }
+        catch (ArithmeticException e) {
+            dutyCycle2 = 0;
+        }
+        try
+        {
+            boostbar = ((map - barometer) / 101.33);
+        }
+        catch (ArithmeticException e) {
+            boostbar = 0;
+        }
         boostpsig = ((map - barometer) * 0.1450);
         vacuum = ((barometer-map)*0.2953007);
         boostvac = ((map < barometer ) ?  -vacuum : boostpsig);

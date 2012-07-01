@@ -535,18 +535,54 @@ public class GPIO_MShift_2109 extends Megasquirt
         secl = ((timeNow() % 256) - (timeNow() % 1));
         second2 = (seconds % 256);
         time = (timeNow());
-        kmileage = (235.2/mileage);
+        try
+        {
+            kmileage = (235.2/mileage);
+        }
+        catch (ArithmeticException e) {
+            kmileage = 0;
+        }
         if (NOT_METRIC)
         {
-        os_rpm = (((speedo*1.467)/((tire_diam/12)*3.1416)) * 60 * axle_ratio);
+        try
+        {
+            os_rpm = (((speedo*1.467)/((tire_diam/12)*3.1416)) * 60 * axle_ratio);
+        }
+        catch (ArithmeticException e) {
+            os_rpm = 0;
+        }
         }
         else
         {
-        os_rpm = (((speedo*0.893)/(((tire_diam/2.54)/12)*3.1416)) * 60 * axle_ratio);
+        try
+        {
+            os_rpm = (((speedo*0.893)/(((tire_diam/2.54)/12)*3.1416)) * 60 * axle_ratio);
         }
-        VSS_Hz = ((os_rpm * num_teeth)/60);
-        ic1_period = (1/VSS_Hz);
-        ic2_period = (60/(is_rpm * iss_divider ));
+        catch (ArithmeticException e) {
+            os_rpm = 0;
+        }
+        }
+        try
+        {
+            VSS_Hz = ((os_rpm * num_teeth)/60);
+        }
+        catch (ArithmeticException e) {
+            VSS_Hz = 0;
+        }
+        try
+        {
+            ic1_period = (1/VSS_Hz);
+        }
+        catch (ArithmeticException e) {
+            ic1_period = 0;
+        }
+        try
+        {
+            ic2_period = (60/(is_rpm * iss_divider ));
+        }
+        catch (ArithmeticException e) {
+            ic2_period = 0;
+        }
     }
     @Override
     public String getLogHeader()
