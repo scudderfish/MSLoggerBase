@@ -1073,6 +1073,18 @@ public class Normaliser
                 expression = convertC2JavaBoolean(expression);
             }
             definition = name + " = (" + expression + ");";
+            
+            // If the expression contains a division, wrap it in a try/catch to avoid division by zero
+            if (expression.contains("/"))
+            {
+                definition = "try\n" + TAB + TAB + "{\n" +
+                                TAB + TAB + TAB + definition +
+                                "\n" + TAB + TAB + "}\n" +
+                                TAB + TAB + "catch (ArithmeticException e) {\n" +
+                                TAB + TAB + TAB + name + " = 0;\n" +
+                                TAB + TAB + "}";
+            }
+            
             runtime.add(definition);
             if (isFloatingExpression(expression))
             {
