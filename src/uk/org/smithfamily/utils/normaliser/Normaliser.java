@@ -835,7 +835,7 @@ public class Normaliser
     {
         String ret = "";
         boolean first = true;
-
+        s=s.replace("$tsCanId","x00");
         for (int p = 0; p < s.length(); p++)
         {
             if (!first)
@@ -868,7 +868,7 @@ public class Normaliser
                 else if (c == 'i')
                 {
                     String identifier = pageIdentifiers.get(pageNo - 1);
-                    identifier = identifier.replace("$tsCanId", "x00");
+                    //identifier = identifier.replace("$tsCanId", "x00");
 
                     ret += HexStringToBytes(identifier, offset, count, pageNo);
                 }
