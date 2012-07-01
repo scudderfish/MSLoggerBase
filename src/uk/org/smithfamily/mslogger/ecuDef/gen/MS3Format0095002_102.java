@@ -9,12 +9,12 @@ import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 /*
-Fingerprint : d712063a4f2cf0a45a5f5c850febfb39
+Fingerprint : 9c861c0933b92788062fe444d203584b
 */
 @SuppressWarnings("unused")
-public class MS3_Format_0233003 extends Megasquirt
+public class MS3Format0095002_102 extends Megasquirt
 {
-    public MS3_Format_0233003(Context c)
+    public MS3Format0095002_102(Context c)
     {
         super(c);
         refreshFlags();
@@ -23,7 +23,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public void refreshFlags()
     {
         NARROW_BAND_EGO = isSet("NARROW_BAND_EGO");
-        CYL_12_16_SUPPORT = isSet("CYL_12_16_SUPPORT");
         MPH = isSet("MPH");
         INTERNAL_LOG_FIELDS = isSet("INTERNAL_LOG_FIELDS");
         CELSIUS = isSet("CELSIUS");
@@ -36,12 +35,11 @@ public class MS3_Format_0233003 extends Megasquirt
     }
     private Map<String,Double> fields = new HashMap<String,Double>();
     byte[] queryCommand = new byte[]{'Q'};
-    String signature = "MS3 Format 0233.003\0";
+    String signature = "MS3 Format 0095.002\0";
     byte [] ochGetCommand = new byte[]{'A'};
-    int ochBlockSize = 404;
+    int ochBlockSize = 296;
 //Flags
     public boolean NARROW_BAND_EGO;
-    public boolean CYL_12_16_SUPPORT;
     public boolean MPH;
     public boolean INTERNAL_LOG_FIELDS;
     public boolean CELSIUS;
@@ -52,11 +50,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public boolean METRES;
     public boolean EXPANDED_CLT_TEMP;
 //Defaults
-    public String  tsCanId =  "CAN ID 0";
-    public int  rpmhigh =  9000;
-    public int  rpmwarn =  3000;
-    public int  rpmdang =  5000;
-    public int  loadhigh =  400;
 //Variables
     public int EAEFuelCorr1;
     public int EAEFuelCorr2;
@@ -65,15 +58,10 @@ public class MS3_Format_0233003 extends Megasquirt
     public double accelx;
     public double accely;
     public double accelz;
+    public int adc6;
+    public int adc7;
     public double advance;
     public double afr1;
-    public double afr10;
-    public double afr11;
-    public double afr12;
-    public double afr13;
-    public double afr14;
-    public double afr15;
-    public double afr16;
     public double afr1_old;
     public double afr1err;
     public double afr2;
@@ -85,7 +73,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public double afr6;
     public double afr7;
     public double afr8;
-    public double afr9;
     public double afrload1;
     public double afrtgt1;
     public double afrtgt1raw;
@@ -99,9 +86,7 @@ public class MS3_Format_0233003 extends Megasquirt
     public double batteryVoltage;
     public double boostbar;
     public int boostduty;
-    public int boostduty2;
     public double boostpsig;
-    public double boostvac;
     public int canin1_8;
     public int canout1_8;
     public int canout9_16;
@@ -109,14 +94,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public int canpwmin1;
     public int canpwmin2;
     public int canpwmin3;
-    public int cl_idle_targ_rpm;
-    public int clt_exp;
-    public int clthighdang;
-    public int clthighlim;
-    public int clthighwarn;
-    public int cltlowdang;
-    public int cltlowlim;
-    public int cltlowwarn;
     public double coldAdvDeg;
     public double coolant;
     public int crank;
@@ -136,9 +113,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public double dwell;
     public double dwell_trl;
     public double eaeload1;
-    public double economy_l_km;
-    public double economy_mpg_uk;
-    public double economy_mpg_us;
     public double egoCorrection;
     public double egoCorrection1;
     public double egoCorrection2;
@@ -146,13 +120,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public double egoV2;
     public double egoVoltage;
     public double egocor1;
-    public double egocor10;
-    public double egocor11;
-    public double egocor12;
-    public double egocor13;
-    public double egocor14;
-    public double egocor15;
-    public double egocor16;
     public double egocor2;
     public double egocor3;
     public double egocor4;
@@ -160,15 +127,7 @@ public class MS3_Format_0233003 extends Megasquirt
     public double egocor6;
     public double egocor7;
     public double egocor8;
-    public double egocor9;
     public double egov1;
-    public double egov10;
-    public double egov11;
-    public double egov12;
-    public double egov13;
-    public double egov14;
-    public double egov15;
-    public double egov16;
     public double egov2;
     public double egov3;
     public double egov4;
@@ -176,15 +135,10 @@ public class MS3_Format_0233003 extends Megasquirt
     public double egov6;
     public double egov7;
     public double egov8;
-    public double egov9;
     public double egt1;
     public double egt10;
     public double egt11;
     public double egt12;
-    public double egt13;
-    public double egt14;
-    public double egt15;
-    public double egt16;
     public double egt2;
     public double egt3;
     public double egt4;
@@ -196,11 +150,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public int engine;
     public int firing1;
     public int firing2;
+    public double fuelComposition;
     public int fuelCorrection;
-    public double fuel_pct;
-    public double fuel_temp;
-    public int fuelcons;
-    public int fuelflow;
     public double fuelload;
     public double fuelload2;
     public int gammaEnrich;
@@ -211,26 +162,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public double ignload2;
     public int inj1;
     public int inj2;
-    public double inj_timing_pri;
-    public double inj_timing_sec;
     public double knock;
     public double knockRetard;
-    public double knock_cyl01;
-    public double knock_cyl02;
-    public double knock_cyl03;
-    public double knock_cyl04;
-    public double knock_cyl05;
-    public double knock_cyl06;
-    public double knock_cyl07;
-    public double knock_cyl08;
-    public double knock_cyl09;
-    public double knock_cyl10;
-    public double knock_cyl11;
-    public double knock_cyl12;
-    public double knock_cyl13;
-    public double knock_cyl14;
-    public double knock_cyl15;
-    public double knock_cyl16;
     public double lambda1;
     public double lambda2;
     public double lambda3;
@@ -244,11 +177,9 @@ public class MS3_Format_0233003 extends Megasquirt
     public double mafmap;
     public double map;
     public int mapDOT;
-    public double map_accel;
     public int mapaccaen;
     public int mapaccden;
     public double mat;
-    public int mathigh;
     public double n2o_addfuel;
     public double n2o_retard;
     public int nSquirts1;
@@ -273,15 +204,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public double pwmd_load;
     public double pwme_load;
     public double pwmf_load;
-    public double pwmidle_cl_initialvalue_matorclt_follower;
     public double pwseq1;
     public double pwseq10;
-    public double pwseq11;
-    public double pwseq12;
-    public double pwseq13;
-    public double pwseq14;
-    public double pwseq15;
-    public double pwseq16;
     public double pwseq2;
     public double pwseq3;
     public double pwseq4;
@@ -328,43 +252,26 @@ public class MS3_Format_0233003 extends Megasquirt
     public int status4;
     public int status5;
     public int status6;
-    public int status7;
     public int stream_level;
     public int synccnt;
     public int syncreason;
     public double throttle;
     public double time;
     public int timing_err;
-    public double total_accel;
     public double tps;
     public int tpsADC;
     public double tpsDOT;
-    public double tps_accel;
     public int tpsaccaen;
     public int tpsaccden;
     public int tpsfuelcut;
-    public double vacuum;
+    public int user0;
     public double veCurr;
     public double veCurr1;
     public double veCurr2;
     public double vss1;
-    public int vss1_real;
     public double vss1dot;
     public double vss2;
-    public int vss2_real;
     public double vss2dot;
-    public double vvt_ang1;
-    public double vvt_ang2;
-    public double vvt_ang3;
-    public double vvt_ang4;
-    public double vvt_duty1;
-    public double vvt_duty2;
-    public double vvt_duty3;
-    public double vvt_duty4;
-    public double vvt_target1;
-    public double vvt_target2;
-    public double vvt_target3;
-    public double vvt_target4;
     public double wallfuel1;
     public int wallfuel2;
     public int warmup;
@@ -374,12 +281,9 @@ public class MS3_Format_0233003 extends Megasquirt
     public int wbo2_en2;
 
 //Constants
-    public int als_opt_sc;
     public double N2O2PWLo;
-    public double vvt_max_ang4;
     public int sensor08LF;
     public int afrload;
-    public int MAFOption_f;
     public double pwmidle_rpmdot_disablepid;
     public int n2o1n_pins;
     public int pwmidle_min_steps;
@@ -394,25 +298,20 @@ public class MS3_Format_0233003 extends Megasquirt
     public int N2O2Rpm;
     public int IgnAlgorithm2;
     public int eaeload;
-    public int MAFOption_t;
     public double idleve_load;
     public int opentime_opt2;
     public int opentime_opt1;
     public int alternate;
-    public int boost_ctl_Ki2;
     public double gear4ratio;
     public double IC2ISR_tmask;
-    public int testmode_0;
-    public int fan_ctl_settings_acfan;
     public double knk_tadv;
     public int opentime_opta;
     public int opentime_optb;
-    public int spk_mode3_hirespol;
     public int gear_can_offset;
     public int sensor04LF;
     public int shift_cut_on;
-    public int sensor05_trans;
     public int RevLimTPSbypassRPM;
+    public int sensor05_trans;
     public int opentime_optb_own;
     public double inj2Open6;
     public double inj2Open5;
@@ -426,7 +325,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public double inj2Open7;
     public double launch_sft_deg3;
     public double inj2Open8;
-    public int egt16port;
     public double knk_dtble_adv;
     public double shift_cut_add12;
     public int secondtrigopts1;
@@ -441,69 +339,53 @@ public class MS3_Format_0233003 extends Megasquirt
     public int flexFuel;
     public int opentime_optb_pwm;
     public int knk_option;
-    public int map2port;
     public int egt_conf_shutdown;
     public double pwmidle_rpmdot_threshold;
     public int spk_config_trig2l;
     public double shift_cut_add23;
     public int sensor03_source;
-    public int tc_opt_bank;
     public double inj2Opena;
     public double inj2Openb;
-    public double sensor11_val0;
     public int egoCount;
     public int spk_config_campol;
-    public double als_maxtime;
+    public double sensor11_val0;
     public double testint;
-    public double vvt_max_ang2;
-    public double vvt_max_ang3;
     public int poll_tableports;
-    public double vvt_max_ang1;
-    public double tclu_delay;
     public int sensor12LF;
-    public int boost_ctl_Kd2;
-    public double als_iac_duty;
-    public int water_freq_type;
     public int accYport;
     public int dwellmode;
-    public int egomap10t;
     public int flats_arm;
     public int inj2PwmP2;
     public double N2O2PWHi;
     public int boost_vss;
-    public double vvt_coldpos1;
-    public double vvt_coldpos2;
     public int f5_0_tss_opt;
     public int opentime_opta_pwm;
-    public double accel_tpsdot_threshold;
     public int staged_second_param;
     public int boost_ctl_Kp;
     public int spk_mode3;
     public int sensor13_source;
     public int spk_mode0;
     public int ac_idleup_io_out;
-    public double boost_ctl_lowerlimit2;
     public int enable_pollports_digout;
     public double sensor13_val0;
     public double tpsThresh;
     public int n2o2f_pins;
-    public int sensor10_trans;
     public double vss1_can_scale;
+    public int sensor10_trans;
     public double idleadvance_clt;
     public double N2OPWLo;
     public double boost_vss_tps;
-    public int pwmidle_cl_opts_initval_clt;
     public int inj2PwmPd;
     public int log_style2_clg;
     public double sensor14_max;
-    public int egt14port;
     public double gear1ratio;
     public int sequential;
     public int spk_conf2_gm;
-    public int egomap12t;
     public int boost_ctl_Ki;
     public int boost_ctl_Kd;
+    public int opentime2_opt17;
     public int opentime2_opt16;
+    public int opentime2_opt18;
     public int opentime2_opt13;
     public int opentime2_opt12;
     public int boost_ctl_pins;
@@ -511,19 +393,15 @@ public class MS3_Format_0233003 extends Megasquirt
     public int opentime2_opt14;
     public int N2O2RpmMax;
     public double idleve_clt;
-    public int mapport_t;
-    public double vvt_hold_duty;
-    public int egomap11t;
-    public int mapport_f;
     public int opentime2_opt11;
     public double inj2PwmT2;
     public double shift_cut_reshift;
+    public int egt_conf_led;
     public double maxafr_en_time;
     public double EGOVtarget;
     public int spk_config_resetcam;
     public int egt6port;
     public int canpwm_pre;
-    public int vvt_opt1_int;
     public int launch_var_on;
     public double fan_idleup_vss_offpoint;
     public int loadMult;
@@ -534,40 +412,30 @@ public class MS3_Format_0233003 extends Megasquirt
     public int canadc_tab2;
     public int canadc_tab3;
     public int canadc_tab1;
-    public double als_maxclt;
-    public double accel_blend_percent;
     public double pwmidle_Kd;
     public int UNUSED_1_131;
     public int spk_conf2_dwell;
     public double dwelltime_trl;
     public int matmult;
-    public double sensor08_val0;
     public int N2Oopt_3;
+    public double sensor08_val0;
     public int N2Oopt_4;
-    public double tc_maxvss;
     public int N2Oopt_2;
-    public int sensor06LF;
     public int adcLF;
+    public int sensor06LF;
     public int dualfuel_sw2_ob;
     public int canadc_tab6;
-    public int ac_idleup_cl_targetadder;
     public double Xknock0;
     public double fanctl_idleup_adder_duty;
     public int testop_fp;
     public double ReqFuel_alt;
     public double pwmidle_Ki;
     public double pwmidle_Kp;
-    public int boost_ctl_settings_on2;
-    public int als_opt_fuel;
     public double IAC_tinitial_step;
     public double N2OTps;
-    public int s16_debug;
     public int engineType;
-    public double vvt_test_duty;
-    public int vvt_opt2_cam2pol;
     public int boost_ctl_pwm_scale;
     public int N2ORpm;
-    public int knock_conf_num;
     public int pwmidle_min_rpm;
     public int inj2PwmPd2;
     public int fireb;
@@ -575,32 +443,18 @@ public class MS3_Format_0233003 extends Megasquirt
     public int ac_idleup_settings;
     public int fired;
     public int firee;
-    public int als_iac_steps;
     public int sensor12_source;
     public int firea;
-    public int als_opt_fc;
     public int N2Oopt2_prog_freq;
     public int canpwm_clk;
     public double sensor11_max;
-    public int hardware_injij;
-    public int fireo;
-    public int vvt_cam4tth1;
-    public int firen;
-    public int vvt_cam4tth2;
-    public int firep;
-    public int firek;
     public double ac_idleup_cl_lockout_mapadder;
     public double shift_cut_add34;
     public int injPwmPd2;
-    public int firej;
-    public int firem;
-    public int firel;
-    public int tsw_pin_s;
     public int fireg;
+    public int tsw_pin_s;
     public int firef;
-    public int firei;
     public int fireh;
-    public int vvt_opt2_pid;
     public int mapThresh;
     public int tsw_pin_f;
     public double clt0;
@@ -609,14 +463,12 @@ public class MS3_Format_0233003 extends Megasquirt
     public int smallpw2_opt1_master;
     public int opt142_rtc;
     public int launch_var_up;
-    public double can_bcast_int;
     public int altcrank;
     public int vss2_an;
     public double shift_cut_add45;
     public int sensor10LF;
     public int sensor04_source;
     public int log_style_led;
-    public int opt142_gs_share;
     public int injPwmPd;
     public int opentime2_optb_pwm;
     public int gear_no;
@@ -629,13 +481,12 @@ public class MS3_Format_0233003 extends Megasquirt
     public double shift_cut_add56;
     public int sensor06_trans;
     public int boost_ctl_pwm;
-    public int sensor15_trans;
     public int egt11port;
+    public int sensor15_trans;
     public int injPwmP;
     public int IACcrankpos;
     public int flashlock;
     public int shift_cut_in;
-    public int feature3_n2oin;
     public int injPwmP2;
     public int iachometest;
     public double egoLimit;
@@ -648,22 +499,10 @@ public class MS3_Format_0233003 extends Megasquirt
     public int staged_first_param;
     public int sensor09_source;
     public int egt10port;
-    public int knk_pin_out;
     public int tacho_opt80;
     public int N2Oopt2_prog_time;
     public int N2Oopt2_prog;
-    public int vvt_opt1_tst;
-    public int knock_gain14;
-    public int knock_gain13;
     public double IdleHyst;
-    public int knock_gain16;
-    public int knock_gain15;
-    public int knock_gain10;
-    public double map_freq1;
-    public int knock_gain12;
-    public int boost_ctl_pwm_scale2;
-    public int knock_gain11;
-    public double map_freq0;
     public int water_rpm;
     public double launch_sft_deg;
     public int log_style3_adc;
@@ -671,55 +510,38 @@ public class MS3_Format_0233003 extends Megasquirt
     public double pwmidle_min_duty;
     public int testinjPwmP;
     public double baro_lower;
-    public int tclu_gearmin;
     public int IdleCtl_vss;
-    public int knock_gain08;
     public int bcormult;
-    public double tclu_mapmin;
-    public int knock_gain09;
     public int water_pins_pump;
-    public int knock_gain06;
-    public int knock_gain07;
-    public int knock_gain05;
-    public int knock_gain04;
-    public int knock_gain03;
-    public int knock_gain02;
-    public int knock_gain01;
-    public int u08_debug134;
     public int opentime2_optb_own;
     public int smallpw2_opt15;
     public int smallpw2_opt16;
+    public int smallpw2_opt17;
+    public int smallpw2_opt18;
     public int smallpw2_opt11;
     public int smallpw2_opt12;
-    public int boost_ctl_pins_pwm2;
     public int smallpw2_opt13;
     public int smallpw2_opt14;
-    public double sensor15_max;
     public double sensor07_max;
+    public double sensor15_max;
     public int dualfuel_opt_temp;
     public int fc_ego_delay;
     public int dbgtooth;
     public double shift_cut_time;
-    public double sensor16_val0;
     public int No_Miss_Teeth;
-    public int vvt_opt6_freq;
+    public double sensor16_val0;
     public double testpw;
-    public double tclu_tpsmin;
     public int can_poll_id_ports;
-    public int knk_option_an;
     public int n2o1f_pins;
     public double sensor16_max;
-    public double als_minclt;
     public int staged_primary_delay;
     public int timing_flags;
     public int enable_pwmout;
     public double pwmidle_dp_adder;
     public int fanctl_settings_pin;
-    public double sensor12_val0;
     public int sensor15_source;
+    public double sensor12_val0;
     public int sequential_angle_spec;
-    public int idleadv_vsson;
-    public int accel_mapdot_threshold;
     public int sensor07_source;
     public int canadc_off1;
     public int spk_conf2_ngc;
@@ -731,30 +553,24 @@ public class MS3_Format_0233003 extends Megasquirt
     public double vss1_an_max;
     public int canadc_off4;
     public int canadc_off6;
-    public int vvt_ctl_Kp_exh;
-    public int mapsample_opt2;
     public double ego0;
     public int staged_extended_opts_simult;
     public double sensor12_max;
-    public double sensor04_val0;
     public int mapsample_opt1;
-    public double knk_step_adv;
+    public double sensor04_val0;
     public int IACcrankxt;
-    public int testop_0;
+    public int XknkLF;
     public int can_poll2_ego;
     public int launch_var_sof;
     public int opentime2_opta;
     public int boost_ctl_openduty;
     public int opentime2_optb;
     public int egt9port;
-    public int tclu_opt_gear;
     public int sensor16_source;
     public int opentime_opt1_master;
-    public int vvt_opt3_cam1;
     public double floodClear;
     public int fuelFreq0;
     public int egomap8;
-    public int vvt_opt3_cam2;
     public int fuelFreq1;
     public int egomap7;
     public int egomap9;
@@ -767,45 +583,33 @@ public class MS3_Format_0233003 extends Megasquirt
     public double fuelSpkDel0;
     public int egomap4;
     public int egomap3;
-    public int vvt_opt3_cam3;
     public int egomap6;
-    public int vvt_opt3_cam4;
     public double fuelSpkDel1;
     public int egomap5;
     public int pwmidle_close_delay;
     public int staged_pw1_0;
     public int f5_0_tsf_opt;
-    public int vvt_opt2_cam4pol;
-    public int vvt_ctl_Kd;
-    public int vvt_ctl_Ki;
     public int sensor01LF;
     public int tpsProportion;
     public double sensor09_val0;
     public int tsw_pin_ob;
     public double knk_maxrtd;
-    public int spk_conf2_dli;
     public int dualfuel_sw2_boosw;
     public int launch_opt_on;
     public int MapThreshXTD2;
     public double testinjPwmT;
-    public int vvt_opt4_decode;
     public double N2Odel_flat;
     public int egt_conf_action;
-    public int can_bcast1_280x4;
     public int egt2port;
-    public int idleve_vsson;
-    public int vvt_ctl_Kp;
-    public int can_bcast1_280x1;
-    public int vvt_ctl_Kd_exh;
-    public int als_maxrpm;
     public int crankTolerance;
     public int user_value1;
     public int user_value2;
     public int dualfuel_sw2_crank;
     public double N2O2delay;
+    public int RotarySplitModeOn;
     public double fc_delay;
     public int egonum;
-    public double als_maxtps;
+    public int RotarySplitModeRX8;
     public int opentime2_opt8;
     public int pwm_opt_on_a;
     public int opentime2_opt7;
@@ -826,13 +630,10 @@ public class MS3_Format_0233003 extends Megasquirt
     public int launch_var_low;
     public double stoich;
     public int pwmidlecranktaper;
-    public int egomap13t;
     public int water_pins_valve;
-    public double tclu_mapmax;
     public int maxafr_opt1_load;
     public int spkout_hi_lo;
     public double gear1v;
-    public int feature3_maplog;
     public int opentime2_opt1_master;
     public int egt4port;
     public double launch_tps;
@@ -851,25 +652,19 @@ public class MS3_Format_0233003 extends Megasquirt
     public int pwm_opt2_c;
     public int poll_table_rtc;
     public int dualfuel_sw_stoich;
-    public int egomap14t;
     public double water_tps;
     public int rtbaroport;
     public int fanctl_settings_on;
     public double N2Oholdon;
     public double gear0v;
-    public int boost_ctl_Kp2;
     public int can_poll_digout_offset;
     public double map0;
-    public int boost_ctl_closeduty2;
     public int egomult;
     public int NoiseFilterOpts2;
     public int NoiseFilterOpts3;
     public double sensor07_val0;
-    public int knk_option_wind;
-    public double tclu_tpsmax;
     public int vss1_pwmseq;
     public int can_poll_digin_offset;
-    public int egomap15t;
     public double gear3v;
     public int staged_second_logic;
     public int aeEndPW;
@@ -877,7 +672,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public int IC2ISR_pmask;
     public int knk_hirpm;
     public double sensor14_val0;
-    public int boost_ctl_openduty2;
     public int gear_port_an;
     public int idleadvance_rpm;
     public double inj2Open11;
@@ -890,26 +684,22 @@ public class MS3_Format_0233003 extends Megasquirt
     public double inj2Open17;
     public double gear2v;
     public double inj2Open16;
-    public int egomap16t;
     public double baromax;
-    public int vvt_opt5_add2;
-    public int vvt_opt5_add1;
     public int iacpostest;
     public int maxafr_opt1_on;
     public int NoiseFilterOpts1;
     public double gear5v;
     public int pulseTolerance;
     public int IdleCtl;
+    public int dummy_14_0;
     public int ego2port;
     public int testinjPwmPd;
-    public int knkport_an;
-    public double sensor01_max;
     public int launch_fcut_rpm;
+    public double sensor01_max;
     public int RevLimNormal1;
     public int RevLimNormal3;
     public int tacho_opt40;
     public int feature4_0igntrig;
-    public int tclu_opt_vss;
     public int RevLimNormal2;
     public int sensor02_source;
     public double IACcoldtmp;
@@ -921,6 +711,7 @@ public class MS3_Format_0233003 extends Megasquirt
     public int launchlimopt;
     public int fanctl_opt2_engineoff;
     public double gear4v;
+    public int feature3_1;
     public int fc_rpm;
     public int sensor14LF;
     public int pwmidle_dp_adder_steps;
@@ -931,8 +722,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public int sensor04_trans;
     public int N2Oopt_pins;
     public double mat0;
-    public double sensor04_max;
     public int water_pins_in_shut;
+    public double sensor04_max;
     public int launchcutx;
     public int tacho_opt3f;
     public int launchcuty;
@@ -946,43 +737,41 @@ public class MS3_Format_0233003 extends Megasquirt
     public int pwmidle_freq_pin3;
     public double injOpen7;
     public double injOpen8;
-    public double injOpen5;
     public int algorithm2;
+    public double injOpen5;
     public double injOpen6;
     public double injOpen3;
-    public int als_out_pin;
     public double injOpen4;
     public double injOpen1;
     public double injOpen2;
     public int smallpw_opt11;
     public int smallpw_opt12;
     public int gear_method;
-    public int boost_ctl_sensor2;
     public int smallpw_opt15;
     public int baroCorr;
     public int smallpw_opt16;
     public int smallpw_opt13;
     public int smallpw_opt14;
     public double aeTaperTime;
+    public int smallpw_opt17;
+    public int smallpw_opt18;
     public int pwmidle_freq_scale;
     public int egt5port;
-    public int vvt_opt5_err;
     public double injOpenb;
     public double injOpena;
     public int RevLimCLTbased;
     public int launch_sft_lim3;
     public double sensor05_val0;
-    public int knock_bpass;
     public int ss1LF;
     public double gear6v;
     public int sequential_trim_on_off;
+    public int water_pins_in_on;
     public int sensor09LF;
     public int boost_ctl_settings_cl;
-    public int tclu_enablepin;
     public int sensor14_source;
     public double baro0;
-    public int sensor07LF;
     public double ac_idleup_vss_offpoint;
+    public int sensor07LF;
     public int spk_conf2_oddodd;
     public int tpsMin;
     public double sensor09_max;
@@ -992,92 +781,58 @@ public class MS3_Format_0233003 extends Megasquirt
     public int boost_feats_tsw;
     public int dualfuel_sw2_prime;
     public int testsel_inj;
-    public int boost_ctl_pins2;
     public int feature4_0ftrig;
     public int dualfuel_sw_afr;
     public int cltmult;
     public int knkDirection;
-    public int sensor03LF;
     public double ac_idleup_tps_hyst;
+    public int sensor03LF;
     public double egoTemp;
-    public double tclu_vssmin;
     public double idleadvance_tps;
     public int RevLimNormal2_hyst;
     public int UNUSED_1_911;
-    public int vssout_optunits;
     public double gear6ratio;
-    public int vvt_opt2_use_hold_intake;
-    public double vvt_onoff_ang;
     public int tpsLF;
     public int dualfuel_sw_wue;
     public int accZport;
+    public int dualfuel_sec;
     public int mapLF;
-    public double boost_ctl_clt_threshold;
     public double vss2_can_scale;
     public int boost_ctl_ms;
     public int ae_lorpm;
     public int staged_sec_size;
     public double fdratio1;
-    public int knock_sens08;
-    public int knock_sens09;
     public int ac_idleup_delay;
-    public int knock_sens06;
     public double shift_cut_delay;
-    public int knock_sens07;
-    public int knock_sens04;
     public int pwmidle_open_steps;
-    public int egoport14;
-    public int knock_sens05;
-    public int egoport13;
-    public int knock_sens02;
     public int OverBoostOption;
     public int enable_pollADC;
-    public int egoport16;
-    public int knock_sens03;
     public int water_freq;
-    public int egoport15;
-    public int knock_sens01;
     public int IgnAlgorithm;
-    public int vvt_cam2tth1;
-    public int egoport10;
-    public int egoport11;
-    public int can_poll_id;
     public int log_length;
-    public int egoport12;
+    public int can_poll_id;
     public double RevLimRtdAng;
-    public int vvt_cam2tth2;
-    public double als_pausetime;
-    public int als_in_pin;
     public int dualfuel_opt_press;
     public int vss1_can_size;
-    public int sensor03_trans;
     public int maxafr_en_rpm;
+    public int sensor03_trans;
     public int hw_latency;
     public double OverBoostHyst;
+    public int injctl;
     public int boost_launch_duty;
-    public int feature3_aseunit;
     public double launch_addfuel;
     public int dualfuel_opt_out;
-    public int vvt_cam1tth1;
-    public int vvt_cam1tth2;
     public int vss1_can_offset;
     public int sensor_temp;
-    public int egt13port;
     public int AfrAlgorithm;
-    public int vvt_opt2_cam1pol;
     public int feature4_0VEtblsize;
     public int spk_config_trig2;
     public double stoich_alt;
-    public double vvt_min_ang3;
     public int log_style2_but;
-    public double vvt_min_ang2;
-    public double vvt_min_ang4;
-    public double primedelay;
     public int can_poll_id_rtc;
     public double sensor05_max;
     public int mycan_id;
     public int flexport;
-    public double vvt_min_ang1;
     public int can_pwmout_id;
     public int launch_hrd_lim3;
     public int dualfuel_sw_fuel;
@@ -1085,19 +840,11 @@ public class MS3_Format_0233003 extends Megasquirt
     public int pwm_onabove_e;
     public int pwm_onabove_b;
     public int pwm_onabove_c;
-    public double accel_CLT_multiplier;
     public int log_style2_samp;
     public int pwm_onabove_f;
-    public int knock_sens10;
-    public int knock_sens11;
-    public int knock_sens12;
-    public int knock_sens13;
     public int pwm_onabove_a;
-    public int knock_sens14;
     public int knkpull;
-    public int knock_sens15;
     public int log_style_block;
-    public int knock_sens16;
     public int rpmLF;
     public int asTolerance;
     public int egt3port;
@@ -1106,16 +853,14 @@ public class MS3_Format_0233003 extends Megasquirt
     public double wheeldia1;
     public double wheeldia2;
     public int egoport8;
-    public int egoport9;
     public int egoport6;
-    public int tc_opt_method;
     public int egoport7;
     public double fan_idleup_vss_hyst;
     public int egoport1;
     public int enable_pollPWM;
     public int egoport4;
-    public int sensor05_source;
     public int egoport5;
+    public int sensor05_source;
     public int egoport2;
     public int egoport3;
     public int pwmidle_engage_rpm_adder;
@@ -1125,20 +870,18 @@ public class MS3_Format_0233003 extends Megasquirt
     public int fc_rpm_lower;
     public int accXcal2;
     public int accXcal1;
+    public int pwmidle_freq;
     public int egt12port;
-    public int feature3_tps;
     public int feature3_pw4x;
     public double log_int;
     public int sensor01_trans;
     public int n2o2n_pins;
-    public double tc_mintps;
     public int AMCOption;
-    public int sensor05LF;
     public int can_ego_offset;
-    public int tc_opt_n2o;
+    public int sensor05LF;
     public int tpsMax;
-    public int sensor11LF;
     public int accxyzLF;
+    public int sensor11LF;
     public int fanctl_idleup_delay;
     public int RevLimOption_spkcut;
     public int tsw_pin_stoich;
@@ -1149,14 +892,15 @@ public class MS3_Format_0233003 extends Megasquirt
     public int opentime_opt13;
     public int flats_sft;
     public int opentime_opt12;
-    public int tc_opt_on;
     public int algorithm;
     public double mapmax;
     public int staged_param_1;
     public int staged_param_2;
+    public int opentime_opt18;
     public int RevLimcutx;
     public int shift_cut_gear;
     public int opentime_opt16;
+    public int opentime_opt17;
     public double knk_maxmap;
     public double ITB_load_idletpsthresh;
     public int RotarySplitModeFD;
@@ -1164,7 +908,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public double batt0;
     public int maxafr_ret_rpm;
     public double knk_trtd;
-    public int fan_idleup_cl_targetadder;
     public double N2Odel_launch;
     public int spk_mode3_trim;
     public int boost_ctl_settings_invert;
@@ -1173,13 +916,10 @@ public class MS3_Format_0233003 extends Megasquirt
     public int egt1port;
     public double max_coil_dur;
     public double crank_timing;
-    public double tc_minvss;
     public double dwellduty;
     public int sensor11_trans;
     public int egt_num;
     public int launch_opt_pins;
-    public int vvt_cam3tth2;
-    public int vvt_cam3tth1;
     public int dualfuel_sw2_smpw;
     public double N2OClt;
     public double staged_secondary_enrichment;
@@ -1189,20 +929,15 @@ public class MS3_Format_0233003 extends Megasquirt
     public int trig_init;
     public double sensor02_val0;
     public int accXport;
-    public int tclu_brakepin;
-    public int feature3_matase;
     public int OvrRunC;
     public double ac_idleup_tps_offpoint;
     public int testop_coil;
     public int canpwm_div;
     public int sensor01_source;
     public int idleve_rpm;
-    public int boost_ctl_settings_cl2;
-    public int als_pwm_duty;
     public int boost_ctl_pins_pwm;
     public int vss2LF;
     public double shift_cut_soldelay;
-    public int spk_mode3_tach3;
     public int vss2_can_size;
     public double egt_addfuel;
     public int pwm_opt_freq_f;
@@ -1214,28 +949,21 @@ public class MS3_Format_0233003 extends Megasquirt
     public double vssout_scale;
     public int pwm_opt_freq_c;
     public int reluctorteeth4;
-    public double ff_tpw0;
-    public double ff_tpw1;
     public int vss1_an;
     public int reluctorteeth1;
     public int reluctorteeth2;
-    public int pwmidle_cl_opts_initvaluetable;
     public int reluctorteeth3;
     public int enable_pollports_digin;
-    public int pwmidle_dp_decay_factor;
-    public double ego_upper_bound;
     public int taeColdM;
-    public int knock_conf_percyl;
     public double flats_deg;
     public int dualfuel_pin;
-    public int tc_slipthresh;
     public int use_prediction;
     public double dwellAcc;
     public int shift_cut_auto;
     public int shift_cut_rpm45;
     public int taeColdA;
-    public int sensor02_trans;
     public int tsf_rpm;
+    public int sensor02_trans;
     public int vssdotLF;
     public int egomap4t;
     public double Miss_ang;
@@ -1248,36 +976,30 @@ public class MS3_Format_0233003 extends Megasquirt
     public int oldegoLimit;
     public int sensor06_source;
     public int shift_cut_rpm34;
-    public int sensor08_trans;
     public double MAPOXLimit;
+    public int sensor08_trans;
     public int EAElagsource;
     public double tsf_tps;
     public int EAElagRPMmax;
     public double TpsBypassCLTRevlim;
-    public int vvt_opt2_use_hold_exhaust;
     public double idleadvance_load;
     public double max_spk_dur;
     public int pwm_offbelow_f;
     public int pwm_offbelow_e;
     public int pwm_offbelow_d;
     public int N2ORpmMax;
-    public int als_opt_idle;
     public double gear5ratio;
     public double sensor06_max;
     public double fan_idleup_tps_offpoint;
-    public int tc_enin;
     public double dwelltime;
     public int shift_cut_rpm23;
     public int egt8port;
-    public int vvt_opt1_on;
     public double OddFireang;
     public int egomap6t;
     public double gear2ratio;
     public int ss_opt2;
     public double vss2_an_max;
     public int ss_opt1;
-    public double flex_pct1;
-    public double flex_pct0;
     public double injOpen15;
     public double injOpen14;
     public double injOpen13;
@@ -1290,8 +1012,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public double injOpen16;
     public int testmode;
     public int staged_hyst_2;
-    public int enginesize;
     public double injOpen11;
+    public int water_pins_in_type;
     public int dualfuel_sw_on;
     public int shift_cut_rpm12;
     public int staged_hyst_1;
@@ -1302,32 +1024,27 @@ public class MS3_Format_0233003 extends Megasquirt
     public double fanctl_offtemp;
     public int sensor09_trans;
     public double fc_kpa;
-    public int als_minrpm;
     public int dualfuel_sw2_injp;
     public int pwmidle_targ_ramptime;
     public int egomap8t;
     public int egoAlgorithm;
-    public int knock_int;
     public int dualfuel_sw_rf;
     public int ac_idleup_io_in;
-    public double als_mintps;
     public int RevLimOption_retard;
     public int ICISR_pmask;
     public int dlyct;
-    public int can_bcast1_289;
     public double fanctl_ontemp;
-    public int sensor12_trans;
     public int testsel_coil;
+    public int sensor12_trans;
     public int feature4_0mindwl;
     public int staged_extended_opts_use_v3;
     public double OverBoostKpa2;
     public double sensor13_max;
     public int egomap7t;
-    public int vvt_ctl_ms;
     public double sensor02_max;
     public int vss1_can_id;
-    public double sensor03_val0;
     public double boost_ctl_lowerlimit;
+    public double sensor03_val0;
     public double ac_idleup_adder_duty;
     public double shift_cut_tps;
     public double sensor10_val0;
@@ -1336,11 +1053,11 @@ public class MS3_Format_0233003 extends Megasquirt
     public int staged_extended_opts_pw1off;
     public double sensor10_max;
     public int RotarySplitModeNeg;
-    public int sensor02LF;
     public int nCylinders;
-    public double ego_lower_bound;
-    public double sensor06_val0;
+    public int sensor02LF;
     public int egt_conf_bank;
+    public int CID;
+    public double sensor06_val0;
     public int pwm_opt_var_f;
     public int pwm_opt_var_e;
     public double battmax;
@@ -1350,26 +1067,20 @@ public class MS3_Format_0233003 extends Megasquirt
     public int pwm_opt_var_b;
     public int pwm_opt_var_a;
     public int pwm_opt_var_d;
-    public int vvt_opt1_dir_intake;
     public int pwm_opt_var_c;
-    public int AE_options;
     public int dualfuel_sw_spk;
     public int EAEOption;
-    public int tclu_outpin;
     public int can_pwmout_offset;
-    public int als_opt_pwmout;
-    public int egomap9t;
     public int knk_lorpm;
     public int pwmidle_shift_lower_rpm;
     public int ss2LF;
     public int staged_pri_size;
-    public int egt15port;
     public int ss2_pwmseq;
     public int idleve_delay;
-    public double tc_minmap;
     public int smallpw_optb;
     public int smallpw2_opta;
     public int smallpw2_optb;
+    public int dualfuel_pri;
     public int sensor13_trans;
     public int accYcal1;
     public int user_conf1;
@@ -1377,32 +1088,26 @@ public class MS3_Format_0233003 extends Megasquirt
     public int user_conf0;
     public int accYcal2;
     public double RevLimMaxRtd;
+    public int spk_conf2_cam;
     public int spk_config_camcrank;
     public int launch_sft_lim;
     public int egoDelta;
     public int sensor15LF;
     public int egoKI;
-    public int vvt_out3;
-    public int vvt_out4;
-    public int can_bcast1_on;
     public int divider;
     public int egoKD;
     public double maxafr_spkcut_time;
     public int sensor13LF;
-    public int vvt_out2;
-    public int vvt_out1;
     public int launch_3step_in;
-    public int sensor11_source;
     public double pwmidle_tps_threshold;
     public int knk_ndet;
     public int knkport;
     public int smallpw_opta;
+    public int sensor11_source;
     public int bcor0;
-    public int feature3_dwell;
     public int egoKP;
-    public int sensor16LF;
     public int staged_transition_on;
-    public int vvt_opt1_dir_exhaust;
+    public int sensor16LF;
     public int mapport;
     public int MapThreshXTD;
     public double fc_clt;
@@ -1415,7 +1120,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public int smallpw_opt2;
     public int boost_gear_switch;
     public int smallpw2_opt3;
-    public int log_style_ledspd;
     public int smallpw_opt5;
     public int smallpw2_opt2;
     public int smallpw_opt4;
@@ -1431,24 +1135,21 @@ public class MS3_Format_0233003 extends Megasquirt
     public int launch_hrd_lim;
     public double pwmidle_closed_duty;
     public double testdwell;
-    public int vvt_tth2;
     public int pwmidle_pid_wait_timer;
-    public int vvt_tth1;
     public double baro_default;
-    public int vvt_tth4;
-    public int vvt_tth3;
+    public int UNUSED_1_882;
     public int smallpw2_opt8;
+    public int UNUSED_1_880;
     public int fanctl_idleup_adder_steps;
     public int iactestlock;
     public int IACStart;
     public int boost_ctl_settings_freq;
     public int no_skip_pulses;
-    public double vvt_hold_duty_exh;
     public int dualfuel_opt_mode;
     public int injType;
     public int boost_feats_timed;
-    public double sensor03_max;
     public double ICISR_tmask;
+    public double sensor03_max;
     public int canadc_opt5;
     public int canadc_opt4;
     public int canadc_opt6;
@@ -1461,9 +1162,8 @@ public class MS3_Format_0233003 extends Megasquirt
     public double pwmidle_decelload_threshold;
     public int dualfuel_temp_sens;
     public int IACminstep;
-    public double tsf_kpa;
     public int log_style_on;
-    public int idle_special_ops_timing_assist;
+    public double tsf_kpa;
     public int boost_ctl_closeduty;
     public double pwmidle_open_duty;
     public int canadc_opt1;
@@ -1474,39 +1174,24 @@ public class MS3_Format_0233003 extends Megasquirt
     public int pwm_opt_load_e;
     public int egomap10;
     public int pwm_opt_load_d;
-    public int egomap11;
-    public double maf_freq0;
     public int twoStroke;
     public int mapsample_percent;
-    public int vvt_opt2_cam3pol;
     public double idleve_tps;
-    public double maf_freq1;
     public double MAPOXMin;
     public int pwm_opt_load_b;
-    public int egomap13;
     public int pwm_opt_load_c;
-    public int egomap12;
-    public int egomap15;
     public int pwm_opt_load_a;
-    public int egomap14;
-    public int egomap16;
     public int flats_hrd;
     public double Xknockmax;
     public int boost_ctl_settings_on;
-    public int water_freq_on;
-    public int vvt_opt5_vvt1;
     public int ae_hirpm;
     public int TC5_required_width;
     public double baro_upper;
     public int sensor14_trans;
     public int ICIgnCapture;
-    public int fueltemp1;
     public int vss1_pos;
     public int secondtrigopts;
     public double tss_tps;
-    public int vvt_opt5_vvt4;
-    public int vvt_opt5_vvt2;
-    public int vvt_opt5_vvt3;
     public int vss1_can_table;
     public int egomap2t;
     public double fan_idleup_tps_hyst;
@@ -1517,7 +1202,6 @@ public class MS3_Format_0233003 extends Megasquirt
     public int can_ego_table;
     public int triggerTeeth;
     public int shift_cut_rpm56;
-    public int vvt_ctl_Ki_exh;
     public int vss2_pwmseq;
     public int canadc_id3;
     public int egt7port;
@@ -1527,30 +1211,25 @@ public class MS3_Format_0233003 extends Megasquirt
     public int shift_cut_rpm;
     public int canadc_id4;
     public double maxafr_en_load;
-    public double als_maxmat;
-    public int sensor16_trans;
     public int canadc_id6;
+    public int sensor16_trans;
     public int launch_opt_bank;
-    public double ff_temp0;
     public int pwmidle_freq_pin;
     public double knk_step2;
     public int poll_offsetPWM;
-    public double sensor01_val0;
-    public double ff_temp1;
     public double knk_step1;
+    public double sensor01_val0;
     public int canadc_id1;
     public int egomap1t;
 
 
     private String[] defaultGauges = {
         "tachometer",
-        "throttleGauge",
+        "EAEGauge1",
         "pulseWidth1Gauge",
         "cltGauge",
         "advdegGauge",
         "fuelloadGauge",
-        "egoV1Gauge",
-        "lambda1Gauge",
         "afr1Gauge",
         "matGauge"
     };
@@ -1631,13 +1310,7 @@ public class MS3_Format_0233003 extends Megasquirt
         afr2_old = (double)((MSUtils.getSignedWord(ochBuffer,30) + 0.0) * 0.100);
         knock = (double)((MSUtils.getSignedWord(ochBuffer,32) + 0.0) * 0.100);
         egoCorrection1 = (double)((MSUtils.getSignedWord(ochBuffer,34) + 0.0) * 0.1000);
-        try
-        {
-            egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
-        }
-        catch (ArithmeticException e) {
-            egoCorrection = 0;
-        }
+        egoCorrection = (( egoCorrection1 + egoCorrection2) / 2);
         egoCorrection2 = (double)((MSUtils.getSignedWord(ochBuffer,36) + 0.0) * 0.1000);
         airCorrection = (double)((MSUtils.getSignedWord(ochBuffer,38) + 0.0) * 0.1000);
         warmupEnrich = (int)((MSUtils.getSignedWord(ochBuffer,40) + 0.0) * 1.000);
@@ -1681,8 +1354,7 @@ public class MS3_Format_0233003 extends Megasquirt
         ignload2 = (double)((MSUtils.getSignedWord(ochBuffer,92) + 0.0) * 0.100);
         synccnt = (int)((MSUtils.getByte(ochBuffer,94) + 0) * 1);
         timing_err = (int)((MSUtils.getSignedByte(ochBuffer,95) + 0) * 1);
-        wallfuel1 = (double)((MSUtils.getLong(ochBuffer,96) + 0.0) * 0.010);
-        wallfuel2 = (int)((MSUtils.getLong(ochBuffer,100) + 0.0) * 1.000);
+        wallfuel1 = (double)((MSUtils.getLong(ochBuffer,100) + 0.0) * 0.010);
         sensor01 = (double)((MSUtils.getSignedWord(ochBuffer,104) + 0.0) * 0.1000);
         sensor02 = (double)((MSUtils.getSignedWord(ochBuffer,106) + 0.0) * 0.1000);
         sensor03 = (double)((MSUtils.getSignedWord(ochBuffer,108) + 0.0) * 0.1000);
@@ -1691,115 +1363,113 @@ public class MS3_Format_0233003 extends Megasquirt
         sensor06 = (double)((MSUtils.getSignedWord(ochBuffer,114) + 0.0) * 0.1000);
         sensor07 = (double)((MSUtils.getSignedWord(ochBuffer,116) + 0.0) * 0.1000);
         sensor08 = (double)((MSUtils.getSignedWord(ochBuffer,118) + 0.0) * 0.1000);
-        sensor09 = (double)((MSUtils.getSignedWord(ochBuffer,120) + 0.0) * 0.1000);
-        sensor10 = (double)((MSUtils.getSignedWord(ochBuffer,122) + 0.0) * 0.1000);
-        sensor11 = (double)((MSUtils.getSignedWord(ochBuffer,124) + 0.0) * 0.1000);
-        sensor12 = (double)((MSUtils.getSignedWord(ochBuffer,126) + 0.0) * 0.1000);
-        sensor13 = (double)((MSUtils.getSignedWord(ochBuffer,128) + 0.0) * 0.1000);
-        sensor14 = (double)((MSUtils.getSignedWord(ochBuffer,130) + 0.0) * 0.1000);
-        sensor15 = (double)((MSUtils.getSignedWord(ochBuffer,132) + 0.0) * 0.1000);
-        sensor16 = (double)((MSUtils.getSignedWord(ochBuffer,134) + 0.0) * 0.1000);
-        canin1_8 = (int)((MSUtils.getByte(ochBuffer,136) + 0.0) * 1.000);
-        canout1_8 = (int)((MSUtils.getByte(ochBuffer,137) + 0.0) * 1.000);
-        canout9_16 = (int)((MSUtils.getByte(ochBuffer,138) + 0.0) * 1.000);
-        boostduty = (int)((MSUtils.getByte(ochBuffer,139) + 0.0) * 1.0);
+        canpwmin0 = (int)((MSUtils.getWord(ochBuffer,120) + 0.0) * 1.000);
+        canpwmin1 = (int)((MSUtils.getWord(ochBuffer,122) + 0.0) * 1.000);
+        canpwmin2 = (int)((MSUtils.getWord(ochBuffer,124) + 0.0) * 1.000);
+        canpwmin3 = (int)((MSUtils.getWord(ochBuffer,126) + 0.0) * 1.000);
+        canin1_8 = (int)((MSUtils.getByte(ochBuffer,128) + 0.0) * 1.000);
+        canout1_8 = (int)((MSUtils.getByte(ochBuffer,129) + 0.0) * 1.000);
+        canout9_16 = (int)((MSUtils.getByte(ochBuffer,130) + 0.0) * 1.000);
+        adc6 = (int)((MSUtils.getWord(ochBuffer,131) + 0.0) * 1);
+        adc7 = (int)((MSUtils.getWord(ochBuffer,133) + 0.0) * 1);
+        wallfuel2 = (int)((MSUtils.getLong(ochBuffer,135) + 0.0) * 1.000);
+        EAEFuelCorr2 = (int)((MSUtils.getWord(ochBuffer,139) + 0.0) * 1.0);
+        boostduty = (int)((MSUtils.getByte(ochBuffer,141) + 0.0) * 1.0);
+        syncreason = (int)((MSUtils.getByte(ochBuffer,142) + 0.0) * 1.0);
+        sd_status = (int)((MSUtils.getByte(ochBuffer,143) + 0.0) * 1.0);
+        user0 = (int)((MSUtils.getWord(ochBuffer,144) + 0.0) * 1.0);
         if (PW_4X)
         {
-        n2o_addfuel = (double)((MSUtils.getSignedWord(ochBuffer,140) + 0) * 0.004);
+        pwseq1 = (double)((MSUtils.getWord(ochBuffer,146) + 0) * 0.004);
+        pwseq2 = (double)((MSUtils.getWord(ochBuffer,148) + 0) * 0.004);
+        pwseq3 = (double)((MSUtils.getWord(ochBuffer,150) + 0) * 0.004);
+        pwseq4 = (double)((MSUtils.getWord(ochBuffer,152) + 0) * 0.004);
+        pwseq5 = (double)((MSUtils.getWord(ochBuffer,154) + 0) * 0.004);
+        pwseq6 = (double)((MSUtils.getWord(ochBuffer,156) + 0) * 0.004);
+        pwseq7 = (double)((MSUtils.getWord(ochBuffer,158) + 0) * 0.004);
+        pwseq8 = (double)((MSUtils.getWord(ochBuffer,160) + 0) * 0.004);
+        pwseq9 = (double)((MSUtils.getWord(ochBuffer,162) + 0) * 0.004);
+        pwseq10 = (double)((MSUtils.getWord(ochBuffer,164) + 0) * 0.004);
         }
         else
         {
-        n2o_addfuel = (double)((MSUtils.getSignedWord(ochBuffer,140) + 0) * 0.001);
+        pwseq1 = (double)((MSUtils.getWord(ochBuffer,146) + 0) * 0.001);
+        pwseq2 = (double)((MSUtils.getWord(ochBuffer,148) + 0) * 0.001);
+        pwseq3 = (double)((MSUtils.getWord(ochBuffer,150) + 0) * 0.001);
+        pwseq4 = (double)((MSUtils.getWord(ochBuffer,152) + 0) * 0.001);
+        pwseq5 = (double)((MSUtils.getWord(ochBuffer,154) + 0) * 0.001);
+        pwseq6 = (double)((MSUtils.getWord(ochBuffer,156) + 0) * 0.001);
+        pwseq7 = (double)((MSUtils.getWord(ochBuffer,158) + 0) * 0.001);
+        pwseq8 = (double)((MSUtils.getWord(ochBuffer,160) + 0) * 0.001);
+        pwseq9 = (double)((MSUtils.getWord(ochBuffer,162) + 0) * 0.001);
+        pwseq10 = (double)((MSUtils.getWord(ochBuffer,164) + 0) * 0.001);
         }
-        n2o_retard = (double)((MSUtils.getSignedWord(ochBuffer,142) + 0) * 0.1);
-        if (PW_4X)
+        if (MPH)
         {
-        pwseq1 = (double)((MSUtils.getWord(ochBuffer,144) + 0) * 0.004);
-        pwseq2 = (double)((MSUtils.getWord(ochBuffer,146) + 0) * 0.004);
-        pwseq3 = (double)((MSUtils.getWord(ochBuffer,148) + 0) * 0.004);
-        pwseq4 = (double)((MSUtils.getWord(ochBuffer,150) + 0) * 0.004);
-        pwseq5 = (double)((MSUtils.getWord(ochBuffer,152) + 0) * 0.004);
-        pwseq6 = (double)((MSUtils.getWord(ochBuffer,154) + 0) * 0.004);
-        pwseq7 = (double)((MSUtils.getWord(ochBuffer,156) + 0) * 0.004);
-        pwseq8 = (double)((MSUtils.getWord(ochBuffer,158) + 0) * 0.004);
-        pwseq9 = (double)((MSUtils.getWord(ochBuffer,160) + 0) * 0.004);
-        pwseq10 = (double)((MSUtils.getWord(ochBuffer,162) + 0) * 0.004);
-        pwseq11 = (double)((MSUtils.getWord(ochBuffer,164) + 0) * 0.004);
-        pwseq12 = (double)((MSUtils.getWord(ochBuffer,166) + 0) * 0.004);
-        pwseq13 = (double)((MSUtils.getWord(ochBuffer,168) + 0) * 0.004);
-        pwseq14 = (double)((MSUtils.getWord(ochBuffer,170) + 0) * 0.004);
-        pwseq15 = (double)((MSUtils.getWord(ochBuffer,172) + 0) * 0.004);
-        pwseq16 = (double)((MSUtils.getWord(ochBuffer,174) + 0) * 0.004);
+        vss1 = (double)((MSUtils.getSignedWord(ochBuffer,166) + 0.0) * 0.22369);
+        vss2 = (double)((MSUtils.getSignedWord(ochBuffer,168) + 0.0) * 0.22369);
         }
         else
         {
-        pwseq1 = (double)((MSUtils.getWord(ochBuffer,144) + 0) * 0.001);
-        pwseq2 = (double)((MSUtils.getWord(ochBuffer,146) + 0) * 0.001);
-        pwseq3 = (double)((MSUtils.getWord(ochBuffer,148) + 0) * 0.001);
-        pwseq4 = (double)((MSUtils.getWord(ochBuffer,150) + 0) * 0.001);
-        pwseq5 = (double)((MSUtils.getWord(ochBuffer,152) + 0) * 0.001);
-        pwseq6 = (double)((MSUtils.getWord(ochBuffer,154) + 0) * 0.001);
-        pwseq7 = (double)((MSUtils.getWord(ochBuffer,156) + 0) * 0.001);
-        pwseq8 = (double)((MSUtils.getWord(ochBuffer,158) + 0) * 0.001);
-        pwseq9 = (double)((MSUtils.getWord(ochBuffer,160) + 0) * 0.001);
-        pwseq10 = (double)((MSUtils.getWord(ochBuffer,162) + 0) * 0.001);
-        pwseq11 = (double)((MSUtils.getWord(ochBuffer,164) + 0) * 0.001);
-        pwseq12 = (double)((MSUtils.getWord(ochBuffer,166) + 0) * 0.001);
-        pwseq13 = (double)((MSUtils.getWord(ochBuffer,168) + 0) * 0.001);
-        pwseq14 = (double)((MSUtils.getWord(ochBuffer,170) + 0) * 0.001);
-        pwseq15 = (double)((MSUtils.getWord(ochBuffer,172) + 0) * 0.001);
-        pwseq16 = (double)((MSUtils.getWord(ochBuffer,174) + 0) * 0.001);
+        vss1 = (double)((MSUtils.getSignedWord(ochBuffer,166) + 0.0) * 0.3600);
+        vss2 = (double)((MSUtils.getSignedWord(ochBuffer,168) + 0.0) * 0.3600);
         }
-        nitrous1_duty = (int)((MSUtils.getByte(ochBuffer,176) + 0) * 1);
-        nitrous2_duty = (int)((MSUtils.getByte(ochBuffer,177) + 0) * 1);
+        ss1 = (int)((MSUtils.getSignedWord(ochBuffer,170) + 0.0) * 1.000);
+        ss2 = (int)((MSUtils.getSignedWord(ochBuffer,172) + 0.0) * 1.000);
+        if (PW_4X)
+        {
+        n2o_addfuel = (double)((MSUtils.getSignedWord(ochBuffer,174) + 0) * 0.004);
+        }
+        else
+        {
+        n2o_addfuel = (double)((MSUtils.getSignedWord(ochBuffer,174) + 0) * 0.001);
+        }
+        n2o_retard = (double)((MSUtils.getSignedWord(ochBuffer,176) + 0) * 0.1);
+        nitrous1_duty = (int)((MSUtils.getByte(ochBuffer,178) + 0) * 1);
+        nitrous2_duty = (int)((MSUtils.getByte(ochBuffer,179) + 0) * 1);
+        nitrous_timer = (double)((MSUtils.getWord(ochBuffer,180) + 0) * 0.001);
+        sd_filenum = (int)((MSUtils.getWord(ochBuffer,182) + 0) * 1);
+        sd_error = (int)((MSUtils.getByte(ochBuffer,184) + 0) * 1);
+        sd_phase = (int)((MSUtils.getByte(ochBuffer,185) + 0) * 1);
         if (CELSIUS)
         {
-        egt1 = (double)((MSUtils.getSignedWord(ochBuffer,178) + -320) * 0.05555);
-        egt2 = (double)((MSUtils.getSignedWord(ochBuffer,180) + -320) * 0.05555);
-        egt3 = (double)((MSUtils.getSignedWord(ochBuffer,182) + -320) * 0.05555);
-        egt4 = (double)((MSUtils.getSignedWord(ochBuffer,184) + -320) * 0.05555);
-        egt5 = (double)((MSUtils.getSignedWord(ochBuffer,186) + -320) * 0.05555);
-        egt6 = (double)((MSUtils.getSignedWord(ochBuffer,188) + -320) * 0.05555);
-        egt7 = (double)((MSUtils.getSignedWord(ochBuffer,190) + -320) * 0.05555);
-        egt8 = (double)((MSUtils.getSignedWord(ochBuffer,192) + -320) * 0.05555);
-        egt9 = (double)((MSUtils.getSignedWord(ochBuffer,194) + -320) * 0.05555);
-        egt10 = (double)((MSUtils.getSignedWord(ochBuffer,196) + -320) * 0.05555);
-        egt11 = (double)((MSUtils.getSignedWord(ochBuffer,198) + -320) * 0.05555);
-        egt12 = (double)((MSUtils.getSignedWord(ochBuffer,200) + -320) * 0.05555);
-        egt13 = (double)((MSUtils.getSignedWord(ochBuffer,202) + -320) * 0.05555);
-        egt14 = (double)((MSUtils.getSignedWord(ochBuffer,204) + -320) * 0.05555);
-        egt15 = (double)((MSUtils.getSignedWord(ochBuffer,206) + -320) * 0.05555);
-        egt16 = (double)((MSUtils.getSignedWord(ochBuffer,208) + -320) * 0.05555);
+        egt1 = (double)((MSUtils.getSignedWord(ochBuffer,186) + -320) * 0.05555);
+        egt2 = (double)((MSUtils.getSignedWord(ochBuffer,188) + -320) * 0.05555);
+        egt3 = (double)((MSUtils.getSignedWord(ochBuffer,190) + -320) * 0.05555);
+        egt4 = (double)((MSUtils.getSignedWord(ochBuffer,192) + -320) * 0.05555);
+        egt5 = (double)((MSUtils.getSignedWord(ochBuffer,194) + -320) * 0.05555);
+        egt6 = (double)((MSUtils.getSignedWord(ochBuffer,196) + -320) * 0.05555);
+        egt7 = (double)((MSUtils.getSignedWord(ochBuffer,198) + -320) * 0.05555);
+        egt8 = (double)((MSUtils.getSignedWord(ochBuffer,200) + -320) * 0.05555);
+        egt9 = (double)((MSUtils.getSignedWord(ochBuffer,202) + -320) * 0.05555);
+        egt10 = (double)((MSUtils.getSignedWord(ochBuffer,204) + -320) * 0.05555);
+        egt11 = (double)((MSUtils.getSignedWord(ochBuffer,206) + -320) * 0.05555);
+        egt12 = (double)((MSUtils.getSignedWord(ochBuffer,208) + -320) * 0.05555);
         }
         else
         {
-        egt1 = (double)((MSUtils.getSignedWord(ochBuffer,178) + 0) * 0.1);
-        egt2 = (double)((MSUtils.getSignedWord(ochBuffer,180) + 0) * 0.1);
-        egt3 = (double)((MSUtils.getSignedWord(ochBuffer,182) + 0) * 0.1);
-        egt4 = (double)((MSUtils.getSignedWord(ochBuffer,184) + 0) * 0.1);
-        egt5 = (double)((MSUtils.getSignedWord(ochBuffer,186) + 0) * 0.1);
-        egt6 = (double)((MSUtils.getSignedWord(ochBuffer,188) + 0) * 0.1);
-        egt7 = (double)((MSUtils.getSignedWord(ochBuffer,190) + 0) * 0.1);
-        egt8 = (double)((MSUtils.getSignedWord(ochBuffer,192) + 0) * 0.1);
-        egt9 = (double)((MSUtils.getSignedWord(ochBuffer,194) + 0) * 0.1);
-        egt10 = (double)((MSUtils.getSignedWord(ochBuffer,196) + 0) * 0.1);
-        egt11 = (double)((MSUtils.getSignedWord(ochBuffer,198) + 0) * 0.1);
-        egt12 = (double)((MSUtils.getSignedWord(ochBuffer,200) + 0) * 0.1);
-        egt13 = (double)((MSUtils.getSignedWord(ochBuffer,202) + 0) * 0.1);
-        egt14 = (double)((MSUtils.getSignedWord(ochBuffer,204) + 0) * 0.1);
-        egt15 = (double)((MSUtils.getSignedWord(ochBuffer,206) + 0) * 0.1);
-        egt16 = (double)((MSUtils.getSignedWord(ochBuffer,208) + 0) * 0.1);
+        egt1 = (double)((MSUtils.getSignedWord(ochBuffer,186) + 0) * 0.1);
+        egt2 = (double)((MSUtils.getSignedWord(ochBuffer,188) + 0) * 0.1);
+        egt3 = (double)((MSUtils.getSignedWord(ochBuffer,190) + 0) * 0.1);
+        egt4 = (double)((MSUtils.getSignedWord(ochBuffer,192) + 0) * 0.1);
+        egt5 = (double)((MSUtils.getSignedWord(ochBuffer,194) + 0) * 0.1);
+        egt6 = (double)((MSUtils.getSignedWord(ochBuffer,196) + 0) * 0.1);
+        egt7 = (double)((MSUtils.getSignedWord(ochBuffer,198) + 0) * 0.1);
+        egt8 = (double)((MSUtils.getSignedWord(ochBuffer,200) + 0) * 0.1);
+        egt9 = (double)((MSUtils.getSignedWord(ochBuffer,202) + 0) * 0.1);
+        egt10 = (double)((MSUtils.getSignedWord(ochBuffer,204) + 0) * 0.1);
+        egt11 = (double)((MSUtils.getSignedWord(ochBuffer,206) + 0) * 0.1);
+        egt12 = (double)((MSUtils.getSignedWord(ochBuffer,208) + 0) * 0.1);
         }
         maf = (double)((MSUtils.getWord(ochBuffer,210) + 0.0) * 0.010);
-        canpwmin0 = (int)((MSUtils.getWord(ochBuffer,212) + 0.0) * 1.000);
-        canpwmin1 = (int)((MSUtils.getWord(ochBuffer,214) + 0.0) * 1.000);
-        canpwmin2 = (int)((MSUtils.getWord(ochBuffer,216) + 0.0) * 1.000);
-        canpwmin3 = (int)((MSUtils.getWord(ochBuffer,218) + 0.0) * 1.000);
-        fuelflow = (int)((MSUtils.getWord(ochBuffer,220) + 0.0) * 1);
-        fuelcons = (int)((MSUtils.getWord(ochBuffer,222) + 0.0) * 1);
-        EAEFuelCorr2 = (int)((MSUtils.getWord(ochBuffer,224) + 0.0) * 1.0);
-        syncreason = (int)((MSUtils.getByte(ochBuffer,226) + 0.0) * 1.0);
-        sd_status = (int)((MSUtils.getByte(ochBuffer,227) + 0.0) * 1.0);
+        sensor09 = (double)((MSUtils.getSignedWord(ochBuffer,212) + 0.0) * 0.1000);
+        sensor10 = (double)((MSUtils.getSignedWord(ochBuffer,214) + 0.0) * 0.1000);
+        sensor11 = (double)((MSUtils.getSignedWord(ochBuffer,216) + 0.0) * 0.1000);
+        sensor12 = (double)((MSUtils.getSignedWord(ochBuffer,218) + 0.0) * 0.1000);
+        sensor13 = (double)((MSUtils.getSignedWord(ochBuffer,220) + 0.0) * 0.1000);
+        sensor14 = (double)((MSUtils.getSignedWord(ochBuffer,222) + 0.0) * 0.1000);
+        sensor15 = (double)((MSUtils.getSignedWord(ochBuffer,224) + 0.0) * 0.1000);
+        sensor16 = (double)((MSUtils.getSignedWord(ochBuffer,226) + 0.0) * 0.1000);
         eaeload1 = (double)((MSUtils.getSignedWord(ochBuffer,228) + 0.0) * 0.1000);
         afrload1 = (double)((MSUtils.getSignedWord(ochBuffer,230) + 0.0) * 0.1000);
         gear = (int)((MSUtils.getByte(ochBuffer,232) + 0) * 1);
@@ -1824,155 +1494,36 @@ public class MS3_Format_0233003 extends Megasquirt
         afr6 = (double)((MSUtils.getByte(ochBuffer,257) + 0.0) * 0.1);
         afr7 = (double)((MSUtils.getByte(ochBuffer,258) + 0.0) * 0.1);
         afr8 = (double)((MSUtils.getByte(ochBuffer,259) + 0.0) * 0.1);
-        afr9 = (double)((MSUtils.getByte(ochBuffer,260) + 0.0) * 0.1);
-        afr10 = (double)((MSUtils.getByte(ochBuffer,261) + 0.0) * 0.1);
-        afr11 = (double)((MSUtils.getByte(ochBuffer,262) + 0.0) * 0.1);
-        afr12 = (double)((MSUtils.getByte(ochBuffer,263) + 0.0) * 0.1);
-        afr13 = (double)((MSUtils.getByte(ochBuffer,264) + 0.0) * 0.1);
-        afr14 = (double)((MSUtils.getByte(ochBuffer,265) + 0.0) * 0.1);
-        afr15 = (double)((MSUtils.getByte(ochBuffer,266) + 0.0) * 0.1);
-        afr16 = (double)((MSUtils.getByte(ochBuffer,267) + 0.0) * 0.1);
-        egov1 = (double)((MSUtils.getWord(ochBuffer,268) + 0.0) * 0.00489);
-        egov2 = (double)((MSUtils.getWord(ochBuffer,270) + 0.0) * 0.00489);
-        egov3 = (double)((MSUtils.getWord(ochBuffer,272) + 0.0) * 0.00489);
-        egov4 = (double)((MSUtils.getWord(ochBuffer,274) + 0.0) * 0.00489);
-        egov5 = (double)((MSUtils.getWord(ochBuffer,276) + 0.0) * 0.00489);
-        egov6 = (double)((MSUtils.getWord(ochBuffer,278) + 0.0) * 0.00489);
-        egov7 = (double)((MSUtils.getWord(ochBuffer,280) + 0.0) * 0.00489);
-        egov8 = (double)((MSUtils.getWord(ochBuffer,282) + 0.0) * 0.00489);
-        egov9 = (double)((MSUtils.getWord(ochBuffer,284) + 0.0) * 0.00489);
-        egov10 = (double)((MSUtils.getWord(ochBuffer,286) + 0.0) * 0.00489);
-        egov11 = (double)((MSUtils.getWord(ochBuffer,288) + 0.0) * 0.00489);
-        egov12 = (double)((MSUtils.getWord(ochBuffer,290) + 0.0) * 0.00489);
-        egov13 = (double)((MSUtils.getWord(ochBuffer,292) + 0.0) * 0.00489);
-        egov14 = (double)((MSUtils.getWord(ochBuffer,294) + 0.0) * 0.00489);
-        egov15 = (double)((MSUtils.getWord(ochBuffer,296) + 0.0) * 0.00489);
-        egov16 = (double)((MSUtils.getWord(ochBuffer,298) + 0.0) * 0.00489);
-        egocor1 = (double)((MSUtils.getSignedWord(ochBuffer,300) + 0.0) * 0.1000);
-        egocor2 = (double)((MSUtils.getSignedWord(ochBuffer,302) + 0.0) * 0.1000);
-        egocor3 = (double)((MSUtils.getSignedWord(ochBuffer,304) + 0.0) * 0.1000);
-        egocor4 = (double)((MSUtils.getSignedWord(ochBuffer,306) + 0.0) * 0.1000);
-        egocor5 = (double)((MSUtils.getSignedWord(ochBuffer,308) + 0.0) * 0.1000);
-        egocor6 = (double)((MSUtils.getSignedWord(ochBuffer,310) + 0.0) * 0.1000);
-        egocor7 = (double)((MSUtils.getSignedWord(ochBuffer,312) + 0.0) * 0.1000);
-        egocor8 = (double)((MSUtils.getSignedWord(ochBuffer,314) + 0.0) * 0.1000);
-        egocor9 = (double)((MSUtils.getSignedWord(ochBuffer,316) + 0.0) * 0.1000);
-        egocor10 = (double)((MSUtils.getSignedWord(ochBuffer,318) + 0.0) * 0.1000);
-        egocor11 = (double)((MSUtils.getSignedWord(ochBuffer,320) + 0.0) * 0.1000);
-        egocor12 = (double)((MSUtils.getSignedWord(ochBuffer,322) + 0.0) * 0.1000);
-        egocor13 = (double)((MSUtils.getSignedWord(ochBuffer,324) + 0.0) * 0.1000);
-        egocor14 = (double)((MSUtils.getSignedWord(ochBuffer,326) + 0.0) * 0.1000);
-        egocor15 = (double)((MSUtils.getSignedWord(ochBuffer,328) + 0.0) * 0.1000);
-        egocor16 = (double)((MSUtils.getSignedWord(ochBuffer,330) + 0.0) * 0.1000);
-        stream_level = (int)((MSUtils.getByte(ochBuffer,332) + 0) * 1);
-        water_duty = (int)((MSUtils.getByte(ochBuffer,333) + 0) * 1);
-        dwell_trl = (double)((MSUtils.getWord(ochBuffer,334) + 0.0) * 0.1000);
-        vss1_real = (int)((MSUtils.getSignedWord(ochBuffer,336) + 0.0) * 1);
-        vss2_real = (int)((MSUtils.getSignedWord(ochBuffer,338) + 0.0) * 1);
-        ss1 = (int)((MSUtils.getSignedWord(ochBuffer,340) + 0.0) * 1.000);
-        ss2 = (int)((MSUtils.getSignedWord(ochBuffer,342) + 0.0) * 1.000);
-        nitrous_timer = (double)((MSUtils.getWord(ochBuffer,344) + 0) * 0.001);
-        sd_filenum = (int)((MSUtils.getWord(ochBuffer,346) + 0) * 1);
-        sd_error = (int)((MSUtils.getByte(ochBuffer,348) + 0) * 1);
-        sd_phase = (int)((MSUtils.getByte(ochBuffer,349) + 0) * 1);
-        boostduty2 = (int)((MSUtils.getByte(ochBuffer,350) + 0.0) * 1.0);
-        status7 = (int)((MSUtils.getByte(ochBuffer,351) + 0.0) * 1.0);
-        vvt_ang1 = (double)((MSUtils.getSignedWord(ochBuffer,352) + 0.0) * 0.100);
-        vvt_ang2 = (double)((MSUtils.getSignedWord(ochBuffer,354) + 0.0) * 0.100);
-        vvt_ang3 = (double)((MSUtils.getSignedWord(ochBuffer,356) + 0.0) * 0.100);
-        vvt_ang4 = (double)((MSUtils.getSignedWord(ochBuffer,358) + 0.0) * 0.100);
-        inj_timing_pri = (double)((MSUtils.getSignedWord(ochBuffer,360) + 0.0) * 0.100);
-        inj_timing_sec = (double)((MSUtils.getSignedWord(ochBuffer,362) + 0.0) * 0.100);
-        vvt_target1 = (double)((MSUtils.getSignedWord(ochBuffer,364) + 0.0) * 0.100);
-        vvt_target2 = (double)((MSUtils.getSignedWord(ochBuffer,366) + 0.0) * 0.100);
-        vvt_target3 = (double)((MSUtils.getSignedWord(ochBuffer,368) + 0.0) * 0.100);
-        vvt_target4 = (double)((MSUtils.getSignedWord(ochBuffer,370) + 0.0) * 0.100);
-        vvt_duty1 = (double)((MSUtils.getByte(ochBuffer,372) + 0.0) * 0.39063);
-        vvt_duty2 = (double)((MSUtils.getByte(ochBuffer,373) + 0.0) * 0.39063);
-        vvt_duty3 = (double)((MSUtils.getByte(ochBuffer,374) + 0.0) * 0.39063);
-        vvt_duty4 = (double)((MSUtils.getByte(ochBuffer,375) + 0.0) * 0.39063);
-        fuel_pct = (double)((MSUtils.getSignedWord(ochBuffer,376) + 0.0) * 0.1000);
-        if (CELSIUS)
-        {
-        fuel_temp = (double)((MSUtils.getSignedWord(ochBuffer,378) + -320) * 0.05555);
-        }
-        else
-        {
-        fuel_temp = (double)((MSUtils.getSignedWord(ochBuffer,378) + 0) * 0.1);
-        }
-        cl_idle_targ_rpm = (int)((MSUtils.getWord(ochBuffer,380) + 0) * 1);
-        tps_accel = (double)((MSUtils.getSignedWord(ochBuffer,382) + 0.0) * 0.1000);
-        map_accel = (double)((MSUtils.getSignedWord(ochBuffer,384) + 0.0) * 0.1000);
-        total_accel = (double)((MSUtils.getSignedWord(ochBuffer,386) + 0.0) * 0.1000);
-        knock_cyl01 = (double)((MSUtils.getByte(ochBuffer,388) + 0) * 0.4);
-        knock_cyl02 = (double)((MSUtils.getByte(ochBuffer,389) + 0) * 0.4);
-        knock_cyl03 = (double)((MSUtils.getByte(ochBuffer,390) + 0) * 0.4);
-        knock_cyl04 = (double)((MSUtils.getByte(ochBuffer,391) + 0) * 0.4);
-        knock_cyl05 = (double)((MSUtils.getByte(ochBuffer,392) + 0) * 0.4);
-        knock_cyl06 = (double)((MSUtils.getByte(ochBuffer,393) + 0) * 0.4);
-        knock_cyl07 = (double)((MSUtils.getByte(ochBuffer,394) + 0) * 0.4);
-        knock_cyl08 = (double)((MSUtils.getByte(ochBuffer,395) + 0) * 0.4);
-        knock_cyl09 = (double)((MSUtils.getByte(ochBuffer,396) + 0) * 0.4);
-        knock_cyl10 = (double)((MSUtils.getByte(ochBuffer,397) + 0) * 0.4);
-        knock_cyl11 = (double)((MSUtils.getByte(ochBuffer,398) + 0) * 0.4);
-        knock_cyl12 = (double)((MSUtils.getByte(ochBuffer,399) + 0) * 0.4);
-        knock_cyl13 = (double)((MSUtils.getByte(ochBuffer,400) + 0) * 0.4);
-        knock_cyl14 = (double)((MSUtils.getByte(ochBuffer,401) + 0) * 0.4);
-        knock_cyl15 = (double)((MSUtils.getByte(ochBuffer,402) + 0) * 0.4);
-        knock_cyl16 = (double)((MSUtils.getByte(ochBuffer,403) + 0) * 0.4);
+        egov1 = (double)((MSUtils.getWord(ochBuffer,260) + 0.0) * 0.00489);
+        egov2 = (double)((MSUtils.getWord(ochBuffer,262) + 0.0) * 0.00489);
+        egov3 = (double)((MSUtils.getWord(ochBuffer,264) + 0.0) * 0.00489);
+        egov4 = (double)((MSUtils.getWord(ochBuffer,266) + 0.0) * 0.00489);
+        egov5 = (double)((MSUtils.getWord(ochBuffer,268) + 0.0) * 0.00489);
+        egov6 = (double)((MSUtils.getWord(ochBuffer,270) + 0.0) * 0.00489);
+        egov7 = (double)((MSUtils.getWord(ochBuffer,272) + 0.0) * 0.00489);
+        egov8 = (double)((MSUtils.getWord(ochBuffer,274) + 0.0) * 0.00489);
+        egocor1 = (double)((MSUtils.getSignedWord(ochBuffer,276) + 0.0) * 0.1000);
+        egocor2 = (double)((MSUtils.getSignedWord(ochBuffer,278) + 0.0) * 0.1000);
+        egocor3 = (double)((MSUtils.getSignedWord(ochBuffer,280) + 0.0) * 0.1000);
+        egocor4 = (double)((MSUtils.getSignedWord(ochBuffer,282) + 0.0) * 0.1000);
+        egocor5 = (double)((MSUtils.getSignedWord(ochBuffer,284) + 0.0) * 0.1000);
+        egocor6 = (double)((MSUtils.getSignedWord(ochBuffer,286) + 0.0) * 0.1000);
+        egocor7 = (double)((MSUtils.getSignedWord(ochBuffer,288) + 0.0) * 0.1000);
+        egocor8 = (double)((MSUtils.getSignedWord(ochBuffer,290) + 0.0) * 0.1000);
+        stream_level = (int)((MSUtils.getByte(ochBuffer,292) + 0) * 1);
+        water_duty = (int)((MSUtils.getByte(ochBuffer,293) + 0) * 1);
+        dwell_trl = (double)((MSUtils.getWord(ochBuffer,294) + 0.0) * 0.1000);
         accDecEnrich = (((accelEnrich + (tpsaccden ) != 0 ) ?  tpsfuelcut : 100));
         time = (timeNow());
-        try
-        {
-            rpm100 = (rpm / 100.0);
-        }
-        catch (ArithmeticException e) {
-            rpm100 = 0;
-        }
+        rpm100 = (rpm / 100.0);
         altDiv1 = (((alternate ) != 0 ) ?  2 : 1);
         altDiv2 = (((alternate ) != 0 ) ?  2 : 1);
-        try
-        {
-            cycleTime1 = (((rpm ) != 0 ) ?  (60000.0 / rpm * (2.0-(twoStroke&1))) : 0);
-        }
-        catch (ArithmeticException e) {
-            cycleTime1 = 0;
-        }
-        try
-        {
-            nSquirts1 = (nCylinders/divider);
-        }
-        catch (ArithmeticException e) {
-            nSquirts1 = 0;
-        }
-        try
-        {
-            dutyCycle1 = (((cycleTime1 ) != 0 ) ?  (100.0*nSquirts1/altDiv2*pulseWidth1/cycleTime1) : 0);
-        }
-        catch (ArithmeticException e) {
-            dutyCycle1 = 0;
-        }
-        try
-        {
-            cycleTime2 = (((rpm ) != 0 ) ?  (60000.0 / rpm * (2.0-(twoStroke&1))) : 0);
-        }
-        catch (ArithmeticException e) {
-            cycleTime2 = 0;
-        }
-        try
-        {
-            nSquirts2 = (nCylinders/divider);
-        }
-        catch (ArithmeticException e) {
-            nSquirts2 = 0;
-        }
-        try
-        {
-            dutyCycle2 = (((cycleTime2 ) != 0 ) ?  (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2) : 0);
-        }
-        catch (ArithmeticException e) {
-            dutyCycle2 = 0;
-        }
+        cycleTime1 = (60000.0 / rpm * (2.0-twoStroke));
+        nSquirts1 = (nCylinders/divider);
+        dutyCycle1 = (100.0*nSquirts1/altDiv1*pulseWidth1/cycleTime1);
+        cycleTime2 = (60000.0 / rpm * (2.0-twoStroke));
+        nSquirts2 = (nCylinders/divider);
+        dutyCycle2 = (100.0*nSquirts2/altDiv2*pulseWidth2/cycleTime2);
         if (NARROW_BAND_EGO)
         {
         egoVoltage = (egoV);
@@ -1981,91 +1532,19 @@ public class MS3_Format_0233003 extends Megasquirt
         }
         else if (LAMBDA)
         {
-        try
-        {
-            lambda1 = (afr1 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda1 = 0;
-        }
-        try
-        {
-            lambda2 = (afr2 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda2 = 0;
-        }
-        try
-        {
-            lambda3 = (afr3 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda3 = 0;
-        }
-        try
-        {
-            lambda4 = (afr4 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda4 = 0;
-        }
-        try
-        {
-            lambda5 = (afr5 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda5 = 0;
-        }
-        try
-        {
-            lambda6 = (afr6 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda6 = 0;
-        }
-        try
-        {
-            lambda7 = (afr7 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda7 = 0;
-        }
-        try
-        {
-            lambda8 = (afr8 / stoich);
-        }
-        catch (ArithmeticException e) {
-            lambda8 = 0;
-        }
+        lambda1 = (afr1 / stoich);
+        lambda2 = (afr2 / stoich);
+        lambda3 = (afr3 / stoich);
+        lambda4 = (afr4 / stoich);
+        lambda5 = (afr5 / stoich);
+        lambda6 = (afr6 / stoich);
+        lambda7 = (afr7 / stoich);
+        lambda8 = (afr8 / stoich);
         egoVoltage = (lambda1);
-        try
-        {
-            afrtgt1 = (afrtgt1raw / stoich * (egoType == 2 ? 1 : 0));
-        }
-        catch (ArithmeticException e) {
-            afrtgt1 = 0;
-        }
-        try
-        {
-            afrtgt2 = (afrtgt2raw / stoich * (egoType == 2 ? 1 : 0));
-        }
-        catch (ArithmeticException e) {
-            afrtgt2 = 0;
-        }
-        try
-        {
-            afr1err = ((afr1 - afrtgt1raw) / stoich * (egoType == 2 ? 1 : 0));
-        }
-        catch (ArithmeticException e) {
-            afr1err = 0;
-        }
-        try
-        {
-            afr2err = ((afr2 - afrtgt2raw) / stoich * (egoType == 2 ? 1 : 0));
-        }
-        catch (ArithmeticException e) {
-            afr2err = 0;
-        }
+        afrtgt1 = (afrtgt1raw / stoich * (egoType == 2 ? 1 : 0));
+        afrtgt2 = (afrtgt2raw / stoich * (egoType == 2 ? 1 : 0));
+        afr1err = ((afr1 - afrtgt1raw) / stoich * (egoType == 2 ? 1 : 0));
+        afr2err = ((afr2 - afrtgt2raw) / stoich * (egoType == 2 ? 1 : 0));
         }
         else
         {
@@ -2073,120 +1552,17 @@ public class MS3_Format_0233003 extends Megasquirt
         afr1err = (afr1 - afrtgt1);
         afr2err = (afr2 - afrtgt2);
         }
-        try
-        {
-            pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwma_load = 0;
-        }
-        try
-        {
-            pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwmb_load = 0;
-        }
-        try
-        {
-            pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwmc_load = 0;
-        }
-        try
-        {
-            pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwmd_load = 0;
-        }
-        try
-        {
-            pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwme_load = 0;
-        }
-        try
-        {
-            pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
-        }
-        catch (ArithmeticException e) {
-            pwmf_load = 0;
-        }
+        fuelComposition = ((fuelCorrection - 100)*1.587);
+        pwma_load = ((map * (pwm_opt_load_a == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_a == 2 ? 1 : 0)) + (tps * (pwm_opt_load_a == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_a == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_a == 5 ? 1 : 0)) + (mat * (pwm_opt_load_a == 7 ? 1 : 0)));
+        pwmb_load = ((map * (pwm_opt_load_b == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_b == 2 ? 1 : 0)) + (tps * (pwm_opt_load_b == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_b == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_b == 5 ? 1 : 0)) + (mat * (pwm_opt_load_b == 7 ? 1 : 0)));
+        pwmc_load = ((map * (pwm_opt_load_c == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_c == 2 ? 1 : 0)) + (tps * (pwm_opt_load_c == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_c == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_c == 5 ? 1 : 0)) + (mat * (pwm_opt_load_c == 7 ? 1 : 0)));
+        pwmd_load = ((map * (pwm_opt_load_d == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_d == 2 ? 1 : 0)) + (tps * (pwm_opt_load_d == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_d == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_d == 5 ? 1 : 0)) + (mat * (pwm_opt_load_d == 7 ? 1 : 0)));
+        pwme_load = ((map * (pwm_opt_load_e == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_e == 2 ? 1 : 0)) + (tps * (pwm_opt_load_e == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_e == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_e == 5 ? 1 : 0)) + (mat * (pwm_opt_load_e == 7 ? 1 : 0)));
+        pwmf_load = ((map * (pwm_opt_load_f == 1 ? 1 : 0)) + (map*100/(barometer+(100*(barometer==0 ? 1 : 0))) * (pwm_opt_load_f == 2 ? 1 : 0)) + (tps * (pwm_opt_load_f == 3 ? 1 : 0)) + (mafmap * (pwm_opt_load_f == 4 ? 1 : 0)) + (coolant * (pwm_opt_load_f == 5 ? 1 : 0)) + (mat * (pwm_opt_load_f == 7 ? 1 : 0)));
         df_temp = (0);
         df_press = (0);
-        try
-        {
-            boostbar = ((map - barometer) / 101.33);
-        }
-        catch (ArithmeticException e) {
-            boostbar = 0;
-        }
+        boostbar = ((map - barometer) / 101.33);
         boostpsig = ((map - barometer) * 0.1450);
-        vacuum = ((barometer-map)*0.2953007);
-        boostvac = ((map < barometer ) ?  -vacuum : boostpsig);
-        if (MPH)
-        {
-        vss1 = (vss1_real * 0.22369);
-        vss2 = (vss2_real * 0.22369);
-        }
-        else
-        {
-        vss1 = (vss1_real * 0.36);
-        vss2 = (vss2_real * 0.36);
-        }
-        try
-        {
-            economy_l_km = (((vss1_real ) != 0 ) ?  (fuelflow / (vss1_real * 6)) : 0);
-        }
-        catch (ArithmeticException e) {
-            economy_l_km = 0;
-        }
-        try
-        {
-            economy_mpg_us = (((vss1_real ) != 0 ) ?  (2.361 / economy_l_km) : 0);
-        }
-        catch (ArithmeticException e) {
-            economy_mpg_us = 0;
-        }
-        try
-        {
-            economy_mpg_uk = (((vss1_real ) != 0 ) ?  (2.825 / economy_l_km) : 0);
-        }
-        catch (ArithmeticException e) {
-            economy_mpg_uk = 0;
-        }
-        pwmidle_cl_initialvalue_matorclt_follower = (((pwmidle_cl_opts_initval_clt ) != 0 ) ?  coolant : mat);
-        if (EXPANDED_CLT_TEMP)
-        {
-        clt_exp = (1);
-        }
-        else
-        {
-        clt_exp = (0);
-        }
-        if (CELSIUS)
-        {
-        cltlowlim = (((clt_exp ) != 0 ) ?  -40 : -40);
-        clthighlim = (((clt_exp ) != 0 ) ?  230 : 120);
-        cltlowdang = (((clt_exp ) != 0 ) ?  65 : 10);
-        cltlowwarn = (((clt_exp ) != 0 ) ?  93 : 65);
-        clthighwarn = (((clt_exp ) != 0 ) ?  162 : 93);
-        clthighdang = (((clt_exp ) != 0 ) ?  176 : 104);
-        mathigh = (110);
-        }
-        else
-        {
-        cltlowlim = (((clt_exp ) != 0 ) ?  -40 : -40);
-        clthighlim = (((clt_exp ) != 0 ) ?  450 : 250);
-        cltlowdang = (((clt_exp ) != 0 ) ?  150 : 50);
-        cltlowwarn = (((clt_exp ) != 0 ) ?  200 : 150);
-        clthighwarn = (((clt_exp ) != 0 ) ?  325 : 200);
-        clthighdang = (((clt_exp ) != 0 ) ?  350 : 220);
-        mathigh = (215);
-        }
     }
     @Override
     public String getLogHeader()
@@ -2197,8 +1573,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("RPM").append("\t");
         b.append("MAP").append("\t");
         b.append("TP").append("\t");
-        b.append("MAF").append("\t");
-        b.append("MAFMAP").append("\t");
         if (NARROW_BAND_EGO)
         {
         b.append("O2").append("\t");
@@ -2236,14 +1610,14 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("CLT").append("\t");
         b.append("Engine").append("\t");
         b.append("Batt V").append("\t");
-        b.append("egocor_Gego1").append("\t");
-        b.append("egocor_Gego2").append("\t");
-        b.append("egocor_Gego3").append("\t");
-        b.append("egocor_Gego4").append("\t");
-        b.append("egocor_Gego5").append("\t");
-        b.append("egocor_Gego6").append("\t");
-        b.append("egocor_Gego7").append("\t");
-        b.append("egocor_Gego8").append("\t");
+        b.append("egocor Gego1").append("\t");
+        b.append("egocor Gego2").append("\t");
+        b.append("egocor Gego3").append("\t");
+        b.append("egocor Gego4").append("\t");
+        b.append("egocor Gego5").append("\t");
+        b.append("egocor Gego6").append("\t");
+        b.append("egocor Gego7").append("\t");
+        b.append("egocor Gego8").append("\t");
         b.append("Gair").append("\t");
         b.append("Gwarm").append("\t");
         b.append("Gbaro").append("\t");
@@ -2263,23 +1637,10 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("Seq PW6").append("\t");
         b.append("Seq PW7").append("\t");
         b.append("Seq PW8").append("\t");
-        if (CYL_12_16_SUPPORT)
-        {
-        b.append("Seq PW9").append("\t");
-        b.append("Seq PW10").append("\t");
-        b.append("Seq PW11").append("\t");
-        b.append("Seq PW12").append("\t");
-        b.append("Seq PW13").append("\t");
-        b.append("Seq PW14").append("\t");
-        b.append("Seq PW15").append("\t");
-        b.append("Seq PW16").append("\t");
-        }
         b.append("SparkAdv").append("\t");
         b.append("knockRet").append("\t");
-        b.append("knockin").append("\t");
         b.append("ColdAdv").append("\t");
         b.append("Dwell").append("\t");
-        b.append("Barometer").append("\t");
         b.append("IACstep").append("\t");
         b.append("PWM Idle Duty").append("\t");
         b.append("Boost Duty").append("\t");
@@ -2317,8 +1678,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("Secondary Ign Load").append("\t");
         b.append("EAE load").append("\t");
         b.append("AFR load").append("\t");
-        b.append("Injector timing (pri)").append("\t");
-        b.append("Injector timing (sec)").append("\t");
         b.append("EGT 1 temp").append("\t");
         b.append("EGT 2 temp").append("\t");
         b.append("EGT 3 temp").append("\t");
@@ -2331,10 +1690,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("EGT 10 temp").append("\t");
         b.append("EGT 11 temp").append("\t");
         b.append("EGT 12 temp").append("\t");
-        b.append("EGT 13 temp").append("\t");
-        b.append("EGT 14 temp").append("\t");
-        b.append("EGT 15 temp").append("\t");
-        b.append("EGT 16 temp").append("\t");
         b.append("sensor01").append("\t");
         b.append("sensor02").append("\t");
         b.append("sensor03").append("\t");
@@ -2376,7 +1731,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("Nitrous 2 duty").append("\t");
         b.append("Nitrous Timer").append("\t");
         b.append("SDcard file number").append("\t");
-        b.append("SDcard status").append("\t");
         b.append("SDcard phase").append("\t");
         b.append("SDcard error").append("\t");
         b.append("Gear").append("\t");
@@ -2396,42 +1750,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append("status3").append("\t");
         b.append("status4").append("\t");
         b.append("status5").append("\t");
-        b.append("VVT angle 1").append("\t");
-        b.append("VVT angle 2").append("\t");
-        b.append("VVT angle 3").append("\t");
-        b.append("VVT angle 4").append("\t");
-        b.append("VVT target 1").append("\t");
-        b.append("VVT target 2").append("\t");
-        b.append("VVT target 3").append("\t");
-        b.append("VVT target 4").append("\t");
-        b.append("VVT duty 1").append("\t");
-        b.append("VVT duty 2").append("\t");
-        b.append("VVT duty 3").append("\t");
-        b.append("VVT duty 4").append("\t");
-        b.append("Fuel flow cc/min").append("\t");
-        b.append("Fuel cons. l/km").append("\t");
-        b.append("TPS accel").append("\t");
-        b.append("MAP accel").append("\t");
-        b.append("Total accel").append("\t");
-        b.append("knock cyl# 1").append("\t");
-        b.append("knock cyl# 2").append("\t");
-        b.append("knock cyl# 3").append("\t");
-        b.append("knock cyl# 4").append("\t");
-        b.append("knock cyl# 5").append("\t");
-        b.append("knock cyl# 6").append("\t");
-        b.append("knock cyl# 7").append("\t");
-        b.append("knock cyl# 8").append("\t");
-        if (CYL_12_16_SUPPORT)
-        {
-        b.append("knock cyl#09").append("\t");
-        b.append("knock cyl#10").append("\t");
-        b.append("knock cyl#11").append("\t");
-        b.append("knock cyl#12").append("\t");
-        b.append("knock cyl#13").append("\t");
-        b.append("knock cyl#14").append("\t");
-        b.append("knock cyl#15").append("\t");
-        b.append("knock cyl#16").append("\t");
-        }
         if (INTERNAL_LOG_FIELDS)
         {
         }
@@ -2448,8 +1766,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(rpm).append("\t");
         b.append(round(map)).append("\t");
         b.append(throttle).append("\t");
-        b.append(round(maf)).append("\t");
-        b.append(round(mafmap)).append("\t");
         if (NARROW_BAND_EGO)
         {
         b.append(round(egov1)).append("\t");
@@ -2514,23 +1830,10 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(round(pwseq6)).append("\t");
         b.append(round(pwseq7)).append("\t");
         b.append(round(pwseq8)).append("\t");
-        if (CYL_12_16_SUPPORT)
-        {
-        b.append(round(pwseq9)).append("\t");
-        b.append(round(pwseq10)).append("\t");
-        b.append(round(pwseq11)).append("\t");
-        b.append(round(pwseq12)).append("\t");
-        b.append(round(pwseq13)).append("\t");
-        b.append(round(pwseq14)).append("\t");
-        b.append(round(pwseq15)).append("\t");
-        b.append(round(pwseq16)).append("\t");
-        }
         b.append(round(advance)).append("\t");
         b.append(round(knockRetard)).append("\t");
-        b.append(round(knock)).append("\t");
         b.append(round(coldAdvDeg)).append("\t");
         b.append(round(dwell)).append("\t");
-        b.append(round(barometer)).append("\t");
         b.append(iacstep).append("\t");
         b.append(round(idleDC)).append("\t");
         b.append(boostduty).append("\t");
@@ -2568,8 +1871,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(round(ignload2)).append("\t");
         b.append(round(eaeload1)).append("\t");
         b.append(round(afrload1)).append("\t");
-        b.append(round(inj_timing_pri)).append("\t");
-        b.append(round(inj_timing_sec)).append("\t");
         b.append(round(egt1)).append("\t");
         b.append(round(egt2)).append("\t");
         b.append(round(egt3)).append("\t");
@@ -2582,10 +1883,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(round(egt10)).append("\t");
         b.append(round(egt11)).append("\t");
         b.append(round(egt12)).append("\t");
-        b.append(round(egt13)).append("\t");
-        b.append(round(egt14)).append("\t");
-        b.append(round(egt15)).append("\t");
-        b.append(round(egt16)).append("\t");
         b.append(round(sensor01)).append("\t");
         b.append(round(sensor02)).append("\t");
         b.append(round(sensor03)).append("\t");
@@ -2611,13 +1908,13 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(syncreason).append("\t");
         if (MPH)
         {
-        b.append(vss1).append("\t");
-        b.append(vss2).append("\t");
+        b.append(round(vss1)).append("\t");
+        b.append(round(vss2)).append("\t");
         }
         else
         {
-        b.append(vss1).append("\t");
-        b.append(vss2).append("\t");
+        b.append(round(vss1)).append("\t");
+        b.append(round(vss2)).append("\t");
         }
         b.append(ss1).append("\t");
         b.append(ss2).append("\t");
@@ -2627,7 +1924,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(nitrous2_duty).append("\t");
         b.append(round(nitrous_timer)).append("\t");
         b.append(sd_filenum).append("\t");
-        b.append(sd_status).append("\t");
         b.append(sd_phase).append("\t");
         b.append(sd_error).append("\t");
         b.append(gear).append("\t");
@@ -2647,42 +1943,6 @@ public class MS3_Format_0233003 extends Megasquirt
         b.append(status3).append("\t");
         b.append(status4).append("\t");
         b.append(status5).append("\t");
-        b.append(round(vvt_ang1)).append("\t");
-        b.append(round(vvt_ang2)).append("\t");
-        b.append(round(vvt_ang3)).append("\t");
-        b.append(round(vvt_ang4)).append("\t");
-        b.append(round(vvt_target1)).append("\t");
-        b.append(round(vvt_target2)).append("\t");
-        b.append(round(vvt_target3)).append("\t");
-        b.append(round(vvt_target4)).append("\t");
-        b.append(round(vvt_duty1)).append("\t");
-        b.append(round(vvt_duty2)).append("\t");
-        b.append(round(vvt_duty3)).append("\t");
-        b.append(round(vvt_duty4)).append("\t");
-        b.append(fuelflow).append("\t");
-        b.append(fuelcons).append("\t");
-        b.append(round(tps_accel)).append("\t");
-        b.append(round(map_accel)).append("\t");
-        b.append(round(total_accel)).append("\t");
-        b.append(round(knock_cyl01)).append("\t");
-        b.append(round(knock_cyl02)).append("\t");
-        b.append(round(knock_cyl03)).append("\t");
-        b.append(round(knock_cyl04)).append("\t");
-        b.append(round(knock_cyl05)).append("\t");
-        b.append(round(knock_cyl06)).append("\t");
-        b.append(round(knock_cyl07)).append("\t");
-        b.append(round(knock_cyl08)).append("\t");
-        if (CYL_12_16_SUPPORT)
-        {
-        b.append(round(knock_cyl09)).append("\t");
-        b.append(round(knock_cyl10)).append("\t");
-        b.append(round(knock_cyl11)).append("\t");
-        b.append(round(knock_cyl12)).append("\t");
-        b.append(round(knock_cyl13)).append("\t");
-        b.append(round(knock_cyl14)).append("\t");
-        b.append(round(knock_cyl15)).append("\t");
-        b.append(round(knock_cyl16)).append("\t");
-        }
         if (INTERNAL_LOG_FIELDS)
         {
         }
@@ -2693,6 +1953,10 @@ public class MS3_Format_0233003 extends Megasquirt
     @Override
     public void initGauges()
     {
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("IACgauge","iacstep",iacstep,"IAC position","steps",0,255,-1,-1,999,999,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwellGauge","dwell",dwell,"Dwell","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwelltrlGauge","dwell_trl",dwell_trl,"Dwell (Trailing)","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("PWMIdlegauge","idleDC",idleDC,"Idle PWM%","%",0,100,-1,-1,999,90,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge","pulseWidth1",pulseWidth1,"Pulse Width 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge","pulseWidth2",pulseWidth2,"Pulse Width 2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq1Gauge","pwseq1",pwseq1,"Pulse Width Seq 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
@@ -2703,33 +1967,12 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq6Gauge","pwseq6",pwseq6,"Pulse Width Seq 6","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq7Gauge","pwseq7",pwseq7,"Pulse Width Seq 7","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq8Gauge","pwseq8",pwseq8,"Pulse Width Seq 8","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        if (CYL_12_16_SUPPORT)
-        {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq9Gauge","pwseq9",pwseq9,"Pulse Width Seq 9","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq10Gauge","pwseq10",pwseq10,"Pulse Width Seq 10","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq11Gauge","pwseq11",pwseq11,"Pulse Width Seq 11","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq12Gauge","pwseq12",pwseq12,"Pulse Width Seq 12","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq13Gauge","pwseq13",pwseq13,"Pulse Width Seq 13","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq14Gauge","pwseq14",pwseq14,"Pulse Width Seq 14","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq15Gauge","pwseq15",pwseq15,"Pulse Width Seq 15","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq16Gauge","pwseq16",pwseq16,"Pulse Width Seq 16","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        }
-        else
-        {
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq9Gauge","pwseq9",pwseq9,"Pulse Width V3 inj1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq10Gauge","pwseq10",pwseq10,"Pulse Width V3 inj2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("IACgauge","iacstep",iacstep,"IAC position","steps",0,255,-1,-1,999,999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwellGauge","dwell",dwell,"Dwell","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwelltrlGauge","dwell_trl",dwell_trl,"Dwell (Trailing)","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("PWMIdlegauge","idleDC",idleDC,"Idle PWM%","%",0,100,-1,-1,999,90,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advdegGauge","advance",advance,"Ignition Advance","degrees",0,50,-1,-1,999,999,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge","dutyCycle1",dutyCycle1,"Duty Cycle 1","%",0,100,-1,-1,85,90,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge","dutyCycle2",dutyCycle2,"Duty Cycle 2","%",0,100,-1,-1,85,90,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge","boostduty",boostduty,"Boost Duty","%",0,100,-1,-1,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge2","boostduty2",boostduty2,"Boost Duty 2","%",0,100,-1,-1,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injtimingpriGauge","inj_timing_pri",inj_timing_pri,"Injector timing (pri)","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injtimingsecGauge","inj_timing_sec",inj_timing_sec,"Injector timing (sec)","degrees",0,50,-1,-1,999,999,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous_addfuel","n2o_addfuel",n2o_addfuel,"Nitrous added fuel","ms",-5,20,20,20,20,20,3,3,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous_retard","n2o_retard",n2o_retard,"Nitrous retard","deg",-5,30,30,30,30,30,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous1_duty","nitrous1_duty",nitrous1_duty,"Nitrous 1 Duty","%",0,100,100,100,100,100,0,0,45));
@@ -2742,10 +1985,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_d","duty_pwm_d",duty_pwm_d,"Generic PWM D Duty","%",0,100,100,100,100,100,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_e","duty_pwm_e",duty_pwm_e,"Generic PWM E Duty","%",0,100,100,100,100,100,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_f","duty_pwm_f",duty_pwm_f,"Generic PWM F Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvt_duty1","vvt_duty1",vvt_duty1,"VVT 1 duty","%",0,100,100,100,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvt_duty2","vvt_duty2",vvt_duty2,"VVT 2 duty","%",0,100,100,100,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvt_duty3","vvt_duty3",vvt_duty3,"VVT 3 duty","%",0,100,100,100,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvt_duty4","vvt_duty4",vvt_duty4,"VVT 4 duty","%",0,100,100,100,100,100,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge","accDecEnrich",accDecEnrich,"Accel Enrich","%",50,150,-1,-1,999,999,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge","seconds",seconds,"Clock","Seconds",0,65535,10,10,65535,65535,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge","gammaEnrich",gammaEnrich,"Gamma Enrichment","%",50,150,-1,-1,151,151,1,1,45));
@@ -2757,8 +1996,10 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1","EAEFuelCorr1",EAEFuelCorr1,"EAE Fuel Correction 1","%",0,200,40,70,130,160,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2","EAEFuelCorr2",EAEFuelCorr2,"EAE Fuel Correction 2","%",0,200,40,70,130,160,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcorr","fuelCorrection",fuelCorrection,"E85 Fuel Correction","%",100,200,99,99,164,170,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcompsn","fuelComposition",fuelComposition,"Ethanol Percentage","%",0,100,-1,-1,85,101,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lostsyncGauge","synccnt",synccnt,"Lost sync counter","",0,255,255,255,255,255,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge","syncreason",syncreason,"Lost sync reason","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("user0Gauge","user0",user0,"User defined","",0,65535,65535,65535,65535,65535,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge1","veCurr1",veCurr1,"VE Current1","%",0,120,-1,-1,999,999,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge2","veCurr2",veCurr2,"VE2 Current","%",0,120,-1,-1,999,999,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge","warmupEnrich",warmupEnrich,"Warmup Enrichment","%",100,150,-1,-1,101,105,0,0,45));
@@ -2767,17 +2008,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmdot","rpmdot",rpmdot,"rpmdot","rpm/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tpsdot","tpsDOT",tpsDOT,"tpsdot","%/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapdot","mapDOT",mapDOT,"mapdot","kPa/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvttargGauge1","vvt_target1",vvt_target1,"VVT 1 target","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvttargGauge2","vvt_target2",vvt_target2,"VVT 2 target","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvttargGauge3","vvt_target3",vvt_target3,"VVT 3 target","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvttargGauge4","vvt_target4",vvt_target4,"VVT 4 target","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelflowGauge","fuelflow",fuelflow,"Fuel flow","cc/min",0,65535,-1,-1,99999,99999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("economy_l_km","economy_l_km",economy_l_km,"Fuel economy","l/km",0,3,-1,-1,9,9,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("economy_mpg_us","economy_mpg_us",economy_mpg_us,"Fuel economy","mpg_us",0,60,-1,-1,99,99,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("economy_mpg_uk","economy_mpg_uk",economy_mpg_uk,"Fuel economy","mpg_uk",0,60,-1,-1,99,99,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tps_accel","tps_accel",tps_accel,"tps_accel","%/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("map_accel","map_accel",map_accel,"map_accel","kPa/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("total_accel","total_accel",total_accel,"total_accel","%/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
         if (CELSIUS)
         {
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge1","egt1",egt1,"EGT 01","C",0,1250,0,0,1250,1250,0,0,45));
@@ -2792,10 +2022,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge10","egt10",egt10,"EGT 10","C",0,1250,0,0,1250,1250,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge11","egt11",egt11,"EGT 11","C",0,1250,0,0,1250,1250,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge12","egt12",egt12,"EGT 12","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge13","egt13",egt13,"EGT 13","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge14","egt14",egt14,"EGT 14","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge15","egt15",egt15,"EGT 15","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge16","egt16",egt16,"EGT 16","C",0,1250,0,0,1250,1250,0,0,45));
         }
         else
         {
@@ -2811,10 +2037,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge10","egt10",egt10,"EGT 10","F",0,2280,0,0,2280,2280,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge11","egt11",egt11,"EGT 11","F",0,2280,0,0,2280,2280,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge12","egt12",egt12,"EGT 12","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge13","egt13",egt13,"EGT 13","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge14","egt14",egt14,"EGT 14","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge15","egt15",egt15,"EGT 15","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge16","egt16",egt16,"EGT 16","F",0,2280,0,0,2280,2280,0,0,45));
         }
         if (CELSIUS)
         {
@@ -2841,8 +2063,8 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat",mat,"Manifold Air Temp","°F",-40,215,0,30,200,210,0,0,45));
         }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter","batteryVoltage",batteryVoltage,"Battery Voltage","volts",7,21,8,9,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm",rpm,"Engine Speed","RPM",0,rpmhigh,300,600,rpmwarn,rpmdang,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge","throttle",throttle,"Throttle Position","%",0,100,-1,1,90,100,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm",rpm,"Engine Speed","RPM",0,8000,300,600,3000,5000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge","throttle",throttle,"Throttle Position","%",0,100,-1,1,90,100,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge","map",map,"Engine MAP","kPa",0,255,0,20,200,245,1,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge","barometer",barometer,"Barometer","kPa",60,120,0,20,200,245,1,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelloadGauge","fuelload",fuelload,"Fuel Load","%",0,255,0,20,200,245,1,0,45));
@@ -2855,8 +2077,8 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafMapGauge","mafmap",mafmap,"MAFMAP","kPa",0,400,-1,-1,999,999,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostbarGauge","boostbar",boostbar,"Boost","bar",-1,3,-1,-1,5,5,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostpsigGauge","boostpsig",boostpsig,"Boost","psig",-14.7,21,-15,-15,30,30,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostvacGauge","boostvac",boostvac,"Vac/Boost","inHg/psig",-30,30,-30,-30,30,30,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knockinGauge","knock",knock,"Knock Input","%",0,100.0,-1,-1,100.0,100.0,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc6Gauge","adc6",adc6,"ADC 6","",0,1023,1023,1023,1023,1023,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc7Gauge","adc7",adc7,"ADC 7","",0,1023,1023,1023,1023,1023,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("stream_levelGauge","stream_level",stream_level,"Stream Level","",0,128,128,128,128,128,0,0,45));
         if (MPH)
         {
@@ -2874,48 +2096,8 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelx","accelx",accelx,"Accel X","ms-2",-59,59,59,59,59,59,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accely","accely",accely,"Accel Y","ms-2",-59,59,59,59,59,59,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelz","accelz",accelz,"Accel Z","ms-2",-59,59,59,59,59,59,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvtGauge1","vvt_ang1",vvt_ang1,"VVT 1 angle","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvtGauge2","vvt_ang2",vvt_ang2,"VVT 2 angle","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvtGauge3","vvt_ang3",vvt_ang3,"VVT 3 angle","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vvtGauge4","vvt_ang4",vvt_ang4,"VVT 4 angle","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcompsn","fuel_pct",fuel_pct,"Ethanol Percentage","%",0,100,-1,-1,85,101,0,0,45));
-        if (CELSIUS)
-        {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge","fuel_temp",fuel_temp,"Fuel Temp","°C",-40,110,-100,-100,95,105,0,0,45));
-        }
-        else
-        {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fueltempGauge","fuel_temp",fuel_temp,"Fuel Temp","°F",-40,240,-100,-100,200,220,0,0,45));
-        }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock01Gauge","knock_cyl01",knock_cyl01,"Knock cyl# 1","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock02Gauge","knock_cyl02",knock_cyl02,"Knock cyl# 2","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock03Gauge","knock_cyl03",knock_cyl03,"Knock cyl# 3","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock04Gauge","knock_cyl04",knock_cyl04,"Knock cyl# 4","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock05Gauge","knock_cyl05",knock_cyl05,"Knock cyl# 5","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock06Gauge","knock_cyl06",knock_cyl06,"Knock cyl# 6","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock07Gauge","knock_cyl07",knock_cyl07,"Knock cyl# 7","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock08Gauge","knock_cyl08",knock_cyl08,"Knock cyl# 8","",0,100,0,0,100,100,1,0,45));
-        if (CYL_12_16_SUPPORT)
-        {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock09Gauge","knock_cyl09",knock_cyl09,"Knock cyl# 9","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock10Gauge","knock_cyl10",knock_cyl10,"Knock cyl#10","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock11Gauge","knock_cyl11",knock_cyl11,"Knock cyl#11","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock12Gauge","knock_cyl12",knock_cyl12,"Knock cyl#12","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock13Gauge","knock_cyl13",knock_cyl13,"Knock cyl#13","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock14Gauge","knock_cyl14",knock_cyl14,"Knock cyl#14","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock15Gauge","knock_cyl15",knock_cyl15,"Knock cyl#15","",0,100,0,0,100,100,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("knock16Gauge","knock_cyl16",knock_cyl16,"Knock cyl#16","",0,100,0,0,100,100,1,0,45));
-        }
         if (NARROW_BAND_EGO)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV1Gauge","egov1",egov1,"Exhaust Gas Oxygen 1","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge","egov2",egov2,"Exhaust Gas Oxygen 2","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV3Gauge","egov3",egov3,"Exhaust Gas Oxygen 3","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV4Gauge","egov4",egov4,"Exhaust Gas Oxygen 4","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV5Gauge","egov5",egov5,"Exhaust Gas Oxygen 5","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV6Gauge","egov6",egov6,"Exhaust Gas Oxygen 6","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV7Gauge","egov7",egov7,"Exhaust Gas Oxygen 7","volts",0,1,1,1,1,1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV8Gauge","egov8",egov8,"Exhaust Gas Oxygen 8","volts",0,1,1,1,1,1,2,2,45));
         }
         else if (LAMBDA)
         {
@@ -2927,14 +2109,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda6Gauge","lambda6",lambda6,"Lambda 6","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda7Gauge","lambda7",lambda7,"Lambda 7","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda8Gauge","lambda8",lambda8,"Lambda 8","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV1Gauge","egov1",egov1,"Exhaust Gas Oxygen 1","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge","egov2",egov2,"Exhaust Gas Oxygen 2","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV3Gauge","egov3",egov3,"Exhaust Gas Oxygen 3","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV4Gauge","egov4",egov4,"Exhaust Gas Oxygen 4","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV5Gauge","egov5",egov5,"Exhaust Gas Oxygen 5","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV6Gauge","egov6",egov6,"Exhaust Gas Oxygen 6","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV7Gauge","egov7",egov7,"Exhaust Gas Oxygen 7","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV8Gauge","egov8",egov8,"Exhaust Gas Oxygen 8","volts",0,5,5,5,5,5,2,2,45));
         }
         else
         {
@@ -2946,6 +2120,7 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr6Gauge","afr6",afr6,"Air:Fuel Ratio 6","",10,19.4,12,13,15,16,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr7Gauge","afr7",afr7,"Air:Fuel Ratio 7","",10,19.4,12,13,15,16,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr8Gauge","afr8",afr8,"Air:Fuel Ratio 8","",10,19.4,12,13,15,16,2,2,45));
+        }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV1Gauge","egov1",egov1,"Exhaust Gas Oxygen 1","volts",0,5,5,5,5,5,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge","egov2",egov2,"Exhaust Gas Oxygen 2","volts",0,5,5,5,5,5,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV3Gauge","egov3",egov3,"Exhaust Gas Oxygen 3","volts",0,5,5,5,5,5,2,2,45));
@@ -2954,7 +2129,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV6Gauge","egov6",egov6,"Exhaust Gas Oxygen 6","volts",0,5,5,5,5,5,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV7Gauge","egov7",egov7,"Exhaust Gas Oxygen 7","volts",0,5,5,5,5,5,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV8Gauge","egov8",egov8,"Exhaust Gas Oxygen 8","volts",0,5,5,5,5,5,2,2,45));
-        }
         if (NARROW_BAND_EGO)
         {
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1targetGauge","afrtgt1",afrtgt1,"EgoV 1 Target","",0,1,20,20,20,20,3,3,45));
@@ -2984,42 +2158,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge6","egocor6",egocor6,"EGO Correction 6","%",50,150,90,99,101,110,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge7","egocor7",egocor7,"EGO Correction 7","%",50,150,90,99,101,110,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge8","egocor8",egocor8,"EGO Correction 8","%",50,150,90,99,101,110,1,1,45));
-        if (CYL_12_16_SUPPORT)
-        {
-        if (NARROW_BAND_EGO)
-        {
-        }
-        else if (LAMBDA)
-        {
-        }
-        else
-        {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr9Gauge","afr9",afr9,"Air:Fuel Ratio 9","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr10Gauge","afr10",afr10,"Air:Fuel Ratio 10","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr11Gauge","afr11",afr11,"Air:Fuel Ratio 11","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr12Gauge","afr12",afr12,"Air:Fuel Ratio 12","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr13Gauge","afr13",afr13,"Air:Fuel Ratio 13","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr14Gauge","afr14",afr14,"Air:Fuel Ratio 14","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr15Gauge","afr15",afr15,"Air:Fuel Ratio 15","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr16Gauge","afr16",afr16,"Air:Fuel Ratio 16","",10,19.4,12,13,15,16,2,2,45));
-        }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV9Gauge","egov9",egov9,"Exhaust Gas Oxygen 9","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV10Gauge","egov10",egov10,"Exhaust Gas Oxygen 10","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV11Gauge","egov11",egov11,"Exhaust Gas Oxygen 11","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV12Gauge","egov12",egov12,"Exhaust Gas Oxygen 12","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV13Gauge","egov13",egov13,"Exhaust Gas Oxygen 13","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV14Gauge","egov14",egov14,"Exhaust Gas Oxygen 14","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV15Gauge","egov15",egov15,"Exhaust Gas Oxygen 15","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV16Gauge","egov16",egov16,"Exhaust Gas Oxygen 16","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge9","egocor9",egocor9,"EGO Correction 9","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge10","egocor10",egocor10,"EGO Correction 10","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge11","egocor11",egocor11,"EGO Correction 11","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge12","egocor12",egocor12,"EGO Correction 12","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge13","egocor13",egocor13,"EGO Correction 13","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge14","egocor14",egocor14,"EGO Correction 14","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge15","egocor15",egocor15,"EGO Correction 15","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge16","egocor16",egocor16,"EGO Correction 16","%",50,150,90,99,101,110,1,1,45));
-        }
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor01Gauge","sensor01",sensor01,"Sensor 01","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor02Gauge","sensor02",sensor02,"Sensor 02","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor03Gauge","sensor03",sensor03,"Sensor 03","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
@@ -3048,7 +2186,6 @@ public class MS3_Format_0233003 extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status3Gauge","status3",status3,"Status 3","",0,255,255,255,255,255,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status4Gauge","status4",status4,"Status 4","",0,255,255,255,255,255,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status5Gauge","status5",status5,"Status 5","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("injcountGauge","status5",status5,"Injection Count","pulses",0,1000,65535,65535,65535,65535,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("looptimeGauge","looptime",looptime,"Mainloop time","us",0,10000,-1,-1,1000,6000,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_filenum","sd_filenum",sd_filenum,"SDcard file number","",0,9999,9999,9999,9999,9999,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_error","sd_error",sd_error,"SDcard error","",0,255,255,255,255,255,0,0,45));
@@ -3085,17 +2222,17 @@ public class MS3_Format_0233003 extends Megasquirt
     @Override
     public int getPageActivationDelay()
     {
-        return 1;
+        return 100;
     }
     @Override
     public int getInterWriteDelay()
     {
-        return 0;
+        return 1;
     }
     @Override
     public boolean isCRC32Protocol()
     {
-        return true;
+        return false;
     }
     @Override
     public int getCurrentTPS()
@@ -3115,15 +2252,13 @@ public class MS3_Format_0233003 extends Megasquirt
         if (USE_CRC_DATA_CHECK)
         {
         }
-        if (USE_CRC_DATA_CHECK)
-        {
-        }
         pageBuffer = loadPage(1,0,1024,null,new byte[]{114,0,4,0,0,4,0});
         nCylinders = MSUtils.getBits(pageBuffer,0,0,4,0);
         no_skip_pulses = (int)((MSUtils.getByte(pageBuffer,1) + 0.0) * 1.0);
         ICIgnCapture = MSUtils.getBits(pageBuffer,2,0,0,0);
         engineType = MSUtils.getBits(pageBuffer,2,3,3,0);
         spkout_hi_lo = MSUtils.getBits(pageBuffer,2,4,4,0);
+        injctl = MSUtils.getBits(pageBuffer,2,5,5,0);
         max_coil_dur = (double)((MSUtils.getByte(pageBuffer,3) + 0.0) * 0.1);
         max_spk_dur = (double)((MSUtils.getByte(pageBuffer,4) + 0.0) * 0.1);
         dwellAcc = (double)((MSUtils.getByte(pageBuffer,5) + 0.0) * 0.1);
@@ -3204,7 +2339,6 @@ public class MS3_Format_0233003 extends Megasquirt
         hardware_spk = MSUtils.getBits(pageBuffer,77,0,2,0);
         hardware_cam = MSUtils.getBits(pageBuffer,77,3,3,0);
         hardware_fuel = MSUtils.getBits(pageBuffer,77,4,4,0);
-        hardware_injij = MSUtils.getBits(pageBuffer,77,5,5,0);
         OverBoostKpa = (double)((MSUtils.getSignedWord(pageBuffer,78) + 0.0) * 0.1);
         OverBoostHyst = (double)((MSUtils.getSignedWord(pageBuffer,80) + 0.0) * 0.1);
         overboostcutx = (int)((MSUtils.getByte(pageBuffer,82) + 0.0) * 1.0);
@@ -3267,7 +2401,7 @@ public class MS3_Format_0233003 extends Megasquirt
         injPwmT = (double)((MSUtils.getByte(pageBuffer,116) + 0.128) * 0.128);
         injPwmPd = (int)((MSUtils.getByte(pageBuffer,117) + 0.0) * 1.0);
         injPwmP = (int)((MSUtils.getByte(pageBuffer,118) + 0.0) * 1.0);
-        twoStroke = MSUtils.getBits(pageBuffer,119,0,1,0);
+        twoStroke = MSUtils.getBits(pageBuffer,119,0,0,0);
         injType = MSUtils.getBits(pageBuffer,120,0,0,0);
         nInjectors = MSUtils.getBits(pageBuffer,121,0,4,0);
         OddFireang = (double)((MSUtils.getWord(pageBuffer,122) + 0.0) * 0.1);
@@ -3276,7 +2410,7 @@ public class MS3_Format_0233003 extends Megasquirt
         tpsLF = (int)((MSUtils.getByte(pageBuffer,126) + 0.0) * 1.0);
         egoLF = (int)((MSUtils.getByte(pageBuffer,127) + 0.0) * 1.0);
         adcLF = (int)((MSUtils.getByte(pageBuffer,128) + 0.0) * 1.0);
-        knk_pin_out = MSUtils.getBits(pageBuffer,129,0,4,0);
+        XknkLF = (int)((MSUtils.getByte(pageBuffer,129) + 0.0) * 1.0);
         AMCOption = MSUtils.getBits(pageBuffer,130,0,1,0);
         UNUSED_1_131 = MSUtils.getBits(pageBuffer,131,0,0,0);
         algorithm = MSUtils.getBits(pageBuffer,132,0,2,0);
@@ -3293,7 +2427,6 @@ public class MS3_Format_0233003 extends Megasquirt
         ego_startdelay = (int)((MSUtils.getByte(pageBuffer,140) + 0.0) * 1.0);
         can_poll2_ego = MSUtils.getBits(pageBuffer,141,0,0,0);
         opt142_rtc = MSUtils.getBits(pageBuffer,142,0,1,0);
-        opt142_gs_share = MSUtils.getBits(pageBuffer,142,2,2,0);
         injPwmT2 = (double)((MSUtils.getByte(pageBuffer,143) + 0.128) * 0.128);
         injPwmPd2 = (int)((MSUtils.getByte(pageBuffer,144) + 0.0) * 1.0);
         injPwmP2 = (int)((MSUtils.getByte(pageBuffer,145) + 0.0) * 1.0);
@@ -3353,10 +2486,8 @@ public class MS3_Format_0233003 extends Megasquirt
         fan_idleup_vss_offpoint = (double)((MSUtils.getWord(pageBuffer,202) + 0.0) * 0.36);
         }
         knk_option = MSUtils.getBits(pageBuffer,204,0,1,0);
-        knk_option_an = MSUtils.getBits(pageBuffer,204,2,3,0);
         knkDirection = MSUtils.getBits(pageBuffer,204,4,4,0);
         knkpull = MSUtils.getBits(pageBuffer,204,5,6,0);
-        knk_option_wind = MSUtils.getBits(pageBuffer,204,7,7,0);
         knk_maxrtd = (double)((MSUtils.getByte(pageBuffer,205) + 0.0) * 0.1);
         knk_step1 = (double)((MSUtils.getByte(pageBuffer,206) + 0.0) * 0.1);
         knk_step2 = (double)((MSUtils.getByte(pageBuffer,207) + 0.0) * 0.1);
@@ -3381,10 +2512,10 @@ public class MS3_Format_0233003 extends Megasquirt
         fuelSpkDel1 = (double)((MSUtils.getSignedWord(pageBuffer,234) + 0.0) * 0.1);
         spk_conf2_gm = MSUtils.getBits(pageBuffer,236,0,0,0);
         spk_conf2_tfi = MSUtils.getBits(pageBuffer,236,1,2,0);
+        spk_conf2_cam = MSUtils.getBits(pageBuffer,236,3,3,0);
         spk_conf2_oddodd = MSUtils.getBits(pageBuffer,236,4,4,0);
         spk_conf2_dwell = MSUtils.getBits(pageBuffer,236,5,5,0);
         spk_conf2_ngc = MSUtils.getBits(pageBuffer,236,6,6,0);
-        spk_conf2_dli = MSUtils.getBits(pageBuffer,236,7,7,0);
         spk_config_campol = MSUtils.getBits(pageBuffer,237,0,0,0);
         spk_config_camcrank = MSUtils.getBits(pageBuffer,237,1,1,0);
         spk_config_trig2 = MSUtils.getBits(pageBuffer,237,2,3,0);
@@ -3392,15 +2523,10 @@ public class MS3_Format_0233003 extends Megasquirt
         spk_config_resetcam = MSUtils.getBits(pageBuffer,237,6,7,0);
         spk_mode0 = MSUtils.getBits(pageBuffer,238,0,5,0);
         spk_mode3_trim = MSUtils.getBits(pageBuffer,239,0,0,0);
-        spk_mode3_tach3 = MSUtils.getBits(pageBuffer,239,1,1,0);
-        spk_mode3_hirespol = MSUtils.getBits(pageBuffer,239,2,2,0);
         spk_mode3 = MSUtils.getBits(pageBuffer,239,5,7,0);
         rtbaroport = MSUtils.getBits(pageBuffer,240,0,4,0);
         ego2port = MSUtils.getBits(pageBuffer,241,0,4,0);
         mapport = MSUtils.getBits(pageBuffer,242,0,4,0);
-        mapport_t = MSUtils.getBits(pageBuffer,242,5,5,0);
-        mapport_f = MSUtils.getBits(pageBuffer,242,6,7,0);
-        knkport_an = MSUtils.getBits(pageBuffer,243,0,2,0);
         RevLimcutx = (int)((MSUtils.getByte(pageBuffer,244) + 0.0) * 1.0);
         RevLimcuty = (int)((MSUtils.getByte(pageBuffer,245) + 0.0) * 1.0);
         feature4_0igntrig = MSUtils.getBits(pageBuffer,246,1,1,0);
@@ -3427,7 +2553,6 @@ public class MS3_Format_0233003 extends Megasquirt
         f5_0_tss_opt = MSUtils.getBits(pageBuffer,266,5,6,0);
         tsw_pin_s = MSUtils.getBits(pageBuffer,267,0,4,0);
         pwmidlecranktaper = (int)((MSUtils.getByte(pageBuffer,268) + 0.0) * 1.0);
-        knk_step_adv = (double)((MSUtils.getByte(pageBuffer,269) + 0.0) * 0.1);
         fc_rpm = (int)((MSUtils.getWord(pageBuffer,270) + 0.0) * 1.0);
         fc_kpa = (double)((MSUtils.getSignedWord(pageBuffer,272) + 0.0) * 0.1);
         fc_tps = (double)((MSUtils.getSignedWord(pageBuffer,274) + 0.0) * 0.1);
@@ -3461,14 +2586,9 @@ public class MS3_Format_0233003 extends Megasquirt
         EAElagsource = MSUtils.getBits(pageBuffer,281,0,0,0);
         EAElagthresh = (int)((MSUtils.getSignedWord(pageBuffer,282) + 0.0) * 1.0);
         EAElagRPMmax = (int)((MSUtils.getWord(pageBuffer,284) + 0.0) * 1.0);
-        feature3_tps = MSUtils.getBits(pageBuffer,286,0,0,0);
-        feature3_aseunit = MSUtils.getBits(pageBuffer,286,1,1,0);
-        feature3_maplog = MSUtils.getBits(pageBuffer,286,2,2,0);
+        feature3_1 = MSUtils.getBits(pageBuffer,286,1,1,0);
         feature3_3 = MSUtils.getBits(pageBuffer,286,3,3,0);
         feature3_pw4x = MSUtils.getBits(pageBuffer,286,4,4,0);
-        feature3_n2oin = MSUtils.getBits(pageBuffer,286,5,5,0);
-        feature3_matase = MSUtils.getBits(pageBuffer,286,6,6,0);
-        feature3_dwell = MSUtils.getBits(pageBuffer,286,7,7,0);
         launch_opt_bank = MSUtils.getBits(pageBuffer,287,4,5,0);
         launch_opt_on = MSUtils.getBits(pageBuffer,287,6,7,0);
         launch_sft_lim = (int)((MSUtils.getSignedWord(pageBuffer,288) + 0.0) * 1.0);
@@ -3557,6 +2677,8 @@ public class MS3_Format_0233003 extends Megasquirt
         }
         RotarySplitModeFD = MSUtils.getBits(pageBuffer,352,0,0,0);
         RotarySplitModeNeg = MSUtils.getBits(pageBuffer,352,1,1,0);
+        RotarySplitModeRX8 = MSUtils.getBits(pageBuffer,352,2,2,0);
+        RotarySplitModeOn = MSUtils.getBits(pageBuffer,352,5,5,0);
         dlyct = (int)((MSUtils.getByte(pageBuffer,353) + 0.0) * 1.0);
         dwelltime_trl = (double)((MSUtils.getByte(pageBuffer,354) + 0.0) * 0.1);
         N2Oopt_pins = MSUtils.getBits(pageBuffer,355,0,4,0);
@@ -3584,6 +2706,7 @@ public class MS3_Format_0233003 extends Megasquirt
         pwmidle_Ki = (double)((MSUtils.getWord(pageBuffer,382) + 0.0) * 0.1);
         pwmidle_Kd = (double)((MSUtils.getWord(pageBuffer,384) + 0.0) * 0.1);
         pwmidle_freq_scale = MSUtils.getBits(pageBuffer,386,0,3,0);
+        pwmidle_freq = MSUtils.getBits(pageBuffer,386,4,4,0);
         pwmidle_freq_pin = MSUtils.getBits(pageBuffer,386,5,5,0);
         pwmidle_freq_pin3 = MSUtils.getBits(pageBuffer,386,6,7,0);
         boost_ctl_settings_freq = MSUtils.getBits(pageBuffer,387,0,2,0);
@@ -3630,11 +2753,6 @@ public class MS3_Format_0233003 extends Megasquirt
         fan_idleup_vss_hyst = (double)((MSUtils.getWord(pageBuffer,441) + 0.0) * 0.36);
         }
         log_style_led = MSUtils.getBits(pageBuffer,443,0,5,0);
-        log_style_ledspd = MSUtils.getBits(pageBuffer,443,6,7,0);
-        primedelay = (double)((MSUtils.getByte(pageBuffer,444) + 0.0) * 0.1);
-        pwmidle_cl_opts_initvaluetable = MSUtils.getBits(pageBuffer,445,0,0,0);
-        pwmidle_cl_opts_initval_clt = MSUtils.getBits(pageBuffer,445,1,1,0);
-        pwmidle_dp_decay_factor = (int)((MSUtils.getByte(pageBuffer,446) + 0.0) * 1.0);
         if (PW_4X)
         {
         staged_secondary_enrichment = (double)((MSUtils.getWord(pageBuffer,455) + 0.0) * 0.0040);
@@ -3646,9 +2764,6 @@ public class MS3_Format_0233003 extends Megasquirt
         staged_primary_delay = (int)((MSUtils.getByte(pageBuffer,457) + 0.0) * 1.0);
         idleadvance_on = MSUtils.getBits(pageBuffer,459,0,0,0);
         idleve_on = MSUtils.getBits(pageBuffer,459,1,1,0);
-        idleve_vsson = MSUtils.getBits(pageBuffer,459,2,3,0);
-        idleadv_vsson = MSUtils.getBits(pageBuffer,459,4,5,0);
-        idle_special_ops_timing_assist = MSUtils.getBits(pageBuffer,459,6,6,0);
         idleadvance_tps = (double)((MSUtils.getSignedWord(pageBuffer,460) + 0.0) * 0.1);
         idleadvance_rpm = (int)((MSUtils.getSignedWord(pageBuffer,462) + 0.0) * 1.0);
         idleadvance_load = (double)((MSUtils.getSignedWord(pageBuffer,464) + 0.0) * 0.1);
@@ -3691,14 +2806,6 @@ public class MS3_Format_0233003 extends Megasquirt
         firef = (int)((MSUtils.getByte(pageBuffer,689) + 0.0) * 1.0);
         fireg = (int)((MSUtils.getByte(pageBuffer,690) + 0.0) * 1.0);
         fireh = (int)((MSUtils.getByte(pageBuffer,691) + 0.0) * 1.0);
-        firei = (int)((MSUtils.getByte(pageBuffer,692) + 0.0) * 1.0);
-        firej = (int)((MSUtils.getByte(pageBuffer,693) + 0.0) * 1.0);
-        firek = (int)((MSUtils.getByte(pageBuffer,694) + 0.0) * 1.0);
-        firel = (int)((MSUtils.getByte(pageBuffer,695) + 0.0) * 1.0);
-        firem = (int)((MSUtils.getByte(pageBuffer,696) + 0.0) * 1.0);
-        firen = (int)((MSUtils.getByte(pageBuffer,697) + 0.0) * 1.0);
-        fireo = (int)((MSUtils.getByte(pageBuffer,698) + 0.0) * 1.0);
-        firep = (int)((MSUtils.getByte(pageBuffer,699) + 0.0) * 1.0);
         sequential = MSUtils.getBits(pageBuffer,700,0,1,0);
         sequential_angle_spec = MSUtils.getBits(pageBuffer,700,2,4,0);
         sequential_trim_on_off = MSUtils.getBits(pageBuffer,700,5,5,0);
@@ -3734,6 +2841,8 @@ public class MS3_Format_0233003 extends Megasquirt
         opentime_opt14 = MSUtils.getBits(pageBuffer,733,0,1,0);
         opentime_opt15 = MSUtils.getBits(pageBuffer,734,0,1,0);
         opentime_opt16 = MSUtils.getBits(pageBuffer,735,0,1,0);
+        opentime_opt17 = MSUtils.getBits(pageBuffer,736,0,1,0);
+        opentime_opt18 = MSUtils.getBits(pageBuffer,737,0,1,0);
         smallpw_opt1_master = MSUtils.getBits(pageBuffer,738,7,7,0);
         smallpw_opt1 = MSUtils.getBits(pageBuffer,738,0,1,0);
         smallpw_opt2 = MSUtils.getBits(pageBuffer,739,0,1,0);
@@ -3751,6 +2860,8 @@ public class MS3_Format_0233003 extends Megasquirt
         smallpw_opt14 = MSUtils.getBits(pageBuffer,751,0,1,0);
         smallpw_opt15 = MSUtils.getBits(pageBuffer,752,0,1,0);
         smallpw_opt16 = MSUtils.getBits(pageBuffer,753,0,1,0);
+        smallpw_opt17 = MSUtils.getBits(pageBuffer,754,0,1,0);
+        smallpw_opt18 = MSUtils.getBits(pageBuffer,755,0,1,0);
         maxafr_opt1_on = MSUtils.getBits(pageBuffer,756,0,0,0);
         maxafr_opt1_load = MSUtils.getBits(pageBuffer,756,1,2,0);
         maxafr_opt1_led = MSUtils.getBits(pageBuffer,757,0,5,0);
@@ -3780,8 +2891,8 @@ public class MS3_Format_0233003 extends Megasquirt
         wheeldia2 = (double)((MSUtils.getWord(pageBuffer,778) + 0.0) * 0.03937);
         }
         fdratio1 = (double)((MSUtils.getWord(pageBuffer,776) + 0.0) * 0.01);
-        vss1_pos = MSUtils.getBits(pageBuffer,780,0,1,0);
-        vss2_pos = MSUtils.getBits(pageBuffer,780,2,3,0);
+        vss1_pos = MSUtils.getBits(pageBuffer,780,0,0,0);
+        vss2_pos = MSUtils.getBits(pageBuffer,780,1,1,0);
         launch_var_on = MSUtils.getBits(pageBuffer,781,0,4,0);
         reluctorteeth1 = (int)((MSUtils.getByte(pageBuffer,782) + 0.0) * 1.0);
         reluctorteeth2 = (int)((MSUtils.getByte(pageBuffer,783) + 0.0) * 1.0);
@@ -3803,8 +2914,6 @@ public class MS3_Format_0233003 extends Megasquirt
         ss2_pwmseq = (int)((MSUtils.getByte(pageBuffer,799) + 0.0) * 1.0);
         gear_can_offset = (int)((MSUtils.getWord(pageBuffer,800) + 0.0) * 1.0);
         mapsample_opt1 = MSUtils.getBits(pageBuffer,802,0,1,0);
-        mapsample_opt2 = MSUtils.getBits(pageBuffer,802,2,2,0);
-        map2port = MSUtils.getBits(pageBuffer,803,0,4,0);
         n2o1n_pins = MSUtils.getBits(pageBuffer,804,0,4,0);
         n2o1f_pins = MSUtils.getBits(pageBuffer,805,0,4,0);
         n2o2n_pins = MSUtils.getBits(pageBuffer,806,0,4,0);
@@ -3834,10 +2943,10 @@ public class MS3_Format_0233003 extends Megasquirt
         stoich_alt = (double)((MSUtils.getSignedWord(pageBuffer,818) + 0.0) * 0.1);
         water_pins_pump = MSUtils.getBits(pageBuffer,820,0,4,0);
         water_pins_valve = MSUtils.getBits(pageBuffer,821,0,4,0);
-        water_pins_in_shut = MSUtils.getBits(pageBuffer,822,0,4,0);
+        water_pins_in_shut = MSUtils.getBits(pageBuffer,822,0,3,0);
+        water_pins_in_on = MSUtils.getBits(pageBuffer,822,4,4,0);
+        water_pins_in_type = MSUtils.getBits(pageBuffer,822,5,6,0);
         water_freq = MSUtils.getBits(pageBuffer,823,0,2,0);
-        water_freq_on = MSUtils.getBits(pageBuffer,823,4,4,0);
-        water_freq_type = MSUtils.getBits(pageBuffer,823,5,6,0);
         boost_vss_tps = (double)((MSUtils.getWord(pageBuffer,824) + 0.0) * 0.1);
         water_tps = (double)((MSUtils.getWord(pageBuffer,826) + 0.0) * 0.1);
         water_rpm = (int)((MSUtils.getWord(pageBuffer,828) + 0.0) * 1.0);
@@ -3864,7 +2973,7 @@ public class MS3_Format_0233003 extends Megasquirt
         poll_offsetPWM = (int)((MSUtils.getSignedWord(pageBuffer,844) + 0.0) * 1.0);
         can_poll_digin_offset = (int)((MSUtils.getSignedWord(pageBuffer,846) + 0.0) * 1.0);
         can_poll_digout_offset = (int)((MSUtils.getSignedWord(pageBuffer,848) + 0.0) * 1.0);
-        egt_num = MSUtils.getBits(pageBuffer,850,0,4,0);
+        egt_num = MSUtils.getBits(pageBuffer,850,0,3,0);
         accXport = MSUtils.getBits(pageBuffer,851,0,4,0);
         accYport = MSUtils.getBits(pageBuffer,852,0,4,0);
         accZport = MSUtils.getBits(pageBuffer,853,0,4,0);
@@ -3887,13 +2996,12 @@ public class MS3_Format_0233003 extends Megasquirt
         egt10port = MSUtils.getBits(pageBuffer,876,0,4,0);
         egt11port = MSUtils.getBits(pageBuffer,877,0,4,0);
         egt12port = MSUtils.getBits(pageBuffer,878,0,4,0);
-        egt13port = MSUtils.getBits(pageBuffer,879,0,4,0);
-        egt14port = MSUtils.getBits(pageBuffer,880,0,4,0);
-        egt15port = MSUtils.getBits(pageBuffer,881,0,4,0);
-        egt16port = MSUtils.getBits(pageBuffer,882,0,4,0);
-        egt_conf_action = MSUtils.getBits(pageBuffer,883,0,0,0);
-        egt_conf_shutdown = MSUtils.getBits(pageBuffer,883,1,1,0);
-        egt_conf_bank = MSUtils.getBits(pageBuffer,883,2,3,0);
+        egt_conf_action = MSUtils.getBits(pageBuffer,879,0,0,0);
+        egt_conf_shutdown = MSUtils.getBits(pageBuffer,879,1,1,0);
+        egt_conf_bank = MSUtils.getBits(pageBuffer,879,2,3,0);
+        egt_conf_led = MSUtils.getBits(pageBuffer,879,3,7,0);
+        UNUSED_1_880 = (int)((MSUtils.getSignedWord(pageBuffer,880) + 0.0) * 1.0);
+        UNUSED_1_882 = (int)((MSUtils.getSignedWord(pageBuffer,882) + 0.0) * 1.0);
         if (CELSIUS)
         {
         egtcal_temp0 = (double)((MSUtils.getSignedWord(pageBuffer,884) + -320.0) * 0.05555);
@@ -3914,12 +3022,9 @@ public class MS3_Format_0233003 extends Megasquirt
         vss1_pwmseq = (int)((MSUtils.getByte(pageBuffer,898) + 0.0) * 1.0);
         vss2_pwmseq = (int)((MSUtils.getByte(pageBuffer,899) + 0.0) * 1.0);
         MAFOption = MSUtils.getBits(pageBuffer,900,0,4,0);
-        MAFOption_t = MSUtils.getBits(pageBuffer,900,5,5,0);
-        MAFOption_f = MSUtils.getBits(pageBuffer,900,6,7,0);
-        enginesize = (int)((MSUtils.getWord(pageBuffer,901) + 0.0) * 1.0);
+        CID = (int)((MSUtils.getWord(pageBuffer,901) + 0.0) * 1.0);
         vssout_opt = MSUtils.getBits(pageBuffer,903,0,4,0);
-        vssout_optunits = MSUtils.getBits(pageBuffer,903,6,7,0);
-        vssout_scale = (double)((MSUtils.getWord(pageBuffer,904) + 0.0) * 0.1);
+        vssout_scale = (double)((MSUtils.getWord(pageBuffer,904) + 0.0) * 0.05);
         vss1_can_size = MSUtils.getBits(pageBuffer,906,0,0,0);
         vss2_can_size = MSUtils.getBits(pageBuffer,906,1,1,0);
         canpwm_clk = (int)((MSUtils.getByte(pageBuffer,907) + 0.0) * 1.0);
@@ -4005,41 +3110,32 @@ public class MS3_Format_0233003 extends Megasquirt
         canadc_off4 = (int)((MSUtils.getWord(pageBuffer,984) + 0.0) * 1.0);
         canadc_off5 = (int)((MSUtils.getWord(pageBuffer,986) + 0.0) * 1.0);
         canadc_off6 = (int)((MSUtils.getWord(pageBuffer,988) + 0.0) * 1.0);
-        ac_idleup_cl_targetadder = (int)((MSUtils.getSignedWord(pageBuffer,990) + 0.0) * 1.0);
-        fan_idleup_cl_targetadder = (int)((MSUtils.getSignedWord(pageBuffer,992) + 0.0) * 1.0);
-        if (CELSIUS)
-        {
-        if (EXPANDED_CLT_TEMP)
-        {
-        boost_ctl_clt_threshold = (double)((MSUtils.getSignedWord(pageBuffer,994) + -320.0) * 0.05555);
-        }
-        else
-        {
-        boost_ctl_clt_threshold = (double)((MSUtils.getSignedWord(pageBuffer,994) + -320.0) * 0.05555);
-        }
-        }
-        else
-        {
-        if (EXPANDED_CLT_TEMP)
-        {
-        boost_ctl_clt_threshold = (double)((MSUtils.getSignedWord(pageBuffer,994) + 0.0) * 0.1);
-        }
-        else
-        {
-        boost_ctl_clt_threshold = (double)((MSUtils.getSignedWord(pageBuffer,994) + 0.0) * 0.1);
-        }
-        }
-        fan_ctl_settings_acfan = MSUtils.getBits(pageBuffer,996,0,0,0);
-        if (LAMBDA)
-        {
-        ego_upper_bound = (double)((MSUtils.getByte(pageBuffer,997) + 0.0) * 0.006803);
-        ego_lower_bound = (double)((MSUtils.getByte(pageBuffer,998) + 0.0) * 0.006803);
-        }
-        else
-        {
-        ego_upper_bound = (double)((MSUtils.getByte(pageBuffer,997) + 0.0) * 0.1);
-        ego_lower_bound = (double)((MSUtils.getByte(pageBuffer,998) + 0.0) * 0.1);
-        }
+        egoport1 = MSUtils.getBits(pageBuffer,990,0,4,0);
+        egoport2 = MSUtils.getBits(pageBuffer,991,0,4,0);
+        egoport3 = MSUtils.getBits(pageBuffer,992,0,4,0);
+        egoport4 = MSUtils.getBits(pageBuffer,993,0,4,0);
+        egoport5 = MSUtils.getBits(pageBuffer,994,0,4,0);
+        egoport6 = MSUtils.getBits(pageBuffer,995,0,4,0);
+        egoport7 = MSUtils.getBits(pageBuffer,996,0,4,0);
+        egoport8 = MSUtils.getBits(pageBuffer,997,0,4,0);
+        egomap1 = MSUtils.getBits(pageBuffer,998,0,2,0);
+        egomap2 = MSUtils.getBits(pageBuffer,999,0,2,0);
+        egomap3 = MSUtils.getBits(pageBuffer,1000,0,2,0);
+        egomap4 = MSUtils.getBits(pageBuffer,1001,0,2,0);
+        egomap5 = MSUtils.getBits(pageBuffer,1002,0,2,0);
+        egomap6 = MSUtils.getBits(pageBuffer,1003,0,2,0);
+        egomap7 = MSUtils.getBits(pageBuffer,1004,0,2,0);
+        egomap8 = MSUtils.getBits(pageBuffer,1005,0,2,0);
+        egomap9 = MSUtils.getBits(pageBuffer,1006,0,2,0);
+        egomap10 = MSUtils.getBits(pageBuffer,1007,0,2,0);
+        egomap1t = MSUtils.getBits(pageBuffer,998,4,4,0);
+        egomap2t = MSUtils.getBits(pageBuffer,999,4,4,0);
+        egomap3t = MSUtils.getBits(pageBuffer,1000,4,4,0);
+        egomap4t = MSUtils.getBits(pageBuffer,1001,4,4,0);
+        egomap5t = MSUtils.getBits(pageBuffer,1002,4,4,0);
+        egomap6t = MSUtils.getBits(pageBuffer,1003,4,4,0);
+        egomap7t = MSUtils.getBits(pageBuffer,1004,4,4,0);
+        egomap8t = MSUtils.getBits(pageBuffer,1005,4,4,0);
         boost_gear_switch = (int)((MSUtils.getByte(pageBuffer,1008) + 0.0) * 1.0);
         staged_extended_opts_use_v3 = MSUtils.getBits(pageBuffer,1009,0,0,0);
         staged_extended_opts_simult = MSUtils.getBits(pageBuffer,1009,1,1,0);
@@ -4076,14 +3172,12 @@ public class MS3_Format_0233003 extends Megasquirt
         ac_idleup_cl_lockout_mapadder = (double)((MSUtils.getByte(pageBuffer,1023) + 0.0) * 0.1);
         pageBuffer = loadPage(2,0,1024,null,new byte[]{114,0,5,0,0,4,0});
         testmodelock = (int)((MSUtils.getWord(pageBuffer,0) + 0.0) * 1.0);
-        testop_0 = (int)((MSUtils.getByte(pageBuffer,0) + 0.0) * 1.0);
         testop_coil = MSUtils.getBits(pageBuffer,2,0,1,0);
         testop_fp = MSUtils.getBits(pageBuffer,2,4,4,0);
         testop_inj = MSUtils.getBits(pageBuffer,2,5,6,0);
         testop_pwm = MSUtils.getBits(pageBuffer,2,7,7,0);
         testdwell = (double)((MSUtils.getByte(pageBuffer,3) + 0.0) * 0.1);
         testint = (double)((MSUtils.getWord(pageBuffer,4) + 0.0) * 0.128);
-        testmode_0 = (int)((MSUtils.getByte(pageBuffer,6) + 0.0) * 1.0);
         testmode = MSUtils.getBits(pageBuffer,6,0,1,0);
         if (PW_4X)
         {
@@ -4098,158 +3192,13 @@ public class MS3_Format_0233003 extends Megasquirt
         testinjPwmPd = (int)((MSUtils.getByte(pageBuffer,12) + 0.0) * 1.0);
         testinjPwmP = (int)((MSUtils.getByte(pageBuffer,13) + 0.0) * 1.0);
         testsel_inj = MSUtils.getBits(pageBuffer,14,0,3,0);
-        testsel_coil = MSUtils.getBits(pageBuffer,14,4,7,0);
+        testsel_coil = MSUtils.getBits(pageBuffer,14,4,6,0);
         iacpostest = (int)((MSUtils.getWord(pageBuffer,15) + 0.0) * 1.0);
         dbgtooth = (int)((MSUtils.getByte(pageBuffer,17) + 0.0) * 1.0);
         iachometest = (int)((MSUtils.getWord(pageBuffer,18) + 0.0) * 1.0);
         iactest = MSUtils.getBits(pageBuffer,20,0,0,0);
         iactestlock = MSUtils.getBits(pageBuffer,20,1,1,0);
         flashlock = MSUtils.getBits(pageBuffer,21,0,0,0);
-        boost_ctl_settings_on2 = MSUtils.getBits(pageBuffer,22,3,3,0);
-        boost_ctl_settings_cl2 = MSUtils.getBits(pageBuffer,22,4,4,0);
-        boost_ctl_pins_pwm2 = MSUtils.getBits(pageBuffer,23,5,7,0);
-        boost_ctl_pins2 = MSUtils.getBits(pageBuffer,23,0,4,0);
-        boost_ctl_Kp2 = (int)((MSUtils.getByte(pageBuffer,24) + 0.0) * 1.0);
-        boost_ctl_Ki2 = (int)((MSUtils.getByte(pageBuffer,25) + 0.0) * 1.0);
-        boost_ctl_Kd2 = (int)((MSUtils.getByte(pageBuffer,26) + 0.0) * 1.0);
-        boost_ctl_closeduty2 = (int)((MSUtils.getByte(pageBuffer,27) + 0.0) * 1.0);
-        boost_ctl_openduty2 = (int)((MSUtils.getByte(pageBuffer,28) + 0.0) * 1.0);
-        boost_ctl_pwm_scale2 = MSUtils.getBits(pageBuffer,29,0,3,0);
-        boost_ctl_lowerlimit2 = (double)((MSUtils.getSignedWord(pageBuffer,30) + 0.0) * 0.1);
-        boost_ctl_sensor2 = MSUtils.getBits(pageBuffer,32,0,3,0);
-        egoport1 = MSUtils.getBits(pageBuffer,40,0,4,0);
-        egoport2 = MSUtils.getBits(pageBuffer,41,0,4,0);
-        egoport3 = MSUtils.getBits(pageBuffer,42,0,4,0);
-        egoport4 = MSUtils.getBits(pageBuffer,43,0,4,0);
-        egoport5 = MSUtils.getBits(pageBuffer,44,0,4,0);
-        egoport6 = MSUtils.getBits(pageBuffer,45,0,4,0);
-        egoport7 = MSUtils.getBits(pageBuffer,46,0,4,0);
-        egoport8 = MSUtils.getBits(pageBuffer,47,0,4,0);
-        egoport9 = MSUtils.getBits(pageBuffer,48,0,4,0);
-        egoport10 = MSUtils.getBits(pageBuffer,49,0,4,0);
-        egoport11 = MSUtils.getBits(pageBuffer,50,0,4,0);
-        egoport12 = MSUtils.getBits(pageBuffer,51,0,4,0);
-        egoport13 = MSUtils.getBits(pageBuffer,52,0,4,0);
-        egoport14 = MSUtils.getBits(pageBuffer,53,0,4,0);
-        egoport15 = MSUtils.getBits(pageBuffer,54,0,4,0);
-        egoport16 = MSUtils.getBits(pageBuffer,55,0,4,0);
-        egomap1 = MSUtils.getBits(pageBuffer,56,0,3,0);
-        egomap2 = MSUtils.getBits(pageBuffer,57,0,2,0);
-        egomap3 = MSUtils.getBits(pageBuffer,58,0,2,0);
-        egomap4 = MSUtils.getBits(pageBuffer,59,0,2,0);
-        egomap5 = MSUtils.getBits(pageBuffer,60,0,2,0);
-        egomap6 = MSUtils.getBits(pageBuffer,61,0,2,0);
-        egomap7 = MSUtils.getBits(pageBuffer,62,0,2,0);
-        egomap8 = MSUtils.getBits(pageBuffer,63,0,2,0);
-        egomap9 = MSUtils.getBits(pageBuffer,64,0,2,0);
-        egomap10 = MSUtils.getBits(pageBuffer,65,0,2,0);
-        egomap11 = MSUtils.getBits(pageBuffer,66,0,2,0);
-        egomap12 = MSUtils.getBits(pageBuffer,67,0,2,0);
-        egomap13 = MSUtils.getBits(pageBuffer,68,0,2,0);
-        egomap14 = MSUtils.getBits(pageBuffer,69,0,2,0);
-        egomap15 = MSUtils.getBits(pageBuffer,70,0,2,0);
-        egomap16 = MSUtils.getBits(pageBuffer,71,0,2,0);
-        egomap1t = MSUtils.getBits(pageBuffer,56,4,4,0);
-        egomap2t = MSUtils.getBits(pageBuffer,57,4,4,0);
-        egomap3t = MSUtils.getBits(pageBuffer,58,4,4,0);
-        egomap4t = MSUtils.getBits(pageBuffer,59,4,4,0);
-        egomap5t = MSUtils.getBits(pageBuffer,60,4,4,0);
-        egomap6t = MSUtils.getBits(pageBuffer,61,4,4,0);
-        egomap7t = MSUtils.getBits(pageBuffer,62,4,4,0);
-        egomap8t = MSUtils.getBits(pageBuffer,63,4,4,0);
-        egomap9t = MSUtils.getBits(pageBuffer,64,4,4,0);
-        egomap10t = MSUtils.getBits(pageBuffer,65,4,4,0);
-        egomap11t = MSUtils.getBits(pageBuffer,66,4,4,0);
-        egomap12t = MSUtils.getBits(pageBuffer,67,4,4,0);
-        egomap13t = MSUtils.getBits(pageBuffer,68,4,4,0);
-        egomap14t = MSUtils.getBits(pageBuffer,69,4,4,0);
-        egomap15t = MSUtils.getBits(pageBuffer,70,4,4,0);
-        egomap16t = MSUtils.getBits(pageBuffer,71,4,4,0);
-        tc_opt_on = MSUtils.getBits(pageBuffer,72,0,0,0);
-        tc_opt_method = MSUtils.getBits(pageBuffer,72,1,2,0);
-        tc_opt_n2o = MSUtils.getBits(pageBuffer,72,5,5,0);
-        tc_opt_bank = MSUtils.getBits(pageBuffer,72,6,7,0);
-        tc_slipthresh = (int)((MSUtils.getByte(pageBuffer,73) + 0.0) * 1.0);
-        if (MPH)
-        {
-        tc_minvss = (double)((MSUtils.getWord(pageBuffer,74) + 0.0) * 0.22369);
-        tc_maxvss = (double)((MSUtils.getWord(pageBuffer,76) + 0.0) * 0.22369);
-        }
-        else
-        {
-        tc_minvss = (double)((MSUtils.getWord(pageBuffer,74) + 0.0) * 0.36);
-        tc_maxvss = (double)((MSUtils.getWord(pageBuffer,76) + 0.0) * 0.36);
-        }
-        tc_mintps = (double)((MSUtils.getSignedWord(pageBuffer,78) + 0.0) * 0.1);
-        tc_enin = MSUtils.getBits(pageBuffer,80,0,4,0);
-        knock_bpass = MSUtils.getBits(pageBuffer,81,0,5,0);
-        knock_conf_num = MSUtils.getBits(pageBuffer,82,0,0,0);
-        knock_conf_percyl = MSUtils.getBits(pageBuffer,82,7,7,0);
-        knock_int = MSUtils.getBits(pageBuffer,83,0,4,0);
-        ff_tpw0 = (double)((MSUtils.getByte(pageBuffer,84) + 0.0) * 0.05);
-        ff_tpw1 = (double)((MSUtils.getByte(pageBuffer,85) + 0.0) * 0.05);
-        if (CELSIUS)
-        {
-        ff_temp0 = (double)((MSUtils.getSignedWord(pageBuffer,86) + -320.0) * 0.05555);
-        ff_temp1 = (double)((MSUtils.getSignedWord(pageBuffer,88) + -320.0) * 0.05555);
-        }
-        else
-        {
-        ff_temp0 = (double)((MSUtils.getSignedWord(pageBuffer,86) + 0.0) * 0.1);
-        ff_temp1 = (double)((MSUtils.getSignedWord(pageBuffer,88) + 0.0) * 0.1);
-        }
-        fueltemp1 = MSUtils.getBits(pageBuffer,90,0,4,0);
-        maf_freq0 = (double)((MSUtils.getWord(pageBuffer,92) + 0.0) * 0.2);
-        maf_freq1 = (double)((MSUtils.getWord(pageBuffer,94) + 0.0) * 0.2);
-        map_freq0 = (double)((MSUtils.getWord(pageBuffer,96) + 0.0) * 0.2);
-        map_freq1 = (double)((MSUtils.getWord(pageBuffer,98) + 0.0) * 0.2);
-        knock_gain01 = MSUtils.getBits(pageBuffer,100,0,5,0);
-        knock_gain02 = MSUtils.getBits(pageBuffer,101,0,5,0);
-        knock_gain03 = MSUtils.getBits(pageBuffer,102,0,5,0);
-        knock_gain04 = MSUtils.getBits(pageBuffer,103,0,5,0);
-        knock_gain05 = MSUtils.getBits(pageBuffer,104,0,5,0);
-        knock_gain06 = MSUtils.getBits(pageBuffer,105,0,5,0);
-        knock_gain07 = MSUtils.getBits(pageBuffer,106,0,5,0);
-        knock_gain08 = MSUtils.getBits(pageBuffer,107,0,5,0);
-        knock_gain09 = MSUtils.getBits(pageBuffer,108,0,5,0);
-        knock_gain10 = MSUtils.getBits(pageBuffer,109,0,5,0);
-        knock_gain11 = MSUtils.getBits(pageBuffer,110,0,5,0);
-        knock_gain12 = MSUtils.getBits(pageBuffer,111,0,5,0);
-        knock_gain13 = MSUtils.getBits(pageBuffer,112,0,5,0);
-        knock_gain14 = MSUtils.getBits(pageBuffer,113,0,5,0);
-        knock_gain15 = MSUtils.getBits(pageBuffer,114,0,5,0);
-        knock_gain16 = MSUtils.getBits(pageBuffer,115,0,5,0);
-        knock_sens01 = MSUtils.getBits(pageBuffer,116,0,0,0);
-        knock_sens02 = MSUtils.getBits(pageBuffer,117,0,0,0);
-        knock_sens03 = MSUtils.getBits(pageBuffer,118,0,0,0);
-        knock_sens04 = MSUtils.getBits(pageBuffer,119,0,0,0);
-        knock_sens05 = MSUtils.getBits(pageBuffer,120,0,0,0);
-        knock_sens06 = MSUtils.getBits(pageBuffer,121,0,0,0);
-        knock_sens07 = MSUtils.getBits(pageBuffer,122,0,0,0);
-        knock_sens08 = MSUtils.getBits(pageBuffer,123,0,0,0);
-        knock_sens09 = MSUtils.getBits(pageBuffer,124,0,0,0);
-        knock_sens10 = MSUtils.getBits(pageBuffer,125,0,0,0);
-        knock_sens11 = MSUtils.getBits(pageBuffer,126,0,0,0);
-        knock_sens12 = MSUtils.getBits(pageBuffer,127,0,0,0);
-        knock_sens13 = MSUtils.getBits(pageBuffer,128,0,0,0);
-        knock_sens14 = MSUtils.getBits(pageBuffer,129,0,0,0);
-        knock_sens15 = MSUtils.getBits(pageBuffer,130,0,0,0);
-        knock_sens16 = MSUtils.getBits(pageBuffer,131,0,0,0);
-        s16_debug = (int)((MSUtils.getSignedWord(pageBuffer,132) + 0.0) * 1.0);
-        u08_debug134 = (int)((MSUtils.getByte(pageBuffer,134) + 0.0) * 1.0);
-        AE_options = MSUtils.getBits(pageBuffer,135,0,0,0);
-        accel_blend_percent = (double)((MSUtils.getSignedWord(pageBuffer,136) + 0.0) * 0.1);
-        accel_tpsdot_threshold = (double)((MSUtils.getWord(pageBuffer,138) + 0.0) * 0.1);
-        accel_mapdot_threshold = (int)((MSUtils.getWord(pageBuffer,140) + 0.0) * 1.0);
-        accel_CLT_multiplier = (double)((MSUtils.getSignedWord(pageBuffer,206) + 0.0) * 0.1);
-        tc_minmap = (double)((MSUtils.getSignedWord(pageBuffer,246) + 0.0) * 0.1);
-        can_bcast1_on = MSUtils.getBits(pageBuffer,248,0,0,0);
-        can_bcast1_280x4 = MSUtils.getBits(pageBuffer,248,1,1,0);
-        can_bcast1_280x1 = MSUtils.getBits(pageBuffer,248,2,2,0);
-        can_bcast1_289 = MSUtils.getBits(pageBuffer,248,3,3,0);
-        can_bcast_int = (double)((MSUtils.getWord(pageBuffer,250) + 0.0) * 0.128);
-        flex_pct0 = (double)((MSUtils.getWord(pageBuffer,658) + 0.0) * 0.1);
-        flex_pct1 = (double)((MSUtils.getWord(pageBuffer,660) + 0.0) * 0.1);
         sensor01_source = MSUtils.getBits(pageBuffer,662,0,4,0);
         sensor02_source = MSUtils.getBits(pageBuffer,663,0,4,0);
         sensor03_source = MSUtils.getBits(pageBuffer,664,0,4,0);
@@ -4470,6 +3419,8 @@ public class MS3_Format_0233003 extends Megasquirt
         opentime2_opt14 = MSUtils.getBits(pageBuffer,877,0,1,0);
         opentime2_opt15 = MSUtils.getBits(pageBuffer,878,0,1,0);
         opentime2_opt16 = MSUtils.getBits(pageBuffer,879,0,1,0);
+        opentime2_opt17 = MSUtils.getBits(pageBuffer,880,0,1,0);
+        opentime2_opt18 = MSUtils.getBits(pageBuffer,881,0,1,0);
         smallpw2_opt1_master = MSUtils.getBits(pageBuffer,864,7,7,0);
         smallpw2_opt1 = MSUtils.getBits(pageBuffer,882,0,1,0);
         smallpw2_opt2 = MSUtils.getBits(pageBuffer,883,0,1,0);
@@ -4487,6 +3438,8 @@ public class MS3_Format_0233003 extends Megasquirt
         smallpw2_opt14 = MSUtils.getBits(pageBuffer,895,0,1,0);
         smallpw2_opt15 = MSUtils.getBits(pageBuffer,896,0,1,0);
         smallpw2_opt16 = MSUtils.getBits(pageBuffer,897,0,1,0);
+        smallpw2_opt17 = MSUtils.getBits(pageBuffer,898,0,1,0);
+        smallpw2_opt18 = MSUtils.getBits(pageBuffer,899,0,1,0);
         dualfuel_pin = MSUtils.getBits(pageBuffer,900,0,4,0);
         dualfuel_opt_temp = MSUtils.getBits(pageBuffer,901,0,0,0);
         dualfuel_opt_press = MSUtils.getBits(pageBuffer,901,1,1,0);
@@ -4542,6 +3495,8 @@ public class MS3_Format_0233003 extends Megasquirt
         inj2PwmP2 = (int)((MSUtils.getByte(pageBuffer,943) + 0.0) * 1.0);
         dualfuel_temp_sens = MSUtils.getBits(pageBuffer,944,0,3,0);
         dualfuel_press_sens = MSUtils.getBits(pageBuffer,945,0,3,0);
+        dualfuel_pri = MSUtils.getBits(pageBuffer,954,0,1,0);
+        dualfuel_sec = MSUtils.getBits(pageBuffer,955,0,1,0);
         ITB_load_mappoint = (double)((MSUtils.getSignedWord(pageBuffer,956) + 0.0) * 0.1);
         ITB_load_idletpsthresh = (double)((MSUtils.getSignedWord(pageBuffer,958) + 0.0) * 0.1);
         pageBuffer = loadPage(3,0,1024,null,new byte[]{114,0,8,0,0,4,0});
@@ -4559,9 +3514,21 @@ public class MS3_Format_0233003 extends Megasquirt
         }
         if (CELSIUS)
         {
+        if (EXPANDED_CLT_TEMP)
+        {
         }
         else
         {
+        }
+        }
+        else
+        {
+        if (EXPANDED_CLT_TEMP)
+        {
+        }
+        else
+        {
+        }
         }
         if (CELSIUS)
         {
@@ -4661,9 +3628,21 @@ public class MS3_Format_0233003 extends Megasquirt
         }
         if (CELSIUS)
         {
+        if (EXPANDED_CLT_TEMP)
+        {
         }
         else
         {
+        }
+        }
+        else
+        {
+        if (EXPANDED_CLT_TEMP)
+        {
+        }
+        else
+        {
+        }
         }
         if (PW_4X)
         {
@@ -4674,9 +3653,21 @@ public class MS3_Format_0233003 extends Megasquirt
         pageBuffer = loadPage(6,0,1024,null,new byte[]{114,0,11,0,0,4,0});
         if (CELSIUS)
         {
+        if (EXPANDED_CLT_TEMP)
+        {
         }
         else
         {
+        }
+        }
+        else
+        {
+        if (EXPANDED_CLT_TEMP)
+        {
+        }
+        else
+        {
+        }
         }
         if (PW_4X)
         {
@@ -4703,153 +3694,45 @@ public class MS3_Format_0233003 extends Megasquirt
         {
         }
         }
-        if (MPH)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-        }
-        else
-        {
-        }
-        if (CELSIUS)
-        {
-        }
-        else
-        {
-        }
         pageBuffer = loadPage(11,0,1024,null,new byte[]{114,0,21,0,0,4,0});
         if (CELSIUS)
         {
+        if (EXPANDED_CLT_TEMP)
+        {
         }
         else
         {
+        }
+        }
+        else
+        {
+        if (EXPANDED_CLT_TEMP)
+        {
+        }
+        else
+        {
+        }
         }
         if (CELSIUS)
         {
+        if (EXPANDED_CLT_TEMP)
+        {
         }
         else
         {
+        }
+        }
+        else
+        {
+        if (EXPANDED_CLT_TEMP)
+        {
+        }
+        else
+        {
+        }
         }
         pageBuffer = loadPage(14,0,1024,null,new byte[]{114,0,24,0,0,4,0});
-        als_opt_fc = MSUtils.getBits(pageBuffer,336,0,0,0);
-        als_opt_sc = MSUtils.getBits(pageBuffer,336,1,1,0);
-        als_opt_idle = MSUtils.getBits(pageBuffer,336,2,2,0);
-        als_opt_fuel = MSUtils.getBits(pageBuffer,336,3,3,0);
-        als_opt_pwmout = MSUtils.getBits(pageBuffer,336,4,4,0);
-        als_maxtime = (double)((MSUtils.getByte(pageBuffer,337) + 0.0) * 0.1);
-        als_mintps = (double)((MSUtils.getSignedWord(pageBuffer,338) + 0.0) * 0.1);
-        als_maxtps = (double)((MSUtils.getSignedWord(pageBuffer,340) + 0.0) * 0.1);
-        als_iac_duty = (double)((MSUtils.getByte(pageBuffer,342) + 0.0) * 0.39063);
-        als_iac_steps = (int)((MSUtils.getByte(pageBuffer,342) + 0.0) * 1.0);
-        als_in_pin = MSUtils.getBits(pageBuffer,343,0,4,0);
-        als_out_pin = MSUtils.getBits(pageBuffer,344,0,5,0);
-        als_pwm_duty = (int)((MSUtils.getByte(pageBuffer,345) + 0.0) * 1.0);
-        als_pausetime = (double)((MSUtils.getByte(pageBuffer,346) + 0.0) * 0.1);
-        if (CELSIUS)
-        {
-        als_minclt = (double)((MSUtils.getSignedWord(pageBuffer,348) + -320.0) * 0.05555);
-        als_maxclt = (double)((MSUtils.getSignedWord(pageBuffer,350) + -320.0) * 0.05555);
-        }
-        else
-        {
-        als_minclt = (double)((MSUtils.getSignedWord(pageBuffer,348) + 0.0) * 0.1);
-        als_maxclt = (double)((MSUtils.getSignedWord(pageBuffer,350) + 0.0) * 0.1);
-        }
-        als_minrpm = (int)((MSUtils.getWord(pageBuffer,592) + 0.0) * 1.0);
-        als_maxrpm = (int)((MSUtils.getWord(pageBuffer,594) + 0.0) * 1.0);
-        if (CELSIUS)
-        {
-        als_maxmat = (double)((MSUtils.getSignedWord(pageBuffer,596) + -320.0) * 0.05555);
-        }
-        else
-        {
-        als_maxmat = (double)((MSUtils.getSignedWord(pageBuffer,596) + 0.0) * 0.1);
-        }
-        vvt_onoff_ang = (double)((MSUtils.getSignedWord(pageBuffer,598) + 0.0) * 0.1);
-        vvt_opt1_on = MSUtils.getBits(pageBuffer,600,0,1,0);
-        vvt_opt1_dir_intake = MSUtils.getBits(pageBuffer,600,2,2,0);
-        vvt_opt1_int = MSUtils.getBits(pageBuffer,600,3,3,0);
-        vvt_opt1_tst = MSUtils.getBits(pageBuffer,600,4,6,0);
-        vvt_opt1_dir_exhaust = MSUtils.getBits(pageBuffer,600,7,7,0);
-        vvt_hold_duty = (double)((MSUtils.getByte(pageBuffer,601) + 0.0) * 0.394);
-        vvt_out1 = MSUtils.getBits(pageBuffer,602,0,3,0);
-        vvt_out2 = MSUtils.getBits(pageBuffer,603,0,3,0);
-        vvt_out3 = MSUtils.getBits(pageBuffer,604,0,3,0);
-        vvt_out4 = MSUtils.getBits(pageBuffer,605,0,3,0);
-        vvt_ctl_ms = (int)((MSUtils.getWord(pageBuffer,606) + 0.0) * 1.0);
-        vvt_ctl_Kp = (int)((MSUtils.getByte(pageBuffer,608) + 0.0) * 1.0);
-        vvt_ctl_Ki = (int)((MSUtils.getByte(pageBuffer,609) + 0.0) * 1.0);
-        vvt_ctl_Kd = (int)((MSUtils.getByte(pageBuffer,610) + 0.0) * 1.0);
-        vvt_test_duty = (double)((MSUtils.getByte(pageBuffer,611) + 0.0) * 0.39063);
-        vvt_min_ang1 = (double)((MSUtils.getSignedWord(pageBuffer,612) + 0.0) * 0.1);
-        vvt_min_ang2 = (double)((MSUtils.getSignedWord(pageBuffer,614) + 0.0) * 0.1);
-        vvt_min_ang3 = (double)((MSUtils.getSignedWord(pageBuffer,616) + 0.0) * 0.1);
-        vvt_min_ang4 = (double)((MSUtils.getSignedWord(pageBuffer,618) + 0.0) * 0.1);
-        vvt_max_ang1 = (double)((MSUtils.getSignedWord(pageBuffer,620) + 0.0) * 0.1);
-        vvt_max_ang2 = (double)((MSUtils.getSignedWord(pageBuffer,622) + 0.0) * 0.1);
-        vvt_max_ang3 = (double)((MSUtils.getSignedWord(pageBuffer,624) + 0.0) * 0.1);
-        vvt_max_ang4 = (double)((MSUtils.getSignedWord(pageBuffer,626) + 0.0) * 0.1);
-        vvt_opt2_pid = MSUtils.getBits(pageBuffer,628,0,0,0);
-        vvt_opt2_use_hold_intake = MSUtils.getBits(pageBuffer,628,1,1,0);
-        vvt_opt2_use_hold_exhaust = MSUtils.getBits(pageBuffer,628,2,2,0);
-        vvt_opt2_cam2pol = MSUtils.getBits(pageBuffer,628,4,4,0);
-        vvt_opt2_cam3pol = MSUtils.getBits(pageBuffer,628,5,5,0);
-        vvt_opt2_cam4pol = MSUtils.getBits(pageBuffer,628,6,6,0);
-        vvt_opt2_cam1pol = MSUtils.getBits(pageBuffer,628,7,7,0);
-        vvt_opt3_cam2 = MSUtils.getBits(pageBuffer,629,0,1,0);
-        vvt_opt3_cam3 = MSUtils.getBits(pageBuffer,629,2,3,0);
-        vvt_opt3_cam4 = MSUtils.getBits(pageBuffer,629,4,5,0);
-        vvt_opt3_cam1 = MSUtils.getBits(pageBuffer,629,6,6,0);
-        vvt_tth1 = (int)((MSUtils.getByte(pageBuffer,918) + 0.0) * 1.0);
-        vvt_tth2 = (int)((MSUtils.getByte(pageBuffer,919) + 0.0) * 1.0);
-        vvt_tth3 = (int)((MSUtils.getByte(pageBuffer,920) + 0.0) * 1.0);
-        vvt_tth4 = (int)((MSUtils.getByte(pageBuffer,921) + 0.0) * 1.0);
-        vvt_coldpos1 = (double)((MSUtils.getSignedWord(pageBuffer,922) + 0.0) * 0.1);
-        vvt_coldpos2 = (double)((MSUtils.getSignedWord(pageBuffer,924) + 0.0) * 0.1);
-        tclu_opt_vss = MSUtils.getBits(pageBuffer,926,0,1,0);
-        tclu_opt_gear = MSUtils.getBits(pageBuffer,926,2,2,0);
-        tclu_brakepin = MSUtils.getBits(pageBuffer,927,0,4,0);
-        tclu_enablepin = MSUtils.getBits(pageBuffer,928,0,4,0);
-        tclu_outpin = MSUtils.getBits(pageBuffer,929,0,5,0);
-        tclu_gearmin = (int)((MSUtils.getByte(pageBuffer,930) + 0.0) * 1.0);
-        tclu_delay = (double)((MSUtils.getByte(pageBuffer,931) + 0.0) * 0.1);
-        if (MPH)
-        {
-        tclu_vssmin = (double)((MSUtils.getWord(pageBuffer,932) + 0.0) * 0.22369);
-        }
-        else
-        {
-        tclu_vssmin = (double)((MSUtils.getWord(pageBuffer,932) + 0.0) * 0.36);
-        }
-        tclu_tpsmin = (double)((MSUtils.getSignedWord(pageBuffer,934) + 0.0) * 0.1);
-        tclu_tpsmax = (double)((MSUtils.getSignedWord(pageBuffer,936) + 0.0) * 0.1);
-        tclu_mapmin = (double)((MSUtils.getWord(pageBuffer,938) + 0.0) * 0.1);
-        tclu_mapmax = (double)((MSUtils.getWord(pageBuffer,940) + 0.0) * 0.1);
-        vvt_opt4_decode = MSUtils.getBits(pageBuffer,942,0,1,0);
-        vvt_opt5_add1 = MSUtils.getBits(pageBuffer,943,0,1,0);
-        vvt_opt5_add2 = MSUtils.getBits(pageBuffer,943,2,2,0);
-        vvt_opt5_err = MSUtils.getBits(pageBuffer,943,3,3,0);
-        vvt_opt5_vvt1 = MSUtils.getBits(pageBuffer,943,4,4,0);
-        vvt_opt5_vvt2 = MSUtils.getBits(pageBuffer,943,5,5,0);
-        vvt_opt5_vvt3 = MSUtils.getBits(pageBuffer,943,6,6,0);
-        vvt_opt5_vvt4 = MSUtils.getBits(pageBuffer,943,7,7,0);
-        vvt_hold_duty_exh = (double)((MSUtils.getByte(pageBuffer,944) + 0.0) * 0.394);
-        vvt_ctl_Kp_exh = (int)((MSUtils.getByte(pageBuffer,945) + 0.0) * 1.0);
-        vvt_ctl_Ki_exh = (int)((MSUtils.getByte(pageBuffer,946) + 0.0) * 1.0);
-        vvt_ctl_Kd_exh = (int)((MSUtils.getByte(pageBuffer,947) + 0.0) * 1.0);
-        vvt_cam1tth1 = (int)((MSUtils.getByte(pageBuffer,948) + 0.0) * 1.0);
-        vvt_cam1tth2 = (int)((MSUtils.getByte(pageBuffer,949) + 0.0) * 1.0);
-        vvt_cam2tth1 = (int)((MSUtils.getByte(pageBuffer,950) + 0.0) * 1.0);
-        vvt_cam2tth2 = (int)((MSUtils.getByte(pageBuffer,951) + 0.0) * 1.0);
-        vvt_cam3tth1 = (int)((MSUtils.getByte(pageBuffer,952) + 0.0) * 1.0);
-        vvt_cam3tth2 = (int)((MSUtils.getByte(pageBuffer,953) + 0.0) * 1.0);
-        vvt_cam4tth1 = (int)((MSUtils.getByte(pageBuffer,954) + 0.0) * 1.0);
-        vvt_cam4tth2 = (int)((MSUtils.getByte(pageBuffer,955) + 0.0) * 1.0);
-        vvt_opt6_freq = MSUtils.getBits(pageBuffer,956,0,3,0);
+        dummy_14_0 = (int)((MSUtils.getByte(pageBuffer,0) + 0.0) * 1.0);
     }
 
 }

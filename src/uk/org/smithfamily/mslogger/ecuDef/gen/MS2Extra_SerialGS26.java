@@ -1315,7 +1315,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         if (USE_CRC_DATA_CHECK)
         {
         }
-        pageBuffer = loadPage(1,0,1024,null,new byte[]{114,-17,67,97,110,73,100,4,0,0,4,0});
+        pageBuffer = loadPage(1,0,1024,null,new byte[]{114,0,4,0,0,4,0});
         nCylinders = MSUtils.getBits(pageBuffer,0,0,4,0);
         no_skip_pulses = (int)((MSUtils.getByte(pageBuffer,1) + 0.0) * 1.0);
         ICIgnCapture = MSUtils.getBits(pageBuffer,2,0,0,0);
@@ -1717,7 +1717,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         crank_dwell = (double)((MSUtils.getByte(pageBuffer,1019) + 0.0) * 0.0666);
         crank_timing = (double)((MSUtils.getSignedWord(pageBuffer,1020) + 0.0) * 0.1);
         fixed_timing = (double)((MSUtils.getSignedWord(pageBuffer,1022) + 0.0) * 0.1);
-        pageBuffer = loadPage(2,0,1024,null,new byte[]{114,-17,67,97,110,73,100,5,0,0,4,0});
+        pageBuffer = loadPage(2,0,1024,null,new byte[]{114,0,5,0,0,4,0});
         if (CELSIUS)
         {
         if (EXPANDED_CLT_TEMP)
@@ -1932,7 +1932,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         fc_rpm_lower = (int)((MSUtils.getWord(pageBuffer,849) + 0.0) * 1.0);
         pwmidle_shift_lower_rpm = (int)((MSUtils.getWord(pageBuffer,851) + 0.0) * 1.0);
         pwmidle_shift_open_time = (int)((MSUtils.getByte(pageBuffer,853) + 0.0) * 1.0);
-        pageBuffer = loadPage(3,0,1024,null,new byte[]{114,-17,67,97,110,73,100,10,0,0,4,0});
+        pageBuffer = loadPage(3,0,1024,null,new byte[]{114,0,10,0,0,4,0});
         feature3_1 = MSUtils.getBits(pageBuffer,672,1,1,0);
         feature3_3 = MSUtils.getBits(pageBuffer,672,3,3,0);
         launch_opt_on = MSUtils.getBits(pageBuffer,673,6,7,0);
@@ -2047,7 +2047,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         staged_primary_delay = (int)((MSUtils.getByte(pageBuffer,985) + 0.0) * 1.0);
         trig_init = (int)((MSUtils.getByte(pageBuffer,1003) + 0.0) * 1.0);
         inj_time_mask = (int)((MSUtils.getByte(pageBuffer,1004) + 0.0) * 1.0);
-        pageBuffer = loadPage(4,0,1024,null,new byte[]{114,-17,67,97,110,73,100,8,0,0,4,0});
+        pageBuffer = loadPage(4,0,1024,null,new byte[]{114,0,8,0,0,4,0});
         if (INI_VERSION_2)
         {
         testmodelock = (int)((MSUtils.getWord(pageBuffer,0) + 0.0) * 1.0);
@@ -2163,7 +2163,7 @@ public class MS2Extra_SerialGS26 extends Megasquirt
         injOpen4 = (double)((MSUtils.getWord(pageBuffer,632) + 0.0) * 0.0010);
         battFac4 = (double)((MSUtils.getWord(pageBuffer,634) + 0.0) * 1.66667E-4);
         ego_calib_selection = (int)((MSUtils.getByte(pageBuffer,1016) + 0.0) * 1.0);
-        pageBuffer = loadPage(7,0,1024,null,new byte[]{114,-17,67,97,110,73,100,12,0,0,4,0});
+        pageBuffer = loadPage(7,0,1024,null,new byte[]{114,0,12,0,0,4,0});
         idle_up_options = MSUtils.getBits(pageBuffer,0,0,0,0);
         idle_up_options_input = MSUtils.getBits(pageBuffer,0,1,3,0);
         idle_up_options_avc = MSUtils.getBits(pageBuffer,0,4,4,0);
