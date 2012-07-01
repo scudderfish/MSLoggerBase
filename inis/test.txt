@@ -1,1 +1,1 @@
-ms3scratch.ini
+MS2Extra SerialGS26.ini
