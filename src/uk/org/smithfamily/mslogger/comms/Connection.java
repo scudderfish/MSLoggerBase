@@ -327,7 +327,7 @@ public enum Connection
      */
     public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
     {
-        if(isCRC32)
+        if (isCRC32)
         {
         	command = CRC32ProtocolHandler.wrap(command);
         }
@@ -348,7 +348,7 @@ public enum Connection
     public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException
     {
         checkConnection();
-        writeCommand(cmd, d,isCRC32);
+        writeCommand(cmd, d, isCRC32);
 
         byte[] result = readBytes(isCRC32);
         return result;
@@ -391,7 +391,8 @@ public enum Connection
         int read = 0;
         try
         {
-            synchronized(this) {
+            synchronized(this)
+            {
                 while (read < target)
                 {
                     int numRead = mmInStream.read(buffer, read, target - read);
@@ -440,7 +441,8 @@ public enum Connection
     {
         List<Byte> read = new ArrayList<Byte>();
 
-        synchronized(this) {
+        synchronized(this)
+        {
             while (mmInStream.available() > 0)
             {
                 byte b = (byte) mmInStream.read();

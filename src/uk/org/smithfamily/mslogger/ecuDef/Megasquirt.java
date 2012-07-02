@@ -676,7 +676,7 @@ public abstract class Megasquirt
         private String getSignature(byte[] sigCommand) throws IOException
         {
             String signatureFromMS = "";
-            int d = Math.max(getInterWriteDelay(), 100);
+            int d = Math.max(getInterWriteDelay(), 300);
             Connection.INSTANCE.flushAll();
 
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
