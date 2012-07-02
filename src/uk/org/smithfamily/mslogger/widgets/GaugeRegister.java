@@ -30,7 +30,11 @@ public enum GaugeRegister
                 File store = getFileStore(gd);
                 if (store != null)
                 {
-                    store.delete();
+                    boolean deleteResult = store.delete();
+                    if (!deleteResult)
+                    {
+                        DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
+                    }
                 }
             }
         }
@@ -77,7 +81,11 @@ public enum GaugeRegister
             File store = getFileStore(gd);
             if (store != null)
             {
-                store.delete();
+                boolean deleteResult = store.delete();
+                if (!deleteResult)
+                {
+                    DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
+                }
             }
             details.remove(nme);
 

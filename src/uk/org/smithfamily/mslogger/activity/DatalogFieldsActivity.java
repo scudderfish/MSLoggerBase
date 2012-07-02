@@ -7,10 +7,13 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 /**
@@ -20,6 +23,8 @@ public class DatalogFieldsActivity extends Activity implements OnClickListener
 {
     private ListView datalogsList;
     private ArrayAdapter<String> mDatalogsArrayAdapter;
+    
+    private EditText filterFields;
     
     private Button btnOk;
     private Button btnCancel;
@@ -43,8 +48,41 @@ public class DatalogFieldsActivity extends Activity implements OnClickListener
         btnCancel = (Button) findViewById(R.id.cancel);
         btnCancel.setOnClickListener(this);
         
+        filterFields = (EditText) findViewById(R.id.filterFields);
+        filterFields.addTextChangedListener(filterTextWatcher);
+        
         fillDatalogFieldsList();
     }
+    
+    /**
+     * Make sure we remove the text changed listener when the activity is destroyed
+     */
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        filterFields.removeTextChangedListener(filterTextWatcher);
+    }
+    
+    /**
+     * Text watcher that will monitor the edit text and apply the filter to the list
+     */
+    private TextWatcher filterTextWatcher = new TextWatcher()
+    {
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after)
+        {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
+            mDatalogsArrayAdapter.getFilter().filter(s);
+        }
+    };
     
     /**
      * Fill the list view with all availables datalog fields
