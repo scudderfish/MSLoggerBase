@@ -180,6 +180,8 @@ public class ViewDatalogActivity extends Activity
                         nbLine++;
                     }
                     
+                    buffreader.close();
+                    
                     long timeEnd = System.currentTimeMillis();
                     
                     DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);

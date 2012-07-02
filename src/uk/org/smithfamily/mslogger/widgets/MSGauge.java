@@ -405,8 +405,8 @@ public class MSGauge extends View implements Indicator
         {
             c = Color.RED;
         }
+        
         return c;
-
     }
 
     /**
@@ -423,12 +423,12 @@ public class MSGauge extends View implements Indicator
             canvas.drawOval(rimRect, facePaint);
             return;
         }
+        
         canvas.drawOval(rimRect, rimPaint);
         // now the outer rim circle
         canvas.drawOval(rimRect, rimCirclePaint);
         facePaint.setColor(getBgColour());
         canvas.drawOval(faceRect, facePaint);
-
     }
 
     /**
@@ -456,7 +456,6 @@ public class MSGauge extends View implements Indicator
     public void setTitle(String title)
     {
         this.title = title;
-
     }
 
     /**
@@ -466,7 +465,6 @@ public class MSGauge extends View implements Indicator
     public void setUnits(String units)
     {
         this.units = units;
-
     }
 
     /**
@@ -485,7 +483,6 @@ public class MSGauge extends View implements Indicator
     public void setMax(float max)
     {
         this.max = max;
-
     }
 
     /**
@@ -495,7 +492,6 @@ public class MSGauge extends View implements Indicator
     public void setLowD(float lowD)
     {
         this.lowD = lowD;
-
     }
 
     /**
@@ -505,7 +501,6 @@ public class MSGauge extends View implements Indicator
     public void setLowW(float lowW)
     {
         this.lowW = lowW;
-
     }
 
     /**
@@ -515,7 +510,6 @@ public class MSGauge extends View implements Indicator
     public void setHiW(float hiW)
     {
         this.hiW = hiW;
-
     }
 
     /**
@@ -525,7 +519,6 @@ public class MSGauge extends View implements Indicator
     public void setHiD(float hiD)
     {
         this.hiD = hiD;
-
     }
 
     /**
@@ -535,7 +528,6 @@ public class MSGauge extends View implements Indicator
     public void setVD(int vd)
     {
         this.vd = vd;
-
     }
 
     /**
@@ -545,7 +537,6 @@ public class MSGauge extends View implements Indicator
     public void setLD(int ld)
     {
         this.ld = ld;
-
     }
 
     /**
@@ -566,6 +557,7 @@ public class MSGauge extends View implements Indicator
     {
         return channel;
     }
+    
     /**
      * 
      * @param disabled
@@ -610,7 +602,6 @@ public class MSGauge extends View implements Indicator
         ld = gd.getLd();
         offsetAngle = gd.getOffsetAngle();
         value = (max - min) / 2.0;
-
     }
 
     /**
