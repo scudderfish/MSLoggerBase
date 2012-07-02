@@ -96,6 +96,7 @@
 	
 	<!-- View Datalog -->
 	<string name="select_fields_to_view">Select Fields to View</string>
+	<string name="filterDatalogFields">Filter datalog fields…</string>
 	
 	<!-- Manage Datalogs -->
 	<string name="no_datalog_found">It looks like MSLogger haven\'t saved any datalog yet. You can connect to a Megasquirt ECU, start datalogging and come back here after.</string>
