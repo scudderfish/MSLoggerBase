@@ -18,12 +18,13 @@ public enum ECURegistry
     ECURegistry()
     {
         registerEcu(GPIO_MShift_2109.class,"MShift 2.109       \0");
-        registerEcu(MS2Extra310.class,"MS2Extra Serial310 \0");
         registerEcu(MS2Extra311mb_v12.class,"MS2Extra 311 mb_v12\0");
-        registerEcu(MS2ExtraSerial312a.class,"MS2Extra Serial312a\0");
-        registerEcu(MS2ExtraSerial321.class,"MS2Extra Serial321 \0");
         registerEcu(MS2Extra_Rel_201.class,"MS2Extra Rel 2.0.0 \0");
         registerEcu(MS2Extra_Rev_102.class,"MS2Extra Rev 1.0.2 \0");
+        registerEcu(MS2Extra_Serial310.class,"MS2Extra Serial310 \0");
+        registerEcu(MS2Extra_Serial312a.class,"MS2Extra Serial312a\0");
+        registerEcu(MS2Extra_Serial321.class,"MS2Extra Serial321 \0");
+        registerEcu(MS2Extra_Serial330e.class,"MS2Extra Serial330e\0");
         registerEcu(MS2Extra_SerialGS26.class,"MS2Extra SerialGS26\0");
         registerEcu(MS3_Format_0081001.class,"MS3 Format 0081.001\0");
         registerEcu(MS3_Format_0089001.class,"MS3 Format 0095.002\0");
@@ -39,6 +40,10 @@ public enum ECURegistry
         registerEcu(MS3_Format_0231006.class,"MS3 Format 0231.006\0");
         registerEcu(MS3_Format_0233001.class,"MS3 Format 0233.001\0");
         registerEcu(MS3_Format_0233003.class,"MS3 Format 0233.003\0");
+        registerEcu(MS3_Format_0235001.class,"MS3 Format 0235.001\0");
+        registerEcu(MS3_Format_0237000.class,"MS3 Format 0237.000\0");
+        registerEcu(MS3_Format_0237003.class,"MS3 Format 0237.003\0");
+        registerEcu(MS3_Format_0238000.class,"MS3 Format 0238.000\0");
         registerEcu(MS3_Format_0238001.class,"MS3 Format 0238.001\0");
         registerEcu(MS3_Format_0238002.class,"MS3 Format 0238.002\0");
         registerEcu(MSExtra_format_hr_10.class,"MS/Extra format hr_10 **********");
@@ -54,7 +59,6 @@ public enum ECURegistry
         registerEcu(Megasquirt_II_v2905.class,"MSII Rev 2.90500   \0");
         registerEcu(Megasquirt_I_B_G_20.class,"20");
         registerEcu(Megasquirt_I_B_G_20_30.class,"20");
-        registerEcu(Megasquirt_iims2extra.class,"MS2Extra Serial310 \0");
         registerEcu(Ms2extra21p.class,"MS2Extra Rel 2.1.0p\0");
         registerEcu(Ms2extra21q.class,"MS2Extra Rel 2.1.0q\0");
         registerEcu(Ms2extra_210d.class,"MS2Extra Rel 2.1.0q\0");
