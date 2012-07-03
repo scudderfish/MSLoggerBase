@@ -652,9 +652,8 @@ public abstract class Megasquirt
          */
         protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
         {
-
             Connection.INSTANCE.flushAll();
-            int delay = getPageActivationDelay();
+            int delay = Math.max(getPageActivationDelay(), 200);
             if (pageSelectCommand != null)
             {
                 Connection.INSTANCE.writeCommand(pageSelectCommand, delay, isCRC32Protocol());
