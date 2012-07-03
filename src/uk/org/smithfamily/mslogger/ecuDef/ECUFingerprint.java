@@ -57,7 +57,7 @@ public class ECUFingerprint implements Runnable
             }
             catch (IOException e)
             {
-                DebugLogManager.INSTANCE.logException(e, Log.ERROR);
+                DebugLogManager.INSTANCE.logException(e);
                 Connection.INSTANCE.tearDown();
                 delay(1000);
             }
