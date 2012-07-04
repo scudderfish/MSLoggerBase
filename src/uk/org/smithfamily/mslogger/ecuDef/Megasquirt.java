@@ -520,7 +520,7 @@ public abstract class Megasquirt
                         sendMessage("Connected to " + getTrueSignature());
                     }
 
-                    long lastRpsTime = 0;
+                    long lastRpsTime = System.currentTimeMillis();
                     double readCounter = 0;
 
                     // This is the actual work. Outside influences will toggle 'running' when we want this to stop
