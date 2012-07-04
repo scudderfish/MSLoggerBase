@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import android.widget.LinearLayout;
 public class ViewDatalogActivity extends Activity
 {
     private GraphicalView mChartView;
+    private readLogFileInBackground mReadlogAsync;
 
     private String[] headers;
     private String[] completeHeaders;
@@ -72,7 +74,7 @@ public class ViewDatalogActivity extends Activity
             }
         });
         
-        new readLogFileInBackground().execute((Void) null);
+        mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
     }
     
     /**
@@ -82,13 +84,12 @@ public class ViewDatalogActivity extends Activity
     {
         if (resultCode == BACK_FROM_DATALOG_FIELDS)
         {
-            
             LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
             layout.removeAllViews();
             
             mChartView = null;
-            
-            new readLogFileInBackground().execute((Void) null);
+
+            mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
         }
     }
     
@@ -125,6 +126,11 @@ public class ViewDatalogActivity extends Activity
                     String[] lineSplit;
                     
                     long timeStart = System.currentTimeMillis();
+                    
+                    File datalogFile = new File(datalog);
+                    
+                    double currentLength = 0;
+                    double totalLength = datalogFile.length();
                     
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
@@ -178,6 +184,10 @@ public class ViewDatalogActivity extends Activity
                         }
                         
                         nbLine++;
+                        
+                        currentLength += line.length();
+     
+                        mReadlogAsync.doProgress((int) (currentLength * 100 / totalLength));
                     }
                     
                     buffreader.close();
@@ -427,7 +437,7 @@ public class ViewDatalogActivity extends Activity
     /**
      * AsyncTask that is used to read datalog in a background task while the UI can keep updating
      */
-    private class readLogFileInBackground extends AsyncTask<Void, Void, Void>
+    private class readLogFileInBackground extends AsyncTask<Void, Integer, Void>
     {
         private ProgressDialog dialog = new ProgressDialog(ViewDatalogActivity.this);
         
@@ -436,7 +446,10 @@ public class ViewDatalogActivity extends Activity
          */
         protected void onPreExecute()
         {
-            dialog.setMessage("Reading datalog");
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setProgress(0);
+            dialog.setMessage("Reading datalog...");
+            dialog.setCancelable(false);
             dialog.show();
         }
         
@@ -451,7 +464,26 @@ public class ViewDatalogActivity extends Activity
             generateGraph();
             dialog.dismiss();
         }
+        
+        /**
+         * Called by the UI thread to update progress
+         * @param value The new value of the progress bar 
+         */
+        public void doProgress(int value) 
+        {
+            publishProgress(value);
+        }
+        
+        /**
+         * @param value The new value of the progress bar
+         */
+        protected void onProgressUpdate(Integer...  value)
+        {
+           super.onProgressUpdate(value);
 
+           dialog.setProgress(value[0]);
+        }
+        
         /**
          * This is the main function that is executed in another thread 
          * 
