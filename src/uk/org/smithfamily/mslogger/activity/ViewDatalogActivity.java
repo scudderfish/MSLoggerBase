@@ -297,7 +297,7 @@ public class ViewDatalogActivity extends Activity
         
         renderer.setPanLimits(new double[] { minXaxis,maxXaxis,0,100 });
         renderer.setShowLabels(false);
-        renderer.setClickEnabled(true);
+        renderer.setClickEnabled(false);
         renderer.setShowGrid(true);
         renderer.setZoomEnabled(true);
         
@@ -441,15 +441,19 @@ public class ViewDatalogActivity extends Activity
     {
         private ProgressDialog dialog = new ProgressDialog(ViewDatalogActivity.this);
         
+        private long taskStartTime;
+        private long lastRemainingUpdate;
+        
         /**
          * This is executed before doInBackground
          */
         protected void onPreExecute()
         {
+            taskStartTime = System.currentTimeMillis();
+            
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             dialog.setProgress(0);
             dialog.setMessage("Reading datalog...");
-            dialog.setCancelable(false);
             dialog.show();
         }
         
@@ -481,7 +485,28 @@ public class ViewDatalogActivity extends Activity
         {
            super.onProgressUpdate(value);
 
-           dialog.setProgress(value[0]);
+           long currentTime = System.currentTimeMillis();
+           long elapsedMillis = (currentTime - taskStartTime);
+           
+           int percentValue = value[0];
+
+           long totalMillis =  (long) (elapsedMillis / (((double) percentValue) / 100.0));
+           long remainingMillis = totalMillis - elapsedMillis;
+           int remainingSeconds = (int) remainingMillis / 1000;
+           
+           /*
+               Update the status string. If task is less than 5% complete or started less then 2 seconds ago, 
+               assume that the estimate is inaccurate
+               
+               Also, don't update more often then every second
+           */
+           if (percentValue >= 5 && elapsedMillis > 2000 && currentTime - lastRemainingUpdate > 1000) {
+               dialog.setMessage("Reading datalog (About " + remainingSeconds + " second(s) remaining)...");
+               
+               lastRemainingUpdate = System.currentTimeMillis();
+           }
+           
+           dialog.setProgress(percentValue);
         }
         
         /**
