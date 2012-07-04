@@ -500,7 +500,8 @@ public class ViewDatalogActivity extends Activity
                
                Also, don't update more often then every second
            */
-           if (percentValue >= 5 && elapsedMillis > 2000 && currentTime - lastRemainingUpdate > 1000) {
+           if (percentValue >= 5 && elapsedMillis > 2000 && currentTime - lastRemainingUpdate > 1000)
+           {
                dialog.setMessage("Reading datalog (About " + remainingSeconds + " second(s) remaining)...");
                
                lastRemainingUpdate = System.currentTimeMillis();
