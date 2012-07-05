@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import android.widget.LinearLayout;
 public class ViewDatalogActivity extends Activity
 {
     private GraphicalView mChartView;
+    private readLogFileInBackground mReadlogAsync;
 
     private String[] headers;
     private String[] completeHeaders;
@@ -72,7 +74,7 @@ public class ViewDatalogActivity extends Activity
             }
         });
         
-        new readLogFileInBackground().execute((Void) null);
+        mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
     }
     
     /**
@@ -82,13 +84,12 @@ public class ViewDatalogActivity extends Activity
     {
         if (resultCode == BACK_FROM_DATALOG_FIELDS)
         {
-            
             LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
             layout.removeAllViews();
             
             mChartView = null;
-            
-            new readLogFileInBackground().execute((Void) null);
+
+            mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
         }
     }
     
@@ -125,6 +126,11 @@ public class ViewDatalogActivity extends Activity
                     String[] lineSplit;
                     
                     long timeStart = System.currentTimeMillis();
+                    
+                    File datalogFile = new File(datalog);
+                    
+                    double currentLength = 0;
+                    double totalLength = datalogFile.length();
                     
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
@@ -178,6 +184,10 @@ public class ViewDatalogActivity extends Activity
                         }
                         
                         nbLine++;
+                        
+                        currentLength += line.length();
+     
+                        mReadlogAsync.doProgress((int) (currentLength * 100 / totalLength));
                     }
                     
                     buffreader.close();
@@ -287,7 +297,7 @@ public class ViewDatalogActivity extends Activity
         
         renderer.setPanLimits(new double[] { minXaxis,maxXaxis,0,100 });
         renderer.setShowLabels(false);
-        renderer.setClickEnabled(true);
+        renderer.setClickEnabled(false);
         renderer.setShowGrid(true);
         renderer.setZoomEnabled(true);
         
@@ -427,16 +437,23 @@ public class ViewDatalogActivity extends Activity
     /**
      * AsyncTask that is used to read datalog in a background task while the UI can keep updating
      */
-    private class readLogFileInBackground extends AsyncTask<Void, Void, Void>
+    private class readLogFileInBackground extends AsyncTask<Void, Integer, Void>
     {
         private ProgressDialog dialog = new ProgressDialog(ViewDatalogActivity.this);
+        
+        private long taskStartTime;
+        private long lastRemainingUpdate;
         
         /**
          * This is executed before doInBackground
          */
         protected void onPreExecute()
         {
-            dialog.setMessage("Reading datalog");
+            taskStartTime = System.currentTimeMillis();
+            
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setProgress(0);
+            dialog.setMessage("Reading datalog...");
             dialog.show();
         }
         
@@ -451,7 +468,48 @@ public class ViewDatalogActivity extends Activity
             generateGraph();
             dialog.dismiss();
         }
+        
+        /**
+         * Called by the UI thread to update progress
+         * @param value The new value of the progress bar 
+         */
+        public void doProgress(int value) 
+        {
+            publishProgress(value);
+        }
+        
+        /**
+         * @param value The new value of the progress bar
+         */
+        protected void onProgressUpdate(Integer...  value)
+        {
+           super.onProgressUpdate(value);
 
+           long currentTime = System.currentTimeMillis();
+           long elapsedMillis = (currentTime - taskStartTime);
+           
+           int percentValue = value[0];
+
+           long totalMillis =  (long) (elapsedMillis / (((double) percentValue) / 100.0));
+           long remainingMillis = totalMillis - elapsedMillis;
+           int remainingSeconds = (int) remainingMillis / 1000;
+           
+           /*
+               Update the status string. If task is less than 5% complete or started less then 2 seconds ago, 
+               assume that the estimate is inaccurate
+               
+               Also, don't update more often then every second
+           */
+           if (percentValue >= 5 && elapsedMillis > 2000 && currentTime - lastRemainingUpdate > 1000)
+           {
+               dialog.setMessage("Reading datalog (About " + remainingSeconds + " second(s) remaining)...");
+               
+               lastRemainingUpdate = System.currentTimeMillis();
+           }
+           
+           dialog.setProgress(percentValue);
+        }
+        
         /**
          * This is the main function that is executed in another thread 
          * 
