@@ -81,7 +81,7 @@ public abstract class Megasquirt
     private boolean            logging;
     private boolean            constantsLoaded;
     private String             trueSignature = "Unknown";
-    private ECUThread          ecuThread;
+    private volatile ECUThread ecuThread;
     private volatile boolean   running;
 
     // protected byte[] ochBuffer;
