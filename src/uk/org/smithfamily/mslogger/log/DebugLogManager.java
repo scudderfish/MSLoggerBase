@@ -133,7 +133,8 @@ public enum DebugLogManager
         PrintWriter pw = new PrintWriter(os);
         try
         {
-            os.write(ex.getLocalizedMessage() + "\n");
+            long now = System.currentTimeMillis();
+            os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), ex.getLocalizedMessage()));
         }
         catch (IOException e)
         {

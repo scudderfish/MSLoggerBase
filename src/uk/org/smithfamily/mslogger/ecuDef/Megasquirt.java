@@ -520,7 +520,7 @@ public abstract class Megasquirt
                         sendMessage("Connected to " + getTrueSignature());
                     }
 
-                    long lastRpsTime = 0;
+                    long lastRpsTime = System.currentTimeMillis();
                     double readCounter = 0;
 
                     // This is the actual work. Outside influences will toggle 'running' when we want this to stop
@@ -652,7 +652,6 @@ public abstract class Megasquirt
          */
         protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
         {
-
             Connection.INSTANCE.flushAll();
             int delay = getPageActivationDelay();
             if (pageSelectCommand != null)
