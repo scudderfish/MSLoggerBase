@@ -38,7 +38,7 @@ public class BTSocketFactory
 			catch (Exception e)
 			{
 				DebugLogManager.INSTANCE.logException(e);
-				//That didn't work, lets switch it off for the next go around
+				// That didn't work, lets switch it off for the next go around
 				ApplicationSettings.INSTANCE.setBTWorkaround(false);
 			}
 		}
@@ -58,7 +58,7 @@ public class BTSocketFactory
 				try
 				{
 					tmp = createWorkaroundSocket(device);
-					// That did work, let's make it permanment
+
 					ApplicationSettings.INSTANCE.setBTWorkaround(true);
 				}
 				catch (Exception e1)
