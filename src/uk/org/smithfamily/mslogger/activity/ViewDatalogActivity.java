@@ -23,6 +23,8 @@ import uk.org.smithfamily.mslogger.chart.renderer.XYSeriesRenderer;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -455,6 +457,16 @@ public class ViewDatalogActivity extends Activity
             dialog.setProgress(0);
             dialog.setMessage("Reading datalog...");
             dialog.show();
+            
+            // Finish "View datalog" activity when canceling
+            dialog.setOnCancelListener(new OnCancelListener()
+            {
+                @Override
+                public void onCancel(DialogInterface dialog)
+                {
+                   finish();
+                }
+            });
         }
         
         /**

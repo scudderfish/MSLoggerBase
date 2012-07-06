@@ -7,11 +7,6 @@
             android:dialogTitle="Choose Bluetooth Device"
             android:key="bluetooth_mac"
             android:title="Bluetooth Device" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="btworkaround"
-            android:title="@string/workaround" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/megasquirt" >
