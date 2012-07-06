@@ -178,13 +178,30 @@ public enum DebugLogManager
         }
 
         StringBuffer b = new StringBuffer(msg).append("\n");
+        StringBuffer text = new StringBuffer();
+        StringBuffer hex = new StringBuffer();
         for (int i = 0; i < result.length; i++)
         {
-            b.append(String.format(" %02x", result[i]));
+            char c = (char) result[i];
+            hex.append(String.format(" %02x", result[i]));
+            if (c >= 32 && c <= 127)
+            {
+                text.append(c);
+            }
+            else
+            {
+                text.append('.');
+            }
             if ((i + 1) % 40 == 0)
             {
-                b.append("\n");
+                b.append(hex).append(" ").append(text).append("\n");
+                text = new StringBuffer();
+                hex = new StringBuffer();
             }
+        }
+        if(text.length() > 0)
+        {
+            b.append(String.format("%1$-120s %2$s\n",hex.toString(),text.toString()));
         }
         log(b.toString(), logLevel);
     }
