@@ -4,8 +4,7 @@ import uk.org.smithfamily.mslogger.R;
 import android.os.Bundle;
 
 /**
- * 
- * 
+ * Prompt the user to get his email to send datalogs
  */
 public class EmailSelectActivity extends DialogPreferenceActivity
 {

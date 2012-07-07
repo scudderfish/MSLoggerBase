@@ -416,7 +416,7 @@ public abstract class Megasquirt
         public ECUThread()
         {
             String sig = Megasquirt.this.getSignature();
-            setName("ECUThread:" + sig);
+            setName("ECUThread:" + sig + ":" + System.currentTimeMillis());
             calculationThread.start();
         }
 

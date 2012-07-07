@@ -42,7 +42,7 @@ public class ECUFingerprint implements Runnable
     @Override
     public void run()
     {
-        Thread.currentThread().setName("ECUFingerprintThread");
+        Thread.currentThread().setName("ECUFingerprintThread:" + System.currentTimeMillis());
         String fingerprint = UNKNOWN;
         DebugLogManager.INSTANCE.log("Starting fingerprint", Log.INFO);
         String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();

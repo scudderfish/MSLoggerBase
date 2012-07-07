@@ -8,7 +8,7 @@ import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.text.format.DateFormat;
 
 /**
- *
+ * Class that write a datalog in .msl format
  */
 public enum DatalogManager
 {
@@ -21,8 +21,7 @@ public enum DatalogManager
 	private long   logStart = System.currentTimeMillis();
 
 	/**
-	 * 
-	 * @return
+	 * @return The absolute path of the data log
 	 */
 	public synchronized String getAbsolutePath()
 	{
@@ -30,8 +29,7 @@ public enum DatalogManager
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return The filename of the datalog
 	 */
 	public synchronized String getFilename()
 	{
@@ -39,12 +37,14 @@ public enum DatalogManager
 		{
 			fileName = DateFormat.format("yyyy-MM-dd_kk.mm.ss", new Date()).toString() + ".msl";
 		}
+		
 		return fileName;
 	}
 
 	/**
+	 * Append a row at the end of the data log
 	 * 
-	 * @param logRow
+	 * @param logRow   The row to write in the file
 	 */
 	public synchronized void write(String logRow)
 	{
@@ -55,13 +55,11 @@ public enum DatalogManager
 		
 		if (writer == null)
 		{
-
 			File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFilename());
 			absolutePath = logFile.getAbsolutePath();
 			
 			try
 			{
-                
 			    if (!logFile.exists())
 	            { 
 			        writer = new PrintWriter(new FileWriter(logFile));
@@ -83,11 +81,12 @@ public enum DatalogManager
 				e.printStackTrace();
 			}
 		}
+		
 		writer.println(logRow);
 	}
 
 	/**
-	 * 
+	 * Stop logging by closing the file writer
 	 */
 	public synchronized void stopLog()
 	{
@@ -96,11 +95,12 @@ public enum DatalogManager
 			writer.flush();
 			writer.close();
 		}
+		
 		writer = null;
 	}
 
 	/**
-	 * 
+	 * Alias to stopLog()
 	 */
 	public void close()
 	{
@@ -108,8 +108,9 @@ public enum DatalogManager
 	}
 
 	/**
+	 * Mark the datalog with the specified message
 	 * 
-	 * @param msg
+	 * @param msg  The mark message
 	 */
 	public synchronized void mark(String msg)
 	{
@@ -126,11 +127,10 @@ public enum DatalogManager
 				markCounter = 1;
 			}
 		}
-
 	}
 
 	/**
-	 * 
+	 * Mark the datalog
 	 */
 	public void mark()
 	{
@@ -138,8 +138,7 @@ public enum DatalogManager
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return Milliseconds when the log was created
 	 */
     public long getLogStart()
     {

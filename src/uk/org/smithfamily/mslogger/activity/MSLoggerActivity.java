@@ -25,8 +25,7 @@ import uk.org.smithfamily.mslogger.log.*;
 import uk.org.smithfamily.mslogger.widgets.*;
 
 /**
- * 
- * 
+ * Main activity class where the main window (gauges) are and where the bottom menu is handled 
  */
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
@@ -49,7 +48,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     private boolean                registered;
 	
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -104,7 +105,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Intent serverIntent = new Intent(this, StartupActivity.class);
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
-
+    
+    /**
+     * Save the bottom text views content so they can keep their state while device is rotated
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
@@ -115,7 +119,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
     
     /**
-     * 
+     * Dump the user preference into the log file for easier debugging
      */
     private void dumpPreferences()
     {
@@ -128,7 +132,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Complete the initialisation and load/init the gauges
      */
     private void completeCreate()
     {
@@ -143,7 +147,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Finilise the initialisation of the application by initialising the gauges, checking bluetooth, SD card and starting connection to the Megasquirt
      */
     private void finaliseInit()
     {
@@ -160,7 +164,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Check if the SD card is present
      */
     private void checkSDCard()
     {
@@ -173,7 +177,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Clean up messages and GPS when the app is stopped
      */
     @Override
     protected void onDestroy()
@@ -184,7 +188,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Save the gauges when the app is stopped
      */
     @Override
     public void onStop()
@@ -194,7 +198,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Ask to select a Bluetooth device is none is selected
      */
     private void checkBTDeviceSet()
     {
@@ -205,7 +209,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Save current selected gauges in preferences
      */
     private void saveGauges()
     {
@@ -244,7 +248,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Load the gauges
      */
     private void loadGauges()
     {
@@ -254,7 +258,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Init the gauges with the proper gauge saved in preference, default to firmware defined gauge if preference are empty
      */
     private void initGauges()
     {
@@ -263,10 +267,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         String[] defaultGauges = ecu.defaultGauges();
+        
         gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
         gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
         gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
         gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
+        
         if (gauge5 != null)
         {
             gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
@@ -277,6 +283,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             gauge1.setOnTouchListener(new GaugeTouchListener(gauge1));
             gauge2.setOnTouchListener(new GaugeTouchListener(gauge2));
             gauge4.setOnTouchListener(new GaugeTouchListener(gauge4));
+            
             if (gauge5 != null)
             {
                 gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
@@ -305,6 +312,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     return false;
                 }
             };
+            
             gauge3.setOnClickListener(MSLoggerActivity.this);
             gauge3.setOnTouchListener(gestureListener);
         }
@@ -313,17 +321,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             MarkListener l = new MarkListener(layout);
             setTouchListeners(l);
         }
+        
         gauge1.invalidate();
         gauge2.invalidate();
         gauge3.invalidate();
         gauge4.invalidate();
+        
         if (gauge5 != null)
             gauge5.invalidate();
 
     }
 
     /**
-     * 
+     * Set all the gauges variable with their view
      */
     private void findGauges()
     {
@@ -335,6 +345,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
+     * Set the touch listener on the gauge
      * 
      * @param l
      */
@@ -344,12 +355,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         gauge2.setOnTouchListener(l);
         gauge3.setOnTouchListener(l);
         gauge4.setOnTouchListener(l);
+        
         if (gauge5 != null)
             gauge5.setOnTouchListener(l);
     }
 
     /**
-     * 
+     * Register the receiver with the message to receive from the Megasquirt connection
      */
     private void registerMessages()
     {
@@ -372,7 +384,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Unregister receiver
      */
     private void deRegisterMessages()
     {
@@ -383,11 +395,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Process data got from Megasquirt and update the gauges with it
      */
     protected void processData()
     {
-//        long start = System.currentTimeMillis();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         List<Indicator> indicators;
         if ((indicators = indicatorManager.getIndicators()) != null)
@@ -407,8 +418,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
         }
-//	long stop = System.currentTimeMillis();
-//	DebugLogManager.INSTANCE.log("MSLoggerActivity.processData() took "+(stop-start)+"ms",Log.INFO);
     }
 
  
@@ -425,6 +434,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
+     * Triggered just before the bottom menu are displayed, used to update the state of some menu items
      * 
      * @param menu
      */
@@ -475,8 +485,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
+     * Triggered when a bottom menu item is clicked
      * 
-     * @param item
+     * @param item  The clicked menu item
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -535,7 +546,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Start the background task to reset the gauges
      */
     public void resetGuages()
     {
@@ -543,7 +554,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Toggle the gauge editing
      */
     private void toggleEditing()
     {
@@ -556,7 +567,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Toggle data logging of the Megasquirt
      */
     private void toggleLogging()
     {
@@ -576,7 +587,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * If the user opted in to get logs sent to his email, we prompt him
      */
     private void sendLogs()
     {
@@ -597,7 +608,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Quit the application cleanly by stopping the connection to the Megasquirt if it exists
      */
     private void quit()
     {
@@ -620,7 +631,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Toggle the connection to the Megasquirt
      */
     private void toggleConnection()
     {
@@ -726,6 +737,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
+     * Called when a preference change
      * 
      * @param prefs
      * @param key
@@ -759,7 +771,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
      /**
-     *
+     * Background task user to reset gauge to firmware default
      */
     private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
     {
@@ -815,7 +827,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * 
+     * Background task that load the pages
      */
     private class InitTask extends AsyncTask<Void, Void, Void>
     {
@@ -853,7 +865,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
  
     /**
-     * 
+     * Listener that monitor touch action on the gauge.
      */
     public class GaugeTouchListener implements OnTouchListener
     {
@@ -872,27 +884,31 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         @Override
         public boolean onTouch(View v, MotionEvent event)
         {
-            // System.out.println(event);
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
+                // Gauge 3 is the middle gauge
                 String g3name = gauge3.getName();
+                
                 gauge3.initFromName(gauge.getName());
                 gauge.initFromName(g3name);
                 gauge.invalidate();
                 gauge3.invalidate();
+                
                 return true;
             }
+            
             return false;
         }
 
     }
 
     /**
-     *
+     * Receiver that get events from other activities about Megasquirt status and activities
      */
     private final class Reciever extends BroadcastReceiver
     {
         /**
+         * When an event is received
          * 
          * @param context
          * @param intent
@@ -954,15 +970,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     *
+     * Listener used when the user touch the screen to mark the datalog
      */
     private static class MarkListener implements OnTouchListener
     {
         private LinearLayout layout;
 
         /**
+         * Constructor
          * 
-         * @param layout
+         * @param layout    The layout that will change background then the screen is touch
          */
         public MarkListener(LinearLayout layout)
         {
@@ -970,9 +987,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         /**
+         * On touch event
          * 
-         * @param v
-         * @param event
+         * @param v         The view that triggered the event
+         * @param event     Information about the event
          */
         @Override
         public boolean onTouch(View v, MotionEvent event)
