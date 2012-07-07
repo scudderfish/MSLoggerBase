@@ -243,7 +243,7 @@ public enum Connection
         }
         if (ownerThread != Thread.currentThread())
         {
-            throw new IOException("Attempt to use from thread'" + Thread.currentThread().getName() + "' when owned by thread '" + ownerThread.getName());
+            throw new IOException("Attempt to use from thread '" + Thread.currentThread().getName() + "' when owned by thread '" + ownerThread.getName());
         }
     }
 
