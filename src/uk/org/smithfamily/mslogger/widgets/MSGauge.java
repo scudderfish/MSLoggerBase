@@ -639,6 +639,17 @@ public class MSGauge extends View implements Indicator
 
     /**
      * 
+     */
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+
+        IndicatorManager.INSTANCE.deregisterIndicator(this);
+    }
+    
+    /**
+     * 
      * @return
      */
     public double getOffsetAngle()

@@ -1,126 +1,243 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import java.text.NumberFormat;
-
-import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.util.Log;
+import android.view.View;
 
 /**
  * 
  */
-public class NumericIndicator extends TextView implements Indicator
+public class NumericIndicator extends View implements Indicator
 {
-	private float			min;
-	private float			max;
-	private float			warningPoint;
-	private float			errorPoint;
-	private float			value;
-//	private Typeface		font;
-	private int				dp;
-	private NumberFormat	formatter;
-	private String			channel;
+    public static final String DEAD_GAUGE_NAME = "deadGauge";
+    private String          name        = DEAD_GAUGE_NAME;
+    private String          title       = "RPM";
+    private String          channel     = "rpm";
+    private String          units       = "";
+	private double			min;
+	private double			max;
+	private double          lowD        = 0;
+    private double          lowW        = 0;
+    private double          hiW         = 5000;
+    private double          hiD         = 7000;
+    private int             vd          = 0;
+    private int             ld          = 0;
+    final float             scale       = getResources().getDisplayMetrics().density;
+    
+    private int             diameter;
+    
+    private Paint           backgroundPaint;
+    private Paint           titlePaint;
+    private Paint           valuePaint;
+    
+	private double			value;
 	private boolean			disabled;
 
-	/**
-	 * 
-	 * @param context
-	 * @param attrs
-	 * @param defStyle
-	 */
-	public NumericIndicator(Context context, AttributeSet attrs, int defStyle)
-	{
-		super(context, attrs, defStyle);
-//		setFont(context);
-		setupDefaults(context);
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param attrs
-	 */
-	public NumericIndicator(Context context, AttributeSet attrs)
-	{
-		super(context, attrs);
-//		setFont(context);
-		setupDefaults(context);
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
-		value = a.getFloat(R.styleable.Dial_numValue, value);
-		max = a.getFloat(R.styleable.Dial_scaleMaxValue, max);
-		min = a.getFloat(R.styleable.Dial_scaleMinValue, min);
-		warningPoint = a.getFloat(R.styleable.Dial_rangeWarningMinValue, warningPoint);
-		errorPoint = a.getFloat(R.styleable.Dial_rangeErrorMinValue, errorPoint);
-		channel = a.getString(R.styleable.Dial_channel);
-		disabled = a.getBoolean(R.styleable.Dial_disabled, false);
-
-		setupFormat();
-	}
-
-	/**
-	 * 
-	 * @param context
-	 */
-	public NumericIndicator(Context context)
-	{
-		super(context);
-//		setFont(context);
-		setupDefaults(context);
-		setupFormat();
-	}
-
-	/**
-	 * 
-	 * @param context
-	 */
-	private void setupDefaults(Context context)
-	{
-		min = 10;
-		max = 20;
-		value = 14.7f;
-		warningPoint = 16;
-		errorPoint = 17;
-	}
+	private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
 	
-	/**
-	 * 
-	 */
-	private void setupFormat()
-	{
-		double range = Math.abs(this.max - this.min);
-		if (range <= 12)
-			this.dp = 2;
-		else if (range < 100)
-			this.dp = 1;
-		else
-			this.dp = 0;
+    /**
+     * 
+     * @param context
+     */
+    public NumericIndicator(Context context)
+    {
+        super(context);
+        init(context);
+    }
 
-		if (dp == 0)
-		{
-			formatter = NumberFormat.getIntegerInstance();
-		}
-		else
-		{
-			formatter = NumberFormat.getNumberInstance();
-		}
+    /**
+     * 
+     * @param c
+     * @param s
+     */
+    public NumericIndicator(Context c, AttributeSet s)
+    {
+        super(c, s);
+        init(c);
+    }
 
-		formatter.setGroupingUsed(false);
-		formatter.setMaximumFractionDigits(dp);
-		formatter.setMinimumFractionDigits(dp);
-		this.setText(formatter.format(this.value));
-	}
-/*
-	private void setFont(Context context)
-	{
-		this.font = Typeface.createFromAsset(context.getAssets(), "fonts/digital_lcd.ttf");
-		this.setTypeface(font);
+    /**
+     * 
+     * @param context
+     * @param attr
+     * @param defaultStyles
+     */
+    public NumericIndicator(Context context, AttributeSet attr, int defaultStyles)
+    {
+        super(context, attr, defaultStyles);
+        init(context);
+    }
+	
+    /**
+     * 
+     * @param c
+     */
+    private void init(Context c)
+    {
+        initDrawingTools(c);
+    }
+    
+    /**
+     * 
+     * @param context
+     */
+    private void initDrawingTools(Context context)
+    {        
+        int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
+        if (this.isInEditMode())
+        {
+            anti_alias_flag = 0;
+        }
+        
+        titlePaint = new Paint();
+        titlePaint.setColor(Color.WHITE);
+        titlePaint.setTextSize(0.08f);
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setFlags(anti_alias_flag);
+        titlePaint.setAntiAlias(true);
 
-	}
-*/
+        valuePaint = new Paint();
+        valuePaint.setColor(Color.WHITE);
+        valuePaint.setTextSize(0.2f);
+        valuePaint.setTextAlign(Paint.Align.CENTER);
+        valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setAntiAlias(true);
+        
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.BLACK);
+    }
+	
+    /**
+     * @param widthSpec
+     * @param heightSpec
+     */
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec)
+    {
+
+        int measuredWidth = MeasureSpec.getSize(widthSpec);
+
+        int measuredHeight = MeasureSpec.getSize(heightSpec);
+
+        /*
+         * measuredWidth and measured height are your view boundaries. You need to change these values based on your requirement E.g.
+         * 
+         * if you want to draw a circle which fills the entire view, you need to select the Min(measuredWidth,measureHeight) as the radius.
+         * 
+         * Now the boundary of your view is the radius itself i.e. height = width = radius.
+         */
+
+        /*
+         * After obtaining the height, width of your view and performing some changes you need to set the processed value as your view dimension by using the method setMeasuredDimension
+         */
+
+        diameter = Math.min(measuredHeight, measuredWidth);
+        setMeasuredDimension(diameter, diameter);
+
+        /*
+         * If you consider drawing circle as an example, you need to select the minimum of height and width and set that value as your screen dimensions
+         * 
+         * int d=Math.min(measuredWidth, measuredHeight);
+         * 
+         * setMeasuredDimension(d,d);
+         */
+
+    }
+    
+    /**
+     * 
+     * @param gd
+     */
+    public void initFromGD(GaugeDetails gd)
+    {
+        name = gd.getName();
+        title = gd.getTitle();
+        channel = gd.getChannel();
+        units = gd.getUnits();
+        min = gd.getMin();
+        max = gd.getMax();
+        lowD = gd.getLoD();
+
+        lowW = gd.getLoW();
+        hiW = gd.getHiW();
+
+        hiD = gd.getHiD();
+        vd = gd.getVd();
+        ld = gd.getLd();
+        value = (max - min) / 2.0;
+    }
+	
+    /**
+     * 
+     * @param nme
+     */
+    public void initFromName(String nme)
+    {
+        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
+        if (gd == null)
+        {   
+            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
+            gd = deadGauge;
+        }
+        initFromGD(gd);
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawBackground(Canvas canvas)
+    {
+        backgroundPaint.setColor(getBgColour());
+        
+        canvas.drawRect(0.05f, 0.30f, 0.9f, 0.75f, backgroundPaint);
+    }
+    
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawTitle(Canvas canvas)
+    {        
+        titlePaint.setColor(getFgColour());
+        
+        String text = title;
+        if (!units.equals(""))
+        {
+            text += " (" + units + ")";
+        }
+        
+        canvas.drawText(text, 0.48f, 0.65f, titlePaint);
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawValue(Canvas canvas)
+    {
+        valuePaint.setColor(getFgColour());
+
+        float displayValue = (float) (Math.floor(value / Math.pow(10, -vd) + 0.5) * Math.pow(10, -vd));
+
+        String text;
+
+        if (vd <= 0)
+        {
+            text = Integer.toString((int) displayValue);
+        }
+        else
+        {
+            text = Float.toString(displayValue);
+        }
+
+        canvas.drawText(text, 0.5f, 0.5f, valuePaint);
+    }
 	
 	/**
 	 * @param min
@@ -128,8 +245,6 @@ public class NumericIndicator extends TextView implements Indicator
 	public void setMin(float min)
 	{
 		this.min = min;
-		setupFormat();
-
 	}
 
 	/**
@@ -138,8 +253,6 @@ public class NumericIndicator extends TextView implements Indicator
 	public void setMax(float max)
 	{
 		this.max = max;
-		setupFormat();
-
 	}
 
 	/**
@@ -147,7 +260,7 @@ public class NumericIndicator extends TextView implements Indicator
 	 */
 	public void setTitle(String title)
 	{
-		// No Op
+		this.title = title;
 	}
 
 	/**
@@ -157,30 +270,88 @@ public class NumericIndicator extends TextView implements Indicator
 	{
 		this.value = (float) value;
 	}
+	
+    /**
+     * 
+     * @return
+     */
+    private int getFgColour()
+    {
+        if (disabled)
+        {
+            return Color.DKGRAY;
+        }
+        if (value > lowW && value < hiW)
+        {
+            return Color.WHITE;
+        }
+        else
+        {
+            return Color.BLACK;
+        }
+    }
 
+    /**
+     * 
+     * @return
+     */
+    private int getBgColour()
+    {
+        int c = Color.GRAY;
+        if (this.disabled)
+        {
+            return c;
+        }
+        if (value > lowW && value < hiW)
+        {
+            return Color.BLACK;
+        }
+        else if (value <= lowW || value >= hiW)
+        {
+            c = Color.YELLOW;
+        }
+        if (value <= lowD || value >= hiD)
+        {
+            c = Color.RED;
+        }
+        
+        return c;
+    }
+    
 	/**
 	 * @param canvas
 	 */
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
-		if (value < warningPoint)
-			setTextColor(Color.GREEN);
-		else if (value < errorPoint)
-			setTextColor(Color.YELLOW);
-		else
-			setTextColor(Color.RED);
-		if (disabled)
-		{
-			setTextColor(Color.LTGRAY);
-			this.setText("---");
-		}
-		else
-		{
-			String val = formatter.format(this.value);
-			this.setText(val);
-		}
-		super.onDraw(canvas);
+	    int height = getMeasuredHeight();
+
+        int width = getMeasuredWidth();
+
+        float scale = (float) getWidth();
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.scale(scale, scale);
+        float dx = 0.0f;
+        float dy = 0.0f;
+        if (width > height)
+        {
+            dx = (width - height) / 2.0f;
+        }
+        if (height > width)
+        {
+            dy = (height - width) / 2.0f;
+        }
+        canvas.translate(dx, dy);
+        
+        drawBackground(canvas);
+        
+        if (!disabled)
+        {
+            drawValue(canvas);
+        }
+
+        drawTitle(canvas);
+        canvas.restore();	  
 	}
 
 	/**
@@ -208,7 +379,6 @@ public class NumericIndicator extends TextView implements Indicator
 		super.onAttachedToWindow();
 
 		IndicatorManager.INSTANCE.registerIndicator(this);
-
 	}
 
 	/**
@@ -220,7 +390,6 @@ public class NumericIndicator extends TextView implements Indicator
 		super.onDetachedFromWindow();
 
 		IndicatorManager.INSTANCE.deregisterIndicator(this);
-
 	}
 
 	/**
@@ -234,12 +403,20 @@ public class NumericIndicator extends TextView implements Indicator
 	}
 
 	/**
+	 * @return
+	 */
+	public String getName()
+	{
+	    return this.name;
+	}
+	
+	/**
 	 * @param name
 	 */
     @Override
     public void setName(String name)
     {
-        // TODO Auto-generated method stub
+        this.name = name;
     }
 
     /**
@@ -248,7 +425,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setUnits(String units)
     {
-        // TODO Auto-generated method stub
+        this.units = units;
     }
 
     /**
@@ -257,7 +434,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setLowD(float lowD)
     {
-        // TODO Auto-generated method stub
+        this.lowD = lowD;
     }
 
     /**
@@ -266,7 +443,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setLowW(float lowW)
     {
-        // TODO Auto-generated method stub      
+        this.lowW = lowW;
     }
 
     /**
@@ -275,7 +452,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setHiW(float hiW)
     {
-        // TODO Auto-generated method stub     
+        this.hiW = hiW;
     }
 
     /**
@@ -284,7 +461,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setHiD(float hiD)
     {
-        // TODO Auto-generated method stub  
+        this.hiD = hiD;
     }
 
     /**
@@ -293,7 +470,7 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setVD(int vd)
     {
-        // TODO Auto-generated method stub        
+        this.vd = vd;
     }
 
     /**
@@ -302,6 +479,14 @@ public class NumericIndicator extends TextView implements Indicator
     @Override
     public void setLD(int ld)
     {
-        // TODO Auto-generated method stub       
+        this.ld = ld;
+    }
+    
+    /**
+     * @return
+     */
+    public int getLD()
+    {
+        return ld;
     }
 }
