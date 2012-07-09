@@ -2,35 +2,26 @@ package uk.org.smithfamily.mslogger.widgets;
 
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Path.FillType;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
 /**
  *
  */
-public class MSGauge extends View implements Indicator
+public class MSGauge extends Indicator
 {
-    public static final String DEAD_GAUGE_NAME = "deadGauge";
     private int                diameter;
-    private String             name        = DEAD_GAUGE_NAME;
-    private String             title       = "RPM";
-    private String             channel     = "rpm";
-    private String             units       = "";
-    private double             min         = 0;
-    private double             max         = 7000;
-    private double             lowD        = 0;
-    private double             lowW        = 0;
-    private double             hiW         = 5000;
-    private double             hiD         = 7000;
-    private int                vd          = 0;
-    private int                ld          = 0;
-    private double             value       = 2500;
     private double             pi          = Math.PI;
-    private double             offsetAngle = 45;
+    
     final float                scale       = getResources().getDisplayMetrics().density;
     private Paint              titlePaint;
     private Paint              valuePaint;
@@ -44,7 +35,7 @@ public class MSGauge extends View implements Indicator
     private boolean            disabled;
     private static final float rimSize     = 0.02f;
 
-    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+    
     
     /**
      * 
@@ -246,10 +237,10 @@ public class MSGauge extends View implements Indicator
     {
         titlePaint.setTextSize(0.07f);
         titlePaint.setColor(getFgColour());
-        canvas.drawText(title, 0.5f, 0.25f, titlePaint);
+        canvas.drawText(getTitle(), 0.5f, 0.25f, titlePaint);
         
         titlePaint.setTextSize(0.05f);
-        canvas.drawText(units, 0.5f, 0.32f, titlePaint);
+        canvas.drawText(getUnits(), 0.5f, 0.32f, titlePaint);
     }
 
     /**
@@ -260,11 +251,11 @@ public class MSGauge extends View implements Indicator
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(value / Math.pow(10, -vd) + 0.5) * Math.pow(10, -vd));
+        float displayValue = (float) (Math.floor(getValue() / Math.pow(10, -getVd()) + 0.5) * Math.pow(10, -getVd()));
 
         String text;
 
-        if (vd <= 0)
+        if (getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -284,15 +275,15 @@ public class MSGauge extends View implements Indicator
     {
         float back_radius = 0.042f;
                 
-        double range = 270.0 / (max - min);
-        double pointerValue = value;
-        if (pointerValue < min)
+        double range = 270.0 / (getMax() - getMin());
+        double pointerValue = getValue();
+        if (pointerValue < getMin())
         {
-            pointerValue = min;
+            pointerValue = getMin();
         }
-        if (pointerValue > max)
+        if (pointerValue > getMax())
         {
-            pointerValue = max;
+            pointerValue = getMax();
         }
         
         pointerPaint.setColor(getFgColour());
@@ -308,7 +299,7 @@ public class MSGauge extends View implements Indicator
         pointerPath.lineTo(0.5f, 0.1f);                     // 0.500, 0.100
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         
-        double angle = ((pointerValue - min) * range + offsetAngle) - 180;
+        double angle = ((pointerValue - getMin()) * range + getOffsetAngle()) - 180;
         canvas.rotate((float) angle, 0.5f, 0.5f);
         canvas.drawPath(pointerPath, pointerPaint);
         canvas.restore();
@@ -322,12 +313,12 @@ public class MSGauge extends View implements Indicator
     {
         float radius = 0.42f;
         scalePaint.setColor(getFgColour());
-        double range = (max - min);
+        double range = (getMax() - getMin());
         double tenpower = Math.floor(Math.log10(range));
         double scalefactor = Math.pow(10, tenpower);
 
-        double gaugeMax = max;
-        double gaugeMin = min;
+        double gaugeMax = getMax();
+        double gaugeMin = getMin();
 
         double gaugeRange = gaugeMax - gaugeMin;
 
@@ -340,11 +331,11 @@ public class MSGauge extends View implements Indicator
         
         for (double val = gaugeMin; val <= gaugeMax; val += step)
         {
-            float displayValue = (float) (Math.floor(val / Math.pow(10, -ld) + 0.5) * Math.pow(10, -ld));
+            float displayValue = (float) (Math.floor(val / Math.pow(10, -getLd()) + 0.5) * Math.pow(10, -getLd()));
 
             String text;
 
-            if (ld <= 0)
+            if (getLd() <= 0)
             {
                 text = Integer.toString((int) displayValue);
             }
@@ -354,7 +345,7 @@ public class MSGauge extends View implements Indicator
             }
 
             double anglerange = 270.0 / gaugeRange;
-            double angle = (val - gaugeMin) * anglerange + offsetAngle;
+            double angle = (val - gaugeMin) * anglerange + getOffsetAngle();
             double rads = angle * pi / 180.0;
             float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
             float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
@@ -372,7 +363,7 @@ public class MSGauge extends View implements Indicator
         {
             return Color.DKGRAY;
         }
-        if (value > lowW && value < hiW)
+        if (getValue() > getLowW() && getValue() < getHiW())
         {
             return Color.WHITE;
         }
@@ -393,15 +384,16 @@ public class MSGauge extends View implements Indicator
         {
             return c;
         }
-        if (value > lowW && value < hiW)
+        double value = getValue();
+        if (value > getLowW() && value < getHiW())
         {
             return Color.BLACK;
         }
-        else if (value <= lowW || value >= hiW)
+        else if (value <= getLowW() || value >= getHiW())
         {
             c = Color.YELLOW;
         }
-        if (value <= lowD || value >= hiD)
+        if (value <= getLowD() || value >= getHiD())
         {
             c = Color.RED;
         }
@@ -430,179 +422,15 @@ public class MSGauge extends View implements Indicator
         facePaint.setColor(getBgColour());
         canvas.drawOval(faceRect, facePaint);
     }
-
-    /**
-     * @param name
-     */
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * @param channelName
-     */
-    @Override
-    public void setChannel(String channelName)
-    {
-        this.channel = channelName;
-    }
-
-    /**
-     * @param title
-     */
-    @Override
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    /**
-     * @param units
-     */
-    @Override
-    public void setUnits(String units)
-    {
-        this.units = units;
-    }
-
-    /**
-     * @param min
-     */
-    @Override
-    public void setMin(float min)
-    {
-        this.min = min;
-    }
-
-    /**
-     * @param max
-     */
-    @Override
-    public void setMax(float max)
-    {
-        this.max = max;
-    }
-
-    /**
-     * @param lowD
-     */
-    @Override
-    public void setLowD(float lowD)
-    {
-        this.lowD = lowD;
-    }
-
-    /**
-     * @param lowW
-     */
-    @Override
-    public void setLowW(float lowW)
-    {
-        this.lowW = lowW;
-    }
-
-    /**
-     * @param hiW
-     */
-    @Override
-    public void setHiW(float hiW)
-    {
-        this.hiW = hiW;
-    }
-
-    /**
-     * @param hiD
-     */
-    @Override
-    public void setHiD(float hiD)
-    {
-        this.hiD = hiD;
-    }
-
-    /**
-     * @param vd
-     */
-    @Override
-    public void setVD(int vd)
-    {
-        this.vd = vd;
-    }
-
-    /**
-     * @param ld
-     */
-    @Override
-    public void setLD(int ld)
-    {
-        this.ld = ld;
-    }
-
-    /**
-     * @param value
-     */
-    @Override
-    public void setCurrentValue(double value)
-    {
-        this.value = value;
-        invalidate();
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public String getChannel()
-    {
-        return channel;
-    }
-    
-    /**
-     * 
-     * @param disabled
-     */
-    @Override
-    public void setDisabled(boolean disabled)
-    {
-        this.disabled = disabled;
-        this.invalidate();
-    }
-
     /**
      * 
      * @return
      */
-    public GaugeDetails getDetails()
-    {
-        GaugeDetails gd = new GaugeDetails(name, channel,value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
-
-        return gd;
-    }
 
     /**
      * 
      * @param gd
      */
-    public void initFromGD(GaugeDetails gd)
-    {
-        name = gd.getName();
-        title = gd.getTitle();
-        channel = gd.getChannel();
-        units = gd.getUnits();
-        min = gd.getMin();
-        max = gd.getMax();
-        lowD = gd.getLoD();
-
-        lowW = gd.getLoW();
-        hiW = gd.getHiW();
-
-        hiD = gd.getHiD();
-        vd = gd.getVd();
-        ld = gd.getLd();
-        offsetAngle = gd.getOffsetAngle();
-        value = (max - min) / 2.0;
-    }
 
     /**
      * 
@@ -614,19 +442,10 @@ public class MSGauge extends View implements Indicator
         if (gd == null)
         {   
             DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
-            gd = deadGauge;
+            gd = getDeadGauge();
         }
         initFromGD(gd);
     }
-
-    /**
-     * @return
-     */
-    public String getName()
-    {
-        return name;
-    }
-
     /**
      * 
      */
@@ -648,21 +467,4 @@ public class MSGauge extends View implements Indicator
         IndicatorManager.INSTANCE.deregisterIndicator(this);
     }
     
-    /**
-     * 
-     * @return
-     */
-    public double getOffsetAngle()
-    {
-        return offsetAngle;
-    }
-
-    /**
-     * 
-     * @param offsetAngle
-     */
-    public void setOffsetAngle(double offsetAngle)
-    {
-        this.offsetAngle = offsetAngle;
-    }
 }

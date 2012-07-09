@@ -1,6 +1,6 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.graphics.PointF;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -12,19 +12,19 @@ import android.view.MotionEvent;
 class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
 {
     private final MSLoggerActivity msLoggerActivity;
-    private MSGauge gauge;
-    private float   dragStartDeg;
+    private Indicator              gauge;
+    private float                  dragStartDeg;
 
     /**
      * Constructor
      * 
      * @param msLoggerActivity
-     * @param gauge
+     * @param gauge3
      */
-    public GaugeRotationDetector(MSLoggerActivity msLoggerActivity, MSGauge gauge)
+    public GaugeRotationDetector(MSLoggerActivity msLoggerActivity, Indicator gauge3)
     {
         this.msLoggerActivity = msLoggerActivity;
-        this.gauge = gauge;
+        this.gauge = gauge3;
     }
 
     /**
@@ -98,10 +98,10 @@ class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
 
         // Make sure positionToAngle didn't return NaN
         if (!Float.isNaN(currentDeg))
-        {       
+        {
             gauge.setOffsetAngle(dragStartDeg - currentDeg);
         }
-        
+
         gauge.invalidate();
 
         this.msLoggerActivity.scrolling = true;

@@ -34,11 +34,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private TextView               messages;
     private TextView               rps;
     static private Boolean         ready                 = null;
-    private MSGauge                gauge1;
-    private MSGauge                gauge2;
-    private MSGauge                gauge3;
-    private MSGauge                gauge4;
-    private MSGauge                gauge5;
+    private Indicator              gauge1;
+    private Indicator              gauge2;
+    private Indicator              gauge3;
+    private Indicator              gauge4;
+    private Indicator              gauge5;
 
     private GestureDetector        gestureDetector;
     private boolean                gaugeEditEnabled;
@@ -70,8 +70,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         dumpPreferences();
         setContentView(R.layout.displaygauge);
+        
+        
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);
+        
+        LinearLayout l = (LinearLayout) this.findViewById(R.id.mainLinearLayout);
+        l.removeViewAt(0);
+        BarMeter barMeter = new BarMeter(this);
+        barMeter.setId(R.id.g3);
+        l.addView(barMeter);
         
         /* 
          * Get status message from saved instance, for example when
@@ -337,11 +345,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void findGauges()
     {
-        gauge1 = (MSGauge) findViewById(R.id.g1);
-        gauge2 = (MSGauge) findViewById(R.id.g2);
-        gauge3 = (MSGauge) findViewById(R.id.g3);
-        gauge4 = (MSGauge) findViewById(R.id.g4);
-        gauge5 = (MSGauge) findViewById(R.id.g5);
+        gauge1 = (Indicator) findViewById(R.id.g1);
+        gauge2 = (Indicator) findViewById(R.id.g2);
+        gauge3 = (Indicator) findViewById(R.id.g3);
+        gauge4 = (Indicator) findViewById(R.id.g4);
+        gauge5 = (Indicator) findViewById(R.id.g5);
     }
 
     /**
@@ -410,11 +418,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 if (channelName != null)
                 {
                     double value = ecu.getField(channelName);
-                    i.setCurrentValue(value);
+                    i.setValue(value);
                 }
                 else
                 {
-                    i.setCurrentValue(0);
+                    i.setValue(0);
                 }
             }
         }
@@ -870,13 +878,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public class GaugeTouchListener implements OnTouchListener
     {
 
-        private MSGauge gauge;
+        private Indicator gauge;
 
         /**
          * 
          * @param gauge
          */
-        public GaugeTouchListener(MSGauge gauge)
+        public GaugeTouchListener(Indicator gauge)
         {
             this.gauge = gauge;
         }

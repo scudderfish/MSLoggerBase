@@ -10,7 +10,7 @@
 	<LinearLayout android:orientation="vertical" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent" >
 	   <LinearLayout 
 			android:layout_height="0px" android:layout_width="fill_parent"
-			android:layout_weight="75">
+			android:layout_weight="75" android:id="@+id/mainLinearLayout">
 
 			<uk.org.smithfamily.mslogger.widgets.MSGauge
 				android:id="@+id/g3" android:layout_width="0dip"

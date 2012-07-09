@@ -1,44 +1,21 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 
 /**
  * 
  */
-public class NumericIndicator extends View implements Indicator
+public class NumericIndicator extends  Indicator
 {
-    public static final String DEAD_GAUGE_NAME = "deadGauge";
-    private String          name        = DEAD_GAUGE_NAME;
-    private String          title       = "RPM";
-    private String          channel     = "rpm";
-    private String          units       = "";
-	private double			min;
-	private double			max;
-	private double          lowD        = 0;
-    private double          lowW        = 0;
-    private double          hiW         = 5000;
-    private double          hiD         = 7000;
-    private int             vd          = 0;
-    private int             ld          = 0;
     final float             scale       = getResources().getDisplayMetrics().density;
-    
-    private int             diameter;
     
     private Paint           backgroundPaint;
     private Paint           titlePaint;
     private Paint           valuePaint;
-    
-	private double			value;
-	private boolean			disabled;
-
-	private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
 	
     /**
      * 
@@ -136,7 +113,7 @@ public class NumericIndicator extends View implements Indicator
          * After obtaining the height, width of your view and performing some changes you need to set the processed value as your view dimension by using the method setMeasuredDimension
          */
 
-        diameter = Math.min(measuredHeight, measuredWidth);
+        int diameter = Math.min(measuredHeight, measuredWidth);
         setMeasuredDimension(diameter, diameter);
 
         /*
@@ -147,44 +124,6 @@ public class NumericIndicator extends View implements Indicator
          * setMeasuredDimension(d,d);
          */
 
-    }
-    
-    /**
-     * 
-     * @param gd
-     */
-    public void initFromGD(GaugeDetails gd)
-    {
-        name = gd.getName();
-        title = gd.getTitle();
-        channel = gd.getChannel();
-        units = gd.getUnits();
-        min = gd.getMin();
-        max = gd.getMax();
-        lowD = gd.getLoD();
-
-        lowW = gd.getLoW();
-        hiW = gd.getHiW();
-
-        hiD = gd.getHiD();
-        vd = gd.getVd();
-        ld = gd.getLd();
-        value = (max - min) / 2.0;
-    }
-	
-    /**
-     * 
-     * @param nme
-     */
-    public void initFromName(String nme)
-    {
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        if (gd == null)
-        {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
-            gd = deadGauge;
-        }
-        initFromGD(gd);
     }
 
     /**
@@ -206,10 +145,10 @@ public class NumericIndicator extends View implements Indicator
     {        
         titlePaint.setColor(getFgColour());
         
-        String text = title;
-        if (!units.equals(""))
+        String text = getTitle();
+        if (!getUnits().equals(""))
         {
-            text += " (" + units + ")";
+            text += " (" + getUnits() + ")";
         }
         
         canvas.drawText(text, 0.48f, 0.65f, titlePaint);
@@ -223,11 +162,11 @@ public class NumericIndicator extends View implements Indicator
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(value / Math.pow(10, -vd) + 0.5) * Math.pow(10, -vd));
+        float displayValue = (float) (Math.floor(getValue() / Math.pow(10, -getVd()) + 0.5) * Math.pow(10, -getVd()));
 
         String text;
 
-        if (vd <= 0)
+        if (getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -239,37 +178,6 @@ public class NumericIndicator extends View implements Indicator
         canvas.drawText(text, 0.5f, 0.5f, valuePaint);
     }
 	
-	/**
-	 * @param min
-	 */
-	public void setMin(float min)
-	{
-		this.min = min;
-	}
-
-	/**
-	 * @param max
-	 */
-	public void setMax(float max)
-	{
-		this.max = max;
-	}
-
-	/**
-	 * @param title
-	 */
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
-
-	/**
-	 * @param value
-	 */
-	public void setCurrentValue(double value)
-	{
-		this.value = (float) value;
-	}
 	
     /**
      * 
@@ -277,11 +185,11 @@ public class NumericIndicator extends View implements Indicator
      */
     private int getFgColour()
     {
-        if (disabled)
+        if (isDisabled())
         {
             return Color.DKGRAY;
         }
-        if (value > lowW && value < hiW)
+        if (getValue() > getLowW() && getValue() < getHiW())
         {
             return Color.WHITE;
         }
@@ -298,19 +206,19 @@ public class NumericIndicator extends View implements Indicator
     private int getBgColour()
     {
         int c = Color.GRAY;
-        if (this.disabled)
+        if (this.isDisabled())
         {
             return c;
         }
-        if (value > lowW && value < hiW)
+        if (getValue() > getLowW() && getValue() < getHiW())
         {
             return Color.BLACK;
         }
-        else if (value <= lowW || value >= hiW)
+        else if (getValue() <= getLowW() || getValue() >= getHiW())
         {
             c = Color.YELLOW;
         }
-        if (value <= lowD || value >= hiD)
+        if (getValue() <= getLowD() || getValue() >= getHiD())
         {
             c = Color.RED;
         }
@@ -345,7 +253,7 @@ public class NumericIndicator extends View implements Indicator
         
         drawBackground(canvas);
         
-        if (!disabled)
+        if (!isDisabled())
         {
             drawValue(canvas);
         }
@@ -354,21 +262,6 @@ public class NumericIndicator extends View implements Indicator
         canvas.restore();	  
 	}
 
-	/**
-	 * @return 
-	 */
-	public String getChannel()
-	{
-		return channel;
-	}
-
-	/**
-	 * @param channel
-	 */
-	public void setChannel(String channel)
-	{
-		this.channel = channel;
-	}
 
 	/**
 	 * 
@@ -391,102 +284,4 @@ public class NumericIndicator extends View implements Indicator
 
 		IndicatorManager.INSTANCE.deregisterIndicator(this);
 	}
-
-	/**
-	 * @param disabled
-	 */
-	@Override
-	public void setDisabled(boolean disabled)
-	{
-		this.disabled = disabled;
-		this.postInvalidate();
-	}
-
-	/**
-	 * @return
-	 */
-	public String getName()
-	{
-	    return this.name;
-	}
-	
-	/**
-	 * @param name
-	 */
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * @param units
-     */
-    @Override
-    public void setUnits(String units)
-    {
-        this.units = units;
-    }
-
-    /**
-     * @param lowD
-     */
-    @Override
-    public void setLowD(float lowD)
-    {
-        this.lowD = lowD;
-    }
-
-    /**
-     * @param lowW
-     */
-    @Override
-    public void setLowW(float lowW)
-    {
-        this.lowW = lowW;
-    }
-
-    /**
-     * @param hiW
-     */
-    @Override
-    public void setHiW(float hiW)
-    {
-        this.hiW = hiW;
-    }
-
-    /**
-     * @param hiD
-     */
-    @Override
-    public void setHiD(float hiD)
-    {
-        this.hiD = hiD;
-    }
-
-    /**
-     * @param vd
-     */
-    @Override
-    public void setVD(int vd)
-    {
-        this.vd = vd;
-    }
-
-    /**
-     * @param ld
-     */
-    @Override
-    public void setLD(int ld)
-    {
-        this.ld = ld;
-    }
-    
-    /**
-     * @return
-     */
-    public int getLD()
-    {
-        return ld;
-    }
 }

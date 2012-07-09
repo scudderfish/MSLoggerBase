@@ -3,7 +3,7 @@ package uk.org.smithfamily.mslogger.activity;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -18,14 +18,14 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 {
 
     private GaugeDetails gd;
-    private MSGauge      gauge;
+    private Indicator    gauge;
 
     /**
      * 
      * @param context
      * @param gauge
      */
-    public EditGaugeDialog(Context context, MSGauge gauge)
+    public EditGaugeDialog(Context context, Indicator gauge)
     {
         super(context);
         this.gauge = gauge;

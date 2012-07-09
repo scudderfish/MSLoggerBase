@@ -1,33 +1,17 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 
 /**
  *
  */
-public class BarMeter extends View implements Indicator
+public class BarMeter extends Indicator
 {
-    public static final String DEAD_GAUGE_NAME = "deadGauge";
-    private String          name        = DEAD_GAUGE_NAME;
-    private String          title       = "RPM";
-    private String          channel     = "rpm";
-    private String          units       = "";
-    private double          min;
-    private double          max;
-    private double          lowD        = 0;
-    private double          lowW        = 0;
-    private double          hiW         = 5000;
-    private double          hiD         = 7000;
-    private int             vd          = 0;
-    private int             ld          = 0;
-
+ 
     final float             scale       = getResources().getDisplayMetrics().density;
     
     private int             diameter;
@@ -42,12 +26,8 @@ public class BarMeter extends View implements Indicator
     }
     
     private Orientation orientation     = Orientation.HORIZONTAL;
-    
-    private double          value;
-    private boolean         disabled;
-
-    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",value, "---", "", 0, 1, -1, -1, 2, 2, 0, 0, 0);
-
+ 
+ 
     /**
      * 
      * @param context
@@ -129,44 +109,6 @@ public class BarMeter extends View implements Indicator
     
     /**
      * 
-     * @param gd
-     */
-    public void initFromGD(GaugeDetails gd)
-    {
-        name = gd.getName();
-        title = gd.getTitle();
-        channel = gd.getChannel();
-        units = gd.getUnits();
-        min = gd.getMin();
-        max = gd.getMax();
-        lowD = gd.getLoD();
-
-        lowW = gd.getLoW();
-        hiW = gd.getHiW();
-
-        hiD = gd.getHiD();
-        vd = gd.getVd();
-        ld = gd.getLd();
-        value = (max - min) / 2.0;
-    }
-    
-    /**
-     * 
-     * @param nme
-     */
-    public void initFromName(String nme)
-    {
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        if (gd == null)
-        {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
-            gd = deadGauge;
-        }
-        initFromGD(gd);
-    }
-    
-    /**
-     * 
      * @param context
      */
     private void initDrawingTools(Context context)
@@ -223,7 +165,7 @@ public class BarMeter extends View implements Indicator
         
         canvas.translate(dx, dy);       
         
-        if (!disabled)
+        if (!isDisabled())
         {
             drawValue(canvas);
         }
@@ -236,11 +178,11 @@ public class BarMeter extends View implements Indicator
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(value / Math.pow(10, -vd) + 0.5) * Math.pow(10, -vd));
+        float displayValue = (float) (Math.floor(getValue() / Math.pow(10, -getVd()) + 0.5) * Math.pow(10, -getVd()));
 
         String text;
 
-        if (vd <= 0)
+        if (getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -256,10 +198,10 @@ public class BarMeter extends View implements Indicator
     {
         titlePaint.setColor(getFgColour());
         
-        String text = title;
-        if (!units.equals(""))
+        String text = getTitle();
+        if (!getUnits().equals(""))
         {
-            text += " (" + units + ")";
+            text += " (" + getUnits() + ")";
         }
         
         canvas.drawText(text, 0.05f, 0.95f, titlePaint);
@@ -267,10 +209,10 @@ public class BarMeter extends View implements Indicator
     
     public void drawBars(Canvas canvas)
     {
-        double percent = ((value - min) / (max - min)) * 100;
+        double percent = ((getValue() - getMin()) / (getMax() - getMin())) * 100;
         
         barPaint.setColor(Color.WHITE);
-        barPaint.setColor(getBarColour((((max - min) / 100) * percent) + min));
+        barPaint.setColor(getBarColour((((getMax() - getMin()) / 100) * percent) + getMin()));
                 
         final float barWidth = 0.025f;
         final float barSpacing = 0.02f;        
@@ -309,20 +251,20 @@ public class BarMeter extends View implements Indicator
     {
         int c = Color.WHITE;
         
-        if (disabled)
+        if (isDisabled())
         {
             return Color.DKGRAY;
         }
         
-        if (value > lowW && value < hiW)
+        if (getValue() > getLowW() && getValue() < getHiW())
         {
             return Color.WHITE;
         }
-        else if (value <= lowW || value >= hiW)
+        else if (getValue() <= getLowW() || getValue() >= getHiW())
         {
             c = Color.YELLOW;
         }
-        if (value <= lowD || value >= hiD)
+        if (getValue() <= getLowD() || getValue() >= getHiD())
         {
             c = Color.RED;
         }
@@ -337,180 +279,26 @@ public class BarMeter extends View implements Indicator
     private int getBarColour(double value)
     {
         int c = Color.GRAY;
-        if (this.disabled)
+        if (isDisabled())
         {
             return c;
         }
-        if (value > lowW && value < hiW)
+        if (value > getLowW() && value < getHiW())
         {
             return Color.WHITE;
         }
-        else if (value <= lowW || value >= hiW)
+        else if (value <= getLowW() || value >= getHiW())
         {
             c = Color.YELLOW;
         }
-        if (value <= lowD || value >= hiD)
+        if (value <= getLowD() || value >= getHiD())
         {
             c = Color.RED;
         }
         
         return c;
     }
-    
-    /**
-     * @return
-     */
-    public String getName()
-    {
-        return this.name;
-    }
-    
-    /**
-     * @param name
-     */
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;        
-    }
-
-    /**
-     * @param channelName
-     */
-    @Override
-    public void setChannel(String channelName)
-    {
-        this.channel = channelName;        
-    }
-
-    /**
-     * @param title
-     */
-    @Override
-    public void setTitle(String title)
-    {
-        this.title = title;        
-    }
-
-    /**
-     * @param units
-     */
-    @Override
-    public void setUnits(String units)
-    {
-        this.units = units;        
-    }
-
-    /**
-     * @param min
-     */
-    @Override
-    public void setMin(float min)
-    {
-        this.min = min;        
-    }
-
-    /**
-     * @param max
-     */
-    @Override
-    public void setMax(float max)
-    {
-        this.max = max;        
-    }
-
-    /**
-     * @param lowD
-     */
-    @Override
-    public void setLowD(float lowD)
-    {
-        this.lowD = lowD;
-    }
-
-    /**
-     * @param lowW
-     */
-    @Override
-    public void setLowW(float lowW)
-    {
-        this.lowW = lowW;
-    }
-
-    /**
-     * @param hiW
-     */
-    @Override
-    public void setHiW(float hiW)
-    {
-        this.hiW = hiW;
-    }
-
-    /**
-     * @param hiD
-     */
-    @Override
-    public void setHiD(float hiD)
-    {
-        this.hiD = hiD;
-    }
-
-    /**
-     * @param vd
-     */
-    @Override
-    public void setVD(int vd)
-    {
-        this.vd = vd;
-    }
-
-    /**
-     * @param ld
-     */
-    @Override
-    public void setLD(int ld)
-    {
-        this.ld = ld;
-    }
-
-    /**
-     * @return
-     */
-    public int getLD()
-    {
-        return ld;
-    }
-    
-    /**
-     * @param value
-     */
-    @Override
-    public void setCurrentValue(double value)
-    {
-        this.value = value;
-        invalidate();
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public String getChannel()
-    {
-        return channel;
-    }
-    
-    /**
-     * 
-     * @param disabled
-     */
-    @Override
-    public void setDisabled(boolean disabled)
-    {
-        this.disabled = disabled;
-        this.invalidate();
-    }
-    
+       
     /**
      * @param orientation
      */
