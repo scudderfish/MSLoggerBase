@@ -205,7 +205,14 @@ public class NumericIndicator extends View implements Indicator
     private void drawTitle(Canvas canvas)
     {        
         titlePaint.setColor(getFgColour());
-        canvas.drawText(title + " (" + units + ")", 0.48f, 0.65f, titlePaint);
+        
+        String text = title;
+        if (!units.equals(""))
+        {
+            text += " (" + units + ")";
+        }
+        
+        canvas.drawText(text, 0.48f, 0.65f, titlePaint);
     }
 
     /**

@@ -179,7 +179,7 @@ public class BarMeter extends View implements Indicator
         
         titlePaint = new Paint();
         titlePaint.setColor(Color.WHITE);
-        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setTextAlign(Paint.Align.LEFT);
         titlePaint.setTextSize(0.06f);
         titlePaint.setFlags(anti_alias_flag);
         titlePaint.setAntiAlias(true);
@@ -255,7 +255,14 @@ public class BarMeter extends View implements Indicator
     public void drawTitle(Canvas canvas)
     {
         titlePaint.setColor(getFgColour());
-        canvas.drawText(title + " (" + units + ")", 0.31f, 0.95f, titlePaint);
+        
+        String text = title;
+        if (!units.equals(""))
+        {
+            text += " (" + units + ")";
+        }
+        
+        canvas.drawText(text, 0.05f, 0.95f, titlePaint);
     }
     
     public void drawBars(Canvas canvas)
