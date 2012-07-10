@@ -7,30 +7,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
-/**
- *
- */
-public class BarMeter extends Indicator
+public class Histogram extends Indicator
 {    
     private int             diameter;
     
-    private Paint           barPaint;
-    private Paint           titlePaint;
+    private Paint           backgroundPaint;
+    private Paint           linePaint;
     private Paint           valuePaint;
     
-    public enum Orientation
-    {
-        HORIZONTAL, VERTICAL
-    }
+    private static final int NB_VALUES   = 50;
+    private double[]        values      = new double[NB_VALUES];
+    private int             indexValue  = 0;
     
-    private Orientation orientation     = Orientation.HORIZONTAL;
- 
- 
     /**
      * 
      * @param context
      */
-    public BarMeter(Context context)
+    public Histogram(Context context)
     {
         super(context);
         init(context);
@@ -41,7 +34,7 @@ public class BarMeter extends Indicator
      * @param c
      * @param s
      */
-    public BarMeter(Context c, AttributeSet s)
+    public Histogram(Context c, AttributeSet s)
     {
         super(c, s);
         init(c);
@@ -53,7 +46,7 @@ public class BarMeter extends Indicator
      * @param attr
      * @param defaultStyles
      */
-    public BarMeter(Context context, AttributeSet attr, int defaultStyles)
+    public Histogram(Context context, AttributeSet attr, int defaultStyles)
     {
         super(context, attr, defaultStyles);
         init(context);
@@ -66,6 +59,39 @@ public class BarMeter extends Indicator
     private void init(Context c)
     {
         initDrawingTools(c);
+    }
+    
+    /**
+     * 
+     * @param context
+     */
+    private void initDrawingTools(Context context)
+    {        
+        int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
+        if (this.isInEditMode())
+        {
+            anti_alias_flag = 0;
+        }
+        
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
+        backgroundPaint.setTextSize(0.06f);
+        backgroundPaint.setTextAlign(Paint.Align.LEFT);
+        backgroundPaint.setStyle(Paint.Style.STROKE);
+        backgroundPaint.setFlags(anti_alias_flag);
+        backgroundPaint.setAntiAlias(true);
+        
+        valuePaint = new Paint();
+        valuePaint.setColor(Color.DKGRAY);
+        valuePaint.setTextSize(0.06f);
+        valuePaint.setTextAlign(Paint.Align.RIGHT);
+        valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setAntiAlias(true);
+        
+        linePaint = new Paint();
+        linePaint.setColor(Color.BLUE);
+        linePaint.setFlags(anti_alias_flag);
+        linePaint.setAntiAlias(true);       
     }
     
     /**
@@ -104,37 +130,34 @@ public class BarMeter extends Indicator
          */
 
     }
-    
+
     /**
-     * 
-     * @param context
+     * @param value
      */
-    private void initDrawingTools(Context context)
-    {        
-        int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
-        if (this.isInEditMode())
+    @Override
+    public void setValue(double value)
+    {
+        // We haven't reach the limit of the array yet
+        if (indexValue < NB_VALUES)
         {
-            anti_alias_flag = 0;
+           values[indexValue++] = (float) value; 
+        }
+        // Otherwise we shift all the values and replace the last one with the new value
+        else
+        {
+            int i;
+            for (i = 0; i < NB_VALUES - 1; i++)
+            {
+                values[i] = values[i + 1];
+            }        
+            
+            values[i] = value;
         }
         
-        titlePaint = new Paint();
-        titlePaint.setColor(Color.WHITE);
-        titlePaint.setTextAlign(Paint.Align.LEFT);
-        titlePaint.setTextSize(0.06f);
-        titlePaint.setFlags(anti_alias_flag);
-        titlePaint.setAntiAlias(true);
-
-        valuePaint = new Paint();
-        valuePaint.setColor(Color.WHITE);
-        valuePaint.setTextSize(0.06f);
-        valuePaint.setTextAlign(Paint.Align.RIGHT);
-        valuePaint.setFlags(anti_alias_flag);
-        valuePaint.setAntiAlias(true);
-        
-        barPaint = new Paint();
-        barPaint.setColor(Color.BLACK);
+        super.setValue((float) value);
     }
-
+    
+    
     /**
      * @param canvas
      */
@@ -158,10 +181,9 @@ public class BarMeter extends Indicator
         {
             dy = (height - width) / 2.0f;
         }
+        canvas.translate(dx, dy);
         
-        drawBars(canvas);
-        
-        canvas.translate(dx, dy);       
+        drawBackground(canvas);
         
         if (!isDisabled())
         {
@@ -169,7 +191,13 @@ public class BarMeter extends Indicator
         }
 
         drawTitle(canvas);
+        
         canvas.restore();     
+    }
+    
+    public void drawBackground(Canvas canvas)
+    {
+        canvas.drawRect(0.05f, 0.05f, 0.95f, 0.88f, backgroundPaint);
     }
     
     public void drawValue(Canvas canvas)
@@ -189,12 +217,43 @@ public class BarMeter extends Indicator
             text = Float.toString(displayValue);
         }
 
-        canvas.drawText(text, 0.9f, 0.95f, valuePaint);
+        canvas.drawText(text, 0.97f, 0.95f, valuePaint);
+        
+        // We need at least two pair of coords to draw a line
+        if (indexValue > 1)
+        {            
+            final float x = 0.04f;
+            final float y = 0.06f;
+            final float height = 0.81f;
+            final float pixelsBetweenValue = 0.018f;
+            
+            for (int i = 1; i < indexValue; i++)
+            {
+                double oldValue = values[i - 1];
+                double currentValue = values[i];
+              
+                double currentPercent = (1 - (currentValue - getMin()) / (getMax() - getMin()));
+                if (currentPercent < 0) currentPercent = 0;
+                if (currentPercent > 100) currentPercent = 100;
+                
+                double currentY = y + height * currentPercent;              
+              
+                double oldPercent = (1 - (oldValue - getMin()) / (getMax() - getMin()));
+                if (oldPercent < 0) oldPercent = 0;
+                if (oldPercent > 100) oldPercent = 100;
+                
+                double oldX = x + (pixelsBetweenValue * i);
+                double oldY = y + height * oldPercent;     
+                
+                // Draw one value
+                canvas.drawLine((float) oldX, (float) oldY, (float) oldX + pixelsBetweenValue, (float) currentY, linePaint);
+            }
+        }
     }
     
     public void drawTitle(Canvas canvas)
     {
-        titlePaint.setColor(getFgColour());
+        backgroundPaint.setColor(getFgColour());
         
         String text = getTitle();
         if (!getUnits().equals(""))
@@ -202,43 +261,7 @@ public class BarMeter extends Indicator
             text += " (" + getUnits() + ")";
         }
         
-        canvas.drawText(text, 0.05f, 0.95f, titlePaint);
-    }
-    
-    public void drawBars(Canvas canvas)
-    {
-        double percent = ((getValue() - getMin()) / (getMax() - getMin())) * 100;
-        
-        barPaint.setColor(Color.WHITE);
-        barPaint.setColor(getBarColour((((getMax() - getMin()) / 100) * percent) + getMin()));
-                
-        final float barWidth = 0.025f;
-        final float barSpacing = 0.02f;        
-        
-        if (orientation == Orientation.VERTICAL)
-        {       
-            final int nbBars = 21;
-            
-            for (int i = 1; i <= nbBars; i++)
-            {
-                if ((i * 100 / nbBars) <= percent) 
-                {            
-                    canvas.drawRect((i * (barWidth + barSpacing)) + 0.03f,0.05f,(i * (barWidth + barSpacing)) + barWidth + 0.03f,0.85f,barPaint);
-                }
-            }    
-        }
-        else
-        {
-            final int nbBars = 19;
-            
-            for (int i = 1; i <= nbBars; i++)
-            {
-                if ((i * 100 / nbBars) <= percent) 
-                {            
-                    canvas.drawRect(0.05f,0.9f - (i * (barWidth + barSpacing)),0.9f,0.9f - (i * (barWidth + barSpacing)) + barWidth,barPaint);
-                }
-            }
-        }
+        canvas.drawText(text, 0.05f, 0.95f, backgroundPaint);
     }
     
     /**
@@ -272,46 +295,6 @@ public class BarMeter extends Indicator
     
     /**
      * 
-     * @return
-     */
-    private int getBarColour(double value)
-    {
-        int c = Color.GRAY;
-        if (isDisabled())
-        {
-            return c;
-        }
-        if (value > getLowW() && value < getHiW())
-        {
-            return Color.WHITE;
-        }
-        else if (value <= getLowW() || value >= getHiW())
-        {
-            c = Color.YELLOW;
-        }
-        if (value <= getLowD() || value >= getHiD())
-        {
-            c = Color.RED;
-        }
-        
-        return c;
-    }
-       
-    /**
-     * @param orientation
-     */
-    public void setOrientation(Orientation orientation)
-    {
-       this.orientation = orientation; 
-    }
-    
-    public Orientation getOrientation()
-    {
-        return orientation;
-    }
-    
-    /**
-     * 
      */
     @Override
     protected void onAttachedToWindow()
@@ -331,10 +314,10 @@ public class BarMeter extends Indicator
 
         IndicatorManager.INSTANCE.deregisterIndicator(this);
     }
-    
+
     @Override
     public String getType()
     {
-        return getContext().getString(R.string.bargraph);
+        return getContext().getString(R.string.histogram);
     }   
 }

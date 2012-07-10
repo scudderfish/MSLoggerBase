@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,7 +10,7 @@ import android.util.AttributeSet;
 /**
  * 
  */
-public class NumericIndicator extends  Indicator
+public class NumericIndicator extends Indicator
 {
     final float             scale       = getResources().getDisplayMetrics().density;
     
@@ -284,4 +285,10 @@ public class NumericIndicator extends  Indicator
 
 		IndicatorManager.INSTANCE.deregisterIndicator(this);
 	}
+	
+    @Override
+    public String getType()
+    {
+        return getContext().getString(R.string.numeric_indicator);
+    }   
 }

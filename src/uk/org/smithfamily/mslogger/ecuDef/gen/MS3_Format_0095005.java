@@ -2121,245 +2121,245 @@ public class MS3_Format_0095005 extends Megasquirt
     @Override
     public void initGauges()
     {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("IACgauge","iacstep",iacstep,"IAC position","steps",0,255,-1,-1,999,999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwellGauge","dwell",dwell,"Dwell","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dwelltrlGauge","dwell_trl",dwell_trl,"Dwell (Trailing)","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("PWMIdlegauge","idleDC",idleDC,"Idle PWM%","%",0,100,-1,-1,999,90,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth1Gauge","pulseWidth1",pulseWidth1,"Pulse Width 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidth2Gauge","pulseWidth2",pulseWidth2,"Pulse Width 2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq1Gauge","pwseq1",pwseq1,"Pulse Width Seq 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq2Gauge","pwseq2",pwseq2,"Pulse Width Seq 2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq3Gauge","pwseq3",pwseq3,"Pulse Width Seq 3","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq4Gauge","pwseq4",pwseq4,"Pulse Width Seq 4","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq5Gauge","pwseq5",pwseq5,"Pulse Width Seq 5","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq6Gauge","pwseq6",pwseq6,"Pulse Width Seq 6","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq7Gauge","pwseq7",pwseq7,"Pulse Width Seq 7","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq8Gauge","pwseq8",pwseq8,"Pulse Width Seq 8","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq9Gauge","pwseq9",pwseq9,"Pulse Width V3 inj1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("pulseWidthSeq10Gauge","pwseq10",pwseq10,"Pulse Width V3 inj2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("advdegGauge","advance",advance,"Ignition Advance","degrees",0,50,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle1Gauge","dutyCycle1",dutyCycle1,"Duty Cycle 1","%",0,100,-1,-1,85,90,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("dutyCycle2Gauge","dutyCycle2",dutyCycle2,"Duty Cycle 2","%",0,100,-1,-1,85,90,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostdutyGauge","boostduty",boostduty,"Boost Duty","%",0,100,-1,-1,100,100,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous_addfuel","n2o_addfuel",n2o_addfuel,"Nitrous added fuel","ms",-5,20,20,20,20,20,3,3,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous_retard","n2o_retard",n2o_retard,"Nitrous retard","deg",-5,30,30,30,30,30,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous1_duty","nitrous1_duty",nitrous1_duty,"Nitrous 1 Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous2_duty","nitrous2_duty",nitrous2_duty,"Nitrous 2 Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("nitrous_timer","nitrous_timer",nitrous_timer,"Nitrous Timer","s",0,15,15,15,15,15,3,3,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("water_duty","water_duty",water_duty,"Water Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_a","duty_pwm_a",duty_pwm_a,"Generic PWM A Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_b","duty_pwm_b",duty_pwm_b,"Generic PWM B Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_c","duty_pwm_c",duty_pwm_c,"Generic PWM C Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_d","duty_pwm_d",duty_pwm_d,"Generic PWM D Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_e","duty_pwm_e",duty_pwm_e,"Generic PWM E Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("duty_pwm_f","duty_pwm_f",duty_pwm_f,"Generic PWM F Duty","%",0,100,100,100,100,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelEnrichGauge","accDecEnrich",accDecEnrich,"Accel Enrich","%",50,150,-1,-1,999,999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("clockGauge","seconds",seconds,"Clock","Seconds",0,65535,10,10,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaEnrichGauge","gammaEnrich",gammaEnrich,"Gamma Enrichment","%",50,150,-1,-1,151,151,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gammaairGauge","airCorrection",airCorrection,"Gair/aircor","%",50,150,-1,-1,151,151,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gwarmgauge","warmupEnrich",warmupEnrich,"Gwarm","%",50,150,-1,-1,151,151,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gbarogauge","baroCorrection",baroCorrection,"Gbaro","%",50,150,-1,-1,151,151,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge1","wallfuel1",wallfuel1,"Fuel on the walls 1","",0,40000000,0,0,40000000,40000000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("WFGauge2","wallfuel2",wallfuel2,"Fuel on the walls 2","",0,40000000,0,0,40000000,40000000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge1","EAEFuelCorr1",EAEFuelCorr1,"EAE Fuel Correction 1","%",0,200,40,70,130,160,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("EAEGauge2","EAEFuelCorr2",EAEFuelCorr2,"EAE Fuel Correction 2","%",0,200,40,70,130,160,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcorr","fuelCorrection",fuelCorrection,"E85 Fuel Correction","%",100,200,99,99,164,170,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelcompsn","fuelComposition",fuelComposition,"Ethanol Percentage","%",0,100,-1,-1,85,101,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lostsyncGauge","synccnt",synccnt,"Lost sync counter","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("syncreasonGauge","syncreason",syncreason,"Lost sync reason","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("user0Gauge","user0",user0,"User defined","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge1","veCurr1",veCurr1,"VE Current1","%",0,120,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("veGauge2","veCurr2",veCurr2,"VE2 Current","%",0,120,-1,-1,999,999,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("warmupEnrichGauge","warmupEnrich",warmupEnrich,"Warmup Enrichment","%",100,150,-1,-1,101,105,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vss1dot","vss1dot",vss1dot,"VSS1 Acceleration","ms-2",-25,25,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vss2dot","vss2dot",vss2dot,"VSS2 Acceleration","ms-2",-25,25,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("rpmdot","rpmdot",rpmdot,"rpmdot","rpm/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tpsdot","tpsDOT",tpsDOT,"tpsdot","%/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapdot","mapDOT",mapDOT,"mapdot","kPa/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","IACgauge","iacstep",iacstep,"IAC position","steps",0,255,-1,-1,999,999,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","dwellGauge","dwell",dwell,"Dwell","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","dwelltrlGauge","dwell_trl",dwell_trl,"Dwell (Trailing)","mSec",0,10,0.5,1.0,6.0,8.0,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","PWMIdlegauge","idleDC",idleDC,"Idle PWM%","%",0,100,-1,-1,999,90,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidth1Gauge","pulseWidth1",pulseWidth1,"Pulse Width 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidth2Gauge","pulseWidth2",pulseWidth2,"Pulse Width 2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq1Gauge","pwseq1",pwseq1,"Pulse Width Seq 1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq2Gauge","pwseq2",pwseq2,"Pulse Width Seq 2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq3Gauge","pwseq3",pwseq3,"Pulse Width Seq 3","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq4Gauge","pwseq4",pwseq4,"Pulse Width Seq 4","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq5Gauge","pwseq5",pwseq5,"Pulse Width Seq 5","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq6Gauge","pwseq6",pwseq6,"Pulse Width Seq 6","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq7Gauge","pwseq7",pwseq7,"Pulse Width Seq 7","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq8Gauge","pwseq8",pwseq8,"Pulse Width Seq 8","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq9Gauge","pwseq9",pwseq9,"Pulse Width V3 inj1","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","pulseWidthSeq10Gauge","pwseq10",pwseq10,"Pulse Width V3 inj2","mSec",0,25.5,1.0,1.2,20,25,3,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","advdegGauge","advance",advance,"Ignition Advance","degrees",0,50,-1,-1,999,999,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","dutyCycle1Gauge","dutyCycle1",dutyCycle1,"Duty Cycle 1","%",0,100,-1,-1,85,90,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","dutyCycle2Gauge","dutyCycle2",dutyCycle2,"Duty Cycle 2","%",0,100,-1,-1,85,90,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","boostdutyGauge","boostduty",boostduty,"Boost Duty","%",0,100,-1,-1,100,100,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","nitrous_addfuel","n2o_addfuel",n2o_addfuel,"Nitrous added fuel","ms",-5,20,20,20,20,20,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","nitrous_retard","n2o_retard",n2o_retard,"Nitrous retard","deg",-5,30,30,30,30,30,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","nitrous1_duty","nitrous1_duty",nitrous1_duty,"Nitrous 1 Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","nitrous2_duty","nitrous2_duty",nitrous2_duty,"Nitrous 2 Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","nitrous_timer","nitrous_timer",nitrous_timer,"Nitrous Timer","s",0,15,15,15,15,15,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","water_duty","water_duty",water_duty,"Water Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_a","duty_pwm_a",duty_pwm_a,"Generic PWM A Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_b","duty_pwm_b",duty_pwm_b,"Generic PWM B Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_c","duty_pwm_c",duty_pwm_c,"Generic PWM C Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_d","duty_pwm_d",duty_pwm_d,"Generic PWM D Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_e","duty_pwm_e",duty_pwm_e,"Generic PWM E Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","duty_pwm_f","duty_pwm_f",duty_pwm_f,"Generic PWM F Duty","%",0,100,100,100,100,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","accelEnrichGauge","accDecEnrich",accDecEnrich,"Accel Enrich","%",50,150,-1,-1,999,999,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","clockGauge","seconds",seconds,"Clock","Seconds",0,65535,10,10,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","gammaEnrichGauge","gammaEnrich",gammaEnrich,"Gamma Enrichment","%",50,150,-1,-1,151,151,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","gammaairGauge","airCorrection",airCorrection,"Gair/aircor","%",50,150,-1,-1,151,151,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","Gwarmgauge","warmupEnrich",warmupEnrich,"Gwarm","%",50,150,-1,-1,151,151,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","Gbarogauge","baroCorrection",baroCorrection,"Gbaro","%",50,150,-1,-1,151,151,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","WFGauge1","wallfuel1",wallfuel1,"Fuel on the walls 1","",0,40000000,0,0,40000000,40000000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","WFGauge2","wallfuel2",wallfuel2,"Fuel on the walls 2","",0,40000000,0,0,40000000,40000000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","EAEGauge1","EAEFuelCorr1",EAEFuelCorr1,"EAE Fuel Correction 1","%",0,200,40,70,130,160,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","EAEGauge2","EAEFuelCorr2",EAEFuelCorr2,"EAE Fuel Correction 2","%",0,200,40,70,130,160,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","fuelcorr","fuelCorrection",fuelCorrection,"E85 Fuel Correction","%",100,200,99,99,164,170,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","fuelcompsn","fuelComposition",fuelComposition,"Ethanol Percentage","%",0,100,-1,-1,85,101,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lostsyncGauge","synccnt",synccnt,"Lost sync counter","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","syncreasonGauge","syncreason",syncreason,"Lost sync reason","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","user0Gauge","user0",user0,"User defined","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","veGauge1","veCurr1",veCurr1,"VE Current1","%",0,120,-1,-1,999,999,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","veGauge2","veCurr2",veCurr2,"VE2 Current","%",0,120,-1,-1,999,999,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","warmupEnrichGauge","warmupEnrich",warmupEnrich,"Warmup Enrichment","%",100,150,-1,-1,101,105,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vss1dot","vss1dot",vss1dot,"VSS1 Acceleration","ms-2",-25,25,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vss2dot","vss2dot",vss2dot,"VSS2 Acceleration","ms-2",-25,25,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","rpmdot","rpmdot",rpmdot,"rpmdot","rpm/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","tpsdot","tpsDOT",tpsDOT,"tpsdot","%/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","mapdot","mapDOT",mapDOT,"mapdot","kPa/sec",-15000,15000,65535,65535,65535,65535,0,0,45));
         if (CELSIUS)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge1","egt1",egt1,"EGT 01","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge2","egt2",egt2,"EGT 02","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge3","egt3",egt3,"EGT 03","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge4","egt4",egt4,"EGT 04","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge5","egt5",egt5,"EGT 05","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6","egt6",egt6,"EGT 06","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7","egt7",egt7,"EGT 07","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge8","egt8",egt8,"EGT 08","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge9","egt9",egt9,"EGT 09","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge10","egt10",egt10,"EGT 10","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge11","egt11",egt11,"EGT 11","C",0,1250,0,0,1250,1250,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge12","egt12",egt12,"EGT 12","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge1","egt1",egt1,"EGT 01","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge2","egt2",egt2,"EGT 02","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge3","egt3",egt3,"EGT 03","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge4","egt4",egt4,"EGT 04","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge5","egt5",egt5,"EGT 05","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge6","egt6",egt6,"EGT 06","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge7","egt7",egt7,"EGT 07","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge8","egt8",egt8,"EGT 08","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge9","egt9",egt9,"EGT 09","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge10","egt10",egt10,"EGT 10","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge11","egt11",egt11,"EGT 11","C",0,1250,0,0,1250,1250,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge12","egt12",egt12,"EGT 12","C",0,1250,0,0,1250,1250,0,0,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge1","egt1",egt1,"EGT 01","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge2","egt2",egt2,"EGT 02","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge3","egt3",egt3,"EGT 03","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge4","egt4",egt4,"EGT 04","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge5","egt5",egt5,"EGT 05","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge6","egt6",egt6,"EGT 06","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge7","egt7",egt7,"EGT 07","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge8","egt8",egt8,"EGT 08","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge9","egt9",egt9,"EGT 09","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge10","egt10",egt10,"EGT 10","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge11","egt11",egt11,"EGT 11","F",0,2280,0,0,2280,2280,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egtGauge12","egt12",egt12,"EGT 12","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge1","egt1",egt1,"EGT 01","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge2","egt2",egt2,"EGT 02","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge3","egt3",egt3,"EGT 03","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge4","egt4",egt4,"EGT 04","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge5","egt5",egt5,"EGT 05","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge6","egt6",egt6,"EGT 06","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge7","egt7",egt7,"EGT 07","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge8","egt8",egt8,"EGT 08","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge9","egt9",egt9,"EGT 09","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge10","egt10",egt10,"EGT 10","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge11","egt11",egt11,"EGT 11","F",0,2280,0,0,2280,2280,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egtGauge12","egt12",egt12,"EGT 12","F",0,2280,0,0,2280,2280,0,0,45));
         }
         if (CELSIUS)
         {
         if (EXPANDED_CLT_TEMP)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant",coolant,"Coolant Temp","°C",-40,230,-100,-100,170,200,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","cltGauge","coolant",coolant,"Coolant Temp","°C",-40,230,-100,-100,170,200,0,0,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant",coolant,"Coolant Temp","°C",-40,150,-100,-100,95,105,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","cltGauge","coolant",coolant,"Coolant Temp","°C",-40,150,-100,-100,95,105,0,0,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat",mat,"Manifold Air Temp","°C",-40,110,-15,0,95,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","matGauge","mat",mat,"Manifold Air Temp","°C",-40,110,-15,0,95,100,0,0,45));
         }
         else
         {
         if (EXPANDED_CLT_TEMP)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant",coolant,"Coolant Temp","°F",-40,450,-100,-100,350,400,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","cltGauge","coolant",coolant,"Coolant Temp","°F",-40,450,-100,-100,350,400,0,0,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("cltGauge","coolant",coolant,"Coolant Temp","°F",-40,300,-100,-100,200,220,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","cltGauge","coolant",coolant,"Coolant Temp","°F",-40,300,-100,-100,200,220,0,0,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("matGauge","mat",mat,"Manifold Air Temp","°F",-40,215,0,30,200,210,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","matGauge","mat",mat,"Manifold Air Temp","°F",-40,215,0,30,200,210,0,0,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("voltMeter","batteryVoltage",batteryVoltage,"Battery Voltage","volts",7,21,8,9,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("tachometer","rpm",rpm,"Engine Speed","RPM",0,8000,300,600,3000,5000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("throttleGauge","throttle",throttle,"Throttle Position","%",0,100,-1,1,90,100,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mapGauge","map",map,"Engine MAP","kPa",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("barometerGauge","barometer",barometer,"Barometer","kPa",60,120,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelloadGauge","fuelload",fuelload,"Fuel Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("fuelload2Gauge","fuelload2",fuelload2,"Secondary Fuel Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignloadGauge","ignload",ignload,"Ign Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("ignload2Gauge","ignload2",ignload2,"Secondary Ign Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("eaeloadGauge","eaeload1",eaeload1,"EAE Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afrloadGauge","afrload1",afrload1,"AFR Load","%",0,255,0,20,200,245,1,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafGauge","maf",maf,"Mass Air Flow","g/sec",0,650,0,200,480,550,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("mafMapGauge","mafmap",mafmap,"MAFMAP","kPa",0,400,-1,-1,999,999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostbarGauge","boostbar",boostbar,"Boost","bar",-1,3,-1,-1,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("boostpsigGauge","boostpsig",boostpsig,"Boost","psig",-14.7,21,-15,-15,30,30,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc6Gauge","adc6",adc6,"ADC 6","",0,1023,1023,1023,1023,1023,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("adc7Gauge","adc7",adc7,"ADC 7","",0,1023,1023,1023,1023,1023,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("stream_levelGauge","stream_level",stream_level,"Stream Level","",0,128,128,128,128,128,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","voltMeter","batteryVoltage",batteryVoltage,"Battery Voltage","volts",7,21,8,9,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","tachometer","rpm",rpm,"Engine Speed","RPM",0,8000,300,600,3000,5000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","throttleGauge","throttle",throttle,"Throttle Position","%",0,100,-1,1,90,100,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","mapGauge","map",map,"Engine MAP","kPa",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","barometerGauge","barometer",barometer,"Barometer","kPa",60,120,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","fuelloadGauge","fuelload",fuelload,"Fuel Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","fuelload2Gauge","fuelload2",fuelload2,"Secondary Fuel Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","ignloadGauge","ignload",ignload,"Ign Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","ignload2Gauge","ignload2",ignload2,"Secondary Ign Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","eaeloadGauge","eaeload1",eaeload1,"EAE Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afrloadGauge","afrload1",afrload1,"AFR Load","%",0,255,0,20,200,245,1,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","mafGauge","maf",maf,"Mass Air Flow","g/sec",0,650,0,200,480,550,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","mafMapGauge","mafmap",mafmap,"MAFMAP","kPa",0,400,-1,-1,999,999,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","boostbarGauge","boostbar",boostbar,"Boost","bar",-1,3,-1,-1,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","boostpsigGauge","boostpsig",boostpsig,"Boost","psig",-14.7,21,-15,-15,30,30,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","adc6Gauge","adc6",adc6,"ADC 6","",0,1023,1023,1023,1023,1023,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","adc7Gauge","adc7",adc7,"ADC 7","",0,1023,1023,1023,1023,1023,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","stream_levelGauge","stream_level",stream_level,"Stream Level","",0,128,128,128,128,128,0,0,45));
         if (MPH)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vehiclespeed1","vss1",vss1,"Vehicle Speed 1","MPH",0,200,1000,1000,1000,1000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vehiclespeed2","vss2",vss2,"Vehicle Speed 2","MPH",0,200,1000,1000,1000,1000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vehiclespeed1","vss1",vss1,"Vehicle Speed 1","MPH",0,200,1000,1000,1000,1000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vehiclespeed2","vss2",vss2,"Vehicle Speed 2","MPH",0,200,1000,1000,1000,1000,0,0,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vehiclespeed1","vss1",vss1,"Vehicle Speed 1","KPH",0,300,1600,1600,1600,1600,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("vehiclespeed2","vss2",vss2,"Vehicle Speed 2","KPH",0,300,1600,1600,1600,1600,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vehiclespeed1","vss1",vss1,"Vehicle Speed 1","KPH",0,300,1600,1600,1600,1600,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vehiclespeed2","vss2",vss2,"Vehicle Speed 2","KPH",0,300,1600,1600,1600,1600,0,0,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("shaftspeed1","ss1",ss1,"Shaft Speed 1","RPM",0,10000,10000,10000,10000,10000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("shaftspeed2","ss2",ss2,"Shaft Speed 2","RPM",0,10000,10000,10000,10000,10000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("gear","gear",gear,"Gear","",-1,6,6,6,6,6,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelx","accelx",accelx,"Accel X","ms-2",-59,59,59,59,59,59,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accely","accely",accely,"Accel Y","ms-2",-59,59,59,59,59,59,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("accelz","accelz",accelz,"Accel Z","ms-2",-59,59,59,59,59,59,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","shaftspeed1","ss1",ss1,"Shaft Speed 1","RPM",0,10000,10000,10000,10000,10000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","shaftspeed2","ss2",ss2,"Shaft Speed 2","RPM",0,10000,10000,10000,10000,10000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","gear","gear",gear,"Gear","",-1,6,6,6,6,6,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","accelx","accelx",accelx,"Accel X","ms-2",-59,59,59,59,59,59,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","accely","accely",accely,"Accel Y","ms-2",-59,59,59,59,59,59,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","accelz","accelz",accelz,"Accel Z","ms-2",-59,59,59,59,59,59,2,2,45));
         if (NARROW_BAND_EGO)
         {
         }
         else if (LAMBDA)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda1Gauge","lambda1",lambda1,"Lambda 1","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda2Gauge","lambda2",lambda2,"Lambda 2","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda3Gauge","lambda3",lambda3,"Lambda 3","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda4Gauge","lambda4",lambda4,"Lambda 4","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda5Gauge","lambda5",lambda5,"Lambda 5","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda6Gauge","lambda6",lambda6,"Lambda 6","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda7Gauge","lambda7",lambda7,"Lambda 7","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("lambda8Gauge","lambda8",lambda8,"Lambda 8","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda1Gauge","lambda1",lambda1,"Lambda 1","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda2Gauge","lambda2",lambda2,"Lambda 2","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda3Gauge","lambda3",lambda3,"Lambda 3","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda4Gauge","lambda4",lambda4,"Lambda 4","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda5Gauge","lambda5",lambda5,"Lambda 5","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda6Gauge","lambda6",lambda6,"Lambda 6","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda7Gauge","lambda7",lambda7,"Lambda 7","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambda8Gauge","lambda8",lambda8,"Lambda 8","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1Gauge","afr1",afr1,"Air:Fuel Ratio 1","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2Gauge","afr2",afr2,"Air:Fuel Ratio 2","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr3Gauge","afr3",afr3,"Air:Fuel Ratio 3","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr4Gauge","afr4",afr4,"Air:Fuel Ratio 4","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr5Gauge","afr5",afr5,"Air:Fuel Ratio 5","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr6Gauge","afr6",afr6,"Air:Fuel Ratio 6","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr7Gauge","afr7",afr7,"Air:Fuel Ratio 7","",10,19.4,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr8Gauge","afr8",afr8,"Air:Fuel Ratio 8","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1Gauge","afr1",afr1,"Air:Fuel Ratio 1","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2Gauge","afr2",afr2,"Air:Fuel Ratio 2","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr3Gauge","afr3",afr3,"Air:Fuel Ratio 3","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr4Gauge","afr4",afr4,"Air:Fuel Ratio 4","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr5Gauge","afr5",afr5,"Air:Fuel Ratio 5","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr6Gauge","afr6",afr6,"Air:Fuel Ratio 6","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr7Gauge","afr7",afr7,"Air:Fuel Ratio 7","",10,19.4,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr8Gauge","afr8",afr8,"Air:Fuel Ratio 8","",10,19.4,12,13,15,16,2,2,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV1Gauge","egov1",egov1,"Exhaust Gas Oxygen 1","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV2Gauge","egov2",egov2,"Exhaust Gas Oxygen 2","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV3Gauge","egov3",egov3,"Exhaust Gas Oxygen 3","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV4Gauge","egov4",egov4,"Exhaust Gas Oxygen 4","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV5Gauge","egov5",egov5,"Exhaust Gas Oxygen 5","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV6Gauge","egov6",egov6,"Exhaust Gas Oxygen 6","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV7Gauge","egov7",egov7,"Exhaust Gas Oxygen 7","volts",0,5,5,5,5,5,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoV8Gauge","egov8",egov8,"Exhaust Gas Oxygen 8","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV1Gauge","egov1",egov1,"Exhaust Gas Oxygen 1","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV2Gauge","egov2",egov2,"Exhaust Gas Oxygen 2","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV3Gauge","egov3",egov3,"Exhaust Gas Oxygen 3","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV4Gauge","egov4",egov4,"Exhaust Gas Oxygen 4","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV5Gauge","egov5",egov5,"Exhaust Gas Oxygen 5","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV6Gauge","egov6",egov6,"Exhaust Gas Oxygen 6","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV7Gauge","egov7",egov7,"Exhaust Gas Oxygen 7","volts",0,5,5,5,5,5,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoV8Gauge","egov8",egov8,"Exhaust Gas Oxygen 8","volts",0,5,5,5,5,5,2,2,45));
         if (NARROW_BAND_EGO)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1targetGauge","afrtgt1",afrtgt1,"EgoV 1 Target","",0,1,20,20,20,20,3,3,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2targetGauge","afrtgt2",afrtgt2,"EgoV 2 Target","",0,1,20,20,20,20,3,3,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1errGauge","afr1err",afr1err,"EgoV 1 Error","",-1,+1,12,13,15,16,3,3,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2errGauge","afr2err",afr2err,"EgoV 2 Error","",-1,+1,12,13,15,16,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1targetGauge","afrtgt1",afrtgt1,"EgoV 1 Target","",0,1,20,20,20,20,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2targetGauge","afrtgt2",afrtgt2,"EgoV 2 Target","",0,1,20,20,20,20,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1errGauge","afr1err",afr1err,"EgoV 1 Error","",-1,+1,12,13,15,16,3,3,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2errGauge","afr2err",afr2err,"EgoV 2 Error","",-1,+1,12,13,15,16,3,3,45));
         }
         else if (LAMBDA)
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1targetGauge","afrtgt1",afrtgt1,"Lambda 1 Target","",0.5,1.5,20,20,20,20,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2targetGauge","afrtgt2",afrtgt2,"Lambda 2 Target","",0.5,1.5,20,20,20,20,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1errGauge","afr1err",afr1err,"Lambda 1 Error","",-2,+2,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2errGauge","afr2err",afr2err,"Lambda 2 Error","",-2,+2,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1targetGauge","afrtgt1",afrtgt1,"Lambda 1 Target","",0.5,1.5,20,20,20,20,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2targetGauge","afrtgt2",afrtgt2,"Lambda 2 Target","",0.5,1.5,20,20,20,20,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1errGauge","afr1err",afr1err,"Lambda 1 Error","",-2,+2,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2errGauge","afr2err",afr2err,"Lambda 2 Error","",-2,+2,12,13,15,16,2,2,45));
         }
         else
         {
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1targetGauge","afrtgt1",afrtgt1,"AFR 1 Target","",10,19.4,20,20,20,20,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2targetGauge","afrtgt2",afrtgt2,"AFR 2 Target","",10,19.4,20,20,20,20,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr1errGauge","afr1err",afr1err,"AFR 1 Error","",-5,+5,12,13,15,16,2,2,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("afr2errGauge","afr2err",afr2err,"AFR 2 Error","",-5,+5,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1targetGauge","afrtgt1",afrtgt1,"AFR 1 Target","",10,19.4,20,20,20,20,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2targetGauge","afrtgt2",afrtgt2,"AFR 2 Target","",10,19.4,20,20,20,20,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr1errGauge","afr1err",afr1err,"AFR 1 Error","",-5,+5,12,13,15,16,2,2,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afr2errGauge","afr2err",afr2err,"AFR 2 Error","",-5,+5,12,13,15,16,2,2,45));
         }
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge1","egocor1",egocor1,"EGO Correction 1","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge2","egocor2",egocor2,"EGO Correction 2","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge3","egocor3",egocor3,"EGO Correction 3","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge4","egocor4",egocor4,"EGO Correction 4","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge5","egocor5",egocor5,"EGO Correction 5","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge6","egocor6",egocor6,"EGO Correction 6","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge7","egocor7",egocor7,"EGO Correction 7","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("egoCorrGauge8","egocor8",egocor8,"EGO Correction 8","%",50,150,90,99,101,110,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor01Gauge","sensor01",sensor01,"Sensor 01","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor02Gauge","sensor02",sensor02,"Sensor 02","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor03Gauge","sensor03",sensor03,"Sensor 03","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor04Gauge","sensor04",sensor04,"Sensor 04","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor05Gauge","sensor05",sensor05,"Sensor 05","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor06Gauge","sensor06",sensor06,"Sensor 06","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor07Gauge","sensor07",sensor07,"Sensor 07","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor08Gauge","sensor08",sensor08,"Sensor 08","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor09Gauge","sensor09",sensor09,"Sensor 09","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor10Gauge","sensor10",sensor10,"Sensor 10","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor11Gauge","sensor11",sensor11,"Sensor 11","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor12Gauge","sensor12",sensor12,"Sensor 12","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor13Gauge","sensor13",sensor13,"Sensor 13","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor14Gauge","sensor14",sensor14,"Sensor 14","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor15Gauge","sensor15",sensor15,"Sensor 15","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sensor16Gauge","sensor16",sensor16,"Sensor 16","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canin1_8Gauge","canin1_8",canin1_8,"CAN inputs 1-8","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canout1_8Gauge","canout1_8",canout1_8,"CAN outputs 1-8","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canout9_16Gauge","canout9_16",canout9_16,"CAN outputs 9-16","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canpwmin0Gauge","canpwmin0",canpwmin0,"CAN PWMin 0","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canpwmin1Gauge","canpwmin1",canpwmin1,"CAN PWMin 1","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canpwmin2Gauge","canpwmin2",canpwmin2,"CAN PWMin 2","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("canpwmin3Gauge","canpwmin3",canpwmin3,"CAN PWMin 3","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status1Gauge","status1",status1,"Status 1","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status2Gauge","status2",status2,"Status 2","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status3Gauge","status3",status3,"Status 3","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status4Gauge","status4",status4,"Status 4","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("status5Gauge","status5",status5,"Status 5","",0,65535,65535,65535,65535,65535,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("looptimeGauge","looptime",looptime,"Mainloop time","us",0,10000,-1,-1,1000,6000,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_filenum","sd_filenum",sd_filenum,"SDcard file number","",0,9999,9999,9999,9999,9999,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_error","sd_error",sd_error,"SDcard error","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_status","sd_status",sd_status,"SDcard status","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("sd_phase","sd_phase",sd_phase,"SDcard phase","",0,255,255,255,255,255,0,0,45));
-        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("deadGauge","deadValue",deadValue,"---","",0,1,-1,-1,2,2,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge1","egocor1",egocor1,"EGO Correction 1","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge2","egocor2",egocor2,"EGO Correction 2","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge3","egocor3",egocor3,"EGO Correction 3","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge4","egocor4",egocor4,"EGO Correction 4","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge5","egocor5",egocor5,"EGO Correction 5","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge6","egocor6",egocor6,"EGO Correction 6","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge7","egocor7",egocor7,"EGO Correction 7","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","egoCorrGauge8","egocor8",egocor8,"EGO Correction 8","%",50,150,90,99,101,110,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor01Gauge","sensor01",sensor01,"Sensor 01","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor02Gauge","sensor02",sensor02,"Sensor 02","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor03Gauge","sensor03",sensor03,"Sensor 03","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor04Gauge","sensor04",sensor04,"Sensor 04","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor05Gauge","sensor05",sensor05,"Sensor 05","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor06Gauge","sensor06",sensor06,"Sensor 06","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor07Gauge","sensor07",sensor07,"Sensor 07","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor08Gauge","sensor08",sensor08,"Sensor 08","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor09Gauge","sensor09",sensor09,"Sensor 09","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor10Gauge","sensor10",sensor10,"Sensor 10","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor11Gauge","sensor11",sensor11,"Sensor 11","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor12Gauge","sensor12",sensor12,"Sensor 12","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor13Gauge","sensor13",sensor13,"Sensor 13","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor14Gauge","sensor14",sensor14,"Sensor 14","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor15Gauge","sensor15",sensor15,"Sensor 15","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sensor16Gauge","sensor16",sensor16,"Sensor 16","",-3000,3000,-3277,-3277,3277,3277,1,1,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canin1_8Gauge","canin1_8",canin1_8,"CAN inputs 1-8","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canout1_8Gauge","canout1_8",canout1_8,"CAN outputs 1-8","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canout9_16Gauge","canout9_16",canout9_16,"CAN outputs 9-16","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canpwmin0Gauge","canpwmin0",canpwmin0,"CAN PWMin 0","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canpwmin1Gauge","canpwmin1",canpwmin1,"CAN PWMin 1","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canpwmin2Gauge","canpwmin2",canpwmin2,"CAN PWMin 2","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","canpwmin3Gauge","canpwmin3",canpwmin3,"CAN PWMin 3","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","status1Gauge","status1",status1,"Status 1","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","status2Gauge","status2",status2,"Status 2","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","status3Gauge","status3",status3,"Status 3","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","status4Gauge","status4",status4,"Status 4","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","status5Gauge","status5",status5,"Status 5","",0,65535,65535,65535,65535,65535,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","looptimeGauge","looptime",looptime,"Mainloop time","us",0,10000,-1,-1,1000,6000,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sd_filenum","sd_filenum",sd_filenum,"SDcard file number","",0,9999,9999,9999,9999,9999,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sd_error","sd_error",sd_error,"SDcard error","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sd_status","sd_status",sd_status,"SDcard status","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","sd_phase","sd_phase",sd_phase,"SDcard phase","",0,255,255,255,255,255,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","deadGauge","deadValue",deadValue,"---","",0,1,-1,-1,2,2,0,0,45));
     }
 
     @Override

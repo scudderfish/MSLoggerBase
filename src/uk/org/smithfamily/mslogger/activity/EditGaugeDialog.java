@@ -1,14 +1,21 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.widgets.BarMeter;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -16,20 +23,24 @@ import android.widget.TextView;
  */
 public class EditGaugeDialog extends Dialog implements android.view.View.OnClickListener
 {
-
-    private GaugeDetails gd;
-    private Indicator    gauge;
+    private MSLoggerActivity    mainActivity;
+    private GaugeDetails        gd;
+    private Indicator           gauge;
+    private String              indicatorType;
 
     /**
      * 
      * @param context
      * @param gauge
      */
-    public EditGaugeDialog(Context context, Indicator gauge)
+    public EditGaugeDialog(Context context, Indicator gauge, MSLoggerActivity mainActivity)
     {
         super(context);
         this.gauge = gauge;
         this.gd = gauge.getDetails();
+        
+        this.indicatorType = gauge.getType();
+        this.mainActivity = mainActivity;
     }
 
     /**
@@ -59,6 +70,22 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         setValue(R.id.editVD, Integer.toString(gd.getVd()));
         setValue(R.id.editLD, Integer.toString(gd.getLd()));
         setValue(R.id.editoffsetAngle, Double.toString(gd.getOffsetAngle()));
+        
+        // Populate indicator type spinner
+        Spinner spinner = (Spinner) findViewById(R.id.indicatorType);
+        
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.gaugetypes, android.R.layout.simple_spinner_item);
+       
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        
+        // Select current gauge type
+        spinner.setSelection(adapter.getPosition(indicatorType));
+        
         Button buttonOK = (Button) findViewById(R.id.editOK);
         Button buttonReset = (Button) findViewById(R.id.editReset);
         Button buttonCancel = (Button) findViewById(R.id.editCancel);
@@ -88,6 +115,72 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      */
     public void saveDetails()
     {
+        Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType);
+        
+        String selectedIndicatorType = gaugeType.getSelectedItem().toString();
+        
+        // Gauge type changed, need to rebuild the view
+        if (!selectedIndicatorType.equals(indicatorType))
+        {            
+            LinearLayout mainLayout = (LinearLayout) mainActivity.findViewById(R.id.mainLinearLayout);
+            LinearLayout mainLayoutLand = (LinearLayout) mainActivity.findViewById(R.id.mainLinearLayoutLand);
+            
+            if (mainLayout != null)
+            {
+                mainLayout.removeViewAt(0);
+            }
+            
+            if (mainLayoutLand != null)
+            {
+                mainLayoutLand.removeViewAt(0);
+            }
+            
+            Indicator indicator = null;
+            
+            // Gauge
+            if (selectedIndicatorType.equals(getContext().getString(R.string.gauge)))
+            {
+                indicator = new MSGauge(getContext());
+            }
+            // Histogram
+            else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram)))
+            {
+                indicator = new Histogram(getContext()); 
+            }
+            // Bar Graph
+            else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph)))
+            {
+                indicator = new BarMeter(getContext());
+            }
+            // Numeric Indicator
+            else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
+            {
+                indicator = new NumericIndicator(getContext());
+            }
+
+            if (indicator != null)
+            {
+                indicator.setId(R.id.g3);
+                indicator.initFromName(gd.getName());
+                
+                mainActivity.setIndicator3(indicator);
+                
+                if (mainLayout != null)
+                {
+                    mainLayout.addView(indicator);
+                }
+                
+                if (mainLayoutLand != null)
+                {
+                    mainLayoutLand.addView(indicator);
+                }
+                
+                mainActivity.initGauge3Events();
+            }
+        }
+        
+        gd.setType(selectedIndicatorType);
+        gd.setOrientation("");
         gd.setName(getValue(R.id.editName));
         gd.setChannel(getValue(R.id.editChannel));
         gd.setTitle(getValue(R.id.editTitle));

@@ -22,22 +22,19 @@ public enum GaugeRegister
      */
     public void resetAll()
     {
-        for (String name : details.keySet())
+        File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
+        
+        File[] fGaugeDetails = dir.listFiles();
+        
+        for (File gaugeDetails : fGaugeDetails)
         {
-            GaugeDetails gd = details.get(name);
-            if (gd != null)
+            boolean deleteResult = gaugeDetails.delete();
+            if (!deleteResult)
             {
-                File store = getFileStore(gd);
-                if (store != null)
-                {
-                    boolean deleteResult = store.delete();
-                    if (!deleteResult)
-                    {
-                        DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
-                    }
-                }
+                DebugLogManager.INSTANCE.log("Couldn't delete " + gaugeDetails.getPath(),Log.ERROR);
             }
         }
+        
         details.clear();
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
         if (ecuDefinition != null)
@@ -64,6 +61,7 @@ public enum GaugeRegister
         {
             persistDetails(gaugeDetails);
         }
+
         DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails,Log.INFO);
 
         details.put(gaugeDetails.getName(), gaugeDetails);
