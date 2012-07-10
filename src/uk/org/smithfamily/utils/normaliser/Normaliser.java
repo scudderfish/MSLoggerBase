@@ -509,17 +509,16 @@ public class Normaliser
             String hiD = m.group(10);
             String vd = m.group(11);
             String ld = m.group(12);
-
-            String g = String.format("GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));", name,
+            
+            String g = String.format("GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"Gauge\",\"\",\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));", name,
                     channel, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
 
             g = g.replace("{", "").replace("}", "");
             String gd = String
-                    .format("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
+                    .format("<tr><td>Gauge</td><td></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
                             name, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
             gaugeDoc.add(gd);
             gaugeDef.add(g);
-
         }
         else if (line.startsWith("#"))
         {
@@ -686,7 +685,7 @@ public class Normaliser
             if (gauge.contains("GaugeRegister"))
             {
                 String[] parts = gauge.split(",");
-                String channel = parts[2];
+                String channel = parts[4];
                 okToWrite = runtimeVars.containsKey(channel) || evalVars.containsKey(channel);
             }
             if (okToWrite)
