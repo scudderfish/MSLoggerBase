@@ -67,7 +67,7 @@ class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
     @Override
     public boolean onDoubleTap(MotionEvent e)
     {
-        EditGaugeDialog dialog = new EditGaugeDialog(this.msLoggerActivity, gauge);
+        EditGaugeDialog dialog = new EditGaugeDialog(this.msLoggerActivity, gauge, msLoggerActivity);
         dialog.show();
 
         return true;

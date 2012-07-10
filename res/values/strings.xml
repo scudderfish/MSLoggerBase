@@ -78,8 +78,16 @@
 	<string name="log_level">Logging Level</string>
 	<string name="manage_datalogs">Manage Datalogs</string>
 	
+	<!-- Indicator -->
+	<string name="gauge">Gauge</string>
+	<string name="histogram">Histogram</string>
+	<string name="bargraph">Bar Graph</string>
+	<string name="numeric_indicator">Numeric Indicator</string>
+	
 	<!-- Edit gauge -->
 	<string name="channel">Channel</string>
+	<string name="indicator_type">Gauge Type</string>
+	<string name="choose_indicator_type">Choose an Indicator Type</string>
 	<string name="offset_angle">Offset Angle</string>
 	<string name="label_decimal_places">Label Decimal Places</string>
 	<string name="value_decimal_places">Value Decimal Places</string>	

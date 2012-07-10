@@ -1,7 +1,9 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -25,179 +27,298 @@ public abstract class Indicator extends View
     private double             value           = 2500;
     private boolean            disabled        = false;
     private double             offsetAngle     = 45;
+    final float                scale           = getResources().getDisplayMetrics().density;
 
-    private GaugeDetails deadGauge = new GaugeDetails(DEAD_GAUGE_NAME, "deadValue",getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+    private GaugeDetails deadGauge = new GaugeDetails("Gauge","",DEAD_GAUGE_NAME, "deadValue",getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+    
+    /**
+     * @return
+     */
     public double getMin()
     {
         return min;
     }
 
+    /**
+     * @param min
+     */
     public void setMin(double min)
     {
         this.min = min;
     }
 
+    /**
+     * @return
+     */
     public double getMax()
     {
         return max;
     }
 
+    /**
+     * @param max
+     */
     public void setMax(double max)
     {
         this.max = max;
     }
 
+    /**
+     * @return
+     */
     public double getLowD()
     {
         return lowD;
     }
-
+    
+    /**
+     * @param lowD
+     */
     public void setLowD(double lowD)
     {
         this.lowD = lowD;
     }
 
+    /**
+     * @return
+     */
     public double getLowW()
     {
         return lowW;
     }
 
+    /**
+     * @param lowW
+     */
     public void setLowW(double lowW)
     {
         this.lowW = lowW;
     }
 
+    /**
+     * @return
+     */
     public double getHiW()
     {
         return hiW;
     }
 
+    /**
+     * @param hiW
+     */
     public void setHiW(double hiW)
     {
         this.hiW = hiW;
     }
 
+    /**
+     * @return
+     */
     public double getHiD()
     {
         return hiD;
     }
 
+    /**
+     * @param hiD
+     */
     public void setHiD(double hiD)
     {
         this.hiD = hiD;
     }
 
+    /**
+     * @return
+     */
     public int getVd()
     {
         return vd;
     }
 
+    /**
+     * @param vd
+     */
     public void setVd(int vd)
     {
         this.vd = vd;
     }
 
+    /**
+     * @return
+     */
     public int getLd()
     {
         return ld;
     }
 
+    /**
+     * @param ld
+     */
     public void setLd(int ld)
     {
         this.ld = ld;
     }
 
+    /**
+     * @return
+     */
     public double getValue()
     {
         return value;
     }
 
+    /**
+     * @param value
+     */
     public void setValue(double value)
     {
         this.value = value;
+        invalidate();
     }
 
+    /**
+     * @return
+     */
     public static String getDeadGaugeName()
     {
         return DEAD_GAUGE_NAME;
     }
 
+    /**
+     * @return
+     */
     public String getTitle()
     {
         return title;
     }
 
+    /**
+     * @return
+     */
     public String getUnits()
     {
         return units;
     }
 
+    /**
+     * @param context
+     */
     public Indicator(Context context)
     {
         super(context);
     }
 
+    /**
+     * @param c
+     * @param s
+     */
     public Indicator(Context c, AttributeSet s)
     {
         super(c, s);
     }
 
+    /**
+     * @param context
+     * @param attr
+     * @param defaultStyles
+     */
     public Indicator(Context context, AttributeSet attr, int defaultStyles)
     {
         super(context, attr, defaultStyles);
     }
 
-    public void initFromName(String orSetPref)
+    /**
+     * 
+     * @param nme
+     */
+    public void initFromName(String nme)
     {
-    }
+        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
+        if (gd == null)
+        {   
+            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
+            gd = getDeadGauge();
+        }
+        initFromGD(gd);
+    }    
 
+    /**
+     * @return
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * @param name
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /**
+     * @return
+     */
     public String getChannel()
     {
         return channel;
     }
 
+    /**
+     * @param channel
+     */
     public void setChannel(String channel)
     {
         this.channel = channel;
     }
 
+    /**
+     * @return
+     */
     public boolean isDisabled()
     {
-        return disabled;
+        return this.disabled;
     }
 
+    /**
+     * @param disabled
+     */
     public void setDisabled(boolean disabled)
     {
         this.disabled = disabled;
     }
 
+    /**
+     * @param title
+     */
     public void setTitle(String title)
     {
         this.title = title;
     }
 
+    /**
+     * @param units
+     */
     public void setUnits(String units)
     {
         this.units = units;
     }
 
+    /**
+     * @return
+     */
     public GaugeDetails getDetails()
     {
-        GaugeDetails gd = new GaugeDetails(name, channel, value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
+        GaugeDetails gd = new GaugeDetails("","",name, channel, value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
 
         return gd;
     }
 
+    /**
+     * @param gd
+     */
     public void initFromGD(GaugeDetails gd)
     {
         name = gd.getName();
@@ -218,24 +339,37 @@ public abstract class Indicator extends View
         value = (max - min) / 2.0;
     }
 
+    /**
+     * @return
+     */
     public double getOffsetAngle()
     {
         return offsetAngle;
     }
 
+    /**
+     * @param offsetAngle
+     */
     public void setOffsetAngle(double offsetAngle)
     {
         this.offsetAngle = offsetAngle;
     }
 
+    /**
+     * @return
+     */
     public GaugeDetails getDeadGauge()
     {
         return deadGauge;
     }
 
+    /**
+     * @param deadGauge
+     */
     public void setDeadGauge(GaugeDetails deadGauge)
     {
         this.deadGauge = deadGauge;
     }
 
+    public abstract String getType();
 }

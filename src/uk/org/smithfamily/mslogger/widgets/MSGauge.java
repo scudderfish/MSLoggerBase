@@ -1,6 +1,6 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,7 +12,6 @@ import android.graphics.Path.FillType;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.AttributeSet;
-import android.util.Log;
 
 /**
  *
@@ -22,7 +21,6 @@ public class MSGauge extends Indicator
     private int                diameter;
     private double             pi          = Math.PI;
     
-    final float                scale       = getResources().getDisplayMetrics().density;
     private Paint              titlePaint;
     private Paint              valuePaint;
     private Paint              pointerPaint;
@@ -32,7 +30,7 @@ public class MSGauge extends Indicator
     private Paint              rimCirclePaint;
     private RectF              faceRect;
     private Paint              facePaint;
-    private boolean            disabled;
+
     private static final float rimSize     = 0.02f;
 
     
@@ -145,8 +143,8 @@ public class MSGauge extends Indicator
         drawFace(canvas);
 
         drawScale(canvas);
-
-        if (!disabled)
+        
+        if (!isDisabled())
         {
             drawPointer(canvas);
             drawValue(canvas);
@@ -359,7 +357,7 @@ public class MSGauge extends Indicator
      */
     private int getFgColour()
     {
-        if(disabled)
+        if (isDisabled())
         {
             return Color.DKGRAY;
         }
@@ -380,7 +378,7 @@ public class MSGauge extends Indicator
     private int getBgColour()
     {
         int c = Color.GRAY;
-        if (this.disabled)
+        if (isDisabled())
         {
             return c;
         }
@@ -422,30 +420,7 @@ public class MSGauge extends Indicator
         facePaint.setColor(getBgColour());
         canvas.drawOval(faceRect, facePaint);
     }
-    /**
-     * 
-     * @return
-     */
 
-    /**
-     * 
-     * @param gd
-     */
-
-    /**
-     * 
-     * @param nme
-     */
-    public void initFromName(String nme)
-    {
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        if (gd == null)
-        {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
-            gd = getDeadGauge();
-        }
-        initFromGD(gd);
-    }
     /**
      * 
      */
@@ -467,4 +442,9 @@ public class MSGauge extends Indicator
         IndicatorManager.INSTANCE.deregisterIndicator(this);
     }
     
+    @Override
+    public String getType()
+    {
+        return getContext().getString(R.string.gauge);
+    }       
 }

@@ -1,28 +1,55 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
-import android.app.*;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.GPSLocationManager;
+import uk.org.smithfamily.mslogger.MSLoggerApplication;
+import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.EmailManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
+import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
+import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.*;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.*;
+import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.*;
-
-import uk.org.smithfamily.mslogger.*;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.widgets.*;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Main activity class where the main window (gauges) are and where the bottom menu is handled 
@@ -54,7 +81,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        
         super.onCreate(savedInstanceState);
         checkSDCard();
         
@@ -74,12 +100,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);
-        
-        LinearLayout l = (LinearLayout) this.findViewById(R.id.mainLinearLayout);
-        l.removeViewAt(0);
-        BarMeter barMeter = new BarMeter(this);
-        barMeter.setId(R.id.g3);
-        l.addView(barMeter);
         
         /* 
          * Get status message from saved instance, for example when
@@ -297,32 +317,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
             }
             
-            gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
-            OnTouchListener gestureListener = new View.OnTouchListener()
-            {
-                public boolean onTouch(View v, MotionEvent event)
-                {
-                    if (gestureDetector.onTouchEvent(event))
-                    {
-                        return true;
-                    }
-
-                    if (event.getAction() == MotionEvent.ACTION_UP)
-                    {
-                        if (scrolling)
-                        {
-                            scrolling = false;
-                            GaugeDetails gd = gauge3.getDetails();
-                            GaugeRegister.INSTANCE.persistDetails(gd);
-                        }
-                    }
-
-                    return false;
-                }
-            };
-            
-            gauge3.setOnClickListener(MSLoggerActivity.this);
-            gauge3.setOnTouchListener(gestureListener);
+            initGauge3Events();
         }
         else
         {
@@ -340,6 +335,39 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
     }
 
+    /**
+     * 
+     */
+    public void initGauge3Events()
+    {
+        gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
+        OnTouchListener gestureListener = new View.OnTouchListener()
+        {
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                if (gestureDetector.onTouchEvent(event))
+                {
+                    return true;
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    if (scrolling)
+                    {
+                        scrolling = false;
+                        GaugeDetails gd = gauge3.getDetails();
+                        GaugeRegister.INSTANCE.persistDetails(gd);
+                    }
+                }
+
+                return false;
+            }
+        };
+        
+        gauge3.setOnClickListener(MSLoggerActivity.this);
+        gauge3.setOnTouchListener(gestureListener);
+    }
+    
     /**
      * Set all the gauges variable with their view
      */
@@ -553,6 +581,18 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * Used by edit gauge to change the instance of gauge3
+     */
+    public void setIndicator3(Indicator indicator)
+    {
+        gauge3 = indicator;
+        if (gaugeEditEnabled)
+        {
+            gauge3.setOnTouchListener(new GaugeTouchListener(gauge3));
+        }
+    }
+    
     /**
      * Start the background task to reset the gauges
      */
@@ -894,11 +934,43 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
+                String gauge3Type = gauge3.getType();
+                
                 // Gauge 3 is the middle gauge
                 String g3name = gauge3.getName();
+                String gname = gauge.getName();
                 
-                gauge3.initFromName(gauge.getName());
-                gauge.initFromName(g3name);
+                
+                if (gauge.getType().equals(gauge3Type))
+                {
+                    gauge3.initFromName(gauge.getName());
+                    gauge.initFromName(g3name);
+                }
+                // Gauge were not the same type, we need to rebuild them with the right class
+                else
+                {                
+                    // Swap touched gauge with gauge 3
+                    View gauge3View = findViewById(R.id.g3);
+                    
+                    ViewGroup parentGauge3View = (ViewGroup) gauge3View.getParent();
+                    int index = parentGauge3View.indexOfChild(gauge3View);
+                    parentGauge3View.removeView(gauge3View);
+
+                    ViewGroup parentGaugeView = (ViewGroup) v.getParent();
+                    index = parentGaugeView.indexOfChild(v);
+                    parentGaugeView.removeView(v);
+                    
+                    parentGauge3View.addView(v);           
+                    parentGaugeView.addView(gauge3View, index);        
+                    
+                    Indicator tmpGauge = gauge;
+                    gauge = gauge3;
+                    gauge3 = tmpGauge;
+                    
+                    gauge3.initFromName(gname);
+                    gauge.initFromName(g3name);
+                }               
+                
                 gauge.invalidate();
                 gauge3.invalidate();
                 

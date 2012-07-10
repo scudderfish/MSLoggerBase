@@ -13,6 +13,8 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 public class GaugeDetails implements Externalizable
 {
     private static final long serialVersionUID = 5603843897470844381L;
+    private String            type;
+    private String            orientation;
     private String            name;
     private String            channel;
     private String            title;
@@ -47,6 +49,8 @@ public class GaugeDetails implements Externalizable
         offsetAngle = oi.readDouble();
         vd = oi.readInt();
         ld = oi.readInt();
+        type = oi.readUTF();
+        orientation = oi.readUTF();
     }
 
     /**
@@ -69,6 +73,8 @@ public class GaugeDetails implements Externalizable
         oo.writeDouble(offsetAngle);
         oo.writeInt(vd);
         oo.writeInt(ld);
+        oo.writeUTF(type);
+        oo.writeUTF(orientation);
     }
     
     /**
@@ -96,9 +102,11 @@ public class GaugeDetails implements Externalizable
      * @param ld
      * @param offsetAngle   The offset angle of the scale on the gauge
      */
-    public GaugeDetails(String name, String channel, double iniCheck, String title, String units, double min, double max, double loD, double loW,
-            double hiW, double hiD, int vd, int ld, double offsetAngle)
+    public GaugeDetails(String type, String orientation, String name, String channel, double iniCheck, String title, String units, double min, double max, 
+            double loD, double loW, double hiW, double hiD, int vd, int ld, double offsetAngle)
     {
+        this.type = type;
+        this.orientation = orientation;
         this.name = name;
         this.channel = channel;
         this.title = title;
@@ -114,6 +122,38 @@ public class GaugeDetails implements Externalizable
         this.offsetAngle = ApplicationSettings.INSTANCE.getGaugeSetting(name, title, "offsetAngle", offsetAngle);
     }
 
+    /**
+     * @return
+     */    
+    public String getType()
+    {
+        return type;
+    }
+    
+    /**
+     * @param
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+    
+    /**
+     * @return
+     */    
+    public String getOrientation()
+    {
+        return orientation;
+    }
+    
+    /**
+     * @param
+     */
+    public void setOrientation(String orientation)
+    {
+        this.orientation = orientation;
+    }
+    
     /**
      * @return
      */
@@ -312,8 +352,8 @@ public class GaugeDetails implements Externalizable
     @Override
     public String toString()
     {
-        return "GaugeDetails [name=" + name + ", channel=" + channel + ", title=" + title + ", units=" + units + ", min=" + min
-                + ", max=" + max + ", loD=" + loD + ", loW=" + loW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
+        return "GaugeDetails [type=" + type + ", orientation=" + orientation + ", name=" + name + ", channel=" + channel + ", title=" + title + ", units="
+                + units + ", min=" + min + ", max=" + max + ", loD=" + loD + ", loW=" + loW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
                 + "]";
     }
 
