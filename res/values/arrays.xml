@@ -15,6 +15,7 @@
 		<item>AEM_NON_LINEAR</item>
 		<item>NGK_AFX</item>
 	</string-array>
+	
 	<string-array name="egonames">
 		<item>NARROW_BAND_EGO</item>
 		<item>WB_1_0_LINEAR</item>
@@ -54,6 +55,7 @@
 		<item>CELSIUS</item>
 		<item>FARENHEIT</item>
 	</string-array>
+	
 	<string-array name="levelnames">
 	    <item>Errors Only</item>
 	    <item>Warnings</item>
@@ -61,11 +63,19 @@
 	    <item>Debug</item>
 	    <item>Verbose</item>
 	</string-array>
+	
 	<string-array name="levelvalues">
 	    <item>6</item>
 	    <item>5</item>
 	    <item>4</item>
 	    <item>3</item>
 	    <item>2</item>
+	</string-array>
+	
+	<string-array name="gaugetypes">
+	    <item>@string/gauge</item>
+	   	<item>@string/numeric_indicator</item>
+	   	<item>@string/bargraph</item>
+		<item>@string/histogram</item>		
 	</string-array>
 </resources>
