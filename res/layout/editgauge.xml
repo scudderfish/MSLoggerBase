@@ -33,6 +33,11 @@
 		        <TextView android:text="@string/indicator_type" style="@style/gaugeLabel" />
 				<Spinner android:id="@+id/indicatorType" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_type" />
 		    </TableRow>
+		  	
+		  	<TableRow android:id="@+id/indicatorOrientationRow" android:visibility="gone">
+		        <TextView android:text="@string/indicator_orientation" style="@style/gaugeLabel" />
+				<Spinner android:id="@+id/indicatorOrientation" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_orientation" />
+		    </TableRow>
 		    
 			<TableRow>
 				<TextView android:text="@string/title" style="@style/gaugeLabel" />

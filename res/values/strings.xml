@@ -86,6 +86,8 @@
 	
 	<!-- Edit gauge -->
 	<string name="channel">Channel</string>
+	<string name="indicator_orientation">Orientation</string>
+	<string name="choose_indicator_orientation">Choose the Indicator Orientation</string>
 	<string name="indicator_type">Gauge Type</string>
 	<string name="choose_indicator_type">Choose an Indicator Type</string>
 	<string name="offset_angle">Offset Angle</string>
@@ -100,6 +102,8 @@
 	<string name="name">Name</string>
 	<string name="title">Title</string>
 	<string name="units">Units</string>
+	<string name="horizontal">Horizontal</string>
+	<string name="vertical">Vertical</string>
 	
 	<!-- View Datalog -->
 	<string name="select_fields_to_view">Select Fields to View</string>
