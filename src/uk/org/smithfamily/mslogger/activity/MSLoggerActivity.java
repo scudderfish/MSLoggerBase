@@ -998,10 +998,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 
                 // Rebind regular indicator event
                 indicators[indexIndicator].setOnTouchListener(new GaugeTouchListener(indicators[indexIndicator]));
-                
-                indicators[indexIndicator].invalidate();
-                indicators[2].invalidate();
-                
+
                 return true;
             }
             
