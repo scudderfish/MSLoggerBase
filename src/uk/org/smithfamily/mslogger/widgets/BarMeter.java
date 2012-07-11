@@ -295,6 +295,7 @@ public class BarMeter extends Indicator
     /**
      * @param orientation
      */
+    @Override
     public void setOrientation(Orientation orientation)
     {
        this.orientation = orientation; 
