@@ -83,6 +83,7 @@ class GaugeRotationDetector extends GestureDetector.SimpleOnGestureListener
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
     {
+        if (e1 == null) return false;
 
         if (!this.msLoggerActivity.scrolling)
         {

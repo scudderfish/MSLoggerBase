@@ -12,10 +12,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 /**
@@ -27,6 +30,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     private GaugeDetails        gd;
     private Indicator           gauge;
     private String              indicatorType;
+    
+    private Spinner             typeSpinner;
+    private Spinner             orientationSpinner;
 
     /**
      * 
@@ -71,20 +77,51 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         setValue(R.id.editLD, Integer.toString(gd.getLd()));
         setValue(R.id.editoffsetAngle, Double.toString(gd.getOffsetAngle()));
         
-        // Populate indicator type spinner
-        Spinner spinner = (Spinner) findViewById(R.id.indicatorType);
+        orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
         
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.gaugetypes, android.R.layout.simple_spinner_item);
-       
+        ArrayAdapter<CharSequence> orientationAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatororientation, android.R.layout.simple_spinner_item);
+
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orientationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
+        orientationSpinner.setAdapter(orientationAdapter);
+        
+        // Select currently selected orientation        
+        for (int i = 0; i < Indicator.Orientation.values().length; i++)
+        {
+            if (orientationAdapter.getItem(i).toString().toLowerCase().equals(gd.getOrientation().toLowerCase()))
+            {
+                orientationSpinner.setSelection(i);
+                break;
+            }
+        }
+        
+        typeSpinner = (Spinner) findViewById(R.id.indicatorType);
+        
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatortypes, android.R.layout.simple_spinner_item);
+       
+        // Specify the layout to use when the list of choices appears
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        // Apply the adapter to the spinner
+        typeSpinner.setAdapter(typeAdapter);
         
         // Select current gauge type
-        spinner.setSelection(adapter.getPosition(indicatorType));
+        typeSpinner.setSelection(typeAdapter.getPosition(indicatorType));
+        
+        typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                displayOrientationSpinnerIfNeeded();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
         
         Button buttonOK = (Button) findViewById(R.id.editOK);
         Button buttonReset = (Button) findViewById(R.id.editReset);
@@ -93,6 +130,24 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         buttonOK.setOnClickListener(this);
         buttonReset.setOnClickListener(this);
         buttonCancel.setOnClickListener(this);
+    }
+    
+    /**
+     *
+     */    
+    private void displayOrientationSpinnerIfNeeded()
+    {
+        TableRow orientationRow = (TableRow) findViewById(R.id.indicatorOrientationRow);
+
+        // Display orientation spinner for bar graph
+        if (typeSpinner.getSelectedItem().toString().equals(getContext().getString(R.string.bargraph)))
+        {                        
+            orientationRow.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            orientationRow.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -175,12 +230,12 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
                     mainLayoutLand.addView(indicator);
                 }
                 
-                mainActivity.initGauge3Events();
+                mainActivity.initIndicator3Events();
             }
         }
         
         gd.setType(selectedIndicatorType);
-        gd.setOrientation("");
+        gd.setOrientation(orientationSpinner.getSelectedItem().toString());
         gd.setName(getValue(R.id.editName));
         gd.setChannel(getValue(R.id.editChannel));
         gd.setTitle(getValue(R.id.editTitle));
