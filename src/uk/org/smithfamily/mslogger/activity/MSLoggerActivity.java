@@ -61,11 +61,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private TextView               messages;
     private TextView               rps;
     static private Boolean         ready                 = null;
-    private Indicator              gauge1;
-    private Indicator              gauge2;
-    private Indicator              gauge3;
-    private Indicator              gauge4;
-    private Indicator              gauge5;
+    
+    private Indicator[]            indicators = new Indicator[5];
 
     private GestureDetector        gestureDetector;
     private boolean                gaugeEditEnabled;
@@ -241,34 +238,34 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void saveGauges()
     {
-        if (!(gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null))
+        if (!(indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null))
         {
             findGauges();
         }
-        if (gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null)
+        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[5] != null)
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
             
-            if (!gauge1.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[0].getName().equals(MSGauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge1", gauge1.getName());
+                editor.putString("gauge1", indicators[0].getName());
             }
-            if (!gauge2.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[1].getName().equals(MSGauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge2", gauge2.getName());
+                editor.putString("gauge2", indicators[1].getName());
             }
-            if (!gauge3.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[2].getName().equals(MSGauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge3", gauge3.getName());
+                editor.putString("gauge3", indicators[2].getName());
             }
-            if (!gauge4.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[3].getName().equals(MSGauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge4", gauge4.getName());
+                editor.putString("gauge4", indicators[3].getName());
             }
-            if (!gauge5.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[4].getName().equals(MSGauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge5", gauge5.getName());
+                editor.putString("gauge5", indicators[4].getName());
             }
             
             editor.commit();
@@ -296,25 +293,25 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         String[] defaultGauges = ecu.defaultGauges();
         
-        gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
-        gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
-        gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
-        gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
+        indicators[0].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
+        indicators[1].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
+        indicators[2].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
+        indicators[3].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
         
-        if (gauge5 != null)
+        if (indicators[4] != null)
         {
-            gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
+            indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
         }
         
         if (gaugeEditEnabled)
         {
-            gauge1.setOnTouchListener(new GaugeTouchListener(gauge1));
-            gauge2.setOnTouchListener(new GaugeTouchListener(gauge2));
-            gauge4.setOnTouchListener(new GaugeTouchListener(gauge4));
+            indicators[0].setOnTouchListener(new GaugeTouchListener(indicators[0]));
+            indicators[1].setOnTouchListener(new GaugeTouchListener(indicators[1]));
+            indicators[3].setOnTouchListener(new GaugeTouchListener(indicators[3]));
             
-            if (gauge5 != null)
+            if (indicators[4] != null)
             {
-                gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
+                indicators[4].setOnTouchListener(new GaugeTouchListener(indicators[4]));
             }
             
             initGauge3Events();
@@ -325,13 +322,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             setTouchListeners(l);
         }
         
-        gauge1.invalidate();
-        gauge2.invalidate();
-        gauge3.invalidate();
-        gauge4.invalidate();
+        indicators[0].invalidate();
+        indicators[1].invalidate();
+        indicators[2].invalidate();
+        indicators[3].invalidate();
         
-        if (gauge5 != null)
-            gauge5.invalidate();
+        if (indicators[4] != null)
+            indicators[4].invalidate();
 
     }
 
@@ -340,7 +337,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void initGauge3Events()
     {
-        gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
+        gestureDetector = new GestureDetector(new GaugeRotationDetector(this, indicators[2]));
         OnTouchListener gestureListener = new View.OnTouchListener()
         {
             public boolean onTouch(View v, MotionEvent event)
@@ -355,7 +352,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     if (scrolling)
                     {
                         scrolling = false;
-                        GaugeDetails gd = gauge3.getDetails();
+                        GaugeDetails gd = indicators[2].getDetails();
                         GaugeRegister.INSTANCE.persistDetails(gd);
                     }
                 }
@@ -364,8 +361,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         };
         
-        gauge3.setOnClickListener(MSLoggerActivity.this);
-        gauge3.setOnTouchListener(gestureListener);
+        indicators[2].setOnClickListener(MSLoggerActivity.this);
+        indicators[2].setOnTouchListener(gestureListener);
     }
     
     /**
@@ -373,11 +370,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void findGauges()
     {
-        gauge1 = (Indicator) findViewById(R.id.g1);
-        gauge2 = (Indicator) findViewById(R.id.g2);
-        gauge3 = (Indicator) findViewById(R.id.g3);
-        gauge4 = (Indicator) findViewById(R.id.g4);
-        gauge5 = (Indicator) findViewById(R.id.g5);
+        indicators[0] = (Indicator) findViewById(R.id.g1);
+        indicators[1] = (Indicator) findViewById(R.id.g2);
+        indicators[2] = (Indicator) findViewById(R.id.g3);
+        indicators[3] = (Indicator) findViewById(R.id.g4);
+        indicators[4] = (Indicator) findViewById(R.id.g5);
     }
 
     /**
@@ -387,13 +384,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void setTouchListeners(MarkListener l)
     {
-        gauge1.setOnTouchListener(l);
-        gauge2.setOnTouchListener(l);
-        gauge3.setOnTouchListener(l);
-        gauge4.setOnTouchListener(l);
+        indicators[0].setOnTouchListener(l);
+        indicators[1].setOnTouchListener(l);
+        indicators[2].setOnTouchListener(l);
+        indicators[3].setOnTouchListener(l);
         
-        if (gauge5 != null)
-            gauge5.setOnTouchListener(l);
+        if (indicators[4] != null)
+            indicators[4].setOnTouchListener(l);
     }
 
     /**
@@ -586,10 +583,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void setIndicator3(Indicator indicator)
     {
-        gauge3 = indicator;
+        indicators[2] = indicator;
         if (gaugeEditEnabled)
         {
-            gauge3.setOnTouchListener(new GaugeTouchListener(gauge3));
+            indicators[2].setOnTouchListener(new GaugeTouchListener(indicators[2]));
         }
     }
     
@@ -934,16 +931,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
-                String gauge3Type = gauge3.getType();
+                String gauge3Type = indicators[2].getType();
                 
                 // Gauge 3 is the middle gauge
-                String g3name = gauge3.getName();
+                String g3name = indicators[2].getName();
                 String gname = gauge.getName();
                 
                 
                 if (gauge.getType().equals(gauge3Type))
                 {
-                    gauge3.initFromName(gauge.getName());
+                    indicators[2].initFromName(gauge.getName());
                     gauge.initFromName(g3name);
                 }
                 // Gauge were not the same type, we need to rebuild them with the right class
@@ -964,15 +961,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     parentGaugeView.addView(gauge3View, index);        
                     
                     Indicator tmpGauge = gauge;
-                    gauge = gauge3;
-                    gauge3 = tmpGauge;
+                    gauge = indicators[2];
+                    indicators[2] = tmpGauge;
                     
-                    gauge3.initFromName(gname);
+                    indicators[2].initFromName(gname);
                     gauge.initFromName(g3name);
                 }               
                 
                 gauge.invalidate();
-                gauge3.invalidate();
+                indicators[2].invalidate();
                 
                 return true;
             }
