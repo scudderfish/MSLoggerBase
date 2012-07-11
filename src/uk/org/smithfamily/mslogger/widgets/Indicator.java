@@ -11,6 +11,11 @@ import android.view.View;
  */
 public abstract class Indicator extends View
 {
+    public enum Orientation
+    {
+        HORIZONTAL, VERTICAL
+    }    
+    
     public static final String DEAD_GAUGE_NAME = "deadGauge";
     private String             name            = DEAD_GAUGE_NAME;
     private String             title           = "RPM";
@@ -311,7 +316,17 @@ public abstract class Indicator extends View
      */
     public GaugeDetails getDetails()
     {
-        GaugeDetails gd = new GaugeDetails("","",name, channel, value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
+        String orientation = "";
+        if (getOrientation() == Orientation.HORIZONTAL)
+        {
+            orientation = "horizontal";
+        }
+        else 
+        {
+            orientation = "vertical";
+        }
+        
+        GaugeDetails gd = new GaugeDetails(getType(),orientation,name, channel, value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
 
         return gd;
     }
@@ -339,6 +354,14 @@ public abstract class Indicator extends View
         value = (max - min) / 2.0;
     }
 
+    /**
+     * @return
+     */
+    public Orientation getOrientation()
+    {
+        return Orientation.VERTICAL;
+    }
+    
     /**
      * @return
      */

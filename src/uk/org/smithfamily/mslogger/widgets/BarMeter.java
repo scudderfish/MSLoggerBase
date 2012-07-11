@@ -18,12 +18,7 @@ public class BarMeter extends Indicator
     private Paint           titlePaint;
     private Paint           valuePaint;
     
-    public enum Orientation
-    {
-        HORIZONTAL, VERTICAL
-    }
-    
-    private Orientation orientation     = Orientation.HORIZONTAL;
+    private Orientation     orientation    = Orientation.HORIZONTAL;
  
  
     /**
@@ -305,6 +300,10 @@ public class BarMeter extends Indicator
        this.orientation = orientation; 
     }
     
+    /**
+     * @return
+     */
+    @Override
     public Orientation getOrientation()
     {
         return orientation;

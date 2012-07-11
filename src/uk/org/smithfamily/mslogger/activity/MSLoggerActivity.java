@@ -314,7 +314,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 indicators[4].setOnTouchListener(new GaugeTouchListener(indicators[4]));
             }
             
-            initGauge3Events();
+            initIndicator3Events();
         }
         else
         {
@@ -335,9 +335,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     /**
      * 
      */
-    public void initGauge3Events()
+    public void initIndicator3Events()
     {
-        gestureDetector = new GestureDetector(new GaugeRotationDetector(this, indicators[2]));
+        gestureDetector = new GestureDetector(new GaugeRotationDetector(MSLoggerActivity.this, indicators[2]));
+        
         OnTouchListener gestureListener = new View.OnTouchListener()
         {
             public boolean onTouch(View v, MotionEvent event)
@@ -931,44 +932,74 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
-                String gauge3Type = indicators[2].getType();
+                String middleIndicatorType = indicators[2].getType();
                 
-                // Gauge 3 is the middle gauge
+                // indicator[2] is the middle gauge
                 String g3name = indicators[2].getName();
                 String gname = gauge.getName();
+
+                int indexIndicator = 0;
                 
+                // Find touched gauge index     
+                for (int i = 0; i < indicators.length; i++)
+                {
+                    if (v.getId() == indicators[i].getId())
+                    {
+                        indexIndicator = i;
+                    }
+                };
                 
-                if (gauge.getType().equals(gauge3Type))
+                // Indicator are the same type
+                if (gauge.getType().equals(middleIndicatorType))
                 {
                     indicators[2].initFromName(gauge.getName());
-                    gauge.initFromName(g3name);
+
+                    indicators[indexIndicator] = gauge;
+                    indicators[indexIndicator].initFromName(g3name);
                 }
-                // Gauge were not the same type, we need to rebuild them with the right class
+                // Indicator were not the same type, we need to rebuild them with the right class
                 else
                 {                
-                    // Swap touched gauge with gauge 3
-                    View gauge3View = findViewById(R.id.g3);
+                    // Swap touched indicator with indicator 3 (middle one)
+                    View indicator3View = findViewById(R.id.g3);
                     
-                    ViewGroup parentGauge3View = (ViewGroup) gauge3View.getParent();
-                    int index = parentGauge3View.indexOfChild(gauge3View);
-                    parentGauge3View.removeView(gauge3View);
+                    // Remove old indicator 3
+                    ViewGroup parentIndicator3View = (ViewGroup) indicator3View.getParent();
+                    int index = parentIndicator3View.indexOfChild(indicator3View);
+                    parentIndicator3View.removeView(indicator3View);
 
-                    ViewGroup parentGaugeView = (ViewGroup) v.getParent();
-                    index = parentGaugeView.indexOfChild(v);
-                    parentGaugeView.removeView(v);
+                    // Remove old touched indicator
+                    ViewGroup parentTouchedIndicatorView = (ViewGroup) v.getParent();
+                    index = parentTouchedIndicatorView.indexOfChild(v);
+                    parentTouchedIndicatorView.removeView(v);
                     
-                    parentGauge3View.addView(v);           
-                    parentGaugeView.addView(gauge3View, index);        
+                    // Add touched indicator in place of indicator 3
+                    parentIndicator3View.addView(v);           
                     
-                    Indicator tmpGauge = gauge;
-                    gauge = indicators[2];
-                    indicators[2] = tmpGauge;
+                    // Add indicator 3 in place of touched indicator
+                    parentTouchedIndicatorView.addView(indicator3View, index);        
                     
+                    // Swap objects
+                    Indicator tmpIndicator = indicators[indexIndicator];
+                    indicators[indexIndicator] = indicators[2];
+                    indicators[2] = tmpIndicator;
+                    
+                    // Init the indicator with their new gauge details
                     indicators[2].initFromName(gname);
-                    gauge.initFromName(g3name);
-                }               
+                    indicators[indexIndicator].initFromName(g3name);
+                }                
                 
-                gauge.invalidate();
+                // Put their ID back in place
+                indicators[indexIndicator].setId(v.getId());
+                indicators[2].setId(R.id.g3);
+                
+                // Rebind touch event to new indicator 3
+                initIndicator3Events();
+                
+                // Rebind regular indicator event
+                indicators[indexIndicator].setOnTouchListener(new GaugeTouchListener(indicators[indexIndicator]));
+                
+                indicators[indexIndicator].invalidate();
                 indicators[2].invalidate();
                 
                 return true;

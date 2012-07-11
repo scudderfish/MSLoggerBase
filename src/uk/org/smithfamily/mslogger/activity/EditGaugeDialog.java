@@ -175,7 +175,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
                     mainLayoutLand.addView(indicator);
                 }
                 
-                mainActivity.initGauge3Events();
+                mainActivity.initIndicator3Events();
             }
         }
         
