@@ -14,11 +14,14 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.widgets.BarMeter;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -301,6 +304,56 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         if (indicators[4] != null)
         {
             indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
+        }
+       
+        // Look at all indicators and make sure they are the right type
+        for (int i = 0; i < indicators.length; i++)
+        {
+            if (indicators[i] != null)
+            {
+                boolean wasWrongType = false;
+                String name = indicators[i].getName();
+                int id = indicators[i].getId();
+
+                GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
+                
+                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof MSGauge))
+                {
+                    indicators[i] = new MSGauge(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarMeter))
+                {
+                    indicators[i] = new BarMeter(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.numeric_indicator)) && !(indicators[i] instanceof NumericIndicator))
+                {
+                    indicators[i] = new NumericIndicator(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.histogram)) && !(indicators[i] instanceof Histogram))
+                {
+                    indicators[i] = new Histogram(this);
+                    wasWrongType = true;
+                }
+                
+                if (wasWrongType)
+                {
+                    View indicator = findViewById(id);
+                    
+                    // Remove indicator with wrong type
+                    ViewGroup parentView = (ViewGroup) indicator.getParent();
+                    int index = parentView.indexOfChild(indicator);
+                    parentView.removeView(indicator);
+
+                    // Add new indicator back in place
+                    parentView.addView(indicators[i], index);    
+                    
+                    indicators[i].setId(id);
+                    indicators[i].initFromName(name);
+                }
+            }
         }
         
         if (gaugeEditEnabled)
