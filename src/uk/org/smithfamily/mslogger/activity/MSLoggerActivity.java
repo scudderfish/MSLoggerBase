@@ -242,7 +242,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             findGauges();
         }
-        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[5] != null)
+        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null)
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
