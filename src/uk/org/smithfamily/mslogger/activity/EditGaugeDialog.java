@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -217,6 +218,12 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             {
                 indicator.setId(R.id.g3);
                 indicator.initFromName(gd.getName());
+                
+                LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+                indicator.setLayoutParams(params);
+                
+                indicator.setFocusable(true);
+                indicator.setFocusableInTouchMode(true);
                 
                 mainActivity.setIndicator3(indicator);
                 

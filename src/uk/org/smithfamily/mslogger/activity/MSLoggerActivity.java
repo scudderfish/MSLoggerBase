@@ -50,6 +50,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -353,6 +354,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     
                     indicators[i].setId(id);
                     indicators[i].initFromName(name);
+                    
+                    LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+                    indicators[i].setLayoutParams(params);
+                    
+                    indicators[i].setFocusable(true);
+                    indicators[i].setFocusableInTouchMode(true);
                 }
             }
         }
