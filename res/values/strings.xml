@@ -64,7 +64,7 @@
     <string name="bt_cancel">Cancel</string>
     <string name="bt_reset">Reset</string>
     
-    <string name="no_bt">Bluetooth not available.  The application will close.</string>
+    <string name="no_bt">Bluetooth is not available on your Android device.  You won\'t be able to connect to a Megasquirt ECU.</string>
     <string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Devices</string>
 	<string name="button_scan">Scan</string>       
