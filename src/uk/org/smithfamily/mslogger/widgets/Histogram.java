@@ -197,7 +197,7 @@ public class Histogram extends Indicator
     
     public void drawBackground(Canvas canvas)
     {
-        canvas.drawRect(0.05f, 0.05f, 0.95f, 0.88f, backgroundPaint);
+        canvas.drawRect(0.05f, 0.05f, 0.94f, 0.83f, backgroundPaint);
     }
     
     public void drawValue(Canvas canvas)
@@ -217,14 +217,14 @@ public class Histogram extends Indicator
             text = Float.toString(displayValue);
         }
 
-        canvas.drawText(text, 0.97f, 0.95f, valuePaint);
+        canvas.drawText(text, 0.93f, 0.90f, valuePaint);
         
         // We need at least two pair of coords to draw a line
         if (indexValue > 1)
         {            
-            final float x = 0.04f;
+            final float x = 0.035f;
             final float y = 0.06f;
-            final float height = 0.81f;
+            final float height = 0.76f;
             final float pixelsBetweenValue = 0.018f;
             
             for (int i = 1; i < indexValue; i++)
@@ -261,7 +261,7 @@ public class Histogram extends Indicator
             text += " (" + getUnits() + ")";
         }
         
-        canvas.drawText(text, 0.05f, 0.95f, backgroundPaint);
+        canvas.drawText(text, 0.05f, 0.90f, backgroundPaint);
     }
     
     /**

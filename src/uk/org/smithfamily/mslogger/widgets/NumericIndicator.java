@@ -135,7 +135,7 @@ public class NumericIndicator extends Indicator
     {
         backgroundPaint.setColor(getBgColour());
         
-        canvas.drawRect(0.05f, 0.30f, 0.9f, 0.75f, backgroundPaint);
+        canvas.drawRect(0.05f, 0.30f, 0.9f, 0.72f, backgroundPaint);
     }
     
     /**
