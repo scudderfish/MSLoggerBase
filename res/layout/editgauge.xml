@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_gravity="center"
-	android:layout_margin="1dp" android:layout_width="fill_parent"
+	android:layout_margin="8dp" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="100"
 	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
@@ -20,10 +20,10 @@
 	</TableLayout>
 
 	<View android:layout_height="2dip" android:layout_width="fill_parent"
-		android:background="#FF909090" />
+		android:background="#FF909090" android:layout_marginTop="5dp" android:layout_marginBottom="5dp" />
 
 	<ScrollView android:id="@+id/scrollView1"
-		android:layout_weight="80" android:layout_width="match_parent"
+		android:layout_weight="100" android:layout_width="match_parent"
 		android:layout_height="0px">
 
 		<TableLayout android:layout_height="wrap_content"
@@ -107,7 +107,8 @@
 	</ScrollView>
 	
 	<LinearLayout android:orientation="horizontal"
-		android:layout_height="wrap_content" android:layout_width="fill_parent">
+		android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="5dp">
+		
 		<Button android:text="@string/bt_ok" android:id="@+id/editOK"
 			android:layout_weight="1" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
