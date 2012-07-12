@@ -14,13 +14,13 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.widgets.BarMeter;
+import uk.org.smithfamily.mslogger.widgets.BarGraph;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -50,9 +50,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Main activity class where the main window (gauges) are and where the bottom menu is handled 
@@ -250,23 +252,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
             
-            if (!indicators[0].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[0].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge1", indicators[0].getName());
             }
-            if (!indicators[1].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[1].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge2", indicators[1].getName());
             }
-            if (!indicators[2].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[2].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge3", indicators[2].getName());
             }
-            if (!indicators[3].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[3].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge4", indicators[3].getName());
             }
-            if (!indicators[4].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge5", indicators[4].getName());
             }
@@ -317,14 +319,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                 GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
                 
-                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof MSGauge))
+                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof Gauge))
                 {
-                    indicators[i] = new MSGauge(this);
+                    indicators[i] = new Gauge(this);
                     wasWrongType = true;
                 }
-                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarMeter))
+                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarGraph))
                 {
-                    indicators[i] = new BarMeter(this);
+                    indicators[i] = new BarGraph(this);
                     wasWrongType = true;
                 }
                 else if (gd.getType().equals(getString(R.string.numeric_indicator)) && !(indicators[i] instanceof NumericIndicator))
@@ -352,6 +354,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     
                     indicators[i].setId(id);
                     indicators[i].initFromName(name);
+                    
+                    LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+                    indicators[i].setLayoutParams(params);
+                    
+                    indicators[i].setFocusable(true);
+                    indicators[i].setFocusableInTouchMode(true);
                 }
             }
         }
@@ -657,10 +665,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleEditing()
     {
+        // Gauge editing is enabled
         if (gaugeEditEnabled)
         {
             saveGauges();
         }
+        // Gauge editing is not enabled
+        else
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
+            }
+        }
+        
         gaugeEditEnabled = !gaugeEditEnabled;
         initGauges();
     }

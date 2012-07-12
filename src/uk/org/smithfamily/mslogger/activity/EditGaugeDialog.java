@@ -1,17 +1,18 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.BarMeter;
+import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -195,7 +196,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             // Gauge
             if (selectedIndicatorType.equals(getContext().getString(R.string.gauge)))
             {
-                indicator = new MSGauge(getContext());
+                indicator = new Gauge(getContext());
             }
             // Histogram
             else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram)))
@@ -205,7 +206,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             // Bar Graph
             else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph)))
             {
-                indicator = new BarMeter(getContext());
+                indicator = new BarGraph(getContext());
             }
             // Numeric Indicator
             else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
@@ -217,6 +218,12 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             {
                 indicator.setId(R.id.g3);
                 indicator.initFromName(gd.getName());
+                
+                LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+                indicator.setLayoutParams(params);
+                
+                indicator.setFocusable(true);
+                indicator.setFocusableInTouchMode(true);
                 
                 mainActivity.setIndicator3(indicator);
                 

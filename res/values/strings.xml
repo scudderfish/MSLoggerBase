@@ -31,6 +31,7 @@
 	<string name="disconnected_from_ms">Disconnected from MegaSquirt</string>
 	<string name="please_select">Please select your Bluetooth device in Preferences</string>
 	<string name="enable_gauge_edit">Enable Gauge Editing</string>
+	<string name="edit_gauges_instructions">You can double tap on the middle indicator to edit its details. You can also tap on any smaller indicators to swap them with the middle one.</string>
 	<string name="disable_gauge_edit">Disable Gauge Editing</string>
 	<string name="autoconnect">Enable autoconnect</string>
 	<string name="autoconnect_summary">Automatically manage the connection to the ECU</string>
@@ -64,7 +65,7 @@
     <string name="bt_cancel">Cancel</string>
     <string name="bt_reset">Reset</string>
     
-    <string name="no_bt">Bluetooth not available.  The application will close.</string>
+    <string name="no_bt">Bluetooth is not available on your Android device.  You won\'t be able to connect to a Megasquirt ECU.</string>
     <string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Devices</string>
 	<string name="button_scan">Scan</string>       
