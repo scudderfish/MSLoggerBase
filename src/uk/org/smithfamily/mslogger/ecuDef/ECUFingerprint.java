@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
+import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.BluetoothAdapter;
@@ -61,6 +62,12 @@ public class ECUFingerprint implements Runnable
                 Connection.INSTANCE.tearDown();
                 delay(1000);
             }
+            catch (CRC32Exception e)
+            {
+                DebugLogManager.INSTANCE.logException(e);
+                Connection.INSTANCE.tearDown();
+                delay(1000);
+            }
         }
  //       conn.tearDown();
         Message msg = handler.obtainMessage(MSLoggerApplication.GOT_SIG, fingerprint);
@@ -72,8 +79,9 @@ public class ECUFingerprint implements Runnable
      * 
      * @return
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    private String getFingerprint() throws IOException
+    private String getFingerprint() throws IOException, CRC32Exception
     {   
         return fingerprint();
     }
@@ -100,8 +108,9 @@ public class ECUFingerprint implements Runnable
      * Get a signature from the ECU.  This is complicated by different firmwares responding to different commands
      * @return
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    private String fingerprint() throws IOException
+    private String fingerprint() throws IOException, CRC32Exception
     {
         sendStatus("Probing the ECU");
         byte[] probeCommand1 = { 'Q' };
