@@ -14,13 +14,13 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.widgets.BarMeter;
+import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -250,23 +250,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
             
-            if (!indicators[0].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[0].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge1", indicators[0].getName());
             }
-            if (!indicators[1].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[1].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge2", indicators[1].getName());
             }
-            if (!indicators[2].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[2].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge3", indicators[2].getName());
             }
-            if (!indicators[3].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[3].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge4", indicators[3].getName());
             }
-            if (!indicators[4].getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge5", indicators[4].getName());
             }
@@ -317,14 +317,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                 GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
                 
-                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof MSGauge))
+                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof Gauge))
                 {
-                    indicators[i] = new MSGauge(this);
+                    indicators[i] = new Gauge(this);
                     wasWrongType = true;
                 }
-                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarMeter))
+                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarGraph))
                 {
-                    indicators[i] = new BarMeter(this);
+                    indicators[i] = new BarGraph(this);
                     wasWrongType = true;
                 }
                 else if (gd.getType().equals(getString(R.string.numeric_indicator)) && !(indicators[i] instanceof NumericIndicator))

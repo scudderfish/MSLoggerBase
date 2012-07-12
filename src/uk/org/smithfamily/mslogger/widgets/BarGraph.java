@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 /**
  *
  */
-public class BarMeter extends Indicator
+public class BarGraph extends Indicator
 {    
     private int             diameter;
     
@@ -25,7 +25,7 @@ public class BarMeter extends Indicator
      * 
      * @param context
      */
-    public BarMeter(Context context)
+    public BarGraph(Context context)
     {
         super(context);
         init(context);
@@ -36,7 +36,7 @@ public class BarMeter extends Indicator
      * @param c
      * @param s
      */
-    public BarMeter(Context c, AttributeSet s)
+    public BarGraph(Context c, AttributeSet s)
     {
         super(c, s);
         init(c);
@@ -48,7 +48,7 @@ public class BarMeter extends Indicator
      * @param attr
      * @param defaultStyles
      */
-    public BarMeter(Context context, AttributeSet attr, int defaultStyles)
+    public BarGraph(Context context, AttributeSet attr, int defaultStyles)
     {
         super(context, attr, defaultStyles);
         init(context);

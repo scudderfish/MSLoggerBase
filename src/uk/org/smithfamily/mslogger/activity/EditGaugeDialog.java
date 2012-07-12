@@ -1,12 +1,12 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.BarMeter;
+import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Dialog;
 import android.content.Context;
@@ -195,7 +195,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             // Gauge
             if (selectedIndicatorType.equals(getContext().getString(R.string.gauge)))
             {
-                indicator = new MSGauge(getContext());
+                indicator = new Gauge(getContext());
             }
             // Histogram
             else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram)))
@@ -205,7 +205,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             // Bar Graph
             else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph)))
             {
-                indicator = new BarMeter(getContext());
+                indicator = new BarGraph(getContext());
             }
             // Numeric Indicator
             else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
