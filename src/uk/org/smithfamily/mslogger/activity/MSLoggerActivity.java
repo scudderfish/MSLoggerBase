@@ -15,12 +15,12 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import uk.org.smithfamily.mslogger.widgets.BarGraph;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -53,6 +53,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Main activity class where the main window (gauges) are and where the bottom menu is handled 
@@ -657,10 +658,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleEditing()
     {
+        // Gauge editing is enabled
         if (gaugeEditEnabled)
         {
             saveGauges();
         }
+        // Gauge editing is not enabled
+        else
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
+            }
+        }
+        
         gaugeEditEnabled = !gaugeEditEnabled;
         initGauges();
     }
