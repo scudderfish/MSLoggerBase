@@ -1014,7 +1014,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 // Find touched gauge index     
                 for (int i = 0; i < indicators.length; i++)
                 {
-                    if (v.getId() == indicators[i].getId())
+                    if (indicators[i] != null && v.getId() == indicators[i].getId())
                     {
                         indexIndicator = i;
                     }
