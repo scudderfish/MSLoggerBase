@@ -16,7 +16,7 @@ import android.util.AttributeSet;
 /**
  *
  */
-public class MSGauge extends Indicator
+public class Gauge extends Indicator
 {
     private int                diameter;
     private double             pi          = Math.PI;
@@ -39,7 +39,7 @@ public class MSGauge extends Indicator
      * 
      * @param context
      */
-    public MSGauge(Context context)
+    public Gauge(Context context)
     {
         super(context);
         init(context);
@@ -50,7 +50,7 @@ public class MSGauge extends Indicator
      * @param c
      * @param s
      */
-    public MSGauge(Context c, AttributeSet s)
+    public Gauge(Context c, AttributeSet s)
     {
         super(c, s);
         init(c);
@@ -62,7 +62,7 @@ public class MSGauge extends Indicator
      * @param attr
      * @param defaultStyles
      */
-    public MSGauge(Context context, AttributeSet attr, int defaultStyles)
+    public Gauge(Context context, AttributeSet attr, int defaultStyles)
     {
         super(context, attr, defaultStyles);
         init(context);

@@ -12,12 +12,12 @@
 			android:orientation="vertical" android:layout_height="fill_parent"
 			android:layout_width="0px" android:layout_weight="25">
 
-			<uk.org.smithfamily.mslogger.widgets.MSGauge
+			<uk.org.smithfamily.mslogger.widgets.Gauge
 				android:id="@+id/g1" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
 
-			<uk.org.smithfamily.mslogger.widgets.MSGauge
+			<uk.org.smithfamily.mslogger.widgets.Gauge
 				android:id="@+id/g2" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
@@ -28,7 +28,7 @@
 			android:layout_height="fill_parent" android:layout_width="0px"
 			android:layout_weight="50" android:id="@+id/mainLinearLayoutLand">
 
-			<uk.org.smithfamily.mslogger.widgets.MSGauge
+			<uk.org.smithfamily.mslogger.widgets.Gauge
 				android:id="@+id/g3" android:layout_width="0dip"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
@@ -38,12 +38,12 @@
 			android:orientation="vertical" android:layout_height="fill_parent"
 			android:layout_width="0px" android:layout_weight="25">
 
-			<uk.org.smithfamily.mslogger.widgets.MSGauge
+			<uk.org.smithfamily.mslogger.widgets.Gauge
 				android:id="@+id/g4" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />
 
-			<uk.org.smithfamily.mslogger.widgets.MSGauge
+			<uk.org.smithfamily.mslogger.widgets.Gauge
 				android:id="@+id/g5" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:focusable="true"
 				android:focusableInTouchMode="true" android:layout_weight="1" />

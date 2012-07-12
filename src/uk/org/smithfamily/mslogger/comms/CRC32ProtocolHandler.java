@@ -56,15 +56,19 @@ public class CRC32ProtocolHandler
 	        return true;
 	    }
 	    
+	    System.out.println("MS3CRC Full wrapped bytes array from MS3: " + Arrays.toString(wrapped));
+	    
 	    // Extract crc32
 	    byte[] crc32 = new byte[CRC32_LENGTH];
 	    System.arraycopy(wrapped, wrapped.length - CRC32_LENGTH, crc32, 0, CRC32_LENGTH); // Copy crc32 from wrapped into crc32 bytes array	   
+	    
+	    System.out.println("MS3CRC CRC32: " + Arrays.toString(crc32));
 	    
 	    // Remove payload size and type, only keep the data
 	    byte[] data = new byte[wrapped.length - notDataLength];
 	    System.arraycopy(wrapped, 3, data, 0, wrapped.length - notDataLength);
 	    
-	    //System.out.println(Arrays.toString(data));
+	    System.out.println("MS3CRC Data: " + Arrays.toString(data));
 	    
 	    // Generate CRC32 on data
 	    CRC32 check = new CRC32();
@@ -72,17 +76,18 @@ public class CRC32ProtocolHandler
 	    
 	    long crc32value = check.getValue();	    
 	    
+	    System.out.println("MS3CRC CRC32 value calculated from data: " + crc32value);
+	    
 	    // Compare crc32 we generated from the data with what we got to see if it match
         if (((crc32value >> 24) & 0xff) != crc32[0] ||
             ((crc32value >> 16) & 0xff) != crc32[1] ||
             ((crc32value >> 8) & 0xff) != crc32[2] ||
             ((crc32value >> 0) & 0xff) != crc32[3])
         {
-            System.out.println("uh oh!");
+            System.out.println("MS3CRC uh oh, CRC doesn't match!");
             
-            return false;
-        }
-	    */
+            //return false;
+        }*/
 
 		return true;
 	}

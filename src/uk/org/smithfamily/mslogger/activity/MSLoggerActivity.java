@@ -14,11 +14,14 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.widgets.BarGraph;
+import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.MSGauge;
+import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -47,9 +50,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Main activity class where the main window (gauges) are and where the bottom menu is handled 
@@ -61,11 +66,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private TextView               messages;
     private TextView               rps;
     static private Boolean         ready                 = null;
-    private Indicator              gauge1;
-    private Indicator              gauge2;
-    private Indicator              gauge3;
-    private Indicator              gauge4;
-    private Indicator              gauge5;
+    
+    private Indicator[]            indicators = new Indicator[5];
 
     private GestureDetector        gestureDetector;
     private boolean                gaugeEditEnabled;
@@ -241,34 +243,34 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void saveGauges()
     {
-        if (!(gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null))
+        if (!(indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null))
         {
             findGauges();
         }
-        if (gauge1 != null && gauge2 != null && gauge3 != null && gauge4 != null && gauge5 != null)
+        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null)
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
             
-            if (!gauge1.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[0].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge1", gauge1.getName());
+                editor.putString("gauge1", indicators[0].getName());
             }
-            if (!gauge2.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[1].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge2", gauge2.getName());
+                editor.putString("gauge2", indicators[1].getName());
             }
-            if (!gauge3.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[2].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge3", gauge3.getName());
+                editor.putString("gauge3", indicators[2].getName());
             }
-            if (!gauge4.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[3].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge4", gauge4.getName());
+                editor.putString("gauge4", indicators[3].getName());
             }
-            if (!gauge5.getName().equals(MSGauge.DEAD_GAUGE_NAME))
+            if (!indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
-                editor.putString("gauge5", gauge5.getName());
+                editor.putString("gauge5", indicators[4].getName());
             }
             
             editor.commit();
@@ -296,28 +298,84 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         String[] defaultGauges = ecu.defaultGauges();
         
-        gauge1.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
-        gauge2.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
-        gauge3.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
-        gauge4.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
+        indicators[0].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
+        indicators[1].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
+        indicators[2].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
+        indicators[3].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
         
-        if (gauge5 != null)
+        if (indicators[4] != null)
         {
-            gauge5.initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
+            indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
+        }
+       
+        // Look at all indicators and make sure they are the right type
+        for (int i = 0; i < indicators.length; i++)
+        {
+            if (indicators[i] != null)
+            {
+                boolean wasWrongType = false;
+                String name = indicators[i].getName();
+                int id = indicators[i].getId();
+
+                GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
+                
+                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof Gauge))
+                {
+                    indicators[i] = new Gauge(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarGraph))
+                {
+                    indicators[i] = new BarGraph(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.numeric_indicator)) && !(indicators[i] instanceof NumericIndicator))
+                {
+                    indicators[i] = new NumericIndicator(this);
+                    wasWrongType = true;
+                }
+                else if (gd.getType().equals(getString(R.string.histogram)) && !(indicators[i] instanceof Histogram))
+                {
+                    indicators[i] = new Histogram(this);
+                    wasWrongType = true;
+                }
+                
+                if (wasWrongType)
+                {
+                    View indicator = findViewById(id);
+                    
+                    // Remove indicator with wrong type
+                    ViewGroup parentView = (ViewGroup) indicator.getParent();
+                    int index = parentView.indexOfChild(indicator);
+                    parentView.removeView(indicator);
+
+                    // Add new indicator back in place
+                    parentView.addView(indicators[i], index);    
+                    
+                    indicators[i].setId(id);
+                    indicators[i].initFromName(name);
+                    
+                    LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+                    indicators[i].setLayoutParams(params);
+                    
+                    indicators[i].setFocusable(true);
+                    indicators[i].setFocusableInTouchMode(true);
+                }
+            }
         }
         
         if (gaugeEditEnabled)
         {
-            gauge1.setOnTouchListener(new GaugeTouchListener(gauge1));
-            gauge2.setOnTouchListener(new GaugeTouchListener(gauge2));
-            gauge4.setOnTouchListener(new GaugeTouchListener(gauge4));
+            indicators[0].setOnTouchListener(new GaugeTouchListener(indicators[0]));
+            indicators[1].setOnTouchListener(new GaugeTouchListener(indicators[1]));
+            indicators[3].setOnTouchListener(new GaugeTouchListener(indicators[3]));
             
-            if (gauge5 != null)
+            if (indicators[4] != null)
             {
-                gauge5.setOnTouchListener(new GaugeTouchListener(gauge5));
+                indicators[4].setOnTouchListener(new GaugeTouchListener(indicators[4]));
             }
             
-            initGauge3Events();
+            initIndicator3Events();
         }
         else
         {
@@ -325,22 +383,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             setTouchListeners(l);
         }
         
-        gauge1.invalidate();
-        gauge2.invalidate();
-        gauge3.invalidate();
-        gauge4.invalidate();
+        indicators[0].invalidate();
+        indicators[1].invalidate();
+        indicators[2].invalidate();
+        indicators[3].invalidate();
         
-        if (gauge5 != null)
-            gauge5.invalidate();
+        if (indicators[4] != null)
+            indicators[4].invalidate();
 
     }
 
     /**
      * 
      */
-    public void initGauge3Events()
+    public void initIndicator3Events()
     {
-        gestureDetector = new GestureDetector(new GaugeRotationDetector(this, gauge3));
+        gestureDetector = new GestureDetector(new GaugeRotationDetector(MSLoggerActivity.this, indicators[2]));
+        
         OnTouchListener gestureListener = new View.OnTouchListener()
         {
             public boolean onTouch(View v, MotionEvent event)
@@ -355,7 +414,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     if (scrolling)
                     {
                         scrolling = false;
-                        GaugeDetails gd = gauge3.getDetails();
+                        GaugeDetails gd = indicators[2].getDetails();
                         GaugeRegister.INSTANCE.persistDetails(gd);
                     }
                 }
@@ -364,8 +423,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         };
         
-        gauge3.setOnClickListener(MSLoggerActivity.this);
-        gauge3.setOnTouchListener(gestureListener);
+        indicators[2].setOnClickListener(MSLoggerActivity.this);
+        indicators[2].setOnTouchListener(gestureListener);
     }
     
     /**
@@ -373,11 +432,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void findGauges()
     {
-        gauge1 = (Indicator) findViewById(R.id.g1);
-        gauge2 = (Indicator) findViewById(R.id.g2);
-        gauge3 = (Indicator) findViewById(R.id.g3);
-        gauge4 = (Indicator) findViewById(R.id.g4);
-        gauge5 = (Indicator) findViewById(R.id.g5);
+        indicators[0] = (Indicator) findViewById(R.id.g1);
+        indicators[1] = (Indicator) findViewById(R.id.g2);
+        indicators[2] = (Indicator) findViewById(R.id.g3);
+        indicators[3] = (Indicator) findViewById(R.id.g4);
+        indicators[4] = (Indicator) findViewById(R.id.g5);
     }
 
     /**
@@ -387,13 +446,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void setTouchListeners(MarkListener l)
     {
-        gauge1.setOnTouchListener(l);
-        gauge2.setOnTouchListener(l);
-        gauge3.setOnTouchListener(l);
-        gauge4.setOnTouchListener(l);
+        indicators[0].setOnTouchListener(l);
+        indicators[1].setOnTouchListener(l);
+        indicators[2].setOnTouchListener(l);
+        indicators[3].setOnTouchListener(l);
         
-        if (gauge5 != null)
-            gauge5.setOnTouchListener(l);
+        if (indicators[4] != null)
+            indicators[4].setOnTouchListener(l);
     }
 
     /**
@@ -586,10 +645,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void setIndicator3(Indicator indicator)
     {
-        gauge3 = indicator;
+        indicators[2] = indicator;
         if (gaugeEditEnabled)
         {
-            gauge3.setOnTouchListener(new GaugeTouchListener(gauge3));
+            indicators[2].setOnTouchListener(new GaugeTouchListener(indicators[2]));
         }
     }
     
@@ -606,10 +665,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleEditing()
     {
+        // Gauge editing is enabled
         if (gaugeEditEnabled)
         {
             saveGauges();
         }
+        // Gauge editing is not enabled
+        else
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
+            }
+        }
+        
         gaugeEditEnabled = !gaugeEditEnabled;
         initGauges();
     }
@@ -934,46 +1003,73 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
-                String gauge3Type = gauge3.getType();
+                String middleIndicatorType = indicators[2].getType();
                 
-                // Gauge 3 is the middle gauge
-                String g3name = gauge3.getName();
+                // indicator[2] is the middle gauge
+                String g3name = indicators[2].getName();
                 String gname = gauge.getName();
+
+                int indexIndicator = 0;
                 
-                
-                if (gauge.getType().equals(gauge3Type))
+                // Find touched gauge index     
+                for (int i = 0; i < indicators.length; i++)
                 {
-                    gauge3.initFromName(gauge.getName());
-                    gauge.initFromName(g3name);
+                    if (v.getId() == indicators[i].getId())
+                    {
+                        indexIndicator = i;
+                    }
+                };
+                
+                // Indicator are the same type
+                if (gauge.getType().equals(middleIndicatorType))
+                {
+                    indicators[2].initFromName(gauge.getName());
+
+                    indicators[indexIndicator] = gauge;
+                    indicators[indexIndicator].initFromName(g3name);
                 }
-                // Gauge were not the same type, we need to rebuild them with the right class
+                // Indicator were not the same type, we need to rebuild them with the right class
                 else
                 {                
-                    // Swap touched gauge with gauge 3
-                    View gauge3View = findViewById(R.id.g3);
+                    // Swap touched indicator with indicator 3 (middle one)
+                    View indicator3View = findViewById(R.id.g3);
                     
-                    ViewGroup parentGauge3View = (ViewGroup) gauge3View.getParent();
-                    int index = parentGauge3View.indexOfChild(gauge3View);
-                    parentGauge3View.removeView(gauge3View);
+                    // Remove old indicator 3
+                    ViewGroup parentIndicator3View = (ViewGroup) indicator3View.getParent();
+                    int index = parentIndicator3View.indexOfChild(indicator3View);
+                    parentIndicator3View.removeView(indicator3View);
 
-                    ViewGroup parentGaugeView = (ViewGroup) v.getParent();
-                    index = parentGaugeView.indexOfChild(v);
-                    parentGaugeView.removeView(v);
+                    // Remove old touched indicator
+                    ViewGroup parentTouchedIndicatorView = (ViewGroup) v.getParent();
+                    index = parentTouchedIndicatorView.indexOfChild(v);
+                    parentTouchedIndicatorView.removeView(v);
                     
-                    parentGauge3View.addView(v);           
-                    parentGaugeView.addView(gauge3View, index);        
+                    // Add touched indicator in place of indicator 3
+                    parentIndicator3View.addView(v);           
                     
-                    Indicator tmpGauge = gauge;
-                    gauge = gauge3;
-                    gauge3 = tmpGauge;
+                    // Add indicator 3 in place of touched indicator
+                    parentTouchedIndicatorView.addView(indicator3View, index);        
                     
-                    gauge3.initFromName(gname);
-                    gauge.initFromName(g3name);
-                }               
+                    // Swap objects
+                    Indicator tmpIndicator = indicators[indexIndicator];
+                    indicators[indexIndicator] = indicators[2];
+                    indicators[2] = tmpIndicator;
+                    
+                    // Init the indicator with their new gauge details
+                    indicators[2].initFromName(gname);
+                    indicators[indexIndicator].initFromName(g3name);
+                }                
                 
-                gauge.invalidate();
-                gauge3.invalidate();
+                // Put their ID back in place
+                indicators[indexIndicator].setId(v.getId());
+                indicators[2].setId(R.id.g3);
                 
+                // Rebind touch event to new indicator 3
+                initIndicator3Events();
+                
+                // Rebind regular indicator event
+                indicators[indexIndicator].setOnTouchListener(new GaugeTouchListener(indicators[indexIndicator]));
+
                 return true;
             }
             
