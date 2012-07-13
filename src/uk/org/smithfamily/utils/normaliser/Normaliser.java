@@ -76,6 +76,7 @@ public class Normaliser
             }
         }
         outputRegistry(f.getParentFile());
+        br.close();
     }
 
     private static void outputRegistry(File baseLocation) throws IOException
@@ -95,7 +96,7 @@ public class Normaliser
                 for(String name : classList.keySet())
                 {
                     String sig = classList.get(name);
-                    w.println(String.format("        registerEcu(%s.class,\"%s\");",name,sig));
+                    w.println(String.format("        registerEcu(%s.class,%s);",name,sig));
                 }
             }
             else
@@ -240,9 +241,14 @@ public class Normaliser
             case ConstantsExtensions:
                 processConstantsExtensions(line);
                 break;
+            case None:
+                break;
+            default:
+                break;
             }
 
         }
+        br.close();
         if (!subRead)
         {
             writeFile(className);
@@ -478,13 +484,13 @@ public class Normaliser
             {
                 tmpsig += "\\0";
             }
-            classSignature = tmpsig;
+            classSignature = "\""+tmpsig+"\"";
             signatureDeclaration = "String signature = \"" + tmpsig + "\";";
         }
         else if (sigByteM.matches())
         {
             String b = sigByteM.group(1).trim();
-            classSignature = "" + (byte) (Integer.parseInt(b));
+            classSignature = "new String(new byte[]{"+b+"})";
             signatureDeclaration = "String signature = \"\"+(byte)" + b + ";";
         }
 
@@ -493,6 +499,10 @@ public class Normaliser
     private static void processGaugeEntry(String line)
     {
         line = removeComments(line);
+        if(line.contains("RpmHiResGauge"))
+        {
+            int x =1;
+        }
 
         Matcher m = Patterns.gauge.matcher(line);
         if (m.matches())
