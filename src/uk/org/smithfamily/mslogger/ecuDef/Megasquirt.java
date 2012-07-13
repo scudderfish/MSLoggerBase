@@ -84,6 +84,7 @@ public abstract class Megasquirt
     private String             trueSignature = "Unknown";
     private volatile ECUThread ecuThread;
     private volatile boolean   running;
+    private static volatile ECUThread watch;
 
     // protected byte[] ochBuffer;
 
@@ -416,6 +417,11 @@ public abstract class Megasquirt
          */
         public ECUThread()
         {
+            if(watch != null)
+            {
+                DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
+            }
+            watch = this;
             String sig = Megasquirt.this.getSignature();
             setName("ECUThread:" + sig + ":" + System.currentTimeMillis());
             calculationThread.start();
@@ -582,6 +588,7 @@ public abstract class Megasquirt
             finally
             {
                 calculationThread.interrupt();
+                watch = null;
             }
         }
 
