@@ -243,11 +243,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void saveGauges()
     {
-        if (!(indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null))
+        if (!(indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null))
         {
             findGauges();
         }
-        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null && indicators[4] != null)
+        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null)
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
@@ -268,7 +268,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             {
                 editor.putString("gauge4", indicators[3].getName());
             }
-            if (!indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (indicators[4] != null && !indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge5", indicators[4].getName());
             }
