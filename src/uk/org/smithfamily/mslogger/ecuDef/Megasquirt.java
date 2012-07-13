@@ -11,6 +11,7 @@ import java.util.Timer;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -391,7 +392,7 @@ public abstract class Megasquirt
             public void put(byte[] buf)
             {
                 buffer = buf;
-                synchronized(this)
+                synchronized (this)
                 {
                     notify();
                 }
@@ -430,22 +431,22 @@ public abstract class Megasquirt
                     while (true)
                     {
                         byte[] buffer = handshake.get();
-//                        DebugLogManager.INSTANCE.log("Got a buffer", Log.INFO);
-//                        long start = System.currentTimeMillis();
+                        // DebugLogManager.INSTANCE.log("Got a buffer", Log.INFO);
+                        // long start = System.currentTimeMillis();
                         calculate(buffer);
-//                        long calc = System.currentTimeMillis();
+                        // long calc = System.currentTimeMillis();
                         logValues(buffer);
-//                        long log = System.currentTimeMillis();
-//                        long gen = System.currentTimeMillis();
+                        // long log = System.currentTimeMillis();
+                        // long gen = System.currentTimeMillis();
                         broadcast();
-//                        long b = System.currentTimeMillis();
-//                        DebugLogManager.INSTANCE.log("Calculations done and broadcast : " + (calc - start) + "," + (log - calc) + "," + (gen - log) + ","
-//                                + (b - gen) + "," + (b - start), Log.INFO);
+                        // long b = System.currentTimeMillis();
+                        // DebugLogManager.INSTANCE.log("Calculations done and broadcast : " + (calc - start) + "," + (log - calc) + "," + (gen - log) + ","
+                        // + (b - gen) + "," + (b - start), Log.INFO);
                     }
                 }
                 catch (InterruptedException e)
                 {
-                    //Swallow, we're on our way out.
+                    // Swallow, we're on our way out.
                 }
             }
         }
@@ -526,15 +527,22 @@ public abstract class Megasquirt
                     // This is the actual work. Outside influences will toggle 'running' when we want this to stop
                     while (running)
                     {
-//                        DebugLogManager.INSTANCE.log("** START **", Log.INFO);
-//                        long start = System.currentTimeMillis();
-                        final byte[] buffer = getRuntimeVars();
-//                        long comms = System.currentTimeMillis();
-//                        DebugLogManager.INSTANCE.log("Comms took :" + (comms - start), Log.INFO);
-                        handshake.put(buffer);
-//                        long rt = System.currentTimeMillis();
-//                        DebugLogManager.INSTANCE.log("Sent RTVars for calculation : " + (comms - start) + "," + (rt - comms) + "," + (rt - start), Log.INFO);
-
+                        try
+                        {
+                            // DebugLogManager.INSTANCE.log("** START **", Log.INFO);
+                            // long start = System.currentTimeMillis();
+                            final byte[] buffer = getRuntimeVars();
+                            // long comms = System.currentTimeMillis();
+                            // DebugLogManager.INSTANCE.log("Comms took :" + (comms - start), Log.INFO);
+                            handshake.put(buffer);
+                            // long rt = System.currentTimeMillis();
+                            // DebugLogManager.INSTANCE.log("Sent RTVars for calculation : " + (comms - start) + "," + (rt - comms) + "," + (rt - start), Log.INFO);
+                        }
+                        catch (CRC32Exception e)
+                        {
+                            DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
+                            DebugLogManager.INSTANCE.logException(e);
+                        }
                         readCounter++;
 
                         long delay = System.currentTimeMillis() - lastRpsTime;
@@ -628,8 +636,9 @@ public abstract class Megasquirt
          * Get the current variables from the ECU
          * 
          * @throws IOException
+         * @throws CRC32Exception
          */
-        private byte[] getRuntimeVars() throws IOException
+        private byte[] getRuntimeVars() throws IOException, CRC32Exception
         {
             byte[] buffer = new byte[Megasquirt.this.getBlockSize()];
             if (simulated)
@@ -650,7 +659,8 @@ public abstract class Megasquirt
          * @param pageReadCommand
          * @throws IOException
          */
-        protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException
+        protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException,
+                CRC32Exception
         {
             Connection.INSTANCE.flushAll();
             int delay = getPageActivationDelay();
@@ -686,15 +696,24 @@ public abstract class Megasquirt
              */
             do
             {
-                byte[] buf = Connection.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
 
+                byte[] buf;
                 try
                 {
-                    signatureFromMS = ECUFingerprint.processResponse(buf);
+                    buf = Connection.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
+
+                    try
+                    {
+                        signatureFromMS = ECUFingerprint.processResponse(buf);
+                    }
+                    catch (BootException e)
+                    {
+                        return "ECU needs a reboot!";
+                    }
                 }
-                catch (BootException e)
+                catch (CRC32Exception e1)
                 {
-                    return "ECU needs a reboot!";
+                    DebugLogManager.INSTANCE.logException(e1);
                 }
 
                 DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
@@ -757,6 +776,12 @@ public abstract class Megasquirt
             DebugLogManager.INSTANCE.logException(e);
             sendMessage("Error loading constants from page " + pageNo);
         }
+        catch (CRC32Exception e)
+        {
+            e.printStackTrace();
+            DebugLogManager.INSTANCE.logException(e);
+            sendMessage("Error loading constants from page " + pageNo);
+        }
         return buffer;
     }
 
@@ -767,7 +792,7 @@ public abstract class Megasquirt
      * @param read
      * @throws IOException
      */
-    private void getPage(byte[] buffer, byte[] select, byte[] read) throws IOException
+    private void getPage(byte[] buffer, byte[] select, byte[] read) throws IOException, CRC32Exception
     {
         ecuThread.getPage(buffer, select, read);
     }

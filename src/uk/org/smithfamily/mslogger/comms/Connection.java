@@ -344,8 +344,9 @@ public enum Connection
      * @param d         Delay to wait after sending command
      * @return
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException
+    public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
@@ -361,8 +362,9 @@ public enum Connection
      * @param result    Result of the command sent by the Megasquirt
      * @param d         Delay to wait after sending command
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    public void writeAndRead(byte[] cmd, byte[] result, int d,boolean isCRC32) throws IOException
+    public void writeAndRead(byte[] cmd, byte[] result, int d,boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d,isCRC32);
@@ -375,8 +377,9 @@ public enum Connection
      * 
      * @param bytes
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    public void readBytes(byte[] bytes,boolean isCRC32) throws IOException
+    public void readBytes(byte[] bytes,boolean isCRC32) throws IOException, CRC32Exception
     {
         TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
@@ -410,7 +413,7 @@ public enum Connection
             {
             	if (!CRC32ProtocolHandler.check(buffer))
             	{
-            		throw new IOException("CRC32 check failed");
+            		throw new CRC32Exception("CRC32 check failed");
             	}
             	
             	byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
@@ -436,8 +439,9 @@ public enum Connection
      * 
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
+     * @throws CRC32Exception 
      */
-    public byte[] readBytes(boolean isCRC32) throws IOException
+    public byte[] readBytes(boolean isCRC32) throws IOException, CRC32Exception
     {
         List<Byte> read = new ArrayList<Byte>();
 
@@ -463,7 +467,7 @@ public enum Connection
         {
         	if (!CRC32ProtocolHandler.check(result))
         	{
-        		throw new IOException("CRC32 check failed");
+        		throw new CRC32Exception("CRC32 check failed");
         	}
         	result = CRC32ProtocolHandler.unwrap(result);
         }
