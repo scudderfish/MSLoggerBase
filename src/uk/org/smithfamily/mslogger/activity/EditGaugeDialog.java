@@ -12,7 +12,6 @@ import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -62,7 +61,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-//        Debug.startMethodTracing("EditDialogOnCreate");
         super.onCreate(savedInstanceState);
         
         long start=System.currentTimeMillis();
@@ -138,7 +136,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         buttonOK.setOnClickListener(this);
         buttonReset.setOnClickListener(this);
         buttonCancel.setOnClickListener(this);
-//        Debug.stopMethodTracing();
     }
     
     /**
