@@ -169,7 +169,6 @@ public class ViewDatalogActivity extends Activity
                                 }
                                 else
                                 {
-                                    double[] dataFieldsToKeep = new double[fieldsToKeep.length];
                                     for (int i = 0; i < indexOfFieldsToKeep.length; i++)
                                     {
                                         double currentValue = 0;
@@ -177,9 +176,8 @@ public class ViewDatalogActivity extends Activity
                                         {                                    
                                             currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
                                         }
-                                        
-                                        dataFieldsToKeep[i] = currentValue;
-                                        data.get(i).add(dataFieldsToKeep[i]);
+
+                                        data.get(i).add(currentValue);
                                     }
                                 }
                             }
