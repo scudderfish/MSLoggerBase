@@ -626,6 +626,21 @@ public abstract class Megasquirt
                 {
                     trueSignature = msSig;
                 }
+                else
+                {
+                    for (int i = msSig.length() - 1; i > msSig.length() / 2 && i > 3
+                            && !verified; i--)
+                    {
+                        String fuzzySig = msSig.substring(0, i);
+                        if (signature.startsWith(fuzzySig))
+                        {
+                            verified = true;
+                            trueSignature = msSig;
+
+                        }
+                    }
+
+                }
             }
             if (verified)
             {
