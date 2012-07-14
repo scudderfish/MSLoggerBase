@@ -30,7 +30,8 @@ import android.widget.TextView;
 /**
  * Activity class used to manage datalogs
  */
-public class ManageDatalogsActivity  extends ListActivity {
+public class ManageDatalogsActivity  extends ListActivity
+{
     
     private ListView datalogsList;  
     private TextView datalogsInfo;
@@ -56,7 +57,8 @@ public class ManageDatalogsActivity  extends ListActivity {
         
         view = (Button) findViewById(R.id.view);
         view.setVisibility(View.GONE);
-        view.setOnClickListener(new OnClickListener() {
+        view.setOnClickListener(new OnClickListener()
+        {
             @Override
             public void onClick(View v)
             {
@@ -316,8 +318,10 @@ public class ManageDatalogsActivity  extends ListActivity {
         
         File datalogDirectory = ApplicationSettings.INSTANCE.getDataDir();
 
-        class DatalogFilter implements FilenameFilter {
-            public boolean accept(File dir, String name) {
+        class DatalogFilter implements FilenameFilter
+        {
+            public boolean accept(File dir, String name)
+            {
                 return name.endsWith(".msl");
             }
         }
