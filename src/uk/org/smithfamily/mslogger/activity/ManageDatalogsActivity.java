@@ -245,44 +245,43 @@ public class ManageDatalogsActivity  extends ListActivity
                 holder.txtDatalogSize = (TextView) convertView.findViewById(R.id.datalog_size);
             
                 CheckBox check = (CheckBox) convertView.findViewById(R.id.selected);
-                check.setOnClickListener(new OnClickListener() {
+                check.setOnClickListener(new OnClickListener()
+                {
                     @Override
                     public void onClick(View v)
                     {
                         boolean isChecked = ((CheckBox) v).isChecked();
                         
                         datalogRows.get(position).setSelected(isChecked);
-                        
-                        int nbChecked = 0;
-                        
-                        for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
-                        {
-                            if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                            {
-                                nbChecked++;
-                            }
-                        }
-                        
+                         
                         // If more then one datalog is checked, make send by email button visible
-                        if (nbChecked > 0) 
+                        if (getCountDatalogsChecked() > 0) 
                         {
-                            sendByEmail.setVisibility(View.VISIBLE);
-                            delete.setVisibility(View.VISIBLE);
-                            
-                            if (nbChecked == 1)
-                            {
-                                view.setVisibility(View.VISIBLE);
-                            }
-                            else
-                            {
-                                view.setVisibility(View.GONE);
-                            }
+                            showBottomButtons();
                         }
                         else 
                         {
-                            sendByEmail.setVisibility(View.GONE);
-                            delete.setVisibility(View.GONE);
-                            view.setVisibility(View.GONE);
+                            hideBottomButtons();
+                        }
+                    }
+                });
+                
+                convertView.setOnClickListener(new OnClickListener()
+                {                    
+                    @Override
+                    public void onClick(View v)
+                    {
+                        CheckBox selected = (CheckBox) v.findViewById(R.id.selected);
+                        
+                        selected.setChecked(!selected.isChecked());                        
+                        datalogRows.get(position).setSelected(selected.isChecked());
+                        
+                        if (getCountDatalogsChecked() > 0)
+                        {
+                            showBottomButtons();
+                        }
+                        else {
+                            hideBottomButtons();
                         }
                     }
                 });
@@ -380,9 +379,53 @@ public class ManageDatalogsActivity  extends ListActivity
             datalogsList.setVisibility(View.GONE);
             
             // Make the three bottom buttons dissapear too
-            view.setVisibility(View.GONE);
-            sendByEmail.setVisibility(View.GONE);
-            delete.setVisibility(View.GONE);
+            hideBottomButtons();
         }
+    }
+   
+    /**
+     * @return The number of checked datalogs
+     */
+    public int getCountDatalogsChecked()
+    {
+        int nbChecked = 0;
+        
+        for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+        {
+            if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
+            {
+                nbChecked++;
+            }
+        }
+        
+        return nbChecked;
+    }
+    
+    /**
+     * Show the bottom buttons
+     */ 
+    public void showBottomButtons()
+    {
+        sendByEmail.setVisibility(View.VISIBLE);
+        delete.setVisibility(View.VISIBLE);
+        
+        if (getCountDatalogsChecked() == 1)
+        {
+            view.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            view.setVisibility(View.GONE);
+        }
+    }
+   
+    /**
+     * Hide the bottoms buttons
+     */ 
+    public void hideBottomButtons()
+    {
+        view.setVisibility(View.GONE);
+        sendByEmail.setVisibility(View.GONE);
+        delete.setVisibility(View.GONE);
     }
 }
