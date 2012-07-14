@@ -1497,6 +1497,7 @@ public class Msns_extra29y extends Megasquirt
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","test2Gauge","test2",test2,"TEST2","",0,255,255,255,0,0,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","AD6Gauge","fuelADC",fuelADC,"AD6 raw","",0,255,255,255,0,0,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","AD7Gauge","egtADC",egtADC,"AD7 raw","",0,255,255,255,0,0,0,0,45));
+        GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","RpmHiResGauge","RpmHiRes",RpmHiRes,"Engine RPM","RPM",0,8000,0,300,7800,8000,0,0,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","lambdaGauge2","lambda2",lambda2,"Lambda2","",0.5,1.5,0.5,0.7,2,1.1,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","afrGauge2","afr2",afr2,"Air:Fuel Ratio2","",10,19.4,12,13,15,16,2,2,45));
         GaugeRegister.INSTANCE.addGauge(new GaugeDetails("Gauge","","vacuumGauge","vacuum",vacuum,"Engine Vacuum","in-HG",0,30,0,0,30,30,1,1,45));

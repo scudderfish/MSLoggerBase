@@ -49,7 +49,7 @@ public enum ECURegistry
         registerEcu(MSExtra_format_hr_10.class,"MS/Extra format hr_10 **********");
         registerEcu(MSExtra_format_hr_11.class,"MS/Extra format hr_11b *********");
         registerEcu(MSExtra_format_hr_11d.class,"MS/Extra format hr_11d  ********");
-        registerEcu(Megasquirt_I.class,"20");
+        registerEcu(Megasquirt_I.class,new String(new byte[]{20}));
         registerEcu(Megasquirt_II.class,"MSII Rev 2.30000   \0");
         registerEcu(Megasquirt_II286.class,"MSII Rev 2.88600   \0");
         registerEcu(Megasquirt_II288.class,"MSII Rev 2.88000   \0");
@@ -57,8 +57,8 @@ public enum ECURegistry
         registerEcu(Megasquirt_II2886.class,"MSII Rev 2.88600   \0");
         registerEcu(Megasquirt_II_3760.class,"MSII Rev 3.76000   \0");
         registerEcu(Megasquirt_II_v2905.class,"MSII Rev 2.90500   \0");
-        registerEcu(Megasquirt_I_B_G_20.class,"20");
-        registerEcu(Megasquirt_I_B_G_20_30.class,"20");
+        registerEcu(Megasquirt_I_B_G_20.class,new String(new byte[]{20}));
+        registerEcu(Megasquirt_I_B_G_20_30.class,new String(new byte[]{20}));
         registerEcu(Ms2extra21p.class,"MS2Extra Rel 2.1.0p\0");
         registerEcu(Ms2extra21q.class,"MS2Extra Rel 2.1.0q\0");
         registerEcu(Ms2extra_210d.class,"MS2Extra Rel 2.1.0q\0");
@@ -71,32 +71,54 @@ public enum ECURegistry
         registerEcu(Msns_extra29y.class,"MS1/Extra format 029y3 *********");
     }
 
-    private void registerEcu(Class<? extends Megasquirt> cls, String sig)
-    {
-        ecus.put(sig, cls);
-    }
-    
-    public synchronized Megasquirt getECU(String sig,Context ctx)
-    {
-        Megasquirt ecu = instances.get(sig);
-        if(ecu != null)
-        {
-            return ecu;
-        }
-        Class<? extends Megasquirt> c = ecus.get(sig);
-        
-        try
-        {
-            Constructor<? extends Megasquirt> constructor = c.getConstructor(Context.class);
-            ecu = constructor.newInstance(ctx);
-            instances.put(sig, ecu);
-        }
-        catch (Exception e)
-        {
-            // EEP!
-            e.printStackTrace();
-        }
-        
-        return ecu;
-    }
+	private void registerEcu(Class<? extends Megasquirt> cls, String sig)
+	{
+		ecus.put(sig, cls);
+	}
+
+	public synchronized Megasquirt getECU(String sig, Context ctx)
+	{
+		Megasquirt ecu = instances.get(sig);
+		if (ecu != null)
+		{
+			return ecu;
+		}
+		Class<? extends Megasquirt> c = findEcu(sig);
+
+		try
+		{
+			Constructor<? extends Megasquirt> constructor = c
+					.getConstructor(Context.class);
+			ecu = constructor.newInstance(ctx);
+			instances.put(sig, ecu);
+		} catch (Exception e)
+		{
+			// EEP!
+			e.printStackTrace();
+		}
+
+		return ecu;
+	}
+
+	private Class<? extends Megasquirt> findEcu(String sig)
+	{
+		Class<? extends Megasquirt> ecu = ecus.get(sig);
+		if (ecu != null)
+		{
+			return ecu;
+		}
+		for (int i = sig.length() - 1; i > sig.length() / 2 && i > 3
+				&& ecu == null; i--)
+		{
+			String fuzzySig = sig.substring(0, i);
+			for (String classSig : ecus.keySet())
+			{
+				if (classSig.startsWith(fuzzySig))
+				{
+					ecu = ecus.get(classSig);
+				}
+			}
+		}
+		return ecu;
+	}
 }
