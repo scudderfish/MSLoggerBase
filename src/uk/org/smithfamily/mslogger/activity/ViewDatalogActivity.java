@@ -249,7 +249,7 @@ public class ViewDatalogActivity extends Activity
         List<Double> maxColumns = new ArrayList<Double>();
         
         // Find min and max value for each columns
-        for (int i = 0; i < data.size(); i++) 
+        for (int i = 1; i < data.size(); i++) 
         {
             List<Double> row = data.get(i);
             
@@ -287,7 +287,7 @@ public class ViewDatalogActivity extends Activity
                 rowDouble[j] = row.get(j);
                 
                 // Find percent between min and max
-                rowDouble[j] = (rowDouble[j] - minColumns.get(i)) / (maxColumns.get(i) - minColumns.get(i)) * 100;
+                rowDouble[j] = (rowDouble[j] - minColumns.get(i - 1)) / (maxColumns.get(i - 1) - minColumns.get(i - 1)) * 100;
             }           
             
             values.add(rowDouble);
