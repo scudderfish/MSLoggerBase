@@ -484,13 +484,13 @@ public class Normaliser
             {
                 tmpsig += "\\0";
             }
-            classSignature = "\""+tmpsig+"\"";
+            classSignature = "\"" + tmpsig + "\"";
             signatureDeclaration = "String signature = \"" + tmpsig + "\";";
         }
         else if (sigByteM.matches())
         {
             String b = sigByteM.group(1).trim();
-            classSignature = "new String(new byte[]{"+b+"})";
+            classSignature = "new String(new byte[]{" + b + "})";
             signatureDeclaration = "String signature = \"\"+(byte)" + b + ";";
         }
 
@@ -499,10 +499,6 @@ public class Normaliser
     private static void processGaugeEntry(String line)
     {
         line = removeComments(line);
-        if(line.contains("RpmHiResGauge"))
-        {
-            int x =1;
-        }
 
         Matcher m = Patterns.gauge.matcher(line);
         if (m.matches())
