@@ -65,13 +65,12 @@ public class ManageDatalogsActivity  extends ListActivity
                 // Find selected datalog
                 String datalog = "";
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                if (selectedRows.size() > 0)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        datalog = datalogDirectory + "/" + ((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName();
-                        break;
-                    }
+                    DatalogRow firstSelectedRow = selectedRows.get(0);
+                    datalog = datalogDirectory + "/" + firstSelectedRow.getDatalogName();
                 }
                 
                 Intent launchViewDatalog = new Intent(ManageDatalogsActivity.this, ViewDatalogActivity.class);
@@ -94,12 +93,11 @@ public class ManageDatalogsActivity  extends ListActivity
                 
                 // Create array of datalogs path to send
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                for (DatalogRow datalogRow : selectedRows)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        paths.add(datalogDirectory + "/" + ((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName());
-                    }
+                    paths.add(datalogDirectory + "/" + datalogRow.getDatalogName());
                 }
                 
                 String emailText = getString(R.string.email_body);
@@ -118,12 +116,11 @@ public class ManageDatalogsActivity  extends ListActivity
                 List<String> datalogsToDelete = new ArrayList<String>();
                 
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                for (DatalogRow datalogRow : selectedRows)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        datalogsToDelete.add(((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName());
-                    }
+                    datalogsToDelete.add(datalogDirectory + "/" + datalogRow.getDatalogName());
                 }
                 
                 for (String datalogFilename : datalogsToDelete)
@@ -194,7 +191,7 @@ public class ManageDatalogsActivity  extends ListActivity
      */
     public class DatalogRowAdapter extends BaseAdapter
     {
-       private ArrayList<DatalogRow> datalogRows;
+       private List<DatalogRow> datalogRows;
        
        private LayoutInflater mInflater;
 
@@ -230,6 +227,21 @@ public class ManageDatalogsActivity  extends ListActivity
         public boolean isItemSelected(int position)
         {
             return datalogRows.get(position).isSelected();
+        }
+        
+        public List<DatalogRow> getAllSelected()
+        {
+            List<DatalogRow> selectedRows = new ArrayList<DatalogRow>();
+            
+            for (DatalogRow datalogRow : datalogRows)
+            {
+                if (datalogRow.isSelected())
+                {
+                    selectedRows.add(datalogRow);
+                }
+            }
+            
+            return datalogRows;
         }
     
         @Override
