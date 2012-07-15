@@ -836,7 +836,11 @@ public abstract class Megasquirt
         try
         {
             File dir = new File(Environment.getExternalStorageDirectory(), "MSLogger");
-            dir.mkdirs();
+            boolean mkDirs = dir.mkdirs();
+            if (!mkDirs)
+            {
+                DebugLogManager.INSTANCE.log("Unable to create directory MSLogger at " + Environment.getExternalStorageDirectory(), Log.ERROR);  
+            }
 
             String fileName = this.getClass().getName() + ".firmware";
             File outputFile = new File(dir, fileName);
