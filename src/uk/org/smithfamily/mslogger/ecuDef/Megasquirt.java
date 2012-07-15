@@ -628,15 +628,21 @@ public abstract class Megasquirt
                 }
                 else
                 {
+                    // We are going to try to remove characters from the MS signature to see
+                    // if we support something similar that could match
                     for (int i = msSig.length() - 1; i > msSig.length() / 2 && i > 3
                             && !verified; i--)
                     {
                         String fuzzySig = msSig.substring(0, i);
+                        
+                        // We have a match!
                         if (signature.startsWith(fuzzySig))
                         {
                             verified = true;
                             trueSignature = msSig;
-
+                            
+                            DebugLogManager.INSTANCE.log("Got unsupported signature from MS " + msSig + " but found a similar supported signature " + signature, Log.INFO);
+                            break;
                         }
                     }
 
