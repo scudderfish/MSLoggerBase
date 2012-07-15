@@ -10,7 +10,6 @@ import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
-import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
@@ -183,7 +182,7 @@ public abstract class Megasquirt
 
         DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
 
-        sendMessage(context.getString(R.string.disconnected_from_ms));
+        broadcast(DISCONNECTED);
     }
 
     /**
