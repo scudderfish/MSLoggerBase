@@ -241,7 +241,7 @@ public class ManageDatalogsActivity  extends ListActivity
                 }
             }
             
-            return datalogRows;
+            return selectedRows;
         }
     
         @Override
