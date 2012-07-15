@@ -143,11 +143,15 @@ public class Gauge extends Indicator
         drawFace(canvas);
 
         drawScale(canvas);
+        drawPointer(canvas);
         
         if (!isDisabled())
         {
-            drawPointer(canvas);
             drawValue(canvas);
+        }
+        else
+        {
+            setValue(getMin());
         }
 
         drawTitle(canvas);
