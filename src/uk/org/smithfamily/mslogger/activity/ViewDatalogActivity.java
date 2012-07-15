@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -135,12 +136,14 @@ public class ViewDatalogActivity extends Activity
                     double currentLength = 0;
                     double totalLength = datalogFile.length();
                     
+                    Pattern pattern = Pattern.compile("\t");
+                    
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
                     {
                         if (nbLine > 0)
                         {                    
-                            lineSplit = line.split("\t");    
+                            lineSplit = pattern.split(line);    
                             
                             if (nbLine == 1) 
                             {
