@@ -351,7 +351,7 @@ public abstract class Indicator extends View
         vd = gd.getVd();
         ld = gd.getLd();
         offsetAngle = gd.getOffsetAngle();
-        value = (max - min) / 2.0;
+        value = min; // Default value is min
         
         String orientation = gd.getOrientation();
         if (orientation.toLowerCase().equals("horizontal"))

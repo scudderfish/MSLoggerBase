@@ -23,6 +23,7 @@ public enum IndicatorManager
             for (Indicator i : indicatorList)
             {
                 i.setDisabled(d);
+                i.invalidate();
             }
         }
         disabled = d;

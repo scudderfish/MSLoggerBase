@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -35,6 +36,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Activity used to display a datalog file in a graph format to the user
@@ -134,12 +136,14 @@ public class ViewDatalogActivity extends Activity
                     double currentLength = 0;
                     double totalLength = datalogFile.length();
                     
+                    Pattern pattern = Pattern.compile("\t");
+                    
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
                     {
                         if (nbLine > 0)
                         {                    
-                            lineSplit = line.split("\t");    
+                            lineSplit = pattern.split(line);    
                             
                             if (nbLine == 1) 
                             {
@@ -169,7 +173,6 @@ public class ViewDatalogActivity extends Activity
                                 }
                                 else
                                 {
-                                    double[] dataFieldsToKeep = new double[fieldsToKeep.length];
                                     for (int i = 0; i < indexOfFieldsToKeep.length; i++)
                                     {
                                         double currentValue = 0;
@@ -177,9 +180,8 @@ public class ViewDatalogActivity extends Activity
                                         {                                    
                                             currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
                                         }
-                                        
-                                        dataFieldsToKeep[i] = currentValue;
-                                        data.get(i).add(dataFieldsToKeep[i]);
+
+                                        data.get(i).add(currentValue);
                                     }
                                 }
                             }
@@ -250,7 +252,7 @@ public class ViewDatalogActivity extends Activity
         List<Double> maxColumns = new ArrayList<Double>();
         
         // Find min and max value for each columns
-        for (int i = 0; i < data.size(); i++) 
+        for (int i = 1; i < data.size(); i++) 
         {
             List<Double> row = data.get(i);
             
@@ -288,7 +290,7 @@ public class ViewDatalogActivity extends Activity
                 rowDouble[j] = row.get(j);
                 
                 // Find percent between min and max
-                rowDouble[j] = (rowDouble[j] - minColumns.get(i)) / (maxColumns.get(i) - minColumns.get(i)) * 100;
+                rowDouble[j] = (rowDouble[j] - minColumns.get(i - 1)) / (maxColumns.get(i - 1) - minColumns.get(i - 1)) * 100;
             }           
             
             values.add(rowDouble);
@@ -302,6 +304,13 @@ public class ViewDatalogActivity extends Activity
         renderer.setClickEnabled(false);
         renderer.setShowGrid(true);
         renderer.setZoomEnabled(true);
+               
+        TextView currentlyViewing = (TextView) findViewById(R.id.currentlyViewing);
+        
+        Bundle b = getIntent().getExtras();
+        String datalog = b.getString("datalog");
+        
+        currentlyViewing.setText("Currently viewing " + new File(datalog).getName());
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 
