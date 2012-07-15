@@ -12,7 +12,6 @@
 megasquirt-I.ini
 megasquirt-I_B&G_2.0-3.0.ini
 megasquirt-I_B&G_2.0.ini
-msextra-hr.ini
 msns-extra.029q-29w.ini
 msns-extra.ini
 MSExtra format hr_10.ini
