@@ -107,10 +107,12 @@
 	<string name="vertical">Vertical</string>
 	
 	<!-- View Datalog -->
+	<string name="datalog_viewer_title">Datalog Viewer</string>
 	<string name="select_fields_to_view">Select Fields to View</string>
-	<string name="filterDatalogFields">Filter datalog fields…</string>
+	<string name="filter_datalog_fields">Filter datalog fields…</string>
 	
 	<!-- Manage Datalogs -->
+	<string name="manage_datalogs_title">Manage Datalogs</string>
 	<string name="no_datalog_found">It looks like MSLogger haven\'t saved any datalog yet. You can connect to a Megasquirt ECU, start datalogging and come back here after.</string>
 	<string name="view">View</string>
 	<string name="email">Email</string>
