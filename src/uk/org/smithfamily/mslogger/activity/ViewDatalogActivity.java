@@ -35,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Activity used to display a datalog file in a graph format to the user
@@ -300,6 +301,13 @@ public class ViewDatalogActivity extends Activity
         renderer.setClickEnabled(false);
         renderer.setShowGrid(true);
         renderer.setZoomEnabled(true);
+               
+        TextView currentlyViewing = (TextView) findViewById(R.id.currentlyViewing);
+        
+        Bundle b = getIntent().getExtras();
+        String datalog = b.getString("datalog");
+        
+        currentlyViewing.setText("Currently viewing " + new File(datalog).getName());
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 
