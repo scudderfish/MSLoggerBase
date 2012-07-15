@@ -30,7 +30,8 @@ import android.widget.TextView;
 /**
  * Activity class used to manage datalogs
  */
-public class ManageDatalogsActivity  extends ListActivity {
+public class ManageDatalogsActivity  extends ListActivity
+{
     
     private ListView datalogsList;  
     private TextView datalogsInfo;
@@ -56,20 +57,20 @@ public class ManageDatalogsActivity  extends ListActivity {
         
         view = (Button) findViewById(R.id.view);
         view.setVisibility(View.GONE);
-        view.setOnClickListener(new OnClickListener() {
+        view.setOnClickListener(new OnClickListener()
+        {
             @Override
             public void onClick(View v)
             {
                 // Find selected datalog
                 String datalog = "";
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                if (selectedRows.size() > 0)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        datalog = datalogDirectory + "/" + ((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName();
-                        break;
-                    }
+                    DatalogRow firstSelectedRow = selectedRows.get(0);
+                    datalog = datalogDirectory + "/" + firstSelectedRow.getDatalogName();
                 }
                 
                 Intent launchViewDatalog = new Intent(ManageDatalogsActivity.this, ViewDatalogActivity.class);
@@ -92,12 +93,11 @@ public class ManageDatalogsActivity  extends ListActivity {
                 
                 // Create array of datalogs path to send
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                for (DatalogRow datalogRow : selectedRows)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        paths.add(datalogDirectory + "/" + ((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName());
-                    }
+                    paths.add(datalogDirectory + "/" + datalogRow.getDatalogName());
                 }
                 
                 String emailText = getString(R.string.email_body);
@@ -116,12 +116,11 @@ public class ManageDatalogsActivity  extends ListActivity {
                 List<String> datalogsToDelete = new ArrayList<String>();
                 
                 String datalogDirectory = ApplicationSettings.INSTANCE.getDataDir().getAbsolutePath();
-                for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+                
+                List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
+                for (DatalogRow datalogRow : selectedRows)
                 {
-                    if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                    {
-                        datalogsToDelete.add(((DatalogRow) datalogsList.getAdapter().getItem(i)).getDatalogName());
-                    }
+                    datalogsToDelete.add(datalogDirectory + "/" + datalogRow.getDatalogName());
                 }
                 
                 for (String datalogFilename : datalogsToDelete)
@@ -192,7 +191,7 @@ public class ManageDatalogsActivity  extends ListActivity {
      */
     public class DatalogRowAdapter extends BaseAdapter
     {
-       private ArrayList<DatalogRow> datalogRows;
+       private List<DatalogRow> datalogRows;
        
        private LayoutInflater mInflater;
 
@@ -229,6 +228,21 @@ public class ManageDatalogsActivity  extends ListActivity {
         {
             return datalogRows.get(position).isSelected();
         }
+        
+        public List<DatalogRow> getAllSelected()
+        {
+            List<DatalogRow> selectedRows = new ArrayList<DatalogRow>();
+            
+            for (DatalogRow datalogRow : datalogRows)
+            {
+                if (datalogRow.isSelected())
+                {
+                    selectedRows.add(datalogRow);
+                }
+            }
+            
+            return selectedRows;
+        }
     
         @Override
         public View getView(final int position, View convertView, ViewGroup parent)
@@ -241,46 +255,46 @@ public class ManageDatalogsActivity  extends ListActivity {
                 holder = new ViewHolder();
                 holder.txtDatalogName = (TextView) convertView.findViewById(R.id.datalog_name);
                 holder.txtDatalogSize = (TextView) convertView.findViewById(R.id.datalog_size);
+                holder.chkSelected = (CheckBox) convertView.findViewById(R.id.selected);
             
                 CheckBox check = (CheckBox) convertView.findViewById(R.id.selected);
-                check.setOnClickListener(new OnClickListener() {
+                check.setOnClickListener(new OnClickListener()
+                {
                     @Override
                     public void onClick(View v)
                     {
                         boolean isChecked = ((CheckBox) v).isChecked();
                         
                         datalogRows.get(position).setSelected(isChecked);
-                        
-                        int nbChecked = 0;
-                        
-                        for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
-                        {
-                            if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
-                            {
-                                nbChecked++;
-                            }
-                        }
-                        
+                         
                         // If more then one datalog is checked, make send by email button visible
-                        if (nbChecked > 0) 
+                        if (getCountDatalogsChecked() > 0) 
                         {
-                            sendByEmail.setVisibility(View.VISIBLE);
-                            delete.setVisibility(View.VISIBLE);
-                            
-                            if (nbChecked == 1)
-                            {
-                                view.setVisibility(View.VISIBLE);
-                            }
-                            else
-                            {
-                                view.setVisibility(View.GONE);
-                            }
+                            showBottomButtons();
                         }
                         else 
                         {
-                            sendByEmail.setVisibility(View.GONE);
-                            delete.setVisibility(View.GONE);
-                            view.setVisibility(View.GONE);
+                            hideBottomButtons();
+                        }
+                    }
+                });
+                
+                convertView.setOnClickListener(new OnClickListener()
+                {                    
+                    @Override
+                    public void onClick(View v)
+                    {
+                        CheckBox selected = (CheckBox) v.findViewById(R.id.selected);
+                        
+                        selected.setChecked(!selected.isChecked());                        
+                        datalogRows.get(position).setSelected(selected.isChecked());
+                        
+                        if (getCountDatalogsChecked() > 0)
+                        {
+                            showBottomButtons();
+                        }
+                        else {
+                            hideBottomButtons();
                         }
                     }
                 });
@@ -294,6 +308,7 @@ public class ManageDatalogsActivity  extends ListActivity {
             
             holder.txtDatalogName.setText(datalogRows.get(position).getDatalogName());
             holder.txtDatalogSize.setText(datalogRows.get(position).getDatalogSize());
+            holder.chkSelected.setChecked(datalogRows.get(position).isSelected());
             
             return convertView;
         }
@@ -302,6 +317,7 @@ public class ManageDatalogsActivity  extends ListActivity {
         {
             TextView txtDatalogName;
             TextView txtDatalogSize;
+            CheckBox chkSelected;
         }
 }
     
@@ -316,8 +332,10 @@ public class ManageDatalogsActivity  extends ListActivity {
         
         File datalogDirectory = ApplicationSettings.INSTANCE.getDataDir();
 
-        class DatalogFilter implements FilenameFilter {
-            public boolean accept(File dir, String name) {
+        class DatalogFilter implements FilenameFilter
+        {
+            public boolean accept(File dir, String name)
+            {
                 return name.endsWith(".msl");
             }
         }
@@ -376,9 +394,53 @@ public class ManageDatalogsActivity  extends ListActivity {
             datalogsList.setVisibility(View.GONE);
             
             // Make the three bottom buttons dissapear too
-            view.setVisibility(View.GONE);
-            sendByEmail.setVisibility(View.GONE);
-            delete.setVisibility(View.GONE);
+            hideBottomButtons();
         }
+    }
+   
+    /**
+     * @return The number of checked datalogs
+     */
+    public int getCountDatalogsChecked()
+    {
+        int nbChecked = 0;
+        
+        for (int i = 0; i < datalogsList.getAdapter().getCount(); i++)
+        {
+            if (((DatalogRowAdapter) datalogsList.getAdapter()).isItemSelected(i))
+            {
+                nbChecked++;
+            }
+        }
+        
+        return nbChecked;
+    }
+    
+    /**
+     * Show the bottom buttons
+     */ 
+    public void showBottomButtons()
+    {
+        sendByEmail.setVisibility(View.VISIBLE);
+        delete.setVisibility(View.VISIBLE);
+        
+        if (getCountDatalogsChecked() == 1)
+        {
+            view.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            view.setVisibility(View.GONE);
+        }
+    }
+   
+    /**
+     * Hide the bottoms buttons
+     */ 
+    public void hideBottomButtons()
+    {
+        view.setVisibility(View.GONE);
+        sendByEmail.setVisibility(View.GONE);
+        delete.setVisibility(View.GONE);
     }
 }

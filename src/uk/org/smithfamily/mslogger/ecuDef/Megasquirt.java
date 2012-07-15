@@ -10,7 +10,6 @@ import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
-import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
@@ -183,7 +182,7 @@ public abstract class Megasquirt
 
         DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
 
-        sendMessage(context.getString(R.string.disconnected_from_ms));
+        broadcast(DISCONNECTED);
     }
 
     /**
@@ -417,7 +416,7 @@ public abstract class Megasquirt
          */
         public ECUThread()
         {
-            if(watch != null)
+            if (watch != null)
             {
                 DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
@@ -628,15 +627,21 @@ public abstract class Megasquirt
                 }
                 else
                 {
+                    // We are going to try to remove characters from the MS signature to see
+                    // if we support something similar that could match
                     for (int i = msSig.length() - 1; i > msSig.length() / 2 && i > 3
                             && !verified; i--)
                     {
                         String fuzzySig = msSig.substring(0, i);
+                        
+                        // We have a match!
                         if (signature.startsWith(fuzzySig))
                         {
                             verified = true;
                             trueSignature = msSig;
-
+                            
+                            DebugLogManager.INSTANCE.log("Got unsupported signature from MS " + msSig + " but found a similar supported signature " + signature, Log.INFO);
+                            break;
                         }
                     }
 
