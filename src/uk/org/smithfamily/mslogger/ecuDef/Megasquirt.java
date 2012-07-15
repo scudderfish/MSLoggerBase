@@ -416,7 +416,7 @@ public abstract class Megasquirt
          */
         public ECUThread()
         {
-            if(watch != null)
+            if (watch != null)
             {
                 DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
