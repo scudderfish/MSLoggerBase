@@ -243,6 +243,7 @@ public class ManageDatalogsActivity  extends ListActivity
                 holder = new ViewHolder();
                 holder.txtDatalogName = (TextView) convertView.findViewById(R.id.datalog_name);
                 holder.txtDatalogSize = (TextView) convertView.findViewById(R.id.datalog_size);
+                holder.chkSelected = (CheckBox) convertView.findViewById(R.id.selected);
             
                 CheckBox check = (CheckBox) convertView.findViewById(R.id.selected);
                 check.setOnClickListener(new OnClickListener()
@@ -295,6 +296,7 @@ public class ManageDatalogsActivity  extends ListActivity
             
             holder.txtDatalogName.setText(datalogRows.get(position).getDatalogName());
             holder.txtDatalogSize.setText(datalogRows.get(position).getDatalogSize());
+            holder.chkSelected.setChecked(datalogRows.get(position).isSelected());
             
             return convertView;
         }
@@ -303,6 +305,7 @@ public class ManageDatalogsActivity  extends ListActivity
         {
             TextView txtDatalogName;
             TextView txtDatalogSize;
+            CheckBox chkSelected;
         }
 }
     
