@@ -176,10 +176,13 @@ public enum GaugeRegister
         String name = getStoreName(gd);
         File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
         
-        boolean mkDirs = dir.mkdirs();
-        if (!mkDirs)
+        if (!dir.exists()) 
         {
-            DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+            boolean mkDirs = dir.mkdirs();
+            if (!mkDirs)
+            {
+                DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+            }
         }
         
         File input = new File(dir, name);
@@ -196,10 +199,13 @@ public enum GaugeRegister
         {
             File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
            
-            boolean mkDirs = dir.mkdirs();
-            if (!mkDirs)
+            if (!dir.exists()) 
             {
-                DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+                boolean mkDirs = dir.mkdirs();
+                if (!mkDirs)
+                {
+                    DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+                }
             }
             
             File output = new File(dir, getStoreName(gd));
