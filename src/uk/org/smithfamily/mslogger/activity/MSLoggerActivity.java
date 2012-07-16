@@ -475,6 +475,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
         registerReceiver(updateReceiver, rpsFilter);
         
+        IntentFilter fuzzySigFilter = new IntentFilter(ApplicationSettings.FUZZY_SIG);
+        registerReceiver(updateReceiver, fuzzySigFilter);
+        
         registered = true;
     }
 
@@ -514,7 +517,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         }
     }
-
  
     /**
      * 
@@ -1142,6 +1144,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 
                 rps.setText(RPS + " reads / second");
             }  
+            else if (action.equals(ApplicationSettings.FUZZY_SIG))
+            {
+                String msg = intent.getStringExtra(ApplicationSettings.FUZZY_SIG_MESSAGE);
+                
+                // The toast is called in a loop so it can be displayed longer (Toast.LENGTH_LONG = 3.5 seconds)
+                for (int j = 0; j < 2; j++)
+                {
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
