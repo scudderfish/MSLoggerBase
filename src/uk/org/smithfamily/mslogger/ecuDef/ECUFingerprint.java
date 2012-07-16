@@ -50,7 +50,7 @@ public class ECUFingerprint implements Runnable
         
         while (!located)
         {
-            Connection.INSTANCE.init(btAddr, adapter,handler);
+            Connection.INSTANCE.init(btAddr, adapter, handler);
             try
             {
                 fingerprint = getFingerprint();

@@ -51,7 +51,7 @@ public class ManageDatalogsActivity  extends ListActivity
         
         setContentView(R.layout.managedatalogs);
         
-        setTitle("Manage Datalogs");
+        setTitle(R.string.manage_datalogs_title);
         
         datalogsInfo = (TextView) findViewById(R.id.datalogs_info);
         

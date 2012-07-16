@@ -38,12 +38,10 @@ public abstract class Megasquirt
 
     private BluetoothAdapter   mAdapter;
 
-    public static final String NEW_DATA          = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
-
     public static final String CONNECTED         = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
     public static final String DISCONNECTED      = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
-    public static final String TAG               = ApplicationSettings.TAG;
-
+    public static final String NEW_DATA          = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
+    
     protected Context          context;
 
     public abstract String getSignature();
@@ -239,13 +237,26 @@ public abstract class Megasquirt
     /**
      * Send a message to the user
      * 
-     * @param msg
+     * @param msg Message to be sent
      */
     protected void sendMessage(String msg)
     {
         Intent broadcast = new Intent();
         broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);
         broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
+        context.sendBroadcast(broadcast);
+    }
+    
+    /**
+     * Send a toast message to the user 
+     * 
+     * @param message to be sent
+     */
+    protected void sendToastMessage(String msg)
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(ApplicationSettings.TOAST);
+        broadcast.putExtra(ApplicationSettings.TOAST_MESSAGE, msg);
         context.sendBroadcast(broadcast);
     }
 
@@ -274,7 +285,6 @@ public abstract class Megasquirt
     {
         Intent broadcast = new Intent();
         broadcast.setAction(action);
-        // broadcast.putExtra(LOCATION, location);
         context.sendBroadcast(broadcast);
     }
 
@@ -436,17 +446,9 @@ public abstract class Megasquirt
                     while (true)
                     {
                         byte[] buffer = handshake.get();
-                        // DebugLogManager.INSTANCE.log("Got a buffer", Log.INFO);
-                        // long start = System.currentTimeMillis();
                         calculate(buffer);
-                        // long calc = System.currentTimeMillis();
                         logValues(buffer);
-                        // long log = System.currentTimeMillis();
-                        // long gen = System.currentTimeMillis();
                         broadcast();
-                        // long b = System.currentTimeMillis();
-                        // DebugLogManager.INSTANCE.log("Calculations done and broadcast : " + (calc - start) + "," + (log - calc) + "," + (gen - log) + ","
-                        // + (b - gen) + "," + (b - start), Log.INFO);
                     }
                 }
                 catch (InterruptedException e)
@@ -534,14 +536,8 @@ public abstract class Megasquirt
                     {
                         try
                         {
-                            // DebugLogManager.INSTANCE.log("** START **", Log.INFO);
-                            // long start = System.currentTimeMillis();
                             final byte[] buffer = getRuntimeVars();
-                            // long comms = System.currentTimeMillis();
-                            // DebugLogManager.INSTANCE.log("Comms took :" + (comms - start), Log.INFO);
                             handshake.put(buffer);
-                            // long rt = System.currentTimeMillis();
-                            // DebugLogManager.INSTANCE.log("Sent RTVars for calculation : " + (comms - start) + "," + (rt - comms) + "," + (rt - start), Log.INFO);
                         }
                         catch (CRC32Exception e)
                         {
@@ -640,7 +636,11 @@ public abstract class Megasquirt
                             verified = true;
                             trueSignature = msSig;
                             
-                            DebugLogManager.INSTANCE.log("Got unsupported signature from MS " + msSig + " but found a similar supported signature " + signature, Log.INFO);
+                            String msg = "Got unsupported signature from Megasquirt \"" + msSig + "\" but found a similar supported signature \"" + signature + "\"";
+                            
+                            sendToastMessage(msg);                            
+                            DebugLogManager.INSTANCE.log(msg, Log.INFO);
+                            
                             break;
                         }
                     }
@@ -836,7 +836,15 @@ public abstract class Megasquirt
         try
         {
             File dir = new File(Environment.getExternalStorageDirectory(), "MSLogger");
-            dir.mkdirs();
+            
+            if (!dir.exists())
+            {
+                boolean mkDirs = dir.mkdirs();
+                if (!mkDirs)
+                {
+                    DebugLogManager.INSTANCE.log("Unable to create directory MSLogger at " + Environment.getExternalStorageDirectory(), Log.ERROR);  
+                }
+            }
 
             String fileName = this.getClass().getName() + ".firmware";
             File outputFile = new File(dir, fileName);
