@@ -31,8 +31,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public static final String      TAG                 = "uk.org.smithfamily.mslogger";
     public static final String      RPS_MESSAGE         = "uk.org.smithfamily.mslogger.RPS_MESSAGE";
     public static final String      RPS                 = "uk.org.smithfamily.mslogger.RPS";
-    public static final String      FUZZY_SIG           = "uk.org.smithfamily.mslogger.FUZZY_SIG";
-    public static final String      FUZZY_SIG_MESSAGE   = "uk.org.smithfamily.mslogger.FUZZY_SIG_MESSAGE";
+    public static final String      TOAST               = "uk.org.smithfamily.mslogger.TOAST";
+    public static final String      TOAST_MESSAGE       = "uk.org.smithfamily.mslogger.TOAST_MESSAGE";
     
     private Context                 context;
     private File                    dataDir;

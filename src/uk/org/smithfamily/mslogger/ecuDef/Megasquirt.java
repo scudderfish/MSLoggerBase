@@ -237,7 +237,7 @@ public abstract class Megasquirt
     /**
      * Send a message to the user
      * 
-     * @param msg
+     * @param msg Message to be sent
      */
     protected void sendMessage(String msg)
     {
@@ -248,14 +248,15 @@ public abstract class Megasquirt
     }
     
     /**
-     * Send a fuzzy sig message to the user
-     * telling him we don't support his firmware but we found something that should be close enough to use
+     * Send a toast message to the user 
+     * 
+     * @param message to be sent
      */
-    protected void sendFuzzySigMessage(String msg)
+    protected void sendToastMessage(String msg)
     {
         Intent broadcast = new Intent();
-        broadcast.setAction(ApplicationSettings.FUZZY_SIG);
-        broadcast.putExtra(ApplicationSettings.FUZZY_SIG_MESSAGE, msg);
+        broadcast.setAction(ApplicationSettings.TOAST);
+        broadcast.putExtra(ApplicationSettings.TOAST_MESSAGE, msg);
         context.sendBroadcast(broadcast);
     }
 
@@ -637,7 +638,7 @@ public abstract class Megasquirt
                             
                             String msg = "Got unsupported signature from Megasquirt \"" + msSig + "\" but found a similar supported signature \"" + signature + "\"";
                             
-                            sendFuzzySigMessage(msg);                            
+                            sendToastMessage(msg);                            
                             DebugLogManager.INSTANCE.log(msg, Log.INFO);
                             
                             break;
