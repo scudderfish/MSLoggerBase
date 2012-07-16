@@ -63,6 +63,8 @@ public class ViewDatalogActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.viewdatalog);
          
+        setTitle(R.string.datalog_viewer_title);
+        
         selectDatalogFields = (Button) findViewById(R.id.select_datalog_fields);
         selectDatalogFields.setOnClickListener(new OnClickListener() {
             @Override

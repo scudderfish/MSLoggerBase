@@ -41,7 +41,7 @@ public enum FRDLogManager
      */
     public void write(byte[] buffer) throws IOException
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
+		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
 		}		
@@ -62,7 +62,7 @@ public enum FRDLogManager
      */
     private void writeHeader() throws IOException
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
+		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
 		}
@@ -76,7 +76,7 @@ public enum FRDLogManager
      */
     private void createLogFile() throws FileNotFoundException
     {
-		if(!ApplicationSettings.INSTANCE.isWritable())
+		if (!ApplicationSettings.INSTANCE.isWritable())
 		{
 			return;
 		}

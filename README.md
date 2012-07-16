@@ -2,6 +2,10 @@ MSLogger
 ===============================================
 MSLogger is an Android application for Megasquirt ECU ([MSExtra](http://www.msextra.com) - [MSEFI](http://msefi.com)).
 
+Screenshots
+------------------------------------------------
+[![MSLogger Dashboard](http://img21.imageshack.us/img21/115/device20120715192842.png)](http://img21.imageshack.us/img21/115/device20120715192842.png) [![MSLogger Manage Datalogs](http://img35.imageshack.us/img35/3928/device20120715192857.png)](http://img35.imageshack.us/img35/3928/device20120715192857.png)  [![MSLogger Viewing Datalog](http://img716.imageshack.us/img716/1856/device20120715192949.png)](http://img716.imageshack.us/img716/1856/device20120715192949.png)
+
 Megasquirt Firware Support
 ------------------------------------------------
 MSLogger currently supports the following firmwares:
@@ -23,6 +27,18 @@ MSLogger currently supports the following firmwares:
 * MS3 Format 0214.003
 * MS3 Format 0221.002
 * MS3 Format 0225.005
+* MS3 Format 0225.009
+* MS3 Format 0225.010
+* MS3 Format 0229.002
+* MS3 Format 0231.006
+* MS3 Format 0233.001
+* MS3 Format 0233.003
+* MS3 Format 0235.001
+* MS3 Format 0237.000
+* MS3 Format 0237.003
+* MS3 Format 0238.000
+* MS3 Format 0238.001
+* MS3 Format 0238.002
 * MSII Rev 2.88000
 * MSII Rev 2.88600
 * MSII Rev 2.88600

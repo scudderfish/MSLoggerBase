@@ -199,7 +199,7 @@ public enum DebugLogManager
                 hex = new StringBuffer();
             }
         }
-        if(text.length() > 0)
+        if (text.length() > 0)
         {
             b.append(String.format("%1$-120s %2$s\n",hex.toString(),text.toString()));
         }
