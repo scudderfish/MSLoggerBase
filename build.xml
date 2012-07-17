@@ -18,7 +18,21 @@
 	<target name="generate">
 		<java classpath="bin/Normaliser.jar" classname="uk.org.smithfamily.utils.normaliser.Normaliser">
 			<arg value="inis/generationList.txt"/>
-			<arg value="gen_src"/>
+			<arg value="."/>
 		</java>
+	</target>
+	<target name="compile_dummy">
+		<mkdir dir="dummy_bin" />
+		<javac srcdir="dummy_src" destdir="dummy_bin" />
+	</target>
+	<target name="compileINI" depends="generate,compile_dummy">
+		<mkdir dir="gen_bin"/>
+		<javac srcdir="gen_src" destdir="gen_bin" classpath="dummy_bin"/>
+	</target>
+
+	<target name="ECUjar" depends="compileINI">
+		<jar destfile="bin/ECU.jar">
+			<fileset dir="gen_bin" />
+		</jar>
 	</target>
 </project>
