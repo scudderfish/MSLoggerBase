@@ -42,6 +42,7 @@ MS2Extra311mb_v12.ini
 MS2Extra Serial310.ini
 MS2Extra Serial312a.ini
 MS2Extra Serial321.ini
+MS2Extra Serial323.ini
 MS2Extra Serial330e.ini
 MS2Extra SerialGS26.ini
 
