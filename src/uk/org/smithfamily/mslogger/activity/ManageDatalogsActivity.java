@@ -24,6 +24,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -248,6 +250,7 @@ public class ManageDatalogsActivity  extends ListActivity
         public View getView(final int position, View convertView, ViewGroup parent)
         {
             ViewHolder holder;
+            
             if (convertView == null)
             {
                 convertView = mInflater.inflate(R.layout.viewdatalog_row, null);
@@ -256,55 +259,53 @@ public class ManageDatalogsActivity  extends ListActivity
                 holder.txtDatalogName = (TextView) convertView.findViewById(R.id.datalog_name);
                 holder.txtDatalogSize = (TextView) convertView.findViewById(R.id.datalog_size);
                 holder.chkSelected = (CheckBox) convertView.findViewById(R.id.selected);
-            
-                CheckBox check = (CheckBox) convertView.findViewById(R.id.selected);
-                check.setOnClickListener(new OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        boolean isChecked = ((CheckBox) v).isChecked();
-                        
-                        datalogRows.get(position).setSelected(isChecked);
-                         
-                        // If more then one datalog is checked, make send by email button visible
-                        if (getCountDatalogsChecked() > 0) 
-                        {
-                            showBottomButtons();
-                        }
-                        else 
-                        {
-                            hideBottomButtons();
-                        }
-                    }
-                });
-                
-                convertView.setOnClickListener(new OnClickListener()
-                {                    
-                    @Override
-                    public void onClick(View v)
-                    {
-                        CheckBox selected = (CheckBox) v.findViewById(R.id.selected);
-                        
-                        selected.setChecked(!selected.isChecked());                        
-                        datalogRows.get(position).setSelected(selected.isChecked());
-                        
-                        if (getCountDatalogsChecked() > 0)
-                        {
-                            showBottomButtons();
-                        }
-                        else {
-                            hideBottomButtons();
-                        }
-                    }
-                });
-                
+
                 convertView.setTag(holder);
             }
             else
             {
                 holder = (ViewHolder) convertView.getTag();
             }
+            
+            holder.chkSelected.setOnCheckedChangeListener(new OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                {                     
+                    datalogRows.get(position).setSelected(isChecked);
+                    
+                    // If more then one datalog is checked, make send by email button visible
+                    if (getCountDatalogsChecked() > 0) 
+                    {
+                        showBottomButtons();
+                    }
+                    else 
+                    {
+                        hideBottomButtons();
+                    }
+                }
+            });
+            
+            convertView.setOnClickListener(new OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    CheckBox selected = (CheckBox) v.findViewById(R.id.selected);
+                    
+                    selected.setChecked(!selected.isChecked());    
+                    
+                    datalogRows.get(position).setSelected(selected.isChecked());
+                    
+                    if (getCountDatalogsChecked() > 0)
+                    {
+                        showBottomButtons();
+                    }
+                    else {
+                        hideBottomButtons();
+                    }
+                }
+            });
             
             holder.txtDatalogName.setText(datalogRows.get(position).getDatalogName());
             holder.txtDatalogSize.setText(datalogRows.get(position).getDatalogSize());
