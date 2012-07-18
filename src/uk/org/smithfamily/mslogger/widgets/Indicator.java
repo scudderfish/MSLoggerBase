@@ -32,7 +32,6 @@ public abstract class Indicator extends View
     private double             value           = 2500;
     private boolean            disabled        = false;
     private double             offsetAngle     = 45;
-    final float                scale           = getResources().getDisplayMetrics().density;
 
     private GaugeDetails deadGauge = new GaugeDetails("Gauge","",DEAD_GAUGE_NAME, "deadValue",getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
     

@@ -1,38 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+<TabHost android:layout_width="fill_parent"
+    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabhost">
+    
+    <LinearLayout android:orientation="vertical" android:layout_height="fill_parent"
+        android:layout_width="fill_parent">
+        
+        <TabWidget android:id="@android:id/tabs"
+            android:layout_height="wrap_content" android:layout_width="fill_parent"></TabWidget>
+        <FrameLayout android:id="@android:id/tabcontent"
+            android:layout_height="fill_parent" android:layout_width="fill_parent">           
+           
+			<LinearLayout
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    android:orientation="vertical" android:id="@+id/regular_datalog">
+			
+			    <TextView
+			        android:id="@+id/currentlyViewing"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:textAppearance="?android:attr/textAppearanceMedium"
+			        android:paddingTop="12dp"
+			        android:paddingLeft="15dp" />
+			    
+			    <LinearLayout
+			        android:id="@+id/chart"
+			        android:layout_width="fill_parent"
+			        android:layout_height="0px"
+			        android:layout_weight="1"
+			        android:stackFromBottom="true" >
+			    </LinearLayout>			
+			
+			    <RelativeLayout
+			        android:id="@+id/RelativeLayout1"
+			        android:layout_width="match_parent"
+			        android:layout_height="62dp"
+			        android:padding="10dip" >
+			
+			        <Button
+			            android:id="@+id/select_datalog_fields"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_alignParentRight="true"
+			            android:layout_alignParentBottom="true"
+			            android:text="@string/select_fields_to_view" />
+			    </RelativeLayout>
+			</LinearLayout>
+			
+			<LinearLayout
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    android:orientation="vertical" android:id="@+id/scatter_plot">
+			 
+			 	<LinearLayout
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:padding="10dip" >			
+			        
+			        <TextView 
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:text="@string/x_axis">
+			        </TextView>
+			        
+			        <Spinner
+			            android:id="@+id/xAxisSpinner"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_weight="1"
+			            android:prompt="@string/choose_x_axis_datalog_field"
+			            android:layout_marginRight="3dip" />
+			        
+			        <TextView 
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:text="@string/y_axis">
+			        </TextView>
+			        
+			        <Spinner
+			            android:id="@+id/yAxisSpinner"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_weight="1"
+			            android:prompt="@string/choose_y_axis_datalog_field"
+			            android:layout_marginRight="3dip" />
+			        
+			        <TextView 
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:text="@string/z_axis">
+			        </TextView>
+			        
+			        <Spinner
+			            android:id="@+id/zAxisSpinner"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_weight="1"
+			            android:prompt="@string/choose_z_axis_datalog_field"
+			            android:layout_marginRight="3dip" />
+			        
+					<Button
+					    android:text="@string/bt_generate"
+					    android:id="@+id/btGenerate"
+						android:layout_weight="1"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content" />
+			    </LinearLayout>
+			    
+			 	<TextView  
+				    android:layout_width="fill_parent" 
+				    android:layout_height="fill_parent" 
+				    android:gravity="center"
+				    android:text="@string/choose_axis_and_generate"
+				    android:textAppearance="?android:attr/textAppearanceLarge"
+				    android:id="@+id/chooseAxisAndGenerateText" />
+			 	
+	 			<LinearLayout
+					android:layout_width="fill_parent"
+					android:layout_height="fill_parent"
+					android:orientation="horizontal"
+					android:baselineAligned="false"
+					android:id="@+id/scatterPlotBottom"
+					android:visibility="gone">
+					
+	 			    <LinearLayout
+		 		        android:id="@+id/chart_scatter_plot"
+		 		        android:layout_width="0dip"
+		 		        android:layout_height="fill_parent"
+		 		        android:layout_weight="0.94">	 			    
+					</LinearLayout>	        
 
-    <TextView
-        android:id="@+id/currentlyViewing"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingTop="12dp"
-        android:paddingLeft="15dp" />
-
-    <LinearLayout
-        android:id="@+id/chart"
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:stackFromBottom="true" >
-    </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/RelativeLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:padding="10dip" >
-
-        <Button
-            android:id="@+id/select_datalog_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:text="@string/select_fields_to_view" />
-    </RelativeLayout>
-
-</LinearLayout>
+					<uk.org.smithfamily.mslogger.widgets.ScatterPlotZAxisGradient
+					    android:id="@+id/scatterPlotZAxisGradient"
+					    android:layout_width="0dip"
+					    android:layout_height="fill_parent"
+					    android:layout_weight="0.06"
+					    android:focusable="true"
+					    android:focusableInTouchMode="true" />
+		   		</LinearLayout>
+			</LinearLayout>            
+        </FrameLayout>
+    </LinearLayout>    
+</TabHost>
