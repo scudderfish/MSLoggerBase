@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project Normailiser">
+<project default="firmware" name="Create Runnable Jar for Project Normailiser">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
 	<target name="compile">
@@ -27,12 +27,13 @@
 	</target>
 	<target name="compile_firmwares" depends="generate_java,compile_dummy">
 		<mkdir dir="gen_bin"/>
-		<javac srcdir="gen_src" destdir="gen_bin" classpath="dummy_bin"/>
+		<javac debug="on" srcdir="gen_src" destdir="gen_bin" classpath="dummy_bin"/>
 	</target>
 
 	<target name="firmware" depends="compile_firmwares">
 		<jar destfile="../MSLoggerBase/libs/firmwares.jar">
 			<fileset dir="gen_bin" />
+			<fileset dir="gen_src"/>
 		</jar>
 	</target>
 </project>
