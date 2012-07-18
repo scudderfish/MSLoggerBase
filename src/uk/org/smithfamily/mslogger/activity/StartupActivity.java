@@ -299,7 +299,7 @@ public class StartupActivity extends Activity
      */
     private void constructEmail(String sig)
     {
-        EmailManager.email(this, "dave.g.smith@gmail.com", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + sig
+        EmailManager.email(this, "mslogger.android@gmail.com", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + sig
                 + "'.\n\nPlease consider this for the next release.", null);
 
     }
