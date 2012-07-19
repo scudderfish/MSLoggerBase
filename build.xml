@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="firmware" name="Create Runnable Jar for Project Normailiser">
+	
+	<property name="output.file.location" value="../MSLoggerBase/libs"/>
+	<property name="output.file" value="${output.file.location}/firmwares.jar"/>
+	
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
 	<target name="compile">
@@ -15,7 +19,7 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/commons-lang3-3.0.1.jar"/>
         </jar>
     </target>
-	<target name="generate_java">
+	<target name="generate_java" depends="create_run_jar">
 		<java classpath="bin/Normaliser.jar" classname="uk.org.smithfamily.utils.normaliser.Normaliser">
 			<arg value="inis/generationList.txt"/>
 			<arg value="."/>
@@ -35,5 +39,12 @@
 			<fileset dir="gen_bin" />
 			<fileset dir="gen_src"/>
 		</jar>
+	</target>
+	
+	<target name="clean">
+		<delete file="${output.file}"/>
+		<delete file="bin/Normaliser.jar" />
+		<delete dir="gen_src" />
+		<delete dir="gen_bin" />
 	</target>
 </project>
