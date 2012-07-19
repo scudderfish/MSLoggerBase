@@ -58,6 +58,7 @@ public class ViewDatalogActivity extends Activity
     private String[] headers;
     private String[] completeHeaders;
     private List<List<Double>> data;
+    private List<List<Double>> dataScatterPlot;
     
     private TabHost tabHost;
     private Spinner xAxisSpinner;
@@ -123,98 +124,7 @@ public class ViewDatalogActivity extends Activity
                 Bundle b = getIntent().getExtras();
                 String datalog = b.getString("datalog");
                 
-                int[] indexOfFieldsToKeep = new int[3];                
-                
-                indexOfFieldsToKeep[0] = xAxisSpinner.getSelectedItemPosition();
-                indexOfFieldsToKeep[1] = yAxisSpinner.getSelectedItemPosition();
-                indexOfFieldsToKeep[2] = zAxisSpinner.getSelectedItemPosition();
-                
-                List<List<Double>> dataScatterPlot = new ArrayList<List<Double>>();
-                for (int i = 0; i < 3; i++)
-                {                                            
-                    dataScatterPlot.add(new ArrayList<Double>());
-                }
-                                
-                try
-                {            
-                    InputStream instream = new FileInputStream(datalog);
-
-                    if (instream != null)
-                    {
-                        try
-                        {
-                            // Prepare the file for reading
-                            InputStreamReader inputreader = new InputStreamReader(instream);
-                            BufferedReader buffreader = new BufferedReader(inputreader);
-            
-                            int nbLine = 0;
-                            headers = new String[] {};
-                            data = new ArrayList<List<Double>>();
-
-                            String line;
-                            String[] lineSplit;
-                            
-                            long timeStart = System.currentTimeMillis();
-                            
-                            File datalogFile = new File(datalog);
-                            
-                            double currentLength = 0;
-                            double totalLength = datalogFile.length();
-                            
-                            // Read every line of the file into the line-variable, on line at the time
-                            while ((line = buffreader.readLine()) != null)
-                            {
-                                if (nbLine > 1)
-                                {                    
-                                    lineSplit = line.split("\t");    
- 
-                                    // Skip MARK and empty line
-                                    if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
-                                    {
-                                        
-                                    }
-                                    else
-                                    {
-                                        for (int i = 0; i < indexOfFieldsToKeep.length; i++)
-                                        {
-                                            double currentValue = 0;
-                                            if (lineSplit.length > indexOfFieldsToKeep[i])
-                                            {                                    
-                                                currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
-                                            }
-
-                                            dataScatterPlot.get(i).add(currentValue);
-                                        }
-                                    }
-                                }
-                                
-                                nbLine++;
-                                
-                                currentLength += line.length();
-             
-                                mReadlogAsync.doProgress((int) (currentLength * 100 / totalLength));
-                            }
-                            
-                            buffreader.close();
-                            
-                            long timeEnd = System.currentTimeMillis();
-                            
-                            DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
-                        }
-                        finally
-                        {
-                            instream.close();
-                        }
-                    }
-                }
-                catch (FileNotFoundException e)
-                {
-                    DebugLogManager.INSTANCE.logException(e);
-                } 
-                catch (IOException e)
-                {
-                    DebugLogManager.INSTANCE.logException(e);
-                }                               
+                readScatterPlotDatalog(datalog);
                 
                 String[] titles = new String[dataScatterPlot.get(0).size()];
                 int[] colors = new int[dataScatterPlot.get(0).size()];
@@ -377,9 +287,112 @@ public class ViewDatalogActivity extends Activity
     }
     
     /**
-     * Read the datalog and fill up all the necessary variables
+     * Read the datalog and fill up all the necessary variables to generate a scatter plot
+     * 
+     * @param datalog The datalog file name to read
      */
-    private void readDatalog(String datalog)
+    private void readScatterPlotDatalog(String datalog)
+    {
+        int[] indexOfFieldsToKeep = new int[3];                
+        
+        indexOfFieldsToKeep[0] = xAxisSpinner.getSelectedItemPosition();
+        indexOfFieldsToKeep[1] = yAxisSpinner.getSelectedItemPosition();
+        indexOfFieldsToKeep[2] = zAxisSpinner.getSelectedItemPosition();
+        
+        dataScatterPlot = new ArrayList<List<Double>>();
+        
+        for (int i = 0; i < 3; i++)
+        {                                            
+            dataScatterPlot.add(new ArrayList<Double>());
+        }
+                        
+        try
+        {            
+            InputStream instream = new FileInputStream(datalog);
+
+            if (instream != null)
+            {
+                try
+                {
+                    // Prepare the file for reading
+                    InputStreamReader inputreader = new InputStreamReader(instream);
+                    BufferedReader buffreader = new BufferedReader(inputreader);
+    
+                    int nbLine = 0;
+                    headers = new String[] {};
+                    
+                    String line;
+                    String[] lineSplit;
+                    
+                    long timeStart = System.currentTimeMillis();
+                    
+                    File datalogFile = new File(datalog);
+                    
+                    double currentLength = 0;
+                    double totalLength = datalogFile.length();
+                    
+                    // Read every line of the file into the line-variable, on line at the time
+                    while ((line = buffreader.readLine()) != null)
+                    {
+                        if (nbLine > 1)
+                        {                    
+                            lineSplit = line.split("\t");    
+
+                            // Skip MARK and empty line
+                            if ((lineSplit[0].length() > 3 && lineSplit[0].substring(0,4).equals("MARK")) || lineSplit[0].equals(""))
+                            {
+                                
+                            }
+                            else
+                            {
+                                for (int i = 0; i < indexOfFieldsToKeep.length; i++)
+                                {
+                                    double currentValue = 0;
+                                    if (lineSplit.length > indexOfFieldsToKeep[i])
+                                    {                                    
+                                        currentValue = Double.parseDouble(lineSplit[indexOfFieldsToKeep[i]]);
+                                    }
+
+                                    dataScatterPlot.get(i).add(currentValue);
+                                }
+                            }
+                        }
+                        
+                        nbLine++;
+                        
+                        currentLength += line.length();
+     
+                        mReadlogAsync.doProgress((int) (currentLength * 100 / totalLength));
+                    }
+                    
+                    buffreader.close();
+                    
+                    long timeEnd = System.currentTimeMillis();
+                    
+                    DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+                }
+                finally
+                {
+                    instream.close();
+                }
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        } 
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }                               
+    }
+    
+    /**
+     * Read the datalog and fill up all the necessary variables to generate a line chart
+     * 
+     * @param datalog The datalog file name to read
+     */
+    private void readRegularDatalog(String datalog)
     {        
         String fieldsToKeep[] = ApplicationSettings.INSTANCE.getDatalogFields();
         int indexOfFieldsToKeep[] = new int[fieldsToKeep.length];
@@ -822,7 +835,7 @@ public class ViewDatalogActivity extends Activity
             Bundle b = getIntent().getExtras();
             String datalog = b.getString("datalog");
             
-            readDatalog(datalog);
+            readRegularDatalog(datalog);
             
             return null;
         }
