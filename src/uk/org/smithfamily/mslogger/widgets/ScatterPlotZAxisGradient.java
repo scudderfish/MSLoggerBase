@@ -23,8 +23,7 @@ public class ScatterPlotZAxisGradient extends View
     private boolean ready = false;
     
     ZAxisGradient color;
-    
-    final float scale = getResources().getDisplayMetrics().density;
+
     private Paint gradientPaint;
     
     /**
@@ -67,16 +66,16 @@ public class ScatterPlotZAxisGradient extends View
     public void init(Context context)
     {
         gradientPaint = new Paint();
+        gradientPaint.setStrokeWidth(2);
         
         color = new ZAxisGradient(1020,0);
+        decimalFormat = new DecimalFormat("#.00");
         
         valuePaint = new Paint();
         valuePaint.setColor(Color.WHITE);
         valuePaint.setTextSize(14);
         valuePaint.setTextAlign(Paint.Align.LEFT);
         valuePaint.setAntiAlias(true);
-        
-        decimalFormat = new DecimalFormat("#.00");
     }
     
     /**
@@ -117,7 +116,7 @@ public class ScatterPlotZAxisGradient extends View
     protected void onDraw(Canvas canvas)
     {            
         if (ready) {
-            int height = getHeight();
+            final int height = getHeight();
             float yRescaleFactor = height / 1020f;
             
             // Draw the gradient line per line
@@ -131,11 +130,11 @@ public class ScatterPlotZAxisGradient extends View
                 y++;
             }
 
-            final float textHeight = 16;
+            final float textHeight = valuePaint.getTextSize() + 2;
             final int nbSteps = (int) (height / textHeight);
             
-            double range = max - min;
-            double step = range / nbSteps;
+            final double range = max - min;
+            final double step = range / nbSteps;
             
             // Draw the scale
             for (int i = 0; i < nbSteps; i ++)

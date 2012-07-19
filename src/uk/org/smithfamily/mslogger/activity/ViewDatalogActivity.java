@@ -240,6 +240,8 @@ public class ViewDatalogActivity extends Activity
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
                     {
+                        if (mReadlogAsync.isCancelled()) break;
+                        
                         if (nbLine > 1)
                         {                    
                             lineSplit = line.split("\t");    
@@ -339,6 +341,8 @@ public class ViewDatalogActivity extends Activity
                     // Read every line of the file into the line-variable, on line at the time
                     while ((line = buffreader.readLine()) != null)
                     {
+                        if (mReadlogAsync.isCancelled()) break;
+                        
                         if (nbLine > 0)
                         {                    
                             lineSplit = pattern.split(line);    
@@ -770,6 +774,7 @@ public class ViewDatalogActivity extends Activity
                 @Override
                 public void onCancel(DialogInterface dialog)
                 {
+                   mReadlogAsync.cancel(true);
                    finish();
                 }
             });

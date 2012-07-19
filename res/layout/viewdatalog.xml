@@ -127,14 +127,14 @@
 		 		        android:id="@+id/chart_scatter_plot"
 		 		        android:layout_width="0dip"
 		 		        android:layout_height="fill_parent"
-		 		        android:layout_weight="0.94">	 			    
+		 		        android:layout_weight="0.92">	 			    
 					</LinearLayout>	        
 
 					<uk.org.smithfamily.mslogger.widgets.ScatterPlotZAxisGradient
 					    android:id="@+id/scatterPlotZAxisGradient"
 					    android:layout_width="0dip"
 					    android:layout_height="fill_parent"
-					    android:layout_weight="0.06"
+					    android:layout_weight="0.08"
 					    android:focusable="true"
 					    android:focusableInTouchMode="true" />
 		   		</LinearLayout>
