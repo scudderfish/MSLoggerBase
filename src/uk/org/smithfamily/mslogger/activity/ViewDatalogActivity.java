@@ -117,104 +117,10 @@ public class ViewDatalogActivity extends Activity
         btGenerate = (Button) findViewById(R.id.btGenerate);
         btGenerate.setOnClickListener(new OnClickListener()
         {
-
             @Override
             public void onClick(View v)
-            {         
-                Bundle b = getIntent().getExtras();
-                String datalog = b.getString("datalog");
-                
-                readScatterPlotDatalog(datalog);
-                
-                String[] titles = new String[dataScatterPlot.get(0).size()];
-                int[] colors = new int[dataScatterPlot.get(0).size()];
-
-                List<double[]> x = new ArrayList<double[]>();
-                List<double[]> values = new ArrayList<double[]>();
-
-                List<Double> xAxis = dataScatterPlot.get(0);
-                List<Double> yAxis = dataScatterPlot.get(1);
-                //List<Double> zAxis = dataScatterPlot.get(2);
-                
-                for (int i = 0; i < xAxis.size(); i++)
-                {
-                    x.add(new double[] { xAxis.get(i) });
-                    values.add(new double[] { yAxis.get(i) });
-                }
-
-                List<Double> minColumns = new ArrayList<Double>();
-                List<Double> maxColumns = new ArrayList<Double>();
-                
-                // Find min and max value for each columns
-                for (int i = 0; i < dataScatterPlot.size(); i++) 
-                {
-                    List<Double> row = dataScatterPlot.get(i);
-                    
-                    double min = row.get(0); 
-                    double max = min;
-                    for (int j = 0; j < row.size(); j++)
-                    {
-                        double value = row.get(j);
-                        
-                        if (min > value)
-                        {
-                            min = value;
-                        } 
-                        
-                        if (max < value)
-                        {
-                            max = value;
-                        }
-                    }
-                    
-                    minColumns.add(min);
-                    maxColumns.add(max);
-                }
-                
-                scatterPlotZAxisGradient.initWithMinMax(minColumns.get(2), maxColumns.get(2));
-
-                ZAxisGradient color = new ZAxisGradient(minColumns.get(2), maxColumns.get(2));
-                
-                for (int i = 0; i < dataScatterPlot.get(0).size(); i++)
-                {
-                    titles[i] = "";
-                    colors[i] = color.getColorForValue(dataScatterPlot.get(2).get(i));
-                }
-                
-                String xAxisField = xAxisSpinner.getSelectedItem().toString();
-                String yAxisField = yAxisSpinner.getSelectedItem().toString();
-                
-                String title = xAxisSpinner.getSelectedItem().toString() + " vs " + yAxisField;
-
-                XYMultipleSeriesRenderer renderer = buildRenderer(titles.length, colors);
-                setChartSettings(renderer, title, xAxisField, yAxisField, minColumns.get(0) - 10, maxColumns.get(0) + 10, minColumns.get(1) - 10, maxColumns.get(1) + 10, Color.GRAY, Color.LTGRAY);
-                
-                renderer.setXLabels(10);
-                renderer.setYLabels(10);
-                renderer.setShowLegend(false);
-                
-                int length = renderer.getSeriesRendererCount();
-                for (int i = 0; i < length; i++) {
-                  ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
-                }
-
-                TextView chooseAxisAndGenerateText = (TextView) findViewById(R.id.chooseAxisAndGenerateText);
-                chooseAxisAndGenerateText.setVisibility(View.GONE);
-                
-                LinearLayout scatterPlotBottom = (LinearLayout) findViewById(R.id.scatterPlotBottom);
-                scatterPlotBottom.setVisibility(View.VISIBLE);
-                
-                LinearLayout layout = (LinearLayout) findViewById(R.id.chart_scatter_plot);
-
-                if (mChartScatterPlotView == null)
-                {
-                    mChartScatterPlotView = ChartFactory.getScatterChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);                                 
-                    layout.addView(mChartScatterPlotView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-                }
-                else
-                {
-                    mChartScatterPlotView.repaint();
-                }
+            {
+                mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute("scatterplot");                
             }            
         });
         
@@ -233,7 +139,7 @@ public class ViewDatalogActivity extends Activity
             }
         });
         
-        mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
+        mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute("regular");
     }
     
     private void populateAxisSpinners()
@@ -282,7 +188,7 @@ public class ViewDatalogActivity extends Activity
             
             mChartView = null;
 
-            mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute((Void) null);
+            mReadlogAsync = (readLogFileInBackground) new readLogFileInBackground().execute("regular");
         }
     }
     
@@ -508,9 +414,9 @@ public class ViewDatalogActivity extends Activity
     }
     
     /**
-     * Generate graph for the selected datalog
+     * Generate graph for the selected regular datalog
      */
-    private void generateGraph()
+    private void generateRegularGraph()
     {        
         double minXaxis = 0;
         double maxXaxis = data.get(0).size();
@@ -638,6 +544,102 @@ public class ViewDatalogActivity extends Activity
     }
 
     /**
+     * Generate scatter plot for the current datalog
+     */
+    public void generateScatterPlot()
+    {
+        String[] titles = new String[dataScatterPlot.get(0).size()];
+        int[] colors = new int[dataScatterPlot.get(0).size()];
+
+        List<double[]> x = new ArrayList<double[]>();
+        List<double[]> values = new ArrayList<double[]>();
+
+        List<Double> xAxis = dataScatterPlot.get(0);
+        List<Double> yAxis = dataScatterPlot.get(1);
+        //List<Double> zAxis = dataScatterPlot.get(2);
+        
+        for (int i = 0; i < xAxis.size(); i++)
+        {
+            x.add(new double[] { xAxis.get(i) });
+            values.add(new double[] { yAxis.get(i) });
+        }
+
+        List<Double> minColumns = new ArrayList<Double>();
+        List<Double> maxColumns = new ArrayList<Double>();
+        
+        // Find min and max value for each columns
+        for (int i = 0; i < dataScatterPlot.size(); i++) 
+        {
+            List<Double> row = dataScatterPlot.get(i);
+            
+            double min = row.get(0); 
+            double max = min;
+            for (int j = 0; j < row.size(); j++)
+            {
+                double value = row.get(j);
+                
+                if (min > value)
+                {
+                    min = value;
+                } 
+                
+                if (max < value)
+                {
+                    max = value;
+                }
+            }
+            
+            minColumns.add(min);
+            maxColumns.add(max);
+        }
+        
+        scatterPlotZAxisGradient.initWithMinMax(minColumns.get(2), maxColumns.get(2));
+
+        ZAxisGradient color = new ZAxisGradient(minColumns.get(2), maxColumns.get(2));
+        
+        for (int i = 0; i < dataScatterPlot.get(0).size(); i++)
+        {
+            titles[i] = "";
+            colors[i] = color.getColorForValue(dataScatterPlot.get(2).get(i));
+        }
+        
+        String xAxisField = xAxisSpinner.getSelectedItem().toString();
+        String yAxisField = yAxisSpinner.getSelectedItem().toString();
+        
+        String title = xAxisSpinner.getSelectedItem().toString() + " vs " + yAxisField;
+
+        XYMultipleSeriesRenderer renderer = buildRenderer(titles.length, colors);
+        setChartSettings(renderer, title, xAxisField, yAxisField, minColumns.get(0) - 10, maxColumns.get(0) + 10, minColumns.get(1) - 10, maxColumns.get(1) + 10, Color.GRAY, Color.LTGRAY);
+        
+        renderer.setXLabels(10);
+        renderer.setYLabels(10);
+        renderer.setShowLegend(false);
+        
+        int length = renderer.getSeriesRendererCount();
+        for (int i = 0; i < length; i++) {
+          ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
+        }
+
+        TextView chooseAxisAndGenerateText = (TextView) findViewById(R.id.chooseAxisAndGenerateText);
+        chooseAxisAndGenerateText.setVisibility(View.GONE);
+        
+        LinearLayout scatterPlotBottom = (LinearLayout) findViewById(R.id.scatterPlotBottom);
+        scatterPlotBottom.setVisibility(View.VISIBLE);
+        
+        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_scatter_plot);
+
+        if (mChartScatterPlotView == null)
+        {
+            mChartScatterPlotView = ChartFactory.getScatterChartView(ViewDatalogActivity.this, buildDateDataset(titles, x, values), renderer);                                 
+            layout.addView(mChartScatterPlotView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        }
+        else
+        {
+            mChartScatterPlotView.repaint();
+        }
+    }
+    
+    /**
      * Builds an XY multiple time dataset using the provided values.
      * 
      * @param titles
@@ -741,12 +743,14 @@ public class ViewDatalogActivity extends Activity
     /**
      * AsyncTask that is used to read datalog in a background task while the UI can keep updating
      */
-    private class readLogFileInBackground extends AsyncTask<Void, Integer, Void>
+    private class readLogFileInBackground extends AsyncTask<String, Integer, Void>
     {
         private ProgressDialog dialog = new ProgressDialog(ViewDatalogActivity.this);
         
         private long taskStartTime;
         private long lastRemainingUpdate;
+        
+        private String graphType = "";
         
         /**
          * This is executed before doInBackground
@@ -779,7 +783,15 @@ public class ViewDatalogActivity extends Activity
         {
             super.onPostExecute(result);
             
-            generateGraph();
+            if (graphType.equals("regular"))
+            {
+                generateRegularGraph();
+            }
+            else if (graphType.equals("scatterplot"))
+            {
+                generateScatterPlot();
+            }
+            
             dialog.dismiss();
         }
         
@@ -830,12 +842,21 @@ public class ViewDatalogActivity extends Activity
          * @param params Parameters of the task
          */
         @Override
-        protected Void doInBackground(Void... params)
-        {            
+        protected Void doInBackground(String... params)
+        {
+            graphType = params[0];
+            
             Bundle b = getIntent().getExtras();
             String datalog = b.getString("datalog");
-            
-            readRegularDatalog(datalog);
+           
+            if (graphType.equals("regular"))
+            {
+                readRegularDatalog(datalog);
+            }
+            else if (graphType.equals("scatterplot"))
+            {
+                readScatterPlotDatalog(datalog);
+            }
             
             return null;
         }
