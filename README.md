@@ -10,22 +10,47 @@ Megasquirt Firware Support
 ------------------------------------------------
 MSLogger currently supports the following firmwares:
 
-* Megasquirt-I B&G 2.0-3.0
-* JimStim format V2.0.3
-* MS/Extra format hr_10
-* MS/Extra format hr_11b
-* MS/Extra format hr_11d
-* MS1/Extra format 029y3
-* MS2 Extra 311 mb_v12
-* MS2 Extra Rel 2.0.0
-* MS2 Extra Rel 2.1.0
-* MS2 Extra Rev 1.0.2
-* MS2 Extra Serial310
-* MS2 Extra Serial312a
-* MS2 Extra Serial312b
+* megasquirt-I
+* megasquirt-I_B&G_2.0-3.0
+* megasquirt-I_B&G_2.0
+* msns-extra.029q-29w
+* msns-extra
+* MSExtra format hr_10
+* MSExtra format hr_11
+* MSExtra format hr_11d
+* megasquirt-I
+* msns-extra.29y
+* megasquirt-II.2.86
+* megasquirt-II.2.88
+* megasquirt-II.2.885
+* megasquirt-II.2.886
+* megasquirt-II
+* megasquirt-II_3760
+* megasquirt-II_v2905
+* ms2extra.2.1p
+* ms2extra.2.1q
+* ms2extra_2.1.0.d
+* ms2extra_3.03s
+* ms2extra_3.03u
+* ms2extra_3.03r
+* MS2Extra Rel 2.0.1
+* MS2Extra Rev 1.0.2
+* MS2Extra311mb_v12
+* MS2Extra Serial310
+* MS2Extra Serial312a
+* MS2Extra Serial321
+* MS2Extra Serial323
+* MS2Extra Serial330e
+* MS2Extra Serial330f
+* MS2Extra SerialGS26
+* MS2Extra SerialGS27
+* MS3 Format 0081.001
+* MS3 Format 0089.001
 * MS3 Format 0095.002
-* MS3 Format 0214.003
+* MS3 Format 0095.005
+* MS3 Format 0215.001
 * MS3 Format 0221.002
+* MS3 Format 0221.009
 * MS3 Format 0225.005
 * MS3 Format 0225.009
 * MS3 Format 0225.010
@@ -39,12 +64,11 @@ MSLogger currently supports the following firmwares:
 * MS3 Format 0238.000
 * MS3 Format 0238.001
 * MS3 Format 0238.002
-* MSII Rev 2.88000
-* MSII Rev 2.88600
-* MSII Rev 2.88600
-* MSII Rev 2.90500
-* MSII Rev 3.76000
-* MShift 2.110
-* MSnS-Extra Format 029q
+* GPIO_MShift_2109
 
-Please note that more firmwares can be supported upon request, just ask the developers.
+Please note that more firmwares can be supported upon request, just ask the developers.  List generated from Normaliser with the following command 
+
+    grep ".ini" ../Normaliser/inis/generationList.txt |grep -v "^#" | sed -e's/.ini//' -e 's/^/\* /'
+
+We can be contacted at msloggger.android@gmail.com
+  
