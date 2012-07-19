@@ -62,7 +62,7 @@ public enum DebugLogManager
      * @param logLevel
      *            The level of log
      */
-    public synchronized void log(String s, int logLevel)
+    public void log(String s, int logLevel)
     {
         // Make sure the user want to save a log of that level
         if (!checkLogLevel(logLevel))
@@ -83,8 +83,11 @@ public enum DebugLogManager
                     createLogFile();
 
                 long now = System.currentTimeMillis();
-                os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), s));
-                os.flush();
+                synchronized (os)
+                {
+                    os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), s));
+                    os.flush();
+                }
             }
             catch (IOException e)
             {
@@ -111,7 +114,7 @@ public enum DebugLogManager
      * @param ex
      *            The exception to log
      */
-    public synchronized void logException(Exception ex)
+    public void logException(Exception ex)
     {
         // Make sure we have write permission
         if (!ApplicationSettings.INSTANCE.isWritable())
@@ -130,25 +133,28 @@ public enum DebugLogManager
                 System.err.println("Could not create the log file : " + e.getLocalizedMessage());
             }
         }
-        PrintWriter pw = new PrintWriter(os);
-        try
+        synchronized (os)
         {
-            long now = System.currentTimeMillis();
-            os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), ex.getLocalizedMessage()));
-        }
-        catch (IOException e)
-        {
-        }
-        ex.printStackTrace(pw);
-        try
-        {
-            if (os != null)
+            PrintWriter pw = new PrintWriter(os);
+            try
             {
-                os.flush();
+                long now = System.currentTimeMillis();
+                os.write(String.format("%tc:%tL:%s:%s%n", now, now, Thread.currentThread().getName(), ex.getLocalizedMessage()));
             }
-        }
-        catch (IOException e)
-        {
+            catch (IOException e)
+            {
+            }
+            ex.printStackTrace(pw);
+            try
+            {
+                if (os != null)
+                {
+                    os.flush();
+                }
+            }
+            catch (IOException e)
+            {
+            }
         }
     }
 
@@ -201,7 +207,7 @@ public enum DebugLogManager
         }
         if (text.length() > 0)
         {
-            b.append(String.format("%1$-120s %2$s\n",hex.toString(),text.toString()));
+            b.append(String.format("%1$-120s %2$s\n", hex.toString(), text.toString()));
         }
         log(b.toString(), logLevel);
     }
