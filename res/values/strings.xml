@@ -110,6 +110,16 @@
 	<string name="datalog_viewer_title">Datalog Viewer</string>
 	<string name="select_fields_to_view">Select Fields to View</string>
 	<string name="filter_datalog_fields">Filter datalog fields…</string>
+	<string name="log_viewer">Log Viewer</string>
+	<string name="scatter_plot">Scatter Plot</string>
+	<string name="x_axis">X Axis:</string>
+	<string name="y_axis">Y Axis:</string>
+	<string name="z_axis">Z Axis:</string>
+	<string name="choose_x_axis_datalog_field">Choose the X axis datalog field</string>
+	<string name="choose_y_axis_datalog_field">Choose the Y axis datalog field</string>
+	<string name="choose_z_axis_datalog_field">Choose the Z axis datalog field</string>
+	<string name="bt_generate">Generate</string>
+	<string name="choose_axis_and_generate">Choose a datalog field for the X, Y and Z axis and click the \"Generate\" button.</string>
 	
 	<!-- Manage Datalogs -->
 	<string name="manage_datalogs_title">Manage Datalogs</string>
