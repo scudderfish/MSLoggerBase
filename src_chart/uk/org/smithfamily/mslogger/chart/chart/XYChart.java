@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2009 - 2012 SC 4ViewSoft SRL
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,7 +80,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Builds a new XY chart instance.
-   * 
+   *
    * @param dataset the multiple series dataset
    * @param renderer the multiple series renderer
    */
@@ -98,7 +98,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of the XY chart.
-   * 
+   *
    * @param canvas the canvas to paint to
    * @param x the top left x value of the view to draw to
    * @param y the top left y value of the view to draw to
@@ -351,7 +351,7 @@ public abstract class XYChart extends AbstractChart {
                   canvas.drawLine(right, yLabel, right + getLabelLinePos(axisAlign), yLabel, paint);
                   drawText(canvas, label, right, yLabel - 2, paint, mRenderer.getYLabelsAngle());
                 }
-                
+
                 if (showCustomTextGrid) {
                   paint.setColor(mRenderer.getGridColor());
                   canvas.drawLine(left, yLabel, right, yLabel, paint);
@@ -457,7 +457,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Draws the series.
-   * 
+   *
    * @param series the series
    * @param canvas the canvas
    * @param paint the paint object
@@ -520,7 +520,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of the series values as text.
-   * 
+   *
    * @param canvas the canvas to paint to
    * @param series the series to be painted
    * @param renderer the series renderer
@@ -536,25 +536,28 @@ public abstract class XYChart extends AbstractChart {
       float previousPointX = points[0];
       float previousPointY = points[1];
       for (int k = 0; k < points.length; k += 2) {
-        if (k == 2) { // decide whether to display first two points' values or not
-          if (Math.abs(points[2]- points[0]) > 100 || Math.abs(points[3] - points[1]) > 100) {
+        if (k == 2) { // decide whether to display first two points' values or
+                      // not
+          if (Math.abs(points[2] - points[0]) > renderer.getDisplayChartValuesDistance() || Math.abs(points[3] - points[1]) > renderer.getDisplayChartValuesDistance()) {
             // first point
-            drawText(canvas, getLabel(series.getY(startIndex)), points[0], points[1]
-                - renderer.getChartValuesSpacing(), paint, 0);
+            drawText(canvas, getLabel(series.getY(startIndex)), points[0],
+                points[1] - renderer.getChartValuesSpacing(), paint, 0);
             // second point
-            drawText(canvas, getLabel(series.getY(startIndex + 1)), points[2], points[3]
-                - renderer.getChartValuesSpacing(), paint, 0);
+            drawText(canvas, getLabel(series.getY(startIndex + 1)), points[2],
+                points[3] - renderer.getChartValuesSpacing(), paint, 0);
 
             previousPointX = points[2];
             previousPointY = points[3];
           }
         } else if (k > 2) {
-          // compare current point's position with the previous point's, if they are not too close, display
-          if (Math.abs(points[k]- previousPointX) > 100 || Math.abs(points[k+1] - previousPointY) > 100) {
+          // compare current point's position with the previous point's, if they
+          // are not too close, display
+          if (Math.abs(points[k] - previousPointX) > renderer.getDisplayChartValuesDistance()
+              || Math.abs(points[k + 1] - previousPointY) > renderer.getDisplayChartValuesDistance()) {
             drawText(canvas, getLabel(series.getY(startIndex + k / 2)), points[k], points[k + 1]
                 - renderer.getChartValuesSpacing(), paint, 0);
             previousPointX = points[k];
-            previousPointY = points[k+1];
+            previousPointY = points[k + 1];
           }
         }
       }
@@ -569,7 +572,7 @@ public abstract class XYChart extends AbstractChart {
   /**
    * The graphical representation of a text, to handle both HORIZONTAL and
    * VERTICAL orientations and extra rotation angles.
-   * 
+   *
    * @param canvas the canvas to paint to
    * @param text the text to be rendered
    * @param x the X axis location of the text
@@ -594,7 +597,7 @@ public abstract class XYChart extends AbstractChart {
   /**
    * Transform the canvas such as it can handle both HORIZONTAL and VERTICAL
    * orientations.
-   * 
+   *
    * @param canvas the canvas to paint to
    * @param angle the angle of rotation
    * @param inverse if the inverse transform needs to be applied
@@ -613,7 +616,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of the labels on the X axis.
-   * 
+   *
    * @param xLabels the X labels values
    * @param xTextLabelLocations the X text label locations
    * @param canvas the canvas to paint to
@@ -650,7 +653,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of the labels on the X axis.
-   * 
+   *
    * @param allYLabels the Y labels values
    * @param canvas the canvas to paint to
    * @param paint the paint to be used for drawing
@@ -710,7 +713,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of the text labels on the X axis.
-   * 
+   *
    * @param xTextLabelLocations the X text label locations
    * @param canvas the canvas to paint to
    * @param paint the paint to be used for drawing
@@ -732,7 +735,7 @@ public abstract class XYChart extends AbstractChart {
           float xLabel = (float) (left + xPixelsPerUnit * (location.doubleValue() - minX));
           paint.setColor(mRenderer.getXLabelsColor());
           canvas
-          .drawLine(xLabel, bottom, xLabel, bottom + mRenderer.getLabelsTextSize() / 3, paint);
+              .drawLine(xLabel, bottom, xLabel, bottom + mRenderer.getLabelsTextSize() / 3, paint);
           drawText(canvas, mRenderer.getXTextLabel(location), xLabel,
               bottom + mRenderer.getLabelsTextSize() * 4 / 3, paint, mRenderer.getXLabelsAngle());
           if (showCustomTextGrid) {
@@ -779,7 +782,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Transforms a screen point to a real coordinates point.
-   * 
+   *
    * @param screenX the screen x axis value
    * @param screenY the screen y axis value
    * @return the real coordinates point
@@ -824,13 +827,11 @@ public abstract class XYChart extends AbstractChart {
         if (clickableAreas.get(seriesIndex) != null) {
           RectF rectangle;
           for (ClickableArea area : clickableAreas.get(seriesIndex)) {
-            if (area != null) {
-              rectangle = area.getRect();
-              if (rectangle != null && rectangle.contains(screenPoint.getX(), screenPoint.getY())) {
-                return new SeriesSelection(seriesIndex, pointIndex, area.getX(), area.getY());
-              }
-              pointIndex++;
+            rectangle = area.getRect();
+            if (rectangle != null && rectangle.contains(screenPoint.getX(), screenPoint.getY())) {
+              return new SeriesSelection(seriesIndex, pointIndex, area.getX(), area.getY());
             }
+            pointIndex++;
           }
         }
       }
@@ -839,7 +840,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * The graphical representation of a series.
-   * 
+   *
    * @param canvas the canvas to paint to
    * @param paint the paint to be used for drawing
    * @param points the array of points to be used for drawing the series
@@ -853,7 +854,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns the clickable areas for all passed points
-   * 
+   *
    * @param points the array of points
    * @param values the array of values of each point
    * @param yAxisValue the minimum value of the y axis
@@ -866,7 +867,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns if the chart should display the null values.
-   * 
+   *
    * @return if null values should be rendered
    */
   protected boolean isRenderNullValues() {
@@ -875,7 +876,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns if the chart should display the points as a certain shape.
-   * 
+   *
    * @param renderer the series renderer
    */
   public boolean isRenderPoints(SimpleSeriesRenderer renderer) {
@@ -884,7 +885,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns the default axis minimum.
-   * 
+   *
    * @return the default axis minimum
    */
   public double getDefaultMinimum() {
@@ -893,7 +894,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns the scatter chart to be used for drawing the data points.
-   * 
+   *
    * @return the data points scatter chart
    */
   public ScatterChart getPointsChart() {
@@ -902,7 +903,7 @@ public abstract class XYChart extends AbstractChart {
 
   /**
    * Returns the chart type identifier.
-   * 
+   *
    * @return the chart type
    */
   public abstract String getChartType();

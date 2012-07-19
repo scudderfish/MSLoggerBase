@@ -18,6 +18,7 @@ package uk.org.smithfamily.mslogger.chart.model;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import uk.org.smithfamily.mslogger.chart.util.IndexXYMap;
 import uk.org.smithfamily.mslogger.chart.util.MathHelper;
@@ -205,7 +206,7 @@ public class XYSeries implements Serializable {
         stop += next;
       }
     }
-    return mXY.subMap(start, stop);
+    return new TreeMap<Double, Double>(mXY.subMap(start, stop));
   }
 
   public int getIndexForKey(double key) {
