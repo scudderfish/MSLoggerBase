@@ -457,12 +457,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                             String lastIndicatorType = lastIndicator.getType();
     
                             String firstIndicatorName = firstIndicator.getName();
-                            String lastIndicatorName = lastIndicator.getName();                    
+                            String lastIndicatorName = lastIndicator.getName();
             
                             int firstIndexIndicator = 0;
                             int lastIndexIndicator = 0;
-                                                        
-                            // Find first touched indicator index     
+                            
+                            // Find first touched indicator index
                             for (int i = 0; i < indicators.length; i++)
                             {
                                 if (indicators[i] != null && firstIndicator.getId() == indicators[i].getId())
@@ -471,7 +471,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                 }
                             }
                             
-                            // Find last touched indicator index     
+                            // Find last touched indicator index
                             for (int i = 0; i < indicators.length; i++)
                             {
                                 if (indicators[i] != null && lastIndicator.getId() == indicators[i].getId())
@@ -491,7 +491,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                             }
                             // Indicator were not the same type, we need to rebuild them with the right class
                             else
-                            {                                                
+                            {
                                 // Remove old last indicator
                                 ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
                                 int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
@@ -503,7 +503,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                 parentFirstIndicatorView.removeViewAt(indexFirst);
                                 
                                 if (parentFirstIndicatorView == parentLastIndicatorView)
-                                {                  
+                                {
                                     if (indexLast > indexFirst)
                                     {
                                         indexLast -= 1; 
@@ -528,11 +528,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                 // Init the indicator with their new gauge details
                                 indicators[lastIndexIndicator].initFromName(firstIndicatorName);
                                 indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-                            }                
-                            
-                            // Put their ID back in place
-                            indicators[firstIndexIndicator].setId(lastIndicator.getId());
-                            indicators[lastIndexIndicator].setId(firstIndicator.getId());
+                                
+                                // Put their ID back in place
+                                indicators[firstIndexIndicator].setId(lastIndicator.getId());
+                                indicators[lastIndexIndicator].setId(firstIndicator.getId());
+                            }
                             
                             return true;
                         }
@@ -543,7 +543,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             };
             
             indicators[i].setOnClickListener(MSLoggerActivity.this);
-            indicators[i].setOnTouchListener(gestureListener);        
+            indicators[i].setOnTouchListener(gestureListener); 
         }
     }
     
