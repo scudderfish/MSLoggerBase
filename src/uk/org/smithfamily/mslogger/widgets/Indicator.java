@@ -4,6 +4,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.View;
 
 /**
@@ -32,6 +33,7 @@ public abstract class Indicator extends View
     private double             value           = 2500;
     private boolean            disabled        = false;
     private double             offsetAngle     = 45;
+    private GestureDetector    gestureDetector;
 
     private GaugeDetails deadGauge = new GaugeDetails("Gauge","",DEAD_GAUGE_NAME, "deadValue",getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
     
@@ -407,6 +409,22 @@ public abstract class Indicator extends View
     {
         this.deadGauge = deadGauge;
     }
+    
+    /**
+     * @return
+     */
+    public GestureDetector getGestureDetector()
+    {
+        return gestureDetector;
+    }
 
+    /**
+     * @param gestureDetector
+     */
+    public void setGestureDetector(GestureDetector gestureDetector)
+    {
+        this.gestureDetector = gestureDetector;
+    }
+    
     public abstract String getType();
 }

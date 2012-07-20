@@ -1,7 +1,6 @@
 package uk.org.smithfamily.mslogger.activity;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
@@ -12,8 +11,8 @@ import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -31,7 +30,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 {
     private MSLoggerActivity    mainActivity;
     private GaugeDetails        gd;
-    private Indicator           gauge;
+    private Indicator           indicator;
     private String              indicatorType;
     
     private Spinner             typeSpinner;
@@ -40,16 +39,16 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     /**
      * 
      * @param context
-     * @param gauge
+     * @param indicator
      */
-    public EditGaugeDialog(Context context, Indicator gauge, MSLoggerActivity mainActivity)
+    public EditGaugeDialog(Context context, Indicator indicator, MSLoggerActivity mainActivity)
     {
         super(context);
         
-        this.gauge = gauge;
-        this.gd = gauge.getDetails();
+        this.indicator = indicator;
+        this.gd = indicator.getDetails();
         
-        this.indicatorType = gauge.getType();
+        this.indicatorType = indicator.getType();
         this.mainActivity = mainActivity;
     }
 
@@ -63,10 +62,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     {
         super.onCreate(savedInstanceState);
         
-        long start=System.currentTimeMillis();
         setContentView(R.layout.editgauge);
-        long stop = System.currentTimeMillis();
-        DebugLogManager.INSTANCE.log("EditDialog.setContentView took "+(stop-start)+"ms", Log.ERROR);
+
         setTitle("Edit Gauge Properties");
 
         setValue(R.id.editName, gd.getName());
@@ -118,7 +115,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         // Select current gauge type
         typeSpinner.setSelection(typeAdapter.getPosition(indicatorType));
         
-        typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
@@ -182,67 +180,48 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         
         // Gauge type changed, need to rebuild the view
         if (!selectedIndicatorType.equals(indicatorType))
-        {            
-            LinearLayout mainLayout = (LinearLayout) mainActivity.findViewById(R.id.mainLinearLayout);
-            LinearLayout mainLayoutLand = (LinearLayout) mainActivity.findViewById(R.id.mainLinearLayoutLand);
-            
-            if (mainLayout != null)
-            {
-                mainLayout.removeViewAt(0);
-            }
-            
-            if (mainLayoutLand != null)
-            {
-                mainLayoutLand.removeViewAt(0);
-            }
-            
-            Indicator indicator = null;
+        {                        
+            Indicator newIndicator = null;
             
             // Gauge
             if (selectedIndicatorType.equals(getContext().getString(R.string.gauge)))
             {
-                indicator = new Gauge(getContext());
+                newIndicator = new Gauge(getContext());
             }
             // Histogram
             else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram)))
             {
-                indicator = new Histogram(getContext()); 
+                newIndicator = new Histogram(getContext()); 
             }
             // Bar Graph
             else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph)))
             {
-                indicator = new BarGraph(getContext());
+                newIndicator = new BarGraph(getContext());
             }
             // Numeric Indicator
             else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
             {
-                indicator = new NumericIndicator(getContext());
+                newIndicator = new NumericIndicator(getContext());
             }
 
-            if (indicator != null)
+            if (newIndicator != null)
             {
-                indicator.setId(R.id.g3);
-                indicator.initFromName(gd.getName());
+                newIndicator.setId(indicator.getId());
+                newIndicator.initFromName(gd.getName());
                 
                 LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
-                indicator.setLayoutParams(params);
+                newIndicator.setLayoutParams(params);
                 
-                indicator.setFocusable(true);
-                indicator.setFocusableInTouchMode(true);
+                newIndicator.setFocusable(true);
+                newIndicator.setFocusableInTouchMode(true);
+
+                ViewGroup parentIndicatorView = (ViewGroup) indicator.getParent();
+                int index = parentIndicatorView.indexOfChild(indicator);
+                parentIndicatorView.removeView(indicator);
                 
-                mainActivity.setIndicator3(indicator);
+                parentIndicatorView.addView(newIndicator, index);   
                 
-                if (mainLayout != null)
-                {
-                    mainLayout.addView(indicator);
-                }
-                
-                if (mainLayoutLand != null)
-                {
-                    mainLayoutLand.addView(indicator);
-                }
-                
-                mainActivity.initIndicator3Events();
+                mainActivity.bindIndicatorsEvents();
             }
         }
         
@@ -264,8 +243,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         
         GaugeRegister.INSTANCE.persistDetails(gd);
         
-        gauge.initFromGD(gd);
-        gauge.invalidate();
+        indicator.initFromGD(gd);
+        indicator.invalidate();
         
         dismiss();
     }
@@ -277,8 +256,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     {
         GaugeRegister.INSTANCE.reset(gd.getName());
         gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
-        gauge.initFromGD(gd);
-        gauge.invalidate();
+        indicator.initFromGD(gd);
+        indicator.invalidate();
         dismiss();
     }
 
