@@ -11,7 +11,8 @@ import android.view.MotionEvent;
 class IndicatorGestureListener extends GestureDetector.SimpleOnGestureListener
 {
     private final MSLoggerActivity msLoggerActivity;
-    private Indicator              gauge;
+    private Indicator              indicator;
+    private int                    indicatorIndex;
 
     /**
      * Constructor
@@ -19,10 +20,11 @@ class IndicatorGestureListener extends GestureDetector.SimpleOnGestureListener
      * @param msLoggerActivity
      * @param indicator
      */
-    public IndicatorGestureListener(MSLoggerActivity msLoggerActivity, Indicator indicator)
+    public IndicatorGestureListener(MSLoggerActivity msLoggerActivity, Indicator indicator, int indicatorIndex)
     {
         this.msLoggerActivity = msLoggerActivity;
-        this.gauge = indicator;
+        this.indicator = indicator;
+        this.indicatorIndex = indicatorIndex;
     }
 
     /**
@@ -33,7 +35,7 @@ class IndicatorGestureListener extends GestureDetector.SimpleOnGestureListener
     @Override
     public boolean onDoubleTap(MotionEvent e)
     {
-        EditGaugeDialog dialog = new EditGaugeDialog(this.msLoggerActivity, gauge, msLoggerActivity);
+        EditGaugeDialog dialog = new EditGaugeDialog(this.msLoggerActivity, indicator, indicatorIndex, msLoggerActivity);
         dialog.show();
 
         return true;

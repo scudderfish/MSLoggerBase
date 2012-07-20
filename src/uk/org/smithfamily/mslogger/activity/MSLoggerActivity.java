@@ -383,13 +383,24 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
+     * Replace the instance of an indicator, used in EditGaugeDialog, after modifying indicator details
+     * 
+     * @param indicator
+     * @param indicatorIndex
+     */
+    public void replaceIndicator(Indicator indicator, int indicatorIndex)
+    {
+        indicators[indicatorIndex] = indicator;
+    }
+    
+    /**
      * 
      */
     public void bindIndicatorsEvents()
     {
         for (int i = 0; i < indicators.length; i++)
         {
-            indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i])));
+            indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
             
             OnTouchListener gestureListener = new View.OnTouchListener()
             {
@@ -472,32 +483,42 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                             // Indicator are the same type
                             if (firstIndicator.getType().equals(lastIndicatorType))
                             {
-                                lastIndicator.initFromName(firstIndicator.getName());
+                                indicators[lastIndexIndicator] = lastIndicator;
+                                indicators[lastIndexIndicator].initFromName(firstIndicatorName);
             
                                 indicators[firstIndexIndicator] = firstIndicator;
                                 indicators[firstIndexIndicator].initFromName(lastIndicatorName);
                             }
                             // Indicator were not the same type, we need to rebuild them with the right class
                             else
-                            {                
-                                // Swap touched indicator with indicator 3 (middle one)
-                                View indicator3View = findViewById(firstIndicator.getId());
+                            {                                                
+                                // Remove old last indicator
+                                ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
+                                int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
+                                parentLastIndicatorView.removeViewAt(indexLast);
+                                                              
+                                // Remove old first indicator
+                                ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
+                                int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
+                                parentFirstIndicatorView.removeViewAt(indexFirst);
                                 
-                                // Remove old indicator 3
-                                ViewGroup parentIndicator3View = (ViewGroup) indicator3View.getParent();
-                                int index = parentIndicator3View.indexOfChild(indicator3View);
-                                parentIndicator3View.removeView(indicator3View);
-            
-                                // Remove old touched indicator
-                                ViewGroup parentTouchedIndicatorView = (ViewGroup) v.getParent();
-                                index = parentTouchedIndicatorView.indexOfChild(v);
-                                parentTouchedIndicatorView.removeView(v);
+                                if (parentFirstIndicatorView == parentLastIndicatorView)
+                                {                  
+                                    if (indexLast > indexFirst)
+                                    {
+                                        indexLast -= 1; 
+                                    } 
+                                    else
+                                    {
+                                        indexFirst += 1;
+                                    } 
+                                } 
                                 
-                                // Add touched indicator in place of indicator 3
-                                parentIndicator3View.addView(v);           
+                                // Add first touched indicator in place of last touched indicator
+                                parentLastIndicatorView.addView(firstIndicator, indexLast);   
                                 
-                                // Add indicator 3 in place of touched indicator
-                                parentTouchedIndicatorView.addView(indicator3View, index);        
+                                // Add last touched indicator in place of first touched indicator
+                                parentFirstIndicatorView.addView(lastIndicator, indexFirst);     
                                 
                                 // Swap objects
                                 Indicator tmpIndicator = indicators[firstIndexIndicator];
@@ -510,9 +531,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                             }                
                             
                             // Put their ID back in place
-                            indicators[firstIndexIndicator].setId(v.getId());
+                            indicators[firstIndexIndicator].setId(lastIndicator.getId());
                             indicators[lastIndexIndicator].setId(firstIndicator.getId());
-            
+                            
                             return true;
                         }
                     }

@@ -31,6 +31,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     private MSLoggerActivity    mainActivity;
     private GaugeDetails        gd;
     private Indicator           indicator;
+    private int                 indicatorIndex;
     private String              indicatorType;
     
     private Spinner             typeSpinner;
@@ -41,7 +42,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param context
      * @param indicator
      */
-    public EditGaugeDialog(Context context, Indicator indicator, MSLoggerActivity mainActivity)
+    public EditGaugeDialog(Context context, Indicator indicator, int indicatorIndex, MSLoggerActivity mainActivity)
     {
         super(context);
         
@@ -49,6 +50,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         this.gd = indicator.getDetails();
         
         this.indicatorType = indicator.getType();
+        this.indicatorIndex = indicatorIndex;
         this.mainActivity = mainActivity;
     }
 
@@ -221,6 +223,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
                 
                 parentIndicatorView.addView(newIndicator, index);   
                 
+                mainActivity.replaceIndicator(newIndicator, indicatorIndex);
                 mainActivity.bindIndicatorsEvents();
             }
         }

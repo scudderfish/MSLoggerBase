@@ -18,10 +18,10 @@ import android.widget.TextView;
  */
 public class StartupActivity extends Activity
 {
+    private static final int REQUEST_ENABLE_BT = 0;
     private static final int SELECT_EGO        = 1;
     private static final int SELECT_MAP        = 2;
     private static final int SELECT_EMAIL      = 3;
-    private static final int REQUEST_ENABLE_BT = 0;
 
     /**
      *
@@ -110,7 +110,7 @@ public class StartupActivity extends Activity
             startActivityForResult(serverIntent, MSLoggerApplication.REQUEST_CONNECT_DEVICE);
             return;
         }
-        if(ApplicationSettings.INSTANCE.getEcuDefinition() == null)
+        if (ApplicationSettings.INSTANCE.getEcuDefinition() == null)
         {
             startFingerprint();
         }
