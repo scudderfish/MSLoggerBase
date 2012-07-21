@@ -457,7 +457,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                             }
                         }
                         
-                        if (lastIndicator != null)
+                        if (lastIndicator != null && firstIndicator != lastIndicator)
                         {    
                             String firstIndicatorName = firstIndicator.getName();
                             String lastIndicatorName = lastIndicator.getName();
