@@ -427,4 +427,11 @@ public abstract class Indicator extends View
     }
     
     public abstract String getType();
+
+    @Override
+    public String toString()
+    {
+        return "Indicator [name=" + name + ", title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
+                + ", value=" + value + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + "]";
+    }
 }

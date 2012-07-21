@@ -391,6 +391,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public void replaceIndicator(Indicator indicator, int indicatorIndex)
     {
         indicators[indicatorIndex] = indicator;
+        
+        for (int i = 0; i < indicators.length; i++)
+        {
+            System.out.println("Indicator " + indicators[i].toString());
+        }
     }
     
     /**
@@ -453,9 +458,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         }
                         
                         if (lastIndicator != null)
-                        {
-                            String lastIndicatorType = lastIndicator.getType();
-    
+                        {    
                             String firstIndicatorName = firstIndicator.getName();
                             String lastIndicatorName = lastIndicator.getName();
             
@@ -479,61 +482,48 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                     lastIndexIndicator = i;
                                 }
                             }
+                        
+                            // Remove old last indicator
+                            ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
+                            int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
+                            parentLastIndicatorView.removeViewAt(indexLast);
+                                                          
+                            // Remove old first indicator
+                            ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
+                            int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
+                            parentFirstIndicatorView.removeViewAt(indexFirst);
                             
-                            // Indicator are the same type
-                            if (firstIndicator.getType().equals(lastIndicatorType))
+                            if (parentFirstIndicatorView == parentLastIndicatorView)
                             {
-                                indicators[lastIndexIndicator] = lastIndicator;
-                                indicators[lastIndexIndicator].initFromName(firstIndicatorName);
-            
-                                indicators[firstIndexIndicator] = firstIndicator;
-                                indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-                            }
-                            // Indicator were not the same type, we need to rebuild them with the right class
-                            else
-                            {
-                                // Remove old last indicator
-                                ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
-                                int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
-                                parentLastIndicatorView.removeViewAt(indexLast);
-                                                              
-                                // Remove old first indicator
-                                ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
-                                int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
-                                parentFirstIndicatorView.removeViewAt(indexFirst);
-                                
-                                if (parentFirstIndicatorView == parentLastIndicatorView)
+                                if (indexLast > indexFirst)
                                 {
-                                    if (indexLast > indexFirst)
-                                    {
-                                        indexLast -= 1; 
-                                    } 
-                                    else
-                                    {
-                                        indexFirst += 1;
-                                    } 
+                                    indexLast -= 1; 
                                 } 
-                                
-                                // Add first touched indicator in place of last touched indicator
-                                parentLastIndicatorView.addView(firstIndicator, indexLast);   
-                                
-                                // Add last touched indicator in place of first touched indicator
-                                parentFirstIndicatorView.addView(lastIndicator, indexFirst);     
-                                
-                                // Swap objects
-                                Indicator tmpIndicator = indicators[firstIndexIndicator];
-                                indicators[firstIndexIndicator] = lastIndicator;
-                                indicators[lastIndexIndicator] = tmpIndicator;
-                                
-                                // Init the indicator with their new gauge details
-                                indicators[lastIndexIndicator].initFromName(firstIndicatorName);
-                                indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-                                
-                                // Put their ID back in place
-                                indicators[firstIndexIndicator].setId(lastIndicator.getId());
-                                indicators[lastIndexIndicator].setId(firstIndicator.getId());
-                            }
+                                else
+                                {
+                                    indexFirst += 1;
+                                } 
+                            } 
                             
+                            // Add first touched indicator in place of last touched indicator
+                            parentLastIndicatorView.addView(firstIndicator, indexLast);   
+                            
+                            // Add last touched indicator in place of first touched indicator
+                            parentFirstIndicatorView.addView(lastIndicator, indexFirst);     
+                            
+                            // Swap objects
+                            Indicator tmpIndicator = indicators[firstIndexIndicator];
+                            indicators[firstIndexIndicator] = lastIndicator;
+                            indicators[lastIndexIndicator] = tmpIndicator;
+                            
+                            // Init the indicator with their new gauge details
+                            indicators[lastIndexIndicator].initFromName(firstIndicatorName);
+                            indicators[firstIndexIndicator].initFromName(lastIndicatorName);
+                            
+                            // Put their ID back in place
+                            indicators[firstIndexIndicator].setId(lastIndicator.getId());
+                            indicators[lastIndexIndicator].setId(firstIndicator.getId());
+                        
                             return true;
                         }
                     }
