@@ -1,6 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<color name="IndicatorFG">#000</color>
-<color name="IndicatorBG">#fff</color>
-<color name="IndicatorWarn">#f00</color>
 </resources>
