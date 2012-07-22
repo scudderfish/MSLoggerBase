@@ -398,7 +398,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void bindIndicatorsEditEvents()
     {
-        for (int i = 0; i < indicators.length; i++)
+        for (int i = 0; i < indicators.length  && indicators[i] != null; i++)
         {
             indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
             
@@ -449,7 +449,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         int lastIndexIndicator = 0;
                         
                         // Find indicator when the finger was lifted
-                        for (int i = 0; i < indicators.length; i++)
+                        for (int i = 0; lastIndicator == null && i < indicators.length && indicators[i] != null; i++)
                         {
                             if (this.isPointInsideView(event.getRawX(),event.getRawY(),indicators[i]))
                             {
@@ -507,10 +507,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                             // Add first touched indicator in place of last touched indicator
                             parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
-                            
+                            parentLastIndicatorView.forceLayout();
                             // Add last touched indicator in place of first touched indicator
                             parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
-                            
+                            parentFirstIndicatorView.forceLayout();
                             // Init the indicator with their new gauge details
                             indicators[lastIndexIndicator].initFromName(firstIndicatorName);
                             indicators[firstIndexIndicator].initFromName(lastIndicatorName);
