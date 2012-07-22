@@ -328,6 +328,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
+    /**
+     * Scan all indicators and make sure they are the type they should be
+     */
     public void applyWidgetTypeToIndicators()
     {
         // Look at all indicators and make sure they are the right type
@@ -401,9 +404,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
         
     /**
+     * Bind touch listener to indicator
      * 
-     */
-    
+     * @param i Indicator index to bind edit events to
+     */    
     public void bindIndicatorsEditEventsToIndex(int i)
     {
         indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
@@ -438,6 +442,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 }
             }
  
+            /**
+             * 
+             * @param v
+             * @param event
+             */
             public boolean onTouch(View v, MotionEvent event)
             {
                 if (firstIndicator != null && firstIndicator.getGestureDetector().onTouchEvent(event))
@@ -521,8 +530,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         indicators[lastIndexIndicator].setId(lastIndicator.getId());
                         indicators[firstIndexIndicator].setId(firstIndicator.getId());
                         
-                        applyWidgetTypeToIndicators();
+                        // If indicators weren't the same type, we have to change their type
+                        if (firstIndicator.getType() != lastIndicator.getType())
+                        {
+                            applyWidgetTypeToIndicators();
+                        }
                         
+                        // Re-map the right indicators with the right view
                         findGauges();
                         
                         return true;
