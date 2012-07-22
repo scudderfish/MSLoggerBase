@@ -306,7 +306,30 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
         }
-       
+        
+        applyWidgetTypeToIndicators();
+        
+        if (gaugeEditEnabled)
+        {            
+            bindIndicatorsEditEvents();
+        }
+        else
+        {
+            MarkListener l = new MarkListener(layout);
+            setTouchListeners(l);
+        }
+        
+        for (int i = 0; i < indicators.length; i++)
+        {
+            if (indicators[i] != null)
+            {
+                indicators[i].invalidate(); 
+            }
+        }
+    }
+
+    public void applyWidgetTypeToIndicators()
+    {
         // Look at all indicators and make sure they are the right type
         for (int i = 0; i < indicators.length; i++)
         {
@@ -359,29 +382,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     
                     indicators[i].setFocusable(true);
                     indicators[i].setFocusableInTouchMode(true);
+                    
+                    bindIndicatorsEditEventsToIndex(i);
                 }
             }
         }
-        
-        if (gaugeEditEnabled)
-        {            
-            bindIndicatorsEditEvents();
-        }
-        else
-        {
-            MarkListener l = new MarkListener(layout);
-            setTouchListeners(l);
-        }
-        
-        for (int i = 0; i < indicators.length; i++)
-        {
-            if (indicators[i] != null)
-            {
-                indicators[i].invalidate(); 
-            }
-        }
     }
-
+    
     /**
      * Replace the instance of an indicator, used in EditGaugeDialog, after modifying indicator details
      * 
@@ -392,141 +399,155 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         indicators[indicatorIndex] = indicator;
     }
+        
+    /**
+     * 
+     */
+    
+    public void bindIndicatorsEditEventsToIndex(int i)
+    {
+        indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
+        
+        OnTouchListener gestureListener = new View.OnTouchListener()
+        {
+            private Indicator firstIndicator;
+            
+            /**
+             * Determines if given points are inside view
+             * 
+             * @param x X coordinate of point
+             * @param y Y coordinate of point
+             * @param view View object to compare
+             * @return true If the points are within view bounds, false otherwise
+             */
+            private boolean isPointInsideView(float x, float y, View view)
+            {
+                int location[] = new int[2];
+                view.getLocationOnScreen(location);
+                int viewX = location[0];
+                int viewY = location[1];
+                
+                // Point is inside view bounds
+                if (x > viewX && x < viewX + view.getWidth() && y > viewY && y < viewY + view.getHeight())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+ 
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                if (firstIndicator != null && firstIndicator.getGestureDetector().onTouchEvent(event))
+                {
+                    return true;
+                }
+                else if (event.getAction() == MotionEvent.ACTION_DOWN)
+                {
+                    this.firstIndicator = ((Indicator) v);
+                    return true;
+                }
+                else if (event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    Indicator lastIndicator = null;
+                    int lastIndexIndicator = 0;
+                    
+                    // Find indicator when the finger was lifted
+                    for (int i = 0; lastIndicator == null && i < indicators.length && indicators[i] != null; i++)
+                    {
+                        if (this.isPointInsideView(event.getRawX(),event.getRawY(),indicators[i]))
+                        {
+                            lastIndicator = indicators[i];
+                            lastIndexIndicator = i;
+                        }
+                    }
+                                            
+                    if (lastIndicator != null && firstIndicator.getId() != lastIndicator.getId())
+                    {    
+                        String firstIndicatorName = firstIndicator.getName();
+                        String lastIndicatorName = lastIndicator.getName();
+        
+                        int firstIndexIndicator = 0;
+                        
+                        // Find first touched indicator index
+                        for (int i = 0; i < indicators.length; i++)
+                        {
+                            if (indicators[i] != null && firstIndicator.getId() == indicators[i].getId())
+                            {
+                                firstIndexIndicator = i;
+                            }
+                        }
+                    
+                        // Remove old last indicator
+                        ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
+                        int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
+                        parentLastIndicatorView.removeView(lastIndicator);
+                        
+                        // Remove old first indicator
+                        ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
+                        int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
+                        parentFirstIndicatorView.removeView(firstIndicator);
+                        
+                        /*
+                         * Since we are removing both view at the same time, if both were in the same parent,
+                         * we need to do some magic to keep them in the right order.
+                         */
+                        if (parentFirstIndicatorView == parentLastIndicatorView)
+                        {
+                            if (indexLast > indexFirst)
+                            {
+                                indexLast -= 1; 
+                            } 
+                            else
+                            {
+                                indexFirst += 1;
+                            } 
+                        } 
+
+                        // Add first touched indicator in place of last touched indicator
+                        parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
+                        parentLastIndicatorView.forceLayout();
+                        
+                        // Add last touched indicator in place of first touched indicator
+                        parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
+                        parentFirstIndicatorView.forceLayout();
+                        
+                        // Init the indicator with their new gauge details
+                        indicators[lastIndexIndicator].initFromName(firstIndicatorName);
+                        indicators[firstIndexIndicator].initFromName(lastIndicatorName);
+                        
+                        indicators[lastIndexIndicator].setId(lastIndicator.getId());
+                        indicators[firstIndexIndicator].setId(firstIndicator.getId());
+                        
+                        applyWidgetTypeToIndicators();
+                        
+                        findGauges();
+                        
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        };
+        
+        indicators[i].setOnClickListener(MSLoggerActivity.this);
+        indicators[i].setOnTouchListener(gestureListener); 
+    }
     
     /**
      * 
      */
     public void bindIndicatorsEditEvents()
     {
-        for (int i = 0; i < indicators.length  && indicators[i] != null; i++)
+        for (int i = 0; i < indicators.length; i++)
         {
-            indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
-            
-            OnTouchListener gestureListener = new View.OnTouchListener()
+            if (indicators[i] != null)
             {
-                private Indicator firstIndicator;
-                
-                /**
-                 * Determines if given points are inside view
-                 * 
-                 * @param x X coordinate of point
-                 * @param y Y coordinate of point
-                 * @param view View object to compare
-                 * @return true If the points are within view bounds, false otherwise
-                 */
-                private boolean isPointInsideView(float x, float y, View view)
-                {
-                    int location[] = new int[2];
-                    view.getLocationOnScreen(location);
-                    int viewX = location[0];
-                    int viewY = location[1];
-                    
-                    // Point is inside view bounds
-                    if (x > viewX && x < viewX + view.getWidth() && y > viewY && y < viewY + view.getHeight())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-     
-                public boolean onTouch(View v, MotionEvent event)
-                {
-                    if (firstIndicator != null && firstIndicator.getGestureDetector().onTouchEvent(event))
-                    {
-                        return true;
-                    }
-                    else if (event.getAction() == MotionEvent.ACTION_DOWN)
-                    {
-                        this.firstIndicator = ((Indicator) v);
-                        return true;
-                    }
-                    else if (event.getAction() == MotionEvent.ACTION_UP)
-                    {
-                        Indicator lastIndicator = null;
-                        int lastIndexIndicator = 0;
-                        
-                        // Find indicator when the finger was lifted
-                        for (int i = 0; lastIndicator == null && i < indicators.length && indicators[i] != null; i++)
-                        {
-                            if (this.isPointInsideView(event.getRawX(),event.getRawY(),indicators[i]))
-                            {
-                                lastIndicator = indicators[i];
-                                lastIndexIndicator = i;
-                            }
-                        }
-                                                
-                        if (lastIndicator != null && firstIndicator.getId() != lastIndicator.getId())
-                        {    
-                            String firstIndicatorName = firstIndicator.getName();
-                            String lastIndicatorName = lastIndicator.getName();
-            
-                            int firstIndexIndicator = 0;
-                            
-                            // Find first touched indicator index
-                            for (int i = 0; i < indicators.length; i++)
-                            {
-                                if (indicators[i] != null && firstIndicator.getId() == indicators[i].getId())
-                                {
-                                    firstIndexIndicator = i;
-                                }
-                            }
-                        
-                            // Remove old last indicator
-                            ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
-                            int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
-                            parentLastIndicatorView.removeView(lastIndicator);
-                            
-                            // Remove old first indicator
-                            ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
-                            int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
-                            parentFirstIndicatorView.removeView(firstIndicator);
-                            
-                            /*
-                             * Since we are removing both view at the same time, if both were in the same parent,
-                             * we need to do some magic to keep them in the right order.
-                             */
-                            if (parentFirstIndicatorView == parentLastIndicatorView)
-                            {
-                                if (indexLast > indexFirst)
-                                {
-                                    indexLast -= 1; 
-                                } 
-                                else
-                                {
-                                    indexFirst += 1;
-                                } 
-                            } 
-
-                            // Add first touched indicator in place of last touched indicator
-                            parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
-                            parentLastIndicatorView.forceLayout();
-                            
-                            // Add last touched indicator in place of first touched indicator
-                            parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
-                            parentFirstIndicatorView.forceLayout();
-                            
-                            // Init the indicator with their new gauge details
-                            indicators[lastIndexIndicator].initFromName(firstIndicatorName);
-                            indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-                            
-                            indicators[lastIndexIndicator].setId(lastIndicator.getId());
-                            indicators[firstIndexIndicator].setId(firstIndicator.getId());
-                            
-                            findGauges();
-                            
-                            return true;
-                        }
-                    }
-    
-                    return false;
-                }
-            };
-            
-            indicators[i].setOnClickListener(MSLoggerActivity.this);
-            indicators[i].setOnTouchListener(gestureListener); 
+                bindIndicatorsEditEventsToIndex(i);
+            }
         }
     }
     
