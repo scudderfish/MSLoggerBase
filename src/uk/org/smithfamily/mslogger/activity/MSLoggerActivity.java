@@ -499,22 +499,24 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                     indexFirst += 1;
                                 } 
                             } 
-                            
-                            // Swap objects
-                            Indicator tmpIndicator = indicators[firstIndexIndicator];
-                            indicators[firstIndexIndicator] = lastIndicator;
-                            indicators[lastIndexIndicator] = tmpIndicator;
 
                             // Add first touched indicator in place of last touched indicator
                             parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
                             parentLastIndicatorView.forceLayout();
+                            
                             // Add last touched indicator in place of first touched indicator
                             parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
                             parentFirstIndicatorView.forceLayout();
+                            
                             // Init the indicator with their new gauge details
                             indicators[lastIndexIndicator].initFromName(firstIndicatorName);
                             indicators[firstIndexIndicator].initFromName(lastIndicatorName);
- 
+                            
+                            indicators[lastIndexIndicator].setId(lastIndicator.getId());
+                            indicators[firstIndexIndicator].setId(firstIndicator.getId());
+                            
+                            findGauges();
+                            
                             return true;
                         }
                     }
