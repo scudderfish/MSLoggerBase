@@ -208,9 +208,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
             if (newIndicator != null)
             {
-                newIndicator.setId(indicator.getId());
-                newIndicator.initFromName(gd.getName());
-                
                 LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
                 newIndicator.setLayoutParams(params);
                 
@@ -219,12 +216,17 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
                 ViewGroup parentIndicatorView = (ViewGroup) indicator.getParent();
                 int index = parentIndicatorView.indexOfChild(indicator);
-                parentIndicatorView.removeView(indicator);
+                parentIndicatorView.removeViewAt(index);
                 
                 parentIndicatorView.addView(newIndicator, index);   
                 
+                newIndicator.setId(indicator.getId());
+                newIndicator.initFromName(gd.getName());
+                
                 mainActivity.replaceIndicator(newIndicator, indicatorIndex);
-                mainActivity.bindIndicatorsEvents();
+                mainActivity.bindIndicatorsEditEvents();
+                
+                indicator = newIndicator;
             }
         }
         
