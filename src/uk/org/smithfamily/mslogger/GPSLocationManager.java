@@ -16,6 +16,7 @@ public enum GPSLocationManager implements LocationListener
 
 	private Location		lastLocation	= new Location("null");
 	private LocationManager	locationManager	= null;
+    private int freshFlag;
 
 	/**
 	 * @return Last known location object
@@ -25,6 +26,16 @@ public enum GPSLocationManager implements LocationListener
 		return lastLocation;
 	}
 
+	/**
+	 * Indicates freshness of the update.  Set to 1 if this is the first call since the last update
+	 * @return
+	 */
+	public synchronized int getFreshness()
+	{
+	    int value = freshFlag;
+	    freshFlag = 0;
+	    return value;
+	}
 	/**
 	 * Start the location service
 	 */
@@ -83,6 +94,7 @@ public enum GPSLocationManager implements LocationListener
 	public synchronized void onLocationChanged(Location location)
 	{
 		lastLocation = location;
+		freshFlag = 1;
 	}
 
 	/**

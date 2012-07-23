@@ -8,7 +8,7 @@ import android.text.format.DateFormat;
  */
 public class MSUtils
 {
-    /**
+     /**
      * Get the long for the specified index in the buffer
      * 
      * @param ochBuffer
@@ -160,10 +160,10 @@ public class MSUtils
     /**
      * @return The time of the last known location
      */
-    public static String getTime()
+    public static long getTime()
     {
         long time = GPSLocationManager.INSTANCE.getLastKnownLocation().getTime();
-        return DateFormat.format("hh:mm:ss", time).toString();
+        return time;
     }
 
     /**
@@ -171,7 +171,7 @@ public class MSUtils
      */
     public static String getLocationLogHeader()
     {
-        return "Lat\tLong\tSpeed\tBearing\tAccuracy\tGPSTime";
+        return "Latitude\tLongitude\tSpeed (m/s)\tHeading\tAccuracy\tGPSTime\tGPS_Update";
     }
     
     /**
@@ -184,6 +184,12 @@ public class MSUtils
                getSpeed() + "\t" +
                getBearing() + "\t" +
                getAccuracy() + "\t" +
-               getTime();
+               getTime() +"\t"+
+               getGPSUpdate();
+    }
+
+    private static int getGPSUpdate()
+    {
+        return GPSLocationManager.INSTANCE.getFreshness();
     }
 }
