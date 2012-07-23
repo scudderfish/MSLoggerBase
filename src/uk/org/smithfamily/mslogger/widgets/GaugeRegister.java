@@ -9,7 +9,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
 
 /**
- *
+ * Enum that contains all the indicators details for the MegaSquirt firmware
  */
 public enum GaugeRegister
 {
@@ -18,7 +18,7 @@ public enum GaugeRegister
     private static final String       GAUGE_DETAILS = "gaugedetails";
 
     /**
-     * 
+     * Reset all gauges to their default state contained in the firmware INI file specifications
      */
     public void resetAll()
     {
@@ -44,8 +44,9 @@ public enum GaugeRegister
     }
 
     /**
+     * Add an indicator to te list
      * 
-     * @param gaugeDetails
+     * @param gaugeDetails All the indicator details
      */
     public void addGauge(GaugeDetails gaugeDetails)
     {
@@ -68,12 +69,13 @@ public enum GaugeRegister
     }
 
     /**
+     * Reset the specific indicator name to firmware INI file specifications
      * 
-     * @param nme
+     * @param name The name of the indicator to reset
      */
-    public void reset(String nme)
+    public void reset(String name)
     {
-        GaugeDetails gd = details.get(nme);
+        GaugeDetails gd = details.get(name);
         if (gd != null)
         {
             File store = getFileStore(gd);
@@ -85,7 +87,7 @@ public enum GaugeRegister
                     DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
                 }
             }
-            details.remove(nme);
+            details.remove(name);
 
             Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
             if (ecuDefinition != null)
@@ -96,18 +98,18 @@ public enum GaugeRegister
     }
 
     /**
+     * Get details for a specific indicator
      * 
-     * @param nme
-     * @return
+     * @param name Name of the indicator to get details for
+     * @return An instance of GaugeDetails
      */
-    public GaugeDetails getGaugeDetails(String nme)
+    public GaugeDetails getGaugeDetails(String name)
     {
-        return details.get(nme);
+        return details.get(name);
     }
 
     /**
-     * 
-     * @return
+     * @return All the indicators names
      */
     public Set<String> getGaugeNames()
     {
@@ -115,7 +117,7 @@ public enum GaugeRegister
     }
 
     /**
-     * 
+     * Flush all the gauge details from the hash map
      */
     public void flush()
     {
@@ -123,9 +125,10 @@ public enum GaugeRegister
     }
 
     /**
+     * Load indicator details from file
      * 
-     * @param gd
-     * @return
+     * @param gd The GaugeDetails to get details from
+     * @return An instance of GaugeDetails
      */
     private GaugeDetails loadDetails(GaugeDetails gd)
     {
@@ -167,9 +170,10 @@ public enum GaugeRegister
     }
 
     /**
+     * Return a file handle on the file store where the indicator details are
      * 
-     * @param gd
-     * @return
+     * @param gd GaugeDetails to get file store for
+     * @return An handle on the file store
      */
     private File getFileStore(GaugeDetails gd)
     {
@@ -190,8 +194,9 @@ public enum GaugeRegister
     }
 
     /**
+     * Save the current gauge details into a file
      * 
-     * @param gd
+     * @param gd The GaugeDetails to save details for
      */
     public void persistDetails(GaugeDetails gd)
     {
@@ -224,9 +229,10 @@ public enum GaugeRegister
     }
 
     /**
+     * Get the file name where the indicator details are stored
      * 
-     * @param gd
-     * @return
+     * @param gd GaugeDetails to get the file name of
+     * @return The file name for the specified indicator details
      */
     private String getStoreName(GaugeDetails gd)
     {
