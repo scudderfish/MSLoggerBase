@@ -523,20 +523,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
                         parentFirstIndicatorView.forceLayout();
                         
-                        // Init the indicator with their new gauge details
+                        // Init the indicator with their new indicator details
                         indicators[lastIndexIndicator].initFromName(firstIndicatorName);
                         indicators[firstIndexIndicator].initFromName(lastIndicatorName);
                         
                         indicators[lastIndexIndicator].setId(lastIndicator.getId());
                         indicators[firstIndexIndicator].setId(firstIndicator.getId());
                         
-                        // If indicators weren't the same type, we have to change their type
+                        // If indicators weren't the same type, we have to change their types
                         if (firstIndicator.getType() != lastIndicator.getType())
                         {
                             applyWidgetTypeToIndicators();
                         }
                         
-                        // Re-map the right indicators with the right view
+                        // Re-map the right indicators with the right views
                         findGauges();
                         
                         return true;
