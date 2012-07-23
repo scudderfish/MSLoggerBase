@@ -14,8 +14,7 @@
 		</TableRow>
 		<TableRow>
 			<TextView android:text="@string/channel" style="@style/gaugeLabel" />
-			<TextView android:id="@+id/editChannel" android:text="@string/channel"
-				style="@style/gaugeLabel" />
+			<Spinner android:id="@+id/spinnerChannel" style="@style/gaugeLabel" android:prompt="@string/choose_indicator_channel" />
 		</TableRow>
 	</TableLayout>
 

@@ -1,5 +1,12 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.Gauge;
@@ -28,14 +35,18 @@ import android.widget.TextView;
  */
 public class EditGaugeDialog extends Dialog implements android.view.View.OnClickListener
 {
-    private MSLoggerActivity    mainActivity;
-    private GaugeDetails        gd;
-    private Indicator           indicator;
-    private int                 indicatorIndex;
-    private String              indicatorType;
+    private MSLoggerActivity            mainActivity;
+    private GaugeDetails                gd;
+    private Indicator                   indicator;
+    private int                         indicatorIndex;
+    private String                      indicatorType;
     
-    private Spinner             typeSpinner;
-    private Spinner             orientationSpinner;
+    private Map<String, String[]>       channels = new HashMap<String, String[]>();
+    
+    private Spinner                     channelSpinner;
+    
+    private Spinner                     typeSpinner;
+    private Spinner                     orientationSpinner;
 
     /**
      * 
@@ -66,10 +77,31 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         
         setContentView(R.layout.editgauge);
 
-        setTitle("Edit Gauge Properties");
+        setTitle(R.string.edit_gauge_title);
+        
+        populateFieldsForGaugeDetails(gd);
+        
+        prepareChannelSpinner();
+        prepareOrientationSpinner();
+        prepareTypeSpinner();
+        
+        Button buttonOK = (Button) findViewById(R.id.editOK);
+        Button buttonReset = (Button) findViewById(R.id.editReset);
+        Button buttonCancel = (Button) findViewById(R.id.editCancel);
 
+        buttonOK.setOnClickListener(this);
+        buttonReset.setOnClickListener(this);
+        buttonCancel.setOnClickListener(this);
+    }
+    
+    /**
+     * Fill up all the indicator details fields
+     * 
+     * @param gd GaugeDetails to populate the fields with
+     */
+    private void populateFieldsForGaugeDetails(GaugeDetails gd)
+    {
         setValue(R.id.editName, gd.getName());
-        setValue(R.id.editChannel, gd.getChannel());
         setValue(R.id.editTitle, gd.getTitle());
         setValue(R.id.editUnits, gd.getUnits());
         setValue(R.id.editHi, Double.toString(gd.getMax()));
@@ -81,7 +113,66 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         setValue(R.id.editVD, Integer.toString(gd.getVd()));
         setValue(R.id.editLD, Integer.toString(gd.getLd()));
         setValue(R.id.editoffsetAngle, Double.toString(gd.getOffsetAngle()));
+    }
+    
+    /**
+     * Prepare the channel spinner
+     */
+    private void prepareChannelSpinner()
+    {
+        channelSpinner = (Spinner) findViewById(R.id.spinnerChannel);
         
+        Set<String> names = GaugeRegister.INSTANCE.getGaugeNames();
+        List<String> titles = new ArrayList<String>();
+        
+        for (String name : names)
+        {
+            GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
+
+            String[] indicatorDetails = new String[2];
+            indicatorDetails[0] = gd.getName();
+            indicatorDetails[1] = gd.getTitle();
+            
+            channels.put(gd.getChannel(), indicatorDetails);
+            titles.add(gd.getTitle());
+        }
+        
+        Collections.sort(titles);
+        
+        ArrayAdapter<String> channelArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, titles);
+        
+        // Specify the layout to use when the list of choices appears
+        channelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        channelSpinner.setAdapter(channelArrayAdapter);
+        
+        int channelPosition = channelArrayAdapter.getPosition(gd.getTitle());
+        if (channelPosition == -1) channelPosition = 0;
+        channelSpinner.setSelection(channelPosition);
+        
+        channelSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+            {
+                String name = findNameForTitle(channelSpinner.getSelectedItem().toString());
+                
+                GaugeDetails newIndicatorDetails = GaugeRegister.INSTANCE.getGaugeDetails(name);
+                
+                populateFieldsForGaugeDetails(newIndicatorDetails);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {}
+        });
+    }
+    
+    /**
+     * Prepare the orientation spinner
+     */
+    private void prepareOrientationSpinner()
+    {
         orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
         
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -93,16 +184,17 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         // Apply the adapter to the spinner
         orientationSpinner.setAdapter(orientationAdapter);
         
-        // Select currently selected orientation        
-        for (int i = 0; i < Indicator.Orientation.values().length; i++)
-        {
-            if (orientationAdapter.getItem(i).toString().toLowerCase().equals(gd.getOrientation().toLowerCase()))
-            {
-                orientationSpinner.setSelection(i);
-                break;
-            }
-        }
-        
+        // Select currently selected orientation
+        int orientationPosition = orientationAdapter.getPosition(gd.getOrientation().toLowerCase());
+        if (orientationPosition == -1) orientationPosition = 0;
+        orientationSpinner.setSelection(orientationPosition);
+    }
+    
+    /**
+     * Prepare the type spinner
+     */
+    public void prepareTypeSpinner()
+    {
         typeSpinner = (Spinner) findViewById(R.id.indicatorType);
         
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -128,14 +220,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {}
         });
-        
-        Button buttonOK = (Button) findViewById(R.id.editOK);
-        Button buttonReset = (Button) findViewById(R.id.editReset);
-        Button buttonCancel = (Button) findViewById(R.id.editCancel);
-
-        buttonOK.setOnClickListener(this);
-        buttonReset.setOnClickListener(this);
-        buttonCancel.setOnClickListener(this);
     }
     
     /**
@@ -224,7 +308,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
                 newIndicator.initFromName(gd.getName());
                 
                 mainActivity.replaceIndicator(newIndicator, indicatorIndex);
-                mainActivity.bindIndicatorsEditEvents();
+                mainActivity.bindIndicatorsEditEventsToIndex(indicatorIndex);
                 
                 indicator = newIndicator;
             }
@@ -233,7 +317,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         gd.setType(selectedIndicatorType);
         gd.setOrientation(orientationSpinner.getSelectedItem().toString());
         gd.setName(getValue(R.id.editName));
-        gd.setChannel(getValue(R.id.editChannel));
+        gd.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString()));
         gd.setTitle(getValue(R.id.editTitle));
         gd.setUnits(getValue(R.id.editUnits));
         gd.setMax(getValueD(R.id.editHi));
@@ -254,6 +338,40 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         dismiss();
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    private String findChannelForTitle(String indicatorTitle)
+    {
+        for (Map.Entry<String, String[]> entry : channels.entrySet())
+        {
+            String key = entry.getKey();
+            String[] value = entry.getValue();
+
+            if (value[1].equals(indicatorTitle))
+            {
+                return key;
+            }
+        }
+        
+        return "";
+    }
+    
+    private String findNameForTitle(String indicatorTitle)
+    {
+        for (String[] value : channels.values())
+        {
+            if (value[1].equals(indicatorTitle))
+            {
+                return value[0];
+            }
+        }
+        
+        return "";
+    }
+    
     /**
      * Reset gauge details to the firmware default
      */
