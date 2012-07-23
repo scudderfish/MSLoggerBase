@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/bluetooth" >
-
+    <PreferenceCategory android:title="@string/bluetooth">
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
             android:dialogTitle="Choose Bluetooth Device"
             android:key="bluetooth_mac"
             android:title="Bluetooth Device" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/megasquirt" >
-
+    <PreferenceCategory android:title="@string/megasquirt">
         <ListPreference
             android:entries="@array/mapnames"
             android:entryValues="@array/maptypes"
@@ -31,8 +29,7 @@
             android:title="@string/temp_unit" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/app_settings" >
-
+    <PreferenceCategory android:title="@string/app_settings">
         <EditTextPreference
             android:defaultValue="@string/app_name"
             android:dialogTitle="@string/data_log_directory"
@@ -65,33 +62,6 @@
             android:title="@string/autolog" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Gauges" >
-
-        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
-            android:dialogTitle="Choose Gauge 1"
-            android:key="gauge1"
-            android:title="Gauge 1" />
-
-        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
-            android:dialogTitle="Choose Gauge 2"
-            android:key="gauge2"
-            android:title="Gauge 2" />
-
-        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
-            android:dialogTitle="Choose Gauge 3"
-            android:key="gauge3"
-            android:title="Gauge 3" />
-
-        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
-            android:dialogTitle="Choose Gauge 4"
-            android:key="gauge4"
-            android:title="Gauge 4" />
-
-        <uk.org.smithfamily.mslogger.widgets.GaugeChoicePreference
-            android:dialogTitle="Choose Gauge 5"
-            android:key="gauge5"
-            android:title="Gauge 5" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Debug">
           <ListPreference
             android:entries="@array/levelnames"
