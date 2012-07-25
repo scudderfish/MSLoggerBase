@@ -18,7 +18,6 @@ import android.util.Log;
  */
 public class ECUFingerprint implements Runnable
 {
-
     public static final String  UNKNOWN = "UNKNOWN";
     
     private boolean             located = false;
@@ -35,7 +34,6 @@ public class ECUFingerprint implements Runnable
         this.adapter = mBluetoothAdapter;
         this.handler = h;
     }
-
 
     /**
      * 
@@ -69,10 +67,9 @@ public class ECUFingerprint implements Runnable
                 delay(1000);
             }
         }
- //       conn.tearDown();
+
         Message msg = handler.obtainMessage(MSLoggerApplication.GOT_SIG, fingerprint);
         handler.sendMessage(msg);
-        
     }
 
     /**

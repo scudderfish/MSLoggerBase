@@ -1,7 +1,6 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import uk.org.smithfamily.mslogger.GPSLocationManager;
-import android.text.format.DateFormat;
 
 /**
  * Megasquirt utilities class heavily used in the ECU definition Java class
