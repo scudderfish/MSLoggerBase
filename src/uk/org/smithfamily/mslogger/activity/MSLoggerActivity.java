@@ -131,6 +131,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
+        launchStartupActivity();
+    }
+    
+    /**
+     * Launch the startup activity which try to connect to the MegaSquirt
+     */
+    private void launchStartupActivity()
+    {
         Intent serverIntent = new Intent(this, StartupActivity.class);
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
@@ -156,12 +164,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Map<String, ?> prefs = prefsManager.getAll();
         for(Entry<String, ?> entry : prefs.entrySet())
         {
-            DebugLogManager.INSTANCE.log("Preference:"+entry.getKey()+":"+entry.getValue(), Log.ASSERT);
+            DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
         }
     }
 
     /**
-     * Complete the initialisation and load/init the gauges
+     * Complete the initialisation and load/init the indicators
      */
     private void completeCreate()
     {
@@ -217,7 +225,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * Save the gauges when the app is stopped
+     * Save the indicators when the app is stopped
      */
     @Override
     public void onStop()
@@ -238,7 +246,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * Save current selected gauges in preferences
+     * Save current selected indicators in preferences
      */
     private void saveGauges()
     {
@@ -251,23 +259,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
             
-            if (!indicators[0].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (!indicators[0].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge1", indicators[0].getName());
             }
-            if (!indicators[1].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (!indicators[1].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge2", indicators[1].getName());
             }
-            if (!indicators[2].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (!indicators[2].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge3", indicators[2].getName());
             }
-            if (!indicators[3].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (!indicators[3].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge4", indicators[3].getName());
             }
-            if (indicators[4] != null && !indicators[4].getName().equals(Gauge.DEAD_GAUGE_NAME))
+            if (indicators[4] != null && !indicators[4].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge5", indicators[4].getName());
             }
@@ -287,7 +295,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * Init the gauges with the proper gauge saved in preference, default to firmware defined gauge if preference are empty
+     * Init the indicators with the proper one saved in preferences, default to firmware defined indicators if preferences are empty
      */
     private void initGauges()
     {
@@ -882,7 +890,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null)
+        // We never connected to an ECU before (probably StartupActivity was closed),
+        // opening it back up to try to connect
+        if (ecu == null)
+        {
+            launchStartupActivity();
+        }
+        else 
         {
             ecu.toggleConnection();
         }
@@ -909,7 +923,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         catch (NameNotFoundException e)
         {
-            e.printStackTrace();
+            DebugLogManager.INSTANCE.logException(e);
         }
         dialog.setTitle(title);
 
