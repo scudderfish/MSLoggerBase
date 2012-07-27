@@ -1,14 +1,22 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-
-import android.bluetooth.*;
-import android.os.*;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 /**
@@ -327,13 +335,21 @@ public enum Connection
      */
     public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
     {
+        if (socket == null)
+        {
+            throw new IOException("Not connected");
+        }
+
         if (isCRC32)
         {
         	command = CRC32ProtocolHandler.wrap(command);
         }
+
         DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
+
         this.mmOutStream.write(command);
         this.mmOutStream.flush();
+
         delay(d);
     }
 
