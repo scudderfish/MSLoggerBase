@@ -1018,6 +1018,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
         	ecuDefinition.refreshFlags();
         }
+
+        // When the TEMP/MAP/EGO are changed in preference, we refresh the ECU flags if we are online
+        if ((key.equals("temptype") || key.equals("maptype") || key.equals("egotype")) && ecuDefinition != null)
+        {
+            ecuDefinition.refreshFlags();
+        }
     }
 
     /**
