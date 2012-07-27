@@ -60,14 +60,13 @@ public enum TableManager
 	 * @param fileName
 	 * @param values
 	 */
-	@SuppressWarnings("resource")
-    private void readTable(String fileName, List<Integer> values)
+	private void readTable(String fileName, List<Integer> values)
 	{
 		values.clear();
 		Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");
 
 		String assetFileName = "tables" + File.separator + fileName;
-		File  override=new File(ApplicationSettings.INSTANCE.getDataDir(),fileName);
+		File  override = new File(ApplicationSettings.INSTANCE.getDataDir(),fileName);
 		AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
 
 		BufferedReader input = null;
@@ -76,7 +75,7 @@ public enum TableManager
 			try
 			{
 				InputStream data = null;
-				if(override.canRead())
+				if (override.canRead())
 				{
 					data = new FileInputStream(override);
 				}
@@ -111,7 +110,7 @@ public enum TableManager
 		}
 		catch (IOException e)
 		{
-            Log.e(ApplicationSettings.TAG,"TableManager.readTable("+fileName+")",e);
+            Log.e(ApplicationSettings.TAG,"TableManager.readTable(" + fileName + ")", e);
 		}
 	}
 

@@ -125,21 +125,18 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         Boolean result = settings.get(name);
         if (result != null)
+        {
             return result;
+        }
+
         boolean val = false;
 
-        String tempType = prefs.getString("temptype", MISSING_VALUE);
-        if (!val && tempType.equals(name))
+        if (prefs.getString("temptype", MISSING_VALUE).equals(name) || 
+            prefs.getString("maptype", MISSING_VALUE).equals(name) || 
+            prefs.getString("egotype", MISSING_VALUE).equals(name))
+        {
             val = true;
-
-        if (!val && prefs.getString("mstype", MISSING_VALUE).equals(name))
-            val = true;
-
-        if (!val && prefs.getString("maptype", MISSING_VALUE).equals(name))
-            val = true;
-
-        if (!val && prefs.getString("egotype", MISSING_VALUE).equals(name))
-            val = true;
+        }
 
         settings.put(name, val);
         return val;
