@@ -5,7 +5,7 @@
     <string name="start_logging">Start Logging</string>
     <string name="stop_logging">Stop Logging</string>
     <string name="preferences">Preferences</string>
-    <string name="app_settings">AppSettings</string>
+    <string name="app_settings">Application Settings</string>
 	<string name="megasquirt">Megasquirt</string>
 	<string name="hertz">Hertz</string>
 	<string name="quit">Quit</string>
@@ -13,7 +13,7 @@
 	<string name="bluetooth">Bluetooth</string>
 	<string name="map_sensor">MAP Sensor</string>
 	<string name="ego_sensor">EGO Sensor</string>
-	<string name="temp_unit">Temp. Unit</string>
+	<string name="temp_unit">Temperature Unit</string>
 	<string name="data_log_directory">Data Log Directory</string>
 	<string name="mslogger_is_running">MSLogger is running</string>
 	<string name="logging_to">Logging to %s</string>
