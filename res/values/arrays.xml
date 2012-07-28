@@ -3,7 +3,6 @@
 	<string-array name="egotypes">
 		<item>NARROW_BAND_EGO</item>
 		<item>WB_1_0_LINEAR</item>
-		<item>WB_UNKNOWN</item>
 		<item>DIYWB_NON_LINEAR</item>
 		<item>DYNOJET_LINEAR</item>
 		<item>TECHEDGE_LINEAR</item>
@@ -14,22 +13,23 @@
 		<item>AEM_LINEAR</item>
 		<item>AEM_NON_LINEAR</item>
 		<item>NGK_AFX</item>
+		<item>WB_UNKNOWN</item>
 	</string-array>
 	
 	<string-array name="egonames">
-		<item>NARROW_BAND_EGO</item>
-		<item>WB_1_0_LINEAR</item>
-		<item>WB_UNKNOWN</item>
-		<item>DIYWB_NON_LINEAR</item>
-		<item>DYNOJET_LINEAR</item>
-		<item>TECHEDGE_LINEAR</item>
-		<item>INNOVATE_1_2_LINEAR</item>
-		<item>INNOVATE_0_5_LINEAR</item>
-		<item>INNOVATE_LC1_DEFAULT</item>
-		<item>ZEITRONIX_NON_LINEAR</item>
-		<item>AEM_LINEAR</item>
-		<item>AEM_NON_LINEAR</item>
-		<item>NGK_AFX</item>
+		<item>Narrowband Sensor</item>
+		<item>Wideband in NB Emulator Mode, 0–1v 1.5–0.5 Lambda</item>
+		<item>DIY-WB or Tech Edge non-linear output</item>
+		<item>DynoJet Wideband Commander</item>
+		<item>Tech Edge sensor giving 0–5V 9–19:1 AFR</item>
+		<item>Innovate sensor giving 1–2V 10–20:1 AFR</item>
+		<item>Innovate LC–1, MTX–L, PLX 0–5V 10–20:1 AFR</item>
+		<item>Innovate LC–1 default, 0–5v = 0.5–1.5 lambda</item>
+		<item>Zeitronix Non–linear WB</item>
+		<item>AEM Linear</item>
+		<item>AEM Non Linear</item>
+		<item>NGK Powerdex AFX</item>
+		<item>Wideband sensor but none of the above types</item>
 	</string-array>
 
 	<string-array name="maptypes">
@@ -40,10 +40,10 @@
 	</string-array>
 
 	<string-array name="mapnames">
-		<item>MPXH6300A</item>
-		<item>MPXH6400A</item>
-		<item>MPX4250</item>
-		<item>MPX4115</item>
+		<item>MPXH6300A (304kPa)</item>
+		<item>MPXH6400A (400kPa - MapDaddy)</item>
+		<item>MPX4250 (250kPa – Most common)</item>
+		<item>MPX4115 (115kPa)</item>
 	</string-array>
 
 	<string-array name="tempent">
