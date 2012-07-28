@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.org.smithfamily.mslogger"
-    android:versionCode="4203"
-    android:versionName="4.2.0" >
+    android:versionCode="4205"
+    android:versionName="4.2.2" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="10" />
 
