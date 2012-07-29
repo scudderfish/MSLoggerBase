@@ -13,7 +13,7 @@ public class Normaliser
 {
     enum Section
     {
-        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions
+        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, UserDefined
     }
 
     private static final String        TAB          = "    ";
@@ -191,7 +191,26 @@ public class Normaliser
             {
                 currentSection = Section.Gauges;
                 continue;
-
+            }
+            else if (line.trim().equals("[Menu]"))
+            {
+                currentSection = Section.Menu;
+                continue;
+            }
+            else if (line.trim().equals("[TableEditor]"))
+            {
+                currentSection = Section.TableEditor;
+                continue;
+            }
+            else if (line.trim().equals("[CurveEditor]"))
+            {
+                currentSection = Section.CurveEditor;
+                continue;
+            }
+            else if (line.trim().equals("[UserDefined]"))
+            {
+                currentSection = Section.UserDefined;
+                continue;
             }
             else if (line.trim().equals("[FrontPage]"))
             {
@@ -213,8 +232,8 @@ public class Normaliser
             {
                 currentSection = Section.None;
                 continue;
-
             }
+
             switch (currentSection)
             {
             case Expressions:
@@ -240,6 +259,18 @@ public class Normaliser
                 break;
             case ConstantsExtensions:
                 processConstantsExtensions(line);
+                break;
+            case Menu:
+                processMenu(line);
+                break;
+            case TableEditor:
+                processTableEditor(line);
+                break;
+            case CurveEditor:
+                processCurveEditor(line);
+                break;
+            case UserDefined:
+                processUserDefined(line);
                 break;
             case None:
                 break;
@@ -323,7 +354,7 @@ public class Normaliser
         {
             return;
         }
-        if(line.contains("messageEnvelopeFormat"))
+        if (line.contains("messageEnvelopeFormat"))
         {
         	isCRC32Protocol = line.contains("msEnvelope_1.0");
         }
@@ -454,7 +485,207 @@ public class Normaliser
             constants.add(c);
         }
     }
-
+    
+    /**
+     * Process the [Menu] section of the ini file
+     * 
+     * @param line
+     */
+    private static void processMenu(String line)
+    {
+        line = removeComments(line);
+        if (StringUtils.isEmpty(line))
+        {
+            return;
+        }
+        
+        Matcher menuDialog = Patterns.menuDialog.matcher(line);
+        Matcher menu = Patterns.menu.matcher(line);
+        Matcher subMenu = Patterns.subMenu.matcher(line);
+        
+        if (menuDialog.matches())
+        {
+            //System.out.println("menuDialog Name: " + menuDialog.group(1));
+        }       
+        else if (menu.matches())
+        {
+            //System.out.println("menu Label: " + menu.group(1));
+        }       
+        else if (subMenu.matches())
+        {
+            //System.out.println("subMenu Name: " + subMenu.group(1));
+            //System.out.println("subMenu Label: " + subMenu.group(3));
+            //System.out.println("subMenu RandomNumber: " + subMenu.group(5));
+            //System.out.println("subMenu Expression: " + subMenu.group(7));
+        }
+    }
+    
+    /**
+     * Process the [TablEditor] section of the ini file
+     * 
+     * @param line
+     */
+    private static void processTableEditor(String line)
+    {        
+        line = removeComments(line);
+        if (StringUtils.isEmpty(line))
+        {
+            return;
+        }
+        
+        Matcher table = Patterns.tablEditorTable.matcher(line);
+        Matcher xBins = Patterns.tablEditorXBins.matcher(line);
+        Matcher yBins = Patterns.tablEditorYBins.matcher(line);
+        Matcher zBins = Patterns.tablEditorZBins.matcher(line);
+        Matcher upDownLabel = Patterns.tablEditorUpDownLabel.matcher(line);
+        Matcher gridHeight = Patterns.tablEditorGridHeight.matcher(line);
+        Matcher gridOrient = Patterns.tablEditorGridOrient.matcher(line);
+                
+        if (table.matches())
+        {
+            //System.out.println("Name: " + table.group(1));
+            //System.out.println("3dMapName: " + table.group(2));
+            //System.out.println("Label: " + table.group(3));
+            //System.out.println("Page: " + table.group(4));
+        }
+        else if (xBins.matches())
+        {
+            //System.out.println("xBins 1: " + xBins.group(1));
+            //System.out.println("xBins 2: " + xBins.group(2));
+            //System.out.println("xBins readonly: " + xBins.group(4));
+        }
+        else if (yBins.matches())
+        {
+            //System.out.println("yBins 1: " + yBins.group(1));
+            //System.out.println("yBins 2: " + yBins.group(2));
+        }
+        else if (zBins.matches())
+        {
+            //System.out.println("zBins: " + zBins.group(1));
+        }
+        else if (upDownLabel.matches())
+        {
+            //System.out.println("Up Label: " + upDownLabel.group(1));
+            //System.out.println("Down Label: " + upDownLabel.group(2));
+        }
+        else if (gridHeight.matches())
+        {
+            //System.out.println("Grid Height: " + gridHeight.group(1));
+        }
+        else if (gridOrient.matches())
+        {
+            //System.out.println("Grid Height: " + gridOrient.group(1));
+            //System.out.println("Grid Height: " + gridOrient.group(2));
+            //System.out.println("Grid Height: " + gridOrient.group(3));
+        }
+    }
+    
+    /**
+     * Process the [CurveEditor] section of the ini file
+     * 
+     * @param line
+     */
+    private static void processCurveEditor(String line)
+    {
+        line = removeComments(line);
+        if (StringUtils.isEmpty(line))
+        {
+            return;
+        }
+        
+        Matcher curve = Patterns.curve.matcher(line);
+        Matcher curveColumnLabel = Patterns.curveColumnLabel.matcher(line);
+        Matcher curveXAxis = Patterns.curveXAxis.matcher(line);
+        Matcher curveYAxis = Patterns.curveYAxis.matcher(line);
+        Matcher curveXBins = Patterns.curveXBins.matcher(line);
+        Matcher curveYBins = Patterns.curveYBins.matcher(line);
+        Matcher curveGauge = Patterns.curveGauge.matcher(line);
+        Matcher curveLineLabel = Patterns.curveLineLabel.matcher(line);
+                
+        if (curve.matches())
+        {
+            //System.out.println("curve Name: " + curve.group(1));
+            //System.out.println("curve Label: " + curve.group(2));
+        }
+        else if (curveColumnLabel.matches())
+        {
+            //System.out.println("curve First Label: " + curveColumnLabel.group(1));
+            //System.out.println("curve Second Label: " + curveColumnLabel.group(2));    
+        }
+        else if (curveXAxis.matches())
+        {
+            //System.out.println("curve xAxis 1: " + curveXAxis.group(1));
+            //System.out.println("curve xAxis 2: " + curveXAxis.group(2));     
+            //System.out.println("curve xAxis 3: " + curveXAxis.group(3));  
+        }
+        else if (curveYAxis.matches())
+        {
+            //System.out.println("curve yAxis 1: " + curveYAxis.group(1));
+            //System.out.println("curve yAxis 2: " + curveYAxis.group(2));     
+            //System.out.println("curve yAxis 3: " + curveYAxis.group(3));    
+        }
+        else if (curveXBins.matches())
+        {
+            //System.out.println("curve xBins 1: " + curveXBins.group(1));
+            //System.out.println("curve xBins 2: " + curveXBins.group(2));
+        }
+        else if (curveYBins.matches())
+        {
+            //System.out.println("curve yBins 1: " + curveYBins.group(1));
+        }
+        else if (curveGauge.matches())
+        {
+            //System.out.println("curve Gauge: " + curveGauge.group(1));
+        }
+        else if (curveLineLabel.matches())
+        {
+            //System.out.println("curve Line Label: " + curveLineLabel.group(1)); 
+        }
+    }
+    
+    /**
+     * Process the [UserDefined] section of the ini file
+     * 
+     * @param line
+     */
+    private static void processUserDefined(String line)
+    {
+        line = removeComments(line);
+        if (StringUtils.isEmpty(line))
+        {
+            return;
+        }
+        
+        Matcher dialog = Patterns.dialog.matcher(line);
+        Matcher dialogField = Patterns.dialogField.matcher(line);
+        Matcher dialogDisplayOnlyField = Patterns.dialogDisplayOnlyField.matcher(line);
+        Matcher dialogPanel = Patterns.dialogPanel.matcher(line);
+        
+        if (dialog.matches())
+        {
+            //System.out.println("dialog Name: " + dialog.group(1));
+            //System.out.println("dialog Label: " + dialog.group(2));
+        }
+        else if (dialogField.matches())
+        {
+            //System.out.println("dialogField Label: " + dialogField.group(1));
+            //System.out.println("dialogField Name: " + dialogField.group(3));
+            //System.out.println("dialogField Expression: " + dialogField.group(5));
+        }
+        else if (dialogDisplayOnlyField.matches())
+        {
+            //System.out.println("dialogDisplayOnlyField Label: " + dialogDisplayOnlyField.group(1));
+            //System.out.println("dialogDisplayOnlyField Name: " + dialogDisplayOnlyField.group(3));
+            //System.out.println("dialogDisplayOnlyField Expression: " + dialogDisplayOnlyField.group(5)); 
+        }
+        else if (dialogPanel.matches())
+        {
+            //System.out.println("dialogPanel Name: " + dialogPanel.group(1));
+            //System.out.println("dialogPanel Orientation: " + dialogPanel.group(2));
+            //System.out.println("dialogPanel Expression: " + dialogPanel.group(4));
+        }
+    }
+    
     private static void processFrontPage(String line)
     {
         line = removeComments(line);
@@ -571,6 +802,10 @@ public class Normaliser
         outputRTCalcs(writer);
         outputLogInfo(writer);
         outputGauges(writer);
+        outputMenus(writer);
+        outputUserDefined(writer);
+        outputTables(writer);
+        outputCurves(writer);
 
         // outputGaugeDoc(writer);
 
@@ -700,6 +935,26 @@ public class Normaliser
             }
         }
         writer.println(TAB + "}\n");
+    }
+    
+    private static void outputMenus(PrintWriter writer)
+    {
+        
+    }
+    
+    private static void outputUserDefined(PrintWriter writer)
+    {
+        
+    }
+    
+    private static void outputTables(PrintWriter writer)
+    {
+        
+    }
+    
+    private static void outputCurves(PrintWriter writer)
+    {
+        
     }
 
     @SuppressWarnings("unused")
@@ -935,7 +1190,7 @@ public class Normaliser
                 + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getInterWriteDelay()\n" + TAB + "{\n" + TAB + TAB + "return " + interWriteDelay + ";\n" + TAB + "}\n" +
-                TAB + "@Override\n" + TAB + "public boolean isCRC32Protocol()\n" + TAB + "{\n" + TAB + TAB + "return " +isCRC32Protocol + ";\n" + TAB + "}\n" +
+                TAB + "@Override\n" + TAB + "public boolean isCRC32Protocol()\n" + TAB + "{\n" + TAB + TAB + "return " + isCRC32Protocol + ";\n" + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getCurrentTPS()\n" + TAB + "{\n";
         if (runtimeVars.containsKey("tpsADC"))
