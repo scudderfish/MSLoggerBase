@@ -19,6 +19,17 @@
 		</java>
 	</target>
 	
+	<target name="generate_java_test" depends="compile">
+		<java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
+			<arg value="inis/test.txt"/>
+			<arg value="."/>
+			<classpath>
+				<pathelement location="bin" />
+				<pathelement location="lib/commons-lang3-3.0.1.jar" />
+			</classpath>
+		</java>
+	</target>
+	
 	<target name="compile_dummy" >
 		<mkdir dir="dummy_bin" />
 		<javac srcdir="dummy_src" destdir="dummy_bin" includeantruntime="false"  />
