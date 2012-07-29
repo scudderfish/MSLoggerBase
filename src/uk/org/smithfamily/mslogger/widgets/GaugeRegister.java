@@ -24,14 +24,17 @@ public enum GaugeRegister
     {
         File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
         
-        File[] fGaugeDetails = dir.listFiles();
-        
-        for (File gaugeDetails : fGaugeDetails)
+        if (dir.isDirectory())
         {
-            boolean deleteResult = gaugeDetails.delete();
-            if (!deleteResult)
+            File[] fGaugeDetails = dir.listFiles();
+            
+            for (File gaugeDetails : fGaugeDetails)
             {
-                DebugLogManager.INSTANCE.log("Couldn't delete " + gaugeDetails.getPath(),Log.ERROR);
+                boolean deleteResult = gaugeDetails.delete();
+                if (!deleteResult)
+                {
+                    DebugLogManager.INSTANCE.log("Couldn't delete " + gaugeDetails.getPath(),Log.ERROR);
+                }
             }
         }
         
