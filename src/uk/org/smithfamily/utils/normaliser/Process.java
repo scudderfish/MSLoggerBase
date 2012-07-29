@@ -103,6 +103,10 @@ public class Process
         else if (scalarM.matches())
         {
             String name = scalarM.group(1);
+            if(constantDefined(ecuData,name))
+            {
+                name +="RT";
+            }
             String dataType = scalarM.group(2);
             String offset = scalarM.group(3);
             String scalingRaw = scalarM.group(4);
@@ -197,6 +201,25 @@ public class Process
         {
             System.out.println(line);
         }
+    }
+
+    /**
+     * Occasionally we get a collision between the name of a constant and an expression.  Test for
+     * that here.
+     * @param ecuData
+     * @param name
+     * @return
+     */
+    private static boolean constantDefined(ECUData ecuData, String name)
+    {
+        for(Constant c : ecuData.getConstants())
+        {
+            if(c.getName().equals(name))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     static void processLogEntry(ECUData ecuData, String line)
@@ -417,6 +440,7 @@ public class Process
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher constantM = Patterns.constantScalar.matcher(line);
         Matcher constantSimpleM = Patterns.constantSimple.matcher(line);
+        Matcher constantArrayM = Patterns.constantArray.matcher(line);
         if (constantM.matches())
         {
             String name = constantM.group(1);
@@ -435,17 +459,54 @@ public class Process
             double high = !StringUtils.isEmpty(highText) ? Double.parseDouble(highText) : 0;
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
-            Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, low, high, digits);
+            if(!ecuData.getConstants().contains(name))
+            {
+                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, low, high, digits);
+    
+                if (scale == 1.0)
+                {
+                    ecuData.getConstantVars().put(name, "int");
+                }
+                else
+                {
+                    ecuData.getConstantVars().put(name, "double");
+                }
+                ecuData.getConstants().add(c);
+            }
+        }
+        else if (constantArrayM.matches())
+        {
+            
+            String name = constantArrayM.group(1);
+            String classtype = constantArrayM.group(2);
+            String type = constantArrayM.group(3);
+            int offset = Integer.parseInt(constantArrayM.group(4).trim());
+            String shape = constantArrayM.group(5);
+            String units = constantArrayM.group(6);
+            String scaleText = constantArrayM.group(7);
+            String translateText = constantArrayM.group(8);
+            String lowText = constantArrayM.group(9);
+            String highText = constantArrayM.group(10);
+            String digitsText = constantArrayM.group(11);
+            double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
+            double translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
+            double low = !StringUtils.isEmpty(lowText) ? Double.parseDouble(lowText) : 0;
+            double high = !StringUtils.isEmpty(highText) ? Double.parseDouble(highText) : 0;
+            int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
-            if (scale == 1.0)
+            if(!ecuData.getConstants().contains(name))
             {
-                ecuData.getConstantVars().put(name, "int");
+                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scale, translate, low, high, digits);
+                if(shape.contains("x"))
+                {
+                    ecuData.getConstantVars().put(name, "double[][]");
+                }
+                else
+                {
+                    ecuData.getConstantVars().put(name, "double[]");
+                }
+                ecuData.getConstants().add(c);
             }
-            else
-            {
-                ecuData.getConstantVars().put(name, "double");
-            }
-            ecuData.getConstants().add(c);
         }
         else if (constantSimpleM.matches())
         {
@@ -468,7 +529,6 @@ public class Process
                 ecuData.getConstantVars().put(name, "double");
             }
             ecuData.getConstants().add(c);
-
         }
         else if (bitsM.matches())
         {

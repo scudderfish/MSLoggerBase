@@ -11,9 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Output
 {
-    static final String TAB          = "    ";
-    private static Set<String>  alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
-    private static Set<String>  alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
+    static final String        TAB          = "    ";
+    private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
+    private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
             "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
             "egoVoltage", "egoVoltage2", "egoCorrection", "veCurr", "lambda", "TargetLambda" }));
 
@@ -229,6 +229,10 @@ public class Output
             // getScalar(String bufferName,String name, String dataType, String
             // offset, String scale, String numOffset)
             String name = c.getName();
+            if("afrBins1".equals(name))
+            {
+                name = name;
+            }
             if (!"PREPROC".equals(c.getType()))
             {
                 String def;
@@ -248,6 +252,10 @@ public class Output
                     }
                     def = (name + " = MSUtils.getBits(pageBuffer," + offset + "," + start + "," + end + "," + ofs + ");");
                 }
+                else if ("array".equals(c.getClassType()))
+                {
+                    def = generateLoadArray(ecuData, c);
+                }
                 else
                 {
                     def = getScalar("pageBuffer", ecuData.getConstantVars().get(name), name, c.getType(), "" + c.getOffset(), ""
@@ -263,6 +271,32 @@ public class Output
         }
 
         writer.println(TAB + "}");
+    }
+
+    private static String generateLoadArray(ECUData ecuData, Constant c)
+    {
+        String loadArray = "";
+        String arraySpec = StringUtils.remove(StringUtils.remove(c.getShape(), '['), ']');
+        String[] sizes = arraySpec.split("x");
+        int width = Integer.parseInt(sizes[0].trim());
+        int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
+        String functionName = "loadByte";
+        if(c.getType().contains("16"))
+        {
+            functionName="loadWord";
+        }
+        if(height == -1)
+        {
+            functionName += "Vector";
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s);",c.getName(),functionName,c.getOffset(),width,c.getScale(),c.getTranslate());
+                       
+        }
+        else
+        {
+            functionName += "Array";
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s);",c.getName(),functionName,c.getOffset(),width,height,c.getScale(),c.getTranslate());
+        }
+        return loadArray;
     }
 
     static void outputLoadPage(ECUData ecuData, int pageNo, int pageOffset, int pageSize, String activate, String read,
@@ -282,8 +316,7 @@ public class Output
 
     }
 
-
-    static void outputOverrides(ECUData ecuData,PrintWriter writer)
+    static void outputOverrides(ECUData ecuData, PrintWriter writer)
     {
         String overrides = TAB + "@Override\n" + TAB + "public String getSignature()\n" + TAB + "{\n" + TAB + TAB
                 + "return signature;\n" + "}\n" + TAB + "@Override\n" + TAB + "public byte[] getOchCommand()\n" + TAB + "{\n" + TAB
@@ -302,8 +335,9 @@ public class Output
                 + ecuData.getPageActivationDelayVal() + ";\n" + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getInterWriteDelay()\n" + TAB + "{\n" + TAB + TAB + "return "
-                + ecuData.getInterWriteDelay() + ";\n" + TAB + "}\n" + TAB + "@Override\n" + TAB + "public boolean isCRC32Protocol()\n" + TAB
-                + "{\n" + TAB + TAB + "return " + ecuData.isCRC32Protocol() + ";\n" + TAB + "}\n" +
+                + ecuData.getInterWriteDelay() + ";\n" + TAB + "}\n" + TAB + "@Override\n" + TAB
+                + "public boolean isCRC32Protocol()\n" + TAB + "{\n" + TAB + TAB + "return " + ecuData.isCRC32Protocol() + ";\n"
+                + TAB + "}\n" +
 
                 TAB + "@Override\n" + TAB + "public int getCurrentTPS()\n" + TAB + "{\n";
         if (ecuData.getRuntimeVars().containsKey("tpsADC"))
@@ -322,7 +356,6 @@ public class Output
 
         writer.println(overrides);
     }
-
 
     private static String processStringToBytes(ECUData ecuData, String s, int offset, int count, int pageNo)
     {
@@ -383,7 +416,7 @@ public class Output
                 {
                     String identifier = ecuData.getPageIdentifiers().get(pageNo - 1);
 
-                    ret += HexStringToBytes(ecuData,identifier, offset, count, pageNo);
+                    ret += HexStringToBytes(ecuData, identifier, offset, count, pageNo);
                 }
                 break;
 

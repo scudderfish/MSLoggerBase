@@ -167,5 +167,24 @@ public abstract class Megasquirt
 		byte[] buffer = new byte[pageSize];
 		return buffer;
 	}
+	
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        return null;
+    }
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        return null;
+    }
+
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        return null;
+    }
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        return null;
+    }
+
 
 }
