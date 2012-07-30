@@ -1,326 +1,334 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
 public class ECUData
 {
-    private List<String>        runtime   = new ArrayList<String>();
-    private List<String>        logHeader = new ArrayList<String>();
-    private List<String>        logRecord = new ArrayList<String>();
-    private List<String>        gaugeDef  = new ArrayList<String>();
-    private Map<String, String> runtimeVars;
-    private Map<String, String> evalVars;
-    private Map<String, String> constantVars;
-    private List<String>        defaults;
-    private Set<String>         flags;
-    private String              fingerprintSource;
-    private ArrayList<String>   gaugeDoc;
-    private ArrayList<Constant> constants;
-    private ArrayList<String>   pageSizes;
-    private ArrayList<String>   pageIdentifiers;
-    private ArrayList<String>   pageActivateCommands;
-    private ArrayList<String>   pageReadCommands;
-    private String              signatureDeclaration;
-    private String              queryCommandStr;
-    private String              ochGetCommandStr;
-    private String              ochBlockSizeStr;
-    private ArrayList<String>   defaultGauges;
-    private boolean             isCRC32Protocol;
-    private int                 currentPage  = 0;
-    private int                 interWriteDelay;
-    private int                 pageActivationDelayVal;
-    private String              classSignature;
+	private List<String> runtime = new ArrayList<String>();
+	private List<String> logHeader = new ArrayList<String>();
+	private List<String> logRecord = new ArrayList<String>();
+	private List<String> gaugeDef = new ArrayList<String>();
+	private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
+	private Map<String, String> runtimeVars;
+	private Map<String, String> evalVars;
+	private Map<String, String> constantVars;
+	private List<String> defaults;
+	private Set<String> flags;
+	private String fingerprintSource;
+	private ArrayList<String> gaugeDoc;
+	private ArrayList<Constant> constants;
+	private ArrayList<String> pageSizes;
+	private ArrayList<String> pageIdentifiers;
+	private ArrayList<String> pageActivateCommands;
+	private ArrayList<String> pageReadCommands;
+	private String signatureDeclaration;
+	private String queryCommandStr;
+	private String ochGetCommandStr;
+	private String ochBlockSizeStr;
+	private ArrayList<String> defaultGauges;
+	private boolean isCRC32Protocol;
+	private int currentPage = 0;
+	private int interWriteDelay;
+	private int pageActivationDelayVal;
+	private String classSignature;
 
+	public List<String> getRuntime()
+	{
+		return runtime;
+	}
 
+	public void setRuntime(List<String> runtime)
+	{
+		this.runtime = runtime;
+	}
 
-    public List<String> getRuntime()
-    {
-        return runtime;
-    }
+	public List<String> getLogHeader()
+	{
+		return logHeader;
+	}
 
-    public void setRuntime(List<String> runtime)
-    {
-        this.runtime = runtime;
-    }
+	public void setLogHeader(List<String> logHeader)
+	{
+		this.logHeader = logHeader;
+	}
 
-    public List<String> getLogHeader()
-    {
-        return logHeader;
-    }
+	public List<String> getLogRecord()
+	{
+		return logRecord;
+	}
 
-    public void setLogHeader(List<String> logHeader)
-    {
-        this.logHeader = logHeader;
-    }
+	public void setLogRecord(List<String> logRecord)
+	{
+		this.logRecord = logRecord;
+	}
 
-    public List<String> getLogRecord()
-    {
-        return logRecord;
-    }
+	public List<String> getGaugeDef()
+	{
+		return gaugeDef;
+	}
 
-    public void setLogRecord(List<String> logRecord)
-    {
-        this.logRecord = logRecord;
-    }
+	public void setGaugeDef(List<String> gaugeDef)
+	{
+		this.gaugeDef = gaugeDef;
+	}
 
-    public List<String> getGaugeDef()
-    {
-        return gaugeDef;
-    }
+	public void reset()
+	{
+		runtime = new ArrayList<String>();
+		logHeader = new ArrayList<String>();
+		logRecord = new ArrayList<String>();
+		runtimeVars = new HashMap<String, String>();
+		evalVars = new HashMap<String, String>();
+		constantVars = new HashMap<String, String>();
+		defaults = new ArrayList<String>();
+		constants = new ArrayList<Constant>();
+		flags = new HashSet<String>();
+		gaugeDef = new ArrayList<String>();
+		gaugeDoc = new ArrayList<String>();
+		defaultGauges = new ArrayList<String>();
+		pageActivateCommands = new ArrayList<String>();
+		pageIdentifiers = new ArrayList<String>();
+		tableDefs = new ArrayList<TableTracker>();
+		fingerprintSource = "";
+		currentPage = 0;
+		isCRC32Protocol = false;
+		constants = new ArrayList<Constant>();
+		// Default for those who don't define it. I'm looking at you
+		// megasquirt-I.ini!
+		ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
 
-    public void setGaugeDef(List<String> gaugeDef)
-    {
-        this.gaugeDef = gaugeDef;
-    }
+	}
 
-    public void reset()
-    {
-        runtime = new ArrayList<String>();
-        logHeader = new ArrayList<String>();
-        logRecord = new ArrayList<String>();
-        runtimeVars = new HashMap<String, String>();
-        evalVars = new HashMap<String, String>();
-        constantVars = new HashMap<String, String>();
-        defaults = new ArrayList<String>();
-        constants = new ArrayList<Constant>();
-        flags = new HashSet<String>();
-        gaugeDef = new ArrayList<String>();
-        gaugeDoc = new ArrayList<String>();
-        defaultGauges = new ArrayList<String>();
-        pageActivateCommands = new ArrayList<String>();
-        pageIdentifiers = new ArrayList<String>();
-        fingerprintSource = "";
-        currentPage = 0;
-        isCRC32Protocol = false;
-        constants = new ArrayList<Constant>();
-        // Default for those who don't define it. I'm looking at you megasquirt-I.ini!
-        ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
+	public Map<String, String> getRuntimeVars()
+	{
+		return runtimeVars;
+	}
 
-    }
+	public void setRuntimeVars(Map<String, String> runtimeVars)
+	{
+		this.runtimeVars = runtimeVars;
+	}
 
-    public Map<String, String> getRuntimeVars()
-    {
-        return runtimeVars;
-    }
+	public Map<String, String> getEvalVars()
+	{
+		return evalVars;
+	}
 
-    public void setRuntimeVars(Map<String, String> runtimeVars)
-    {
-        this.runtimeVars = runtimeVars;
-    }
+	public void setEvalVars(Map<String, String> evalVars)
+	{
+		this.evalVars = evalVars;
+	}
 
-    public Map<String, String> getEvalVars()
-    {
-        return evalVars;
-    }
+	public Map<String, String> getConstantVars()
+	{
+		return constantVars;
+	}
 
-    public void setEvalVars(Map<String, String> evalVars)
-    {
-        this.evalVars = evalVars;
-    }
+	public void setConstantVars(Map<String, String> constantVars)
+	{
+		this.constantVars = constantVars;
+	}
 
-    public Map<String, String> getConstantVars()
-    {
-        return constantVars;
-    }
+	public List<String> getDefaults()
+	{
+		return defaults;
+	}
 
-    public void setConstantVars(Map<String, String> constantVars)
-    {
-        this.constantVars = constantVars;
-    }
+	public void setDefaults(List<String> defaults)
+	{
+		this.defaults = defaults;
+	}
 
-    public List<String> getDefaults()
-    {
-        return defaults;
-    }
+	public Set<String> getFlags()
+	{
+		return flags;
+	}
 
-    public void setDefaults(List<String> defaults)
-    {
-        this.defaults = defaults;
-    }
+	public void setFlags(Set<String> flags)
+	{
+		this.flags = flags;
+	}
 
-    public Set<String> getFlags()
-    {
-        return flags;
-    }
+	public String getFingerprintSource()
+	{
+		return fingerprintSource;
+	}
 
-    public void setFlags(Set<String> flags)
-    {
-        this.flags = flags;
-    }
+	public void setFingerprintSource(String fingerprintSource)
+	{
+		this.fingerprintSource = fingerprintSource;
+	}
 
-    public String getFingerprintSource()
-    {
-        return fingerprintSource;
-    }
+	public ArrayList<String> getGaugeDoc()
+	{
+		return gaugeDoc;
+	}
 
-    public void setFingerprintSource(String fingerprintSource)
-    {
-        this.fingerprintSource = fingerprintSource;
-    }
+	public void setGaugeDoc(ArrayList<String> gaugeDoc)
+	{
+		this.gaugeDoc = gaugeDoc;
+	}
 
-    public ArrayList<String> getGaugeDoc()
-    {
-        return gaugeDoc;
-    }
+	public ArrayList<Constant> getConstants()
+	{
+		return constants;
+	}
 
-    public void setGaugeDoc(ArrayList<String> gaugeDoc)
-    {
-        this.gaugeDoc = gaugeDoc;
-    }
+	public void setConstants(ArrayList<Constant> constants)
+	{
+		this.constants = constants;
+	}
 
-    public ArrayList<Constant> getConstants()
-    {
-        return constants;
-    }
+	public ArrayList<String> getPageSizes()
+	{
+		return pageSizes;
+	}
 
-    public void setConstants(ArrayList<Constant> constants)
-    {
-        this.constants = constants;
-    }
+	public void setPageSizes(ArrayList<String> pageSizes)
+	{
+		this.pageSizes = pageSizes;
+	}
 
-    public ArrayList<String> getPageSizes()
-    {
-        return pageSizes;
-    }
+	public ArrayList<String> getPageIdentifiers()
+	{
+		return pageIdentifiers;
+	}
 
-    public void setPageSizes(ArrayList<String> pageSizes)
-    {
-        this.pageSizes = pageSizes;
-    }
+	public void setPageIdentifiers(ArrayList<String> pageIdentifiers)
+	{
+		this.pageIdentifiers = pageIdentifiers;
+	}
 
-    public ArrayList<String> getPageIdentifiers()
-    {
-        return pageIdentifiers;
-    }
+	public ArrayList<String> getPageActivateCommands()
+	{
+		return pageActivateCommands;
+	}
 
-    public void setPageIdentifiers(ArrayList<String> pageIdentifiers)
-    {
-        this.pageIdentifiers = pageIdentifiers;
-    }
+	public void setPageActivateCommands(ArrayList<String> pageActivateCommands)
+	{
+		this.pageActivateCommands = pageActivateCommands;
+	}
 
-    public ArrayList<String> getPageActivateCommands()
-    {
-        return pageActivateCommands;
-    }
+	public ArrayList<String> getPageReadCommands()
+	{
+		return pageReadCommands;
+	}
 
-    public void setPageActivateCommands(ArrayList<String> pageActivateCommands)
-    {
-        this.pageActivateCommands = pageActivateCommands;
-    }
+	public void setPageReadCommands(ArrayList<String> pageReadCommands)
+	{
+		this.pageReadCommands = pageReadCommands;
+	}
 
-    public ArrayList<String> getPageReadCommands()
-    {
-        return pageReadCommands;
-    }
+	public String getSignatureDeclaration()
+	{
+		return signatureDeclaration;
+	}
 
-    public void setPageReadCommands(ArrayList<String> pageReadCommands)
-    {
-        this.pageReadCommands = pageReadCommands;
-    }
+	public void setSignatureDeclaration(String signatureDeclaration)
+	{
+		this.signatureDeclaration = signatureDeclaration;
+	}
 
-    public String getSignatureDeclaration()
-    {
-        return signatureDeclaration;
-    }
+	public String getQueryCommandStr()
+	{
+		return queryCommandStr;
+	}
 
-    public void setSignatureDeclaration(String signatureDeclaration)
-    {
-        this.signatureDeclaration = signatureDeclaration;
-    }
+	public void setQueryCommandStr(String queryCommandStr)
+	{
+		this.queryCommandStr = queryCommandStr;
+	}
 
-    public String getQueryCommandStr()
-    {
-        return queryCommandStr;
-    }
+	public String getOchGetCommandStr()
+	{
+		return ochGetCommandStr;
+	}
 
-    public void setQueryCommandStr(String queryCommandStr)
-    {
-        this.queryCommandStr = queryCommandStr;
-    }
+	public void setOchGetCommandStr(String ochGetCommandStr)
+	{
+		this.ochGetCommandStr = ochGetCommandStr;
+	}
 
-    public String getOchGetCommandStr()
-    {
-        return ochGetCommandStr;
-    }
+	public String getOchBlockSizeStr()
+	{
+		return ochBlockSizeStr;
+	}
 
-    public void setOchGetCommandStr(String ochGetCommandStr)
-    {
-        this.ochGetCommandStr = ochGetCommandStr;
-    }
+	public void setOchBlockSizeStr(String ochBlockSizeStr)
+	{
+		this.ochBlockSizeStr = ochBlockSizeStr;
+	}
 
-    public String getOchBlockSizeStr()
-    {
-        return ochBlockSizeStr;
-    }
+	public ArrayList<String> getDefaultGauges()
+	{
+		return defaultGauges;
+	}
 
-    public void setOchBlockSizeStr(String ochBlockSizeStr)
-    {
-        this.ochBlockSizeStr = ochBlockSizeStr;
-    }
+	public void setDefaultGauges(ArrayList<String> defaultGauges)
+	{
+		this.defaultGauges = defaultGauges;
+	}
 
-    public ArrayList<String> getDefaultGauges()
-    {
-        return defaultGauges;
-    }
+	public boolean isCRC32Protocol()
+	{
+		return isCRC32Protocol;
+	}
 
-    public void setDefaultGauges(ArrayList<String> defaultGauges)
-    {
-        this.defaultGauges = defaultGauges;
-    }
+	public void setCRC32Protocol(boolean isCRC32Protocol)
+	{
+		this.isCRC32Protocol = isCRC32Protocol;
+	}
 
-    public boolean isCRC32Protocol()
-    {
-        return isCRC32Protocol;
-    }
+	public int getCurrentPage()
+	{
+		return currentPage;
+	}
 
-    public void setCRC32Protocol(boolean isCRC32Protocol)
-    {
-        this.isCRC32Protocol = isCRC32Protocol;
-    }
+	public void setCurrentPage(int currentPage)
+	{
+		this.currentPage = currentPage;
+	}
 
-    public int getCurrentPage()
-    {
-        return currentPage;
-    }
+	public int getInterWriteDelay()
+	{
+		return interWriteDelay;
+	}
 
-    public void setCurrentPage(int currentPage)
-    {
-        this.currentPage = currentPage;
-    }
+	public void setInterWriteDelay(int interWriteDelay)
+	{
+		this.interWriteDelay = interWriteDelay;
+	}
 
-    public int getInterWriteDelay()
-    {
-        return interWriteDelay;
-    }
+	public int getPageActivationDelayVal()
+	{
+		return pageActivationDelayVal;
+	}
 
-    public void setInterWriteDelay(int interWriteDelay)
-    {
-        this.interWriteDelay = interWriteDelay;
-    }
+	public void setPageActivationDelayVal(int pageActivationDelayVal)
+	{
+		this.pageActivationDelayVal = pageActivationDelayVal;
+	}
 
-    public int getPageActivationDelayVal()
-    {
-        return pageActivationDelayVal;
-    }
+	public String getClassSignature()
+	{
+		return classSignature;
+	}
 
-    public void setPageActivationDelayVal(int pageActivationDelayVal)
-    {
-        this.pageActivationDelayVal = pageActivationDelayVal;
-    }
+	public void setClassSignature(String classSignature)
+	{
+		this.classSignature = classSignature;
+	}
 
-    public String getClassSignature()
-    {
-        return classSignature;
-    }
+	public List<TableTracker> getTableDefs()
+	{
+		return tableDefs;
+	}
 
-    public void setClassSignature(String classSignature)
-    {
-        this.classSignature = classSignature;
-    }
+	public void setTableDefs(List<TableTracker> tableDefs)
+	{
+		this.tableDefs = tableDefs;
+	}
 
 }

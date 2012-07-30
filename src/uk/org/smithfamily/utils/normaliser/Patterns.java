@@ -72,7 +72,7 @@ public class Patterns
      */
     static Pattern tablEditorTable          = Pattern.compile("\\s*table\\s*=\\s*(.*)\\s*,\\s*(.*)\\s*,\\s*\"(.*)\"\\s*,\\s*(\\d+)\\s*");
     static Pattern tablEditorXBins          = Pattern.compile("\\s*xBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*(,\\s*(.*))?");
-    static Pattern tablEditorYBins          = Pattern.compile("\\s*yBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)");
+    static Pattern tablEditorYBins          = Pattern.compile("\\s*yBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*(,\\s*(.*))?");
     static Pattern tablEditorZBins          = Pattern.compile("\\s*zBins\\s*=\\s*(.*)\\s*");
     static Pattern tablEditorUpDownLabel    = Pattern.compile("\\s*upDownLabel\\s*=\\s*\"(.*?)\"\\s*,\\s*\"(.*)\"\\s*");
     static Pattern tablEditorGridHeight     = Pattern.compile("\\s*gridHeight\\s*=\\s*(.*?)\\s*");
