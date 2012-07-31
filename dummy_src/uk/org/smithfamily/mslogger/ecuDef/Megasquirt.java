@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 
@@ -12,7 +14,7 @@ import android.content.Context;
  */
 public abstract class Megasquirt
 {
-	
+	protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
 	public abstract String getSignature();
 
