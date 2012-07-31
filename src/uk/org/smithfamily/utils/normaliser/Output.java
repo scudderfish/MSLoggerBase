@@ -9,9 +9,12 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
+
 public class Output
 {
     static final String        TAB          = "    ";
+	private static final int MAX_LINES = 1000;
     private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
             "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
@@ -35,6 +38,57 @@ public class Output
         writer.println(TAB + TAB + "super(c);");
         writer.println(TAB + TAB + "refreshFlags();");
         writer.println(TAB + "}");
+    }
+    /**
+     * This is nasty.  We need to have a set of methods to init the constants as there is
+     * a hard limit of 64K on the size of a method, and MS3 will break that.  We also
+     * need to ensure that if there is any preprocessor type logic that we don't stop and
+     * start the next method in the middle of it. 
+     * @param ecuData
+     * @param writer
+     */
+    static void outputFlagsAndConstants(ECUData ecuData, PrintWriter writer)
+    {
+    	int constantMethodCount = 0;
+    	int lineCount = 0;
+    	boolean inPreProc = false;
+    	boolean needDeclaration = true;
+    	int lookahead = 3;
+    	for(Constant c : ecuData.getConstants())
+    	{
+    		if(needDeclaration)
+    		{
+    			constantMethodCount++;
+    			writer.println(TAB + "private void initConstants"+constantMethodCount+"()\n"+TAB+"{\n");
+    			needDeclaration = false;
+    		}
+    		if(!inPreProc && lookahead > 0)
+    		{
+    			lookahead--;
+    		}
+    		lineCount++;
+        	if("PREPROC".equals(c.getType()))
+        	{
+        		writer.println(TAB + TAB + c.getName());
+    			lookahead = 3;
+    			inPreProc = true;
+        	}
+        	else
+        	{
+        		writer.println(TAB + TAB + "constants.put(\""+c.getName()+"\", new "+c.toString()+");");
+    			inPreProc = false;
+        	}
+        	if(lineCount > MAX_LINES && !inPreProc && lookahead == 0)
+        	{
+        		writer.println(TAB + "}\n");
+        		needDeclaration = true;
+        		lineCount = 0;
+        	}
+    	}
+    	if(!needDeclaration)
+    	{
+    		writer.println(TAB + "}\n");
+    	}
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void refreshFlags()");
         writer.println(TAB + "{");
@@ -42,10 +96,13 @@ public class Output
         {
             writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
         }
+        for(int i=1; i <= constantMethodCount ; i++)
+        {
+        	writer.println(TAB + TAB + "initConstants"+i+"();\n");
+        }
         writer.println(TAB + "}");
-
+    	
     }
-
     static void outputPackageAndIncludes(ECUData ecuData, PrintWriter writer)
     {
         writer.println("package uk.org.smithfamily.mslogger.ecuDef.gen;");
