@@ -1,12 +1,24 @@
-package uk.org.smithfamily.utils.normaliser;
+package uk.org.smithfamily.mslogger.ecuDef;
 public class Constant
 {
 
 	@Override
     public String toString()
     {
-        return "Constant [page=" + page + ", classType=" + classType + ", type=" + type + ", offset=" + offset + ", shape=" + shape + ", units=" + units
-                + ", name=" + name + "]";
+        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%f,%f,%d)", 
+        		page ,
+        		name,
+        		classType,
+        		type,
+        		offset,
+        		shape,
+        		units,
+        		scale,
+        		translate,
+        		low,
+        		high,
+        		digits);
+                
     }
 
     private int		digits;
