@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -32,6 +34,8 @@ import android.util.Log;
  */
 public abstract class Megasquirt
 {
+    protected Map<String,Constant> constants = new HashMap<String,Constant>();
+
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
