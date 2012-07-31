@@ -2,6 +2,7 @@ package uk.org.smithfamily.utils.normaliser;
 
 import java.util.*;
 
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
 public class ECUData

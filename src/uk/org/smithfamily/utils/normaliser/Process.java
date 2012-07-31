@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.utils.normaliser.tableeditor.*;
 
 public class Process
