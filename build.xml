@@ -1,55 +1,88 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="firmware" name="Create Megasquirt firmwares JAR for MSLogger">
-	
-	<property name="output.file.location" value="../MSLoggerBase/libs"/>
-	<property name="output.file" value="${output.file.location}/firmwares.jar"/>
-	
-	<target name="compile">
-		<javac srcdir="src" destdir="bin"  classpath="lib/commons-lang3-3.0.1.jar" includeantruntime="false" />
-	</target>
+<project
+    name="Create Megasquirt firmwares JAR for MSLogger"
+    default="firmware" >
 
-	<target name="generate_java" depends="compile">
-		<java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
-			<arg value="inis/generationList.txt"/>
-			<arg value="."/>
-			<classpath>
-				<pathelement location="bin" />
-				<pathelement location="lib/commons-lang3-3.0.1.jar" />
-			</classpath>
-		</java>
-	</target>
-	
-	<target name="generate_java_test" depends="compile">
-		<java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
-			<arg value="inis/test.txt"/>
-			<arg value="."/>
-			<classpath>
-				<pathelement location="bin" />
-				<pathelement location="lib/commons-lang3-3.0.1.jar" />
-			</classpath>
-		</java>
-	</target>
-	
-	<target name="compile_dummy" >
-		<mkdir dir="dummy_bin" />
-		<javac srcdir="dummy_src" destdir="dummy_bin" includeantruntime="false"  />
-	</target>
+    <property
+        name="output.file.location"
+        value="../MSLoggerBase/libs" />
 
-	<target name="compile_firmwares" depends="generate_java,compile_dummy">
-		<mkdir dir="gen_bin"/>
-		<javac debug="on" srcdir="gen_src" destdir="gen_bin" classpath="dummy_bin" includeantruntime="false" />
-	</target>
+    <property
+        name="output.file"
+        value="${output.file.location}/firmwares.jar" />
 
-	<target name="firmware" depends="compile_firmwares">
-		<jar destfile="../MSLoggerBase/libs/firmwares.jar">
-			<fileset dir="gen_bin" />
-			<fileset dir="gen_src"/>
-		</jar>
-	</target>
-	
-	<target name="clean">
-		<delete file="${output.file}"/>
-		<delete dir="gen_src" />
-		<delete dir="gen_bin" />
-	</target>
+    <target name="compile" >
+        <javac
+            classpath="lib/commons-lang3-3.0.1.jar"
+            destdir="bin"
+            includeantruntime="false"
+            srcdir="src" />
+    </target>
+
+    <target
+        name="generate_java"
+        depends="compile" >
+
+        <java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
+            <arg value="inis/generationList.txt" />
+            <arg value="." />
+            <classpath>
+                <pathelement location="bin" />
+                <pathelement location="lib/commons-lang3-3.0.1.jar" />
+            </classpath>
+        </java>
+    </target>
+
+    <target
+        name="generate_java_test"
+        depends="compile" >
+
+        <java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
+            <arg value="inis/test.txt" />
+            <arg value="." />
+            <classpath>
+                <pathelement location="bin" />
+                <pathelement location="lib/commons-lang3-3.0.1.jar" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="compile_dummy" >
+        <mkdir dir="dummy_bin" />
+        <javac
+            destdir="dummy_bin"
+            includeantruntime="false"
+            srcdir="dummy_src" />
+    </target>
+
+    <target
+        name="compile_firmwares"
+        depends="generate_java,compile_dummy" >
+        <mkdir dir="gen_bin" />
+        <javac
+            classpath="dummy_bin"
+            debug="on"
+            destdir="gen_bin"
+            fork="true"
+            includeantruntime="false"
+            memoryinitialsize="256m"
+            memorymaximumsize="256m"
+            srcdir="gen_src" />
+    </target>
+
+    <target
+        name="firmware"
+        depends="compile_firmwares" >
+        <jar destfile="../MSLoggerBase/libs/firmwares.jar" >
+            <fileset dir="gen_bin" />
+            <fileset dir="gen_src" />
+        </jar>
+    </target>
+
+    <target name="clean" >
+        <delete file="${output.file}" />
+        <delete dir="gen_src" />
+        <delete dir="gen_bin" />
+    </target>
+
 </project>
