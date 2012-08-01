@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 
@@ -12,7 +14,7 @@ import android.content.Context;
  */
 public abstract class Megasquirt
 {
-	
+	protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
 	public abstract String getSignature();
 
@@ -167,5 +169,24 @@ public abstract class Megasquirt
 		byte[] buffer = new byte[pageSize];
 		return buffer;
 	}
+	
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        return null;
+    }
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        return null;
+    }
+
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        return null;
+    }
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        return null;
+    }
+
 
 }

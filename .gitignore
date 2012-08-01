@@ -6,3 +6,5 @@
 *.ear
 /gen_src
 bin
+/dummy_bin
+/gen_bin

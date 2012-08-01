@@ -47,7 +47,7 @@ public class Patterns
      */
     static Pattern constantScalar      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
     static Pattern constantSimple      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
-    // static Pattern constantArray    = Pattern.compile("\\s*(\\w*)\\s*=\\s*(\\w*)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*(.*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
+    static Pattern constantArray       = Pattern.compile("\\s*(\\w*)\\s*=\\s*(array)\\s*,\\s*(.*?)\\s*,\\s*(\\d*),\\s*(\\[.*?\\])\\s*,\\s*\\\"(.*?)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*");
 
     static Pattern booleanConvert      = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
     static Pattern boolAsInt           = Pattern.compile("(.*\\(.*?[<>=].*?\\))(.*?[\\*/].*)");
@@ -72,7 +72,7 @@ public class Patterns
      */
     static Pattern tablEditorTable          = Pattern.compile("\\s*table\\s*=\\s*(.*)\\s*,\\s*(.*)\\s*,\\s*\"(.*)\"\\s*,\\s*(\\d+)\\s*");
     static Pattern tablEditorXBins          = Pattern.compile("\\s*xBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*(,\\s*(.*))?");
-    static Pattern tablEditorYBins          = Pattern.compile("\\s*yBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)");
+    static Pattern tablEditorYBins          = Pattern.compile("\\s*yBins\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*(,\\s*(.*))?");
     static Pattern tablEditorZBins          = Pattern.compile("\\s*zBins\\s*=\\s*(.*)\\s*");
     static Pattern tablEditorUpDownLabel    = Pattern.compile("\\s*upDownLabel\\s*=\\s*\"(.*?)\"\\s*,\\s*\"(.*)\"\\s*");
     static Pattern tablEditorGridHeight     = Pattern.compile("\\s*gridHeight\\s*=\\s*(.*?)\\s*");
