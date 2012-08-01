@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -32,6 +34,8 @@ import android.util.Log;
  */
 public abstract class Megasquirt
 {
+    protected Map<String,Constant> constants = new HashMap<String,Constant>();
+
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
@@ -888,6 +892,33 @@ public abstract class Megasquirt
             }
             return value;
         }
+
+    }
+
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        double[][] destination = new double[width][height];
+        
+        return destination;
+    }
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        double[] destination = new double[width];
+        
+        return destination;
+    }
+
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    {
+        double[][] destination = new double[width][height];
+        
+        return destination;
+    }
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    {
+        double[] destination = new double[width];
+        
+        return destination;
 
     }
 
