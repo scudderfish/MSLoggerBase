@@ -4,13 +4,13 @@ public class YBins extends TableItem
 {
 
 	private String bins1;
-	private String bins2;
+	private String label;
 	private String readOnly;
 
-	public YBins(String bins1, String bins2, String readonly)
+	public YBins(String bins1, String label, String readonly)
 	{
 		this.bins1=bins1;
-		this.bins2=bins2;
+		this.label=label;
         this.readOnly=(readonly==null ? "false" : readonly);
 	
 	}
@@ -25,14 +25,14 @@ public class YBins extends TableItem
 		this.bins1 = bins1;
 	}
 
-	public String getBins2()
+	public String getLabel()
 	{
-		return bins2;
+		return label;
 	}
 
-	public void setBins2(String bins2)
+	public void setLabel(String label)
 	{
-		this.bins2 = bins2;
+		this.label = label;
 	}
 
 	public String getReadOnly()
@@ -47,7 +47,7 @@ public class YBins extends TableItem
     @Override
     public String toString()
     {
-        return String.format("t.setYBins(%s,%s,%s);", bins1,bins2,readOnly);
+        return String.format("t.setYBins(%s,\"%s\",%s);", bins1,label,readOnly);
     }
 
 }

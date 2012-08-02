@@ -3,10 +3,20 @@ package uk.org.smithfamily.mslogger.ecuDef;
 public class TableEditor
 {
 
-    private int    page;
-    private String label;
-    private String map3DName;
-    private String name;
+    private int        page;
+    private String     label;
+    private String     map3DName;
+    private String     name;
+    private double[]   xBins;
+    private String     xLabel;
+    private boolean    xReadOnly;
+    private double[]   yBins;
+    private String     yLabel;
+    private boolean    yReadOnly;
+    private double[][] zBins;
+    private double     height;
+    private String     upLabel;
+    private String     downLabel;
 
     public TableEditor(String name, String map3DName, String label, int page)
     {
@@ -36,34 +46,86 @@ public class TableEditor
         return name;
     }
 
-    public void setXBins(double[] rpmBins1, int rpm, boolean b)
+    public void setXBins(double[] bins, String label, boolean b)
     {
-        // TODO Auto-generated method stub
-        
+        this.xBins = bins;
+        this.xLabel = label;
+        this.xReadOnly = b;
     }
 
-    public void setYBins(double[] mapBins1, double map, boolean b)
+    public void setYBins(double[] bins, String label, boolean b)
     {
-        // TODO Auto-generated method stub
-        
+        this.yBins = bins;
+        this.yLabel = label;
+        this.yReadOnly = b;
+
     }
 
-    public void setZBins(double[][] veBins1)
+    public void setZBins(double[][] bins)
     {
-        // TODO Auto-generated method stub
-        
+        this.zBins = bins;
+
     }
 
     public void setHeight(double d)
     {
-        // TODO Auto-generated method stub
-        
+        this.height = d;
     }
 
-    public void setUpDownLabel(String string, String string2)
+    public void setUpDownLabel(String up, String down)
     {
-        // TODO Auto-generated method stub
-        
+        this.upLabel = up;
+        this.downLabel = down;
+    }
+
+    public double[] getxBins()
+    {
+        return xBins;
+    }
+
+    public String getxLabel()
+    {
+        return xLabel;
+    }
+
+    public boolean isxReadOnly()
+    {
+        return xReadOnly;
+    }
+
+    public double[] getyBins()
+    {
+        return yBins;
+    }
+
+    public String getyLabel()
+    {
+        return yLabel;
+    }
+
+    public boolean isyReadOnly()
+    {
+        return yReadOnly;
+    }
+
+    public double[][] getzBins()
+    {
+        return zBins;
+    }
+
+    public double getHeight()
+    {
+        return height;
+    }
+
+    public String getUpLabel()
+    {
+        return upLabel;
+    }
+
+    public String getDownLabel()
+    {
+        return downLabel;
     }
 
 }
