@@ -71,6 +71,30 @@
     </target>
 
     <target
+        name="firmware_test"
+        depends="compile_firmwares_test" >
+        <jar destfile="../MSLoggerBase/libs/firmwares.jar" >
+            <fileset dir="gen_bin" />
+            <fileset dir="gen_src" />
+        </jar>
+    </target>
+
+    <target
+        name="compile_firmwares_test"
+        depends="generate_java_test,compile_dummy" >
+        <mkdir dir="gen_bin" />
+        <javac
+            classpath="dummy_bin"
+            debug="on"
+            destdir="gen_bin"
+            fork="true"
+            includeantruntime="false"
+            memoryinitialsize="256m"
+            memorymaximumsize="256m"
+            srcdir="gen_src" />
+    </target>
+
+    <target
         name="firmware"
         depends="compile_firmwares" >
         <jar destfile="../MSLoggerBase/libs/firmwares.jar" >
