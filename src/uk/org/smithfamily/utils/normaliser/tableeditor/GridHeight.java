@@ -19,5 +19,9 @@ public class GridHeight extends TableItem
 	{
 		this.height = height;
 	}
-
+	@Override
+	public String toString()
+	{
+	    return String.format("t.setHeight(%s);",height);
+	}
 }

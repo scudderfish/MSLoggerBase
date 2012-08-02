@@ -673,7 +673,7 @@ public class Process
 			t.addItem(g);
 		} else
 		{
-			PreProcessor p = new PreProcessor(line);
+			PreProcessor p = new PreProcessor(processPreprocessor(ecuData,line));
 			if(t!=null)
 			{
 				t.addItem(p);

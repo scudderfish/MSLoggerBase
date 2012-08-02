@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project
     name="Create Megasquirt firmwares JAR for MSLogger"
-    default="firmware" >
+    default="build_firmwares_jar" >
 
-    <property
-        name="output.file.location"
-        value="../MSLoggerBase/libs" />
+	<property name="jar.file" value="firmwares.jar" />
+    <property name="output.file.location" value="../MSLoggerBase/libs" />
 
-    <property
-        name="output.file"
-        value="${output.file.location}/firmwares.jar" />
+    <property name="output.file" value="${output.file.location}/${jar.file}" />
 
-    <target name="compile" >
+	<property name="mslogger.jar.location" value="../MSLoggerBase/libs/${jar.file}" />
+    
+	<target name="compile_normaliser" >
         <javac
             classpath="lib/commons-lang3-3.0.1.jar"
             destdir="bin"
@@ -19,12 +18,9 @@
             srcdir="src" />
     </target>
 
-    <target
-        name="generate_java"
-        depends="compile" >
-
+    <target name="generate_firmware_java" depends="compile_normaliser" >
         <java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
-            <arg value="inis/generationList.txt" />
+            <arg value="${ini_path}" />
             <arg value="." />
             <classpath>
                 <pathelement location="bin" />
@@ -33,34 +29,24 @@
         </java>
     </target>
 
-    <target
-        name="generate_java_test"
-        depends="compile" >
-
-        <java classname="uk.org.smithfamily.utils.normaliser.Normaliser" >
-            <arg value="inis/test.txt" />
-            <arg value="." />
-            <classpath>
-                <pathelement location="bin" />
-                <pathelement location="lib/commons-lang3-3.0.1.jar" />
-            </classpath>
-        </java>
-    </target>
-
-    <target name="compile_dummy" >
-        <mkdir dir="dummy_bin" />
+    <target name=".compile_support" >
+    	<mkdir dir="dummy_bin" />
+    	<mkdir dir="common_bin" />
+        <javac
+            destdir="common_bin"
+            includeantruntime="false"
+            srcdir="common_src" />
         <javac
             destdir="dummy_bin"
+        	classpath="common_bin"
             includeantruntime="false"
             srcdir="dummy_src" />
     </target>
 
-    <target
-        name="compile_firmwares"
-        depends="generate_java,compile_dummy" >
+	<target name=".compile_firmware" depends="generate_firmware_java,.compile_support">
         <mkdir dir="gen_bin" />
         <javac
-            classpath="dummy_bin"
+            classpath="dummy_bin:common_bin"
             debug="on"
             destdir="gen_bin"
             fork="true"
@@ -68,14 +54,17 @@
             memoryinitialsize="256m"
             memorymaximumsize="256m"
             srcdir="gen_src" />
-    </target>
-
+	</target>
+	
     <target
-        name="firmware"
-        depends="compile_firmwares" >
-        <jar destfile="../MSLoggerBase/libs/firmwares.jar" >
+        name=".construct_firmware_jar" 
+        depends="clean,.compile_firmware" >
+    	<delete file="${mslogger.jar.location}" />
+        <jar destfile="${mslogger.jar.location}" >
             <fileset dir="gen_bin" />
             <fileset dir="gen_src" />
+            <fileset dir="common_bin" />
+            <fileset dir="common_src" />
         </jar>
     </target>
 
@@ -84,5 +73,17 @@
         <delete dir="gen_src" />
         <delete dir="gen_bin" />
     </target>
+
+    <target name="build_firmwares_jar" description="Build ${jar.location} containing the full set of firmwares">
+    	<property name="ini_path" value="inis/generationList.txt"/>
+    	<antcall target=".construct_firmware_jar" />	
+    </target>
+
+	
+    <target name="build_test_firmwares_jar" description="Build ${jar.location} containing the test set of firmwares">
+    	<property name="ini_path" value="inis/test.txt"/>
+    	<antcall target=".construct_firmware_jar" />	
+    </target>
+
 
 </project>

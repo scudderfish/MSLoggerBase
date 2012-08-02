@@ -4,14 +4,14 @@ public class XBins extends TableItem
 {
 
 	private String readOnly;
-	private String bins2;
+	private String label;
 	private String bins1;
 
-	public XBins(String bins1, String bins2, String readonly)
+	public XBins(String bins1, String label, String readonly)
 	{
 		this.bins1=bins1;
-		this.bins2=bins2;
-		this.readOnly=readonly;
+		this.label=label;
+		this.readOnly=(readonly==null ? "false" : readonly);
 	}
 
 	public String getReadOnly()
@@ -24,14 +24,14 @@ public class XBins extends TableItem
 		this.readOnly = readOnly;
 	}
 
-	public String getBins2()
+	public String label()
 	{
-		return bins2;
+		return label;
 	}
 
-	public void setBins2(String bins2)
+	public void label(String label)
 	{
-		this.bins2 = bins2;
+		this.label = label;
 	}
 
 	public String getBins1()
@@ -44,4 +44,9 @@ public class XBins extends TableItem
 		this.bins1 = bins1;
 	}
 
+	@Override
+	public String toString()
+	{
+	    return String.format("t.setXBins(%s,\"%s\",%s);", bins1,label,readOnly);
+	}
 }

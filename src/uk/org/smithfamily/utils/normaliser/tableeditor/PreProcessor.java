@@ -20,4 +20,9 @@ public class PreProcessor extends TableItem
 		this.text = text;
 	}
 
+	@Override
+	public String toString()
+	{
+	    return text;
+	}
 }

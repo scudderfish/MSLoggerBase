@@ -16,6 +16,8 @@ public abstract class Megasquirt
 {
 	protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
+	protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
+	
 	public abstract String getSignature();
 
 	public abstract byte[] getOchCommand();
@@ -48,6 +50,7 @@ public abstract class Megasquirt
 
     public abstract boolean isCRC32Protocol();
 
+    public abstract void createTableEditors();
     
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
@@ -170,20 +173,20 @@ public abstract class Megasquirt
 		return buffer;
 	}
 	
-    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         return null;
     }
-    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         return null;
     }
 
-    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         return null;
     }
-    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         return null;
     }

@@ -44,4 +44,9 @@ public class GridOrient extends TableItem
 		this.z = z;
 	}
 
+	@Override
+	public String toString()
+	{
+	    return String.format("t.setGridOrient(%s,%s,%s);",x,y,z);
+	}
 }

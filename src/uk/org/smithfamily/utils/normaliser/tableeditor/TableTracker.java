@@ -11,10 +11,6 @@ public class TableTracker
 	private String page;
 	
 	List<TableItem>	items = new ArrayList<TableItem>();
-	public TableTracker()
-	{
-	}
-
 	public String getName()
 	{
 		return name;
@@ -60,4 +56,14 @@ public class TableTracker
 		items.add(x);
 	}
 
+    public List<TableItem> getItems()
+    {
+        return items;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("t = new TableEditor(\"%s\",\"%s\",\"%s\",%s); tableEditors.put(\"%s\",t);",name,map3DName,label,page,name);
+    }
 }
