@@ -10,6 +10,8 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableItem;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
 public class Output
 {
@@ -100,6 +102,7 @@ public class Output
         {
         	writer.println(TAB + TAB + "initConstants"+i+"();\n");
         }
+        writer.println(TAB + TAB + "createTableEditors();");
         writer.println(TAB + "}");
     	
     }
@@ -247,8 +250,24 @@ public class Output
 
     }
 
-    static void outputTables(ECUData ecuData, PrintWriter writer)
+    static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createTableEditors()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "TableEditor t = null;");
+
+        for(TableTracker t : ecuData.getTableDefs())
+        {
+            writer.println(TAB + TAB + t);
+            for(TableItem i : t.getItems())
+            {
+                writer.println(TAB + TAB + i);
+            }
+            
+        }
+
+        writer.println(TAB + "}");
 
     }
 
@@ -338,20 +357,25 @@ public class Output
         int width = Integer.parseInt(sizes[0].trim());
         int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
         String functionName = "loadByte";
+        String signed = "false";
         if(c.getType().contains("16"))
         {
             functionName="loadWord";
         }
+        if(c.getType().contains("S"))
+        {
+            signed = "true";
+        }
         if(height == -1)
         {
             functionName += "Vector";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s);",c.getName(),functionName,c.getOffset(),width,c.getScale(),c.getTranslate());
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s);",c.getName(),functionName,c.getOffset(),width,c.getScale(),c.getTranslate(),signed);
                        
         }
         else
         {
             functionName += "Array";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s);",c.getName(),functionName,c.getOffset(),width,height,c.getScale(),c.getTranslate());
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s);",c.getName(),functionName,c.getOffset(),width,height,c.getScale(),c.getTranslate(),signed);
         }
         return loadArray;
     }

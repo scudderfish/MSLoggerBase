@@ -11,7 +11,7 @@ public class YBins extends TableItem
 	{
 		this.bins1=bins1;
 		this.bins2=bins2;
-		this.readOnly=readonly;
+        this.readOnly=(readonly==null ? "false" : readonly);
 	
 	}
 
@@ -44,5 +44,10 @@ public class YBins extends TableItem
 	{
 		this.readOnly = readOnly;
 	}
+    @Override
+    public String toString()
+    {
+        return String.format("t.setYBins(%s,%s,%s);", bins1,bins2,readOnly);
+    }
 
 }

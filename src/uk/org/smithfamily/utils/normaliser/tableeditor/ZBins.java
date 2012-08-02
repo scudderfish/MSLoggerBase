@@ -19,5 +19,10 @@ public class ZBins extends TableItem
 	{
 		this.bins = bins;
 	}
+    @Override
+    public String toString()
+    {
+        return String.format("t.setZBins(%s);", bins);
+    }
 
 }

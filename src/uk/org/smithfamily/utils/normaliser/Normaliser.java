@@ -298,7 +298,7 @@ public class Normaliser
         Output.outputGauges(ecuData,writer);
         Output.outputMenus(ecuData,writer);
         Output.outputUserDefined(ecuData,writer);
-        Output.outputTables(ecuData,writer);
+        Output.outputTableEditors(ecuData,writer);
         Output.outputCurves(ecuData,writer);
 
         // outputGaugeDoc(writer);

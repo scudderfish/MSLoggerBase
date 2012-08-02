@@ -32,4 +32,8 @@ public class UpDownLabel extends TableItem
 		this.up = up;
 	}
 
+	public String toString()
+	{
+	    return String.format("t.setUpDownLabel(\"%s\",\"%s\");",up,down);
+	}
 }
