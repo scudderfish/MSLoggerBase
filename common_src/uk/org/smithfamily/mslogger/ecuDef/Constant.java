@@ -5,7 +5,7 @@ public class Constant
 	@Override
     public String toString()
     {
-        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%f,%f,%d)", 
+        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%f,%s,%d)", 
         		page ,
         		name,
         		classType,
@@ -22,7 +22,7 @@ public class Constant
     }
 
     private int		digits;
-	private double	high;
+	private String	high;
 	private int		page;
 	private String	classType;
 	private String	type;
@@ -34,29 +34,45 @@ public class Constant
 	private double	low;
 	private String	name;
 
-	public Constant(int page,String name, String classType, String type, int offset, String shape, String units, double scale,
-			double translate, double low, double high, int digits)
-	{
-		this.page = page;
-		this.name = name;
-		this.classType = classType;
-		this.type = type;
-		this.offset = offset;
-		this.shape = shape;
-		this.units = units;
-		this.scale = scale;
-		this.translate = translate;
-		this.low = low;
-		this.high = high;
-		this.digits = digits;
-	}
+    public Constant(int page,String name, String classType, String type, int offset, String shape, String units, double scale,
+            double translate, double low, String high, int digits)
+    {
+        this.page = page;
+        this.name = name;
+        this.classType = classType;
+        this.type = type;
+        this.offset = offset;
+        this.shape = shape;
+        this.units = units;
+        this.scale = scale;
+        this.translate = translate;
+        this.low = low;
+        this.high = high;
+        this.digits = digits;
+    }
+    public Constant(int page,String name, String classType, String type, int offset, String shape, String units, double scale,
+            double translate, double low, double high, int digits)
+    {
+        this.page = page;
+        this.name = name;
+        this.classType = classType;
+        this.type = type;
+        this.offset = offset;
+        this.shape = shape;
+        this.units = units;
+        this.scale = scale;
+        this.translate = translate;
+        this.low = low;
+        this.high = Double.toString(high);
+        this.digits = digits;
+    }
 
 	public int getDigits()
 	{
 		return digits;
 	}
 
-	public double getHigh()
+	public String getHigh()
 	{
 		return high;
 	}
