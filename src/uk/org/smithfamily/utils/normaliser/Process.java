@@ -390,6 +390,10 @@ public class Process
 		{
 			return;
 		}
+		if(line.contains("pwmidle_cl_initialvalue_rpms"))
+		{
+		    int x = 1;
+		}
 		if (line.contains("messageEnvelopeFormat"))
 		{
 			ecuData.setCRC32Protocol(line.contains("msEnvelope_1.0"));
@@ -474,8 +478,7 @@ public class Process
 					.parseDouble(translateText) : 0;
 			double low = !StringUtils.isEmpty(lowText) ? Double
 					.parseDouble(lowText) : 0;
-			double high = !StringUtils.isEmpty(highText) ? Double
-					.parseDouble(highText) : 0;
+			
 			int digits = !StringUtils.isEmpty(digitsText) ? (int) Double
 					.parseDouble(digitsText) : 0;
 
@@ -483,7 +486,7 @@ public class Process
 			{
 				Constant c = new Constant(ecuData.getCurrentPage(), name,
 						classtype, type, offset, "", units, scale, translate,
-						low, high, digits);
+						low, highText, digits);
 
 				if (scale == 1.0)
 				{
@@ -508,14 +511,14 @@ public class Process
 			String lowText = constantArrayM.group(9);
 			String highText = constantArrayM.group(10);
 			String digitsText = constantArrayM.group(11);
+			highText = highText.replace("{", "").replace("}", "");
 			double scale = !StringUtils.isEmpty(scaleText) ? Double
 					.parseDouble(scaleText) : 0;
 			double translate = !StringUtils.isEmpty(translateText) ? Double
 					.parseDouble(translateText) : 0;
 			double low = !StringUtils.isEmpty(lowText) ? Double
 					.parseDouble(lowText) : 0;
-			double high = !StringUtils.isEmpty(highText) ? Double
-					.parseDouble(highText) : 0;
+			
 			int digits = !StringUtils.isEmpty(digitsText) ? (int) Double
 					.parseDouble(digitsText) : 0;
 
@@ -523,7 +526,7 @@ public class Process
 			{
 				Constant c = new Constant(ecuData.getCurrentPage(), name,
 						classtype, type, offset, shape, units, scale,
-						translate, low, high, digits);
+						translate, low, highText, digits);
 				if (shape.contains("x"))
 				{
 					ecuData.getConstantVars().put(name, "double[][]");
@@ -544,7 +547,7 @@ public class Process
 			double translate = Double.parseDouble(constantSimpleM.group(7));
 
 			Constant c = new Constant(ecuData.getCurrentPage(), name,
-					classtype, type, offset, "", units, scale, translate, 0, 0,
+					classtype, type, offset, "", units, scale, translate, 0, "0",
 					0);
 
 			if (scale == 1.0)
@@ -564,7 +567,7 @@ public class Process
 
 			Constant c = new Constant(ecuData.getCurrentPage(), name, "bits",
 					"", Integer.parseInt(offset.trim()), "[" + start + ":"
-							+ end + "]", "", 1, 0, 0, 0, 0);
+							+ end + "]", "", 1, 0, 0, "0", 0);
 			ecuData.getConstantVars().put(name, "int");
 			ecuData.getConstants().add(c);
 
@@ -572,7 +575,7 @@ public class Process
 		{
 			String preproc = (processPreprocessor(ecuData, line));
 			Constant c = new Constant(ecuData.getCurrentPage(), preproc, "",
-					"PREPROC", 0, "", "", 0, 0, 0, 0, 0);
+					"PREPROC", 0, "", "", 0, 0, 0, "0", 0);
 			ecuData.getConstants().add(c);
 		}
 	}
@@ -636,15 +639,20 @@ public class Process
 		{
 			t = tableDefs.get(tableDefs.size() - 1);
 		}
-
+		if(t == null)
+		{
+		    t = new TableTracker();
+		    tableDefs.add(t);
+		}
 		if (table.matches())
 		{
-			t = new TableTracker();
-			tableDefs.add(t);
-			t.setName(table.group(1));
-			t.setMap3DName(table.group(2));
-			t.setLabel(table.group(3));
-			t.setPage(table.group(4));
+		    if(t.isDefinitionCompleted())
+		    {
+		        t = new TableTracker();
+	            tableDefs.add(t);
+	        }
+		    TableDefinition td = new TableDefinition(t,table.group(1),table.group(2),table.group(3),table.group(4));
+		    t.addItem(td);
 		} else if (xBins.matches())
 		{
 			XBins x = new XBins(xBins.group(1), xBins.group(2), xBins.group(4));
@@ -674,9 +682,15 @@ public class Process
 		} else
 		{
 			PreProcessor p = new PreProcessor(processPreprocessor(ecuData,line));
-			if(t!=null)
+			if(t!=null && !t.isDefinitionCompleted())
 			{
 				t.addItem(p);
+			}
+			else
+			{
+	            t = new TableTracker();
+	            tableDefs.add(t);
+	            t.addItem(p);
 			}
 		}
 	}

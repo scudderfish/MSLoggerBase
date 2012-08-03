@@ -11,7 +11,7 @@ public class YBins extends TableItem
 	{
 		this.bins1=bins1;
 		this.label=label;
-        this.readOnly=(readonly==null ? "false" : readonly);
+        this.readOnly=(readonly==null ? "false" : readonly.equals("readonly") ? "true" : "false");
 	
 	}
 

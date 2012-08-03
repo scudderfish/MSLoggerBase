@@ -17,6 +17,9 @@ public class TableEditor
     private double     height;
     private String     upLabel;
     private String     downLabel;
+	private int xOrient;
+	private int yOrient;
+	private int zOrient;
 
     public TableEditor(String name, String map3DName, String label, int page)
     {
@@ -127,5 +130,27 @@ public class TableEditor
     {
         return downLabel;
     }
+
+	public void setGridOrient(int xOrient, int yOrient, int zOrient)
+	{
+		this.xOrient=xOrient;
+		this.yOrient=yOrient;
+		this.zOrient=zOrient;
+	}
+
+	public int getxOrient()
+	{
+		return xOrient;
+	}
+
+	public int getyOrient()
+	{
+		return yOrient;
+	}
+
+	public int getzOrient()
+	{
+		return zOrient;
+	}
 
 }

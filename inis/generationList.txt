@@ -5,6 +5,13 @@
 #MSnS.ini - cranky
 #megatuneDT.ini - references non-existent colours ini
 #megatuneGood.ini - references non-existent colours ini
+#MS3 Format 0081.001.ini - references non-existant field in table definition maxafr2_rpm
+#megasquirt-II_3760.ini - preprocessor in table editor definition causes issues
+#megasquirt-II_v2905.in - preprocessor in table editor definition causes issuesi
+#megasquirt-II.2.86.ini - preprocessor in table editor definition causes issues
+#megasquirt-II.2.88.ini - preprocessor in table editor definition causes issues
+#megasquirt-II.2.885.ini - preprocessor in table editor definition causes issues
+#megasquirt-II.2.886.ini - preprocessor in table editor definition causes issues
 
 ###################
 # Megasquirt I    #
@@ -23,13 +30,7 @@ msns-extra.29y.ini
 ###################
 # Megasquirt II   #
 ###################
-megasquirt-II.2.86.ini
-megasquirt-II.2.88.ini
-megasquirt-II.2.885.ini
-megasquirt-II.2.886.ini
 megasquirt-II.ini
-megasquirt-II_3760.ini
-megasquirt-II_v2905.ini
 ms2extra.2.1p.ini
 ms2extra.2.1q.ini
 ms2extra_2.1.0.d.ini
@@ -51,7 +52,6 @@ MS2Extra SerialGS27.ini
 ###################
 # Megasquirt III  #
 ###################
-MS3 Format 0081.001.ini
 MS3 Format 0089.001.ini
 MS3 Format 0095.002.ini
 MS3 Format 0095.005.ini
