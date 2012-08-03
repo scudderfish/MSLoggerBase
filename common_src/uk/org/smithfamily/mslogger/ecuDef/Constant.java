@@ -1,4 +1,5 @@
 package uk.org.smithfamily.mslogger.ecuDef;
+
 public class Constant
 {
 
@@ -47,6 +48,10 @@ public class Constant
         this.scale = scale;
         this.translate = translate;
         this.low = low;
+        if(high == null || high.trim().equals(""))
+        {
+            high="0";
+        }
         this.high = high;
         this.digits = digits;
     }
