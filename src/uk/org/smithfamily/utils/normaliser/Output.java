@@ -1,8 +1,10 @@
 package uk.org.smithfamily.utils.normaliser;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -16,7 +18,7 @@ import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 public class Output
 {
     static final String        TAB          = "    ";
-	private static final int MAX_LINES = 1000;
+	private static final int MAX_LINES = 100;
     private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
             "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
@@ -53,7 +55,7 @@ public class Output
     {
     	int constantMethodCount = 0;
     	int lineCount = 0;
-    	boolean inPreProc = false;
+    	int bracketNesting = 0;
     	boolean needDeclaration = true;
     	int lookahead = 3;
     	for(Constant c : ecuData.getConstants())
@@ -64,23 +66,32 @@ public class Output
     			writer.println(TAB + "private void initConstants"+constantMethodCount+"()\n"+TAB+"{\n");
     			needDeclaration = false;
     		}
-    		if(!inPreProc && lookahead > 0)
+    		if(bracketNesting == 0 && lookahead > 0)
     		{
     			lookahead--;
     		}
     		lineCount++;
-        	if("PREPROC".equals(c.getType()))
+
+            if(c.getName().contains("{"))
+            {
+                bracketNesting++;
+            }
+            if(c.getName().contains("}"))
+            {
+                bracketNesting--;
+            }
+
+    		if("PREPROC".equals(c.getType()))
         	{
         		writer.println(TAB + TAB + c.getName());
     			lookahead = 3;
-    			inPreProc = true;
         	}
         	else
         	{
         		writer.println(TAB + TAB + "constants.put(\""+c.getName()+"\", new "+c.toString()+");");
-    			inPreProc = false;
         	}
-        	if(lineCount > MAX_LINES && !inPreProc && lookahead == 0)
+        	
+            if(lineCount > MAX_LINES && bracketNesting == 0 && lookahead == 0)
         	{
         		writer.println(TAB + "}\n");
         		needDeclaration = true;
@@ -252,19 +263,27 @@ public class Output
 
     static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
-        writer.println(TAB + "@Override");
-        writer.println(TAB + "public void createTableEditors()");
-        writer.println(TAB + "{");
-        writer.println(TAB + TAB + "TableEditor t = null;");
-
         for(TableTracker t : ecuData.getTableDefs())
         {
-            writer.println(TAB + TAB + t);
+            writer.println(TAB + "private void createTableEditor_"+t.getName()+"()");
+            writer.println(TAB + "{");
+            writer.println(TAB + TAB + "TableEditor t = null;");
+            
             for(TableItem i : t.getItems())
             {
                 writer.println(TAB + TAB + i);
             }
-            
+            writer.println(TAB + "}");
+        }
+        
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createTableEditors()");
+        writer.println(TAB + "{");
+
+        for(TableTracker t : ecuData.getTableDefs())
+        {
+            writer.println(TAB + TAB + "createTableEditor_"+t.getName()+"();");
         }
 
         writer.println(TAB + "}");
@@ -278,16 +297,24 @@ public class Output
 
     static void outputLoadConstants(ECUData ecuData, PrintWriter writer)
     {
-        writer.println(TAB + "@Override");
-        writer.println(TAB + "public void loadConstants(boolean simulated)");
-        writer.println(TAB + "{");
-        writer.println(TAB + TAB + "byte[] pageBuffer = null;");
         int pageNo = 0;
+        
+        List<Integer> pageNumbers = new ArrayList<Integer>();
+        
         for (Constant c : ecuData.getConstants())
         {
             if (c.getPage() != pageNo)
             {
+                if(pageNo > 0)
+                {
+                    writer.println(TAB + "}");
+                }
                 pageNo = c.getPage();
+                pageNumbers.add(pageNo);
+                writer.println(TAB + "public void loadConstantsPage"+pageNo+"(boolean simulated)");
+                writer.println(TAB + "{");
+                writer.println(TAB + TAB + "byte[] pageBuffer = null;");
+        
                 int pageSize = Integer.parseInt(ecuData.getPageSizes().get(pageNo - 1).trim());
                 String activateCommand = null;
                 if (pageNo - 1 < ecuData.getPageActivateCommands().size())
@@ -341,11 +368,21 @@ public class Output
             }
             else
             {
-                writer.println(TAB + TAB + name);
+                if(pageNo > 0)
+                {
+                    writer.println(TAB + TAB + name);
+                }
             }
 
         }
-
+        writer.println(TAB + "}");
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void loadConstants(boolean simulated)");
+        writer.println(TAB + "{");
+        for(int i : pageNumbers)
+        {
+            writer.println(TAB + TAB + "loadConstantsPage"+i+"(simulated);");
+        }
         writer.println(TAB + "}");
     }
 

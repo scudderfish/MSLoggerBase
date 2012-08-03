@@ -639,15 +639,20 @@ public class Process
 		{
 			t = tableDefs.get(tableDefs.size() - 1);
 		}
-
+		if(t == null)
+		{
+		    t = new TableTracker();
+		    tableDefs.add(t);
+		}
 		if (table.matches())
 		{
-			t = new TableTracker();
-			tableDefs.add(t);
-			t.setName(table.group(1));
-			t.setMap3DName(table.group(2));
-			t.setLabel(table.group(3));
-			t.setPage(table.group(4));
+		    if(t.isDefinitionCompleted())
+		    {
+		        t = new TableTracker();
+	            tableDefs.add(t);
+	        }
+		    TableDefinition td = new TableDefinition(t,table.group(1),table.group(2),table.group(3),table.group(4));
+		    t.addItem(td);
 		} else if (xBins.matches())
 		{
 			XBins x = new XBins(xBins.group(1), xBins.group(2), xBins.group(4));
@@ -677,9 +682,15 @@ public class Process
 		} else
 		{
 			PreProcessor p = new PreProcessor(processPreprocessor(ecuData,line));
-			if(t!=null)
+			if(t!=null && !t.isDefinitionCompleted())
 			{
 				t.addItem(p);
+			}
+			else
+			{
+	            t = new TableTracker();
+	            tableDefs.add(t);
+	            t.addItem(p);
 			}
 		}
 	}
