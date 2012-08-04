@@ -1,12 +1,27 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.utils.normaliser.tableeditor.*;
+import uk.org.smithfamily.utils.normaliser.curveeditor.ColumnLabel;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
+import uk.org.smithfamily.utils.normaliser.curveeditor.LineLabel;
+import uk.org.smithfamily.utils.normaliser.curveeditor.XAxis;
+import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
+import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
+import uk.org.smithfamily.utils.normaliser.tableeditor.PreProcessor;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableDefinition;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
+import uk.org.smithfamily.utils.normaliser.tableeditor.UpDownLabel;
+import uk.org.smithfamily.utils.normaliser.tableeditor.XBins;
+import uk.org.smithfamily.utils.normaliser.tableeditor.YBins;
+import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
 
 public class Process
 {
@@ -16,7 +31,8 @@ public class Process
 		if (!binNumber.matches())
 		{
 			return group;
-		} else
+		} 
+		else
 		{
 			String binNum = binNumber.group(2);
 			int num = Integer.parseInt(binNum, 2);
@@ -104,7 +120,8 @@ public class Process
 					+ start + "," + end + "," + ofs + ");");
 			ecuData.getRuntime().add(definition);
 			ecuData.getRuntimeVars().put(name, "int");
-		} else if (scalarM.matches())
+		}
+		else if (scalarM.matches())
 		{
 			String name = scalarM.group(1);
 			if (constantDefined(ecuData, name))
@@ -129,7 +146,8 @@ public class Process
 			ecuData.setFingerprintSource(ecuData.getFingerprintSource()
 					+ definition);
 			ecuData.getRuntime().add(definition);
-		} else if (exprM.matches())
+		}
+		else if (exprM.matches())
 		{
 			String name = exprM.group(1);
 			if ("pwma_load".equals(name))
@@ -176,11 +194,13 @@ public class Process
 			if (isFloatingExpression(ecuData, expression))
 			{
 				ecuData.getEvalVars().put(name, "double");
-			} else
+			}
+			else
 			{
 				ecuData.getEvalVars().put(name, "int");
 			}
-		} else if (ochGetCommandM.matches())
+		}
+		else if (ochGetCommandM.matches())
 		{
 			String och = ochGetCommandM.group(1);
 			if (och.length() > 1)
@@ -192,14 +212,17 @@ public class Process
 			}
 			ecuData.setOchGetCommandStr("byte [] ochGetCommand = new byte[]{"
 					+ och + "};");
-		} else if (ochBlockSizeM.matches())
+		}
+		else if (ochBlockSizeM.matches())
 		{
 			ecuData.setOchBlockSizeStr("int ochBlockSize = "
 					+ ochBlockSizeM.group(1) + ";");
-		} else if (line.startsWith("#"))
+		}
+		else if (line.startsWith("#"))
 		{
 			ecuData.getRuntime().add(processPreprocessor(ecuData, line));
-		} else if (!StringUtils.isEmpty(line))
+		}
+		else if (!StringUtils.isEmpty(line))
 		{
 			System.out.println(line);
 		}
@@ -242,7 +265,8 @@ public class Process
 					"b.append(\"" + header + "\").append(\"\\t\");");
 			ecuData.getLogRecord().add(
 					"b.append(" + variable + ").append(\"\\t\");");
-		} else if (line.startsWith("#"))
+		} 
+		else if (line.startsWith("#"))
 		{
 			String directive = processPreprocessor(ecuData, line);
 			ecuData.getLogHeader().add(directive);
@@ -390,9 +414,10 @@ public class Process
 		{
 			return;
 		}
-		if(line.contains("pwmidle_cl_initialvalue_rpms"))
+
+		if (line.contains("idleadvance_rpmsdelta"))
 		{
-		    int x = 1;
+			int x=1;
 		}
 		if (line.contains("messageEnvelopeFormat"))
 		{
@@ -437,15 +462,13 @@ public class Process
 			String values = StringUtils.remove(pageReadCommandM.group(1), ' ');
 			values = StringUtils.remove(values, '"');
 			String[] list = values.split(",");
-			ecuData.setPageReadCommands(new ArrayList<String>(Arrays
-					.asList(list)));
+			ecuData.setPageReadCommands(new ArrayList<String>(Arrays.asList(list)));
 		}
 
 		Matcher interWriteDelayM = Patterns.interWriteDelay.matcher(line);
 		if (interWriteDelayM.matches())
 		{
-			ecuData.setInterWriteDelay(Integer.parseInt(interWriteDelayM.group(
-					1).trim()));
+			ecuData.setInterWriteDelay(Integer.parseInt(interWriteDelayM.group(1).trim()));
 			return;
 		}
 		Matcher pageActivationDelayM = Patterns.pageActivationDelay
@@ -456,6 +479,8 @@ public class Process
 					.parseInt(pageActivationDelayM.group(1).trim()));
 			return;
 		}
+		//To allow for MS2GS27
+		line=removeCurlyBrackets(line);
 		Matcher bitsM = Patterns.bits.matcher(line);
 		Matcher constantM = Patterns.constantScalar.matcher(line);
 		Matcher constantSimpleM = Patterns.constantSimple.matcher(line);
@@ -476,8 +501,6 @@ public class Process
 					.parseDouble(scaleText) : 0;
 			double translate = !StringUtils.isEmpty(translateText) ? Double
 					.parseDouble(translateText) : 0;
-			double low = !StringUtils.isEmpty(lowText) ? Double
-					.parseDouble(lowText) : 0;
 			
 			int digits = !StringUtils.isEmpty(digitsText) ? (int) Double
 					.parseDouble(digitsText) : 0;
@@ -486,18 +509,20 @@ public class Process
 			{
 				Constant c = new Constant(ecuData.getCurrentPage(), name,
 						classtype, type, offset, "", units, scale, translate,
-						low, highText, digits);
+						lowText, highText, digits);
 
 				if (scale == 1.0)
 				{
 					ecuData.getConstantVars().put(name, "int");
-				} else
+				}
+				else
 				{
 					ecuData.getConstantVars().put(name, "double");
 				}
 				ecuData.getConstants().add(c);
 			}
-		} else if (constantArrayM.matches())
+		}
+		else if (constantArrayM.matches())
 		{
 
 			String name = constantArrayM.group(1);
@@ -516,8 +541,6 @@ public class Process
 					.parseDouble(scaleText) : 0;
 			double translate = !StringUtils.isEmpty(translateText) ? Double
 					.parseDouble(translateText) : 0;
-			double low = !StringUtils.isEmpty(lowText) ? Double
-					.parseDouble(lowText) : 0;
 			
 			int digits = !StringUtils.isEmpty(digitsText) ? (int) Double
 					.parseDouble(digitsText) : 0;
@@ -526,17 +549,19 @@ public class Process
 			{
 				Constant c = new Constant(ecuData.getCurrentPage(), name,
 						classtype, type, offset, shape, units, scale,
-						translate, low, highText, digits);
+						translate, lowText, highText, digits);
 				if (shape.contains("x"))
 				{
 					ecuData.getConstantVars().put(name, "double[][]");
-				} else
+				}
+				else
 				{
 					ecuData.getConstantVars().put(name, "double[]");
 				}
 				ecuData.getConstants().add(c);
 			}
-		} else if (constantSimpleM.matches())
+		}
+		else if (constantSimpleM.matches())
 		{
 			String name = constantSimpleM.group(1);
 			String classtype = constantSimpleM.group(2);
@@ -547,7 +572,7 @@ public class Process
 			double translate = Double.parseDouble(constantSimpleM.group(7));
 
 			Constant c = new Constant(ecuData.getCurrentPage(), name,
-					classtype, type, offset, "", units, scale, translate, 0, "0",
+					classtype, type, offset, "", units, scale, translate, "0", "0",
 					0);
 
 			if (scale == 1.0)
@@ -558,7 +583,8 @@ public class Process
 				ecuData.getConstantVars().put(name, "double");
 			}
 			ecuData.getConstants().add(c);
-		} else if (bitsM.matches())
+		}
+		else if (bitsM.matches())
 		{
 			String name = bitsM.group(1);
 			String offset = bitsM.group(3);
@@ -567,17 +593,23 @@ public class Process
 
 			Constant c = new Constant(ecuData.getCurrentPage(), name, "bits",
 					"", Integer.parseInt(offset.trim()), "[" + start + ":"
-							+ end + "]", "", 1, 0, 0, "0", 0);
+							+ end + "]", "", 1, 0, "0", "0", 0);
 			ecuData.getConstantVars().put(name, "int");
 			ecuData.getConstants().add(c);
 
-		} else if (line.startsWith("#"))
+		}
+		else if (line.startsWith("#"))
 		{
 			String preproc = (processPreprocessor(ecuData, line));
 			Constant c = new Constant(ecuData.getCurrentPage(), preproc, "",
-					"PREPROC", 0, "", "", 0, 0, 0, "0", 0);
+					"PREPROC", 0, "", "", 0, 0, "0", "0", 0);
 			ecuData.getConstants().add(c);
 		}
+	}
+
+	private static String removeCurlyBrackets(String line)
+	{
+		return line.replaceAll("\\{", "").replaceAll("\\}", "");
 	}
 
 	/**
@@ -600,10 +632,12 @@ public class Process
 		if (menuDialog.matches())
 		{
 			// System.out.println("menuDialog Name: " + menuDialog.group(1));
-		} else if (menu.matches())
+		}
+		else if (menu.matches())
 		{
 			// System.out.println("menu Label: " + menu.group(1));
-		} else if (subMenu.matches())
+		}
+		else if (subMenu.matches())
 		{
 			// System.out.println("subMenu Name: " + subMenu.group(1));
 			// System.out.println("subMenu Label: " + subMenu.group(3));
@@ -639,60 +673,65 @@ public class Process
 		{
 			t = tableDefs.get(tableDefs.size() - 1);
 		}
-		if(t == null)
-		{
-		    t = new TableTracker();
-		    tableDefs.add(t);
-		}
-		if (table.matches())
-		{
-		    if(t.isDefinitionCompleted())
-		    {
-		        t = new TableTracker();
-	            tableDefs.add(t);
-	        }
-		    TableDefinition td = new TableDefinition(t,table.group(1),table.group(2),table.group(3),table.group(4));
-		    t.addItem(td);
-		} else if (xBins.matches())
-		{
-			XBins x = new XBins(xBins.group(1), xBins.group(2), xBins.group(4));
-			t.addItem(x);
-		} else if (yBins.matches())
-		{
-			YBins y = new YBins(yBins.group(1), yBins.group(2), yBins.group(4));
-			t.addItem(y);
-		} else if (zBins.matches())
-		{
-			ZBins z = new ZBins(zBins.group(1));
-			t.addItem(z);
-		} else if (upDownLabel.matches())
-		{
-			UpDownLabel l = new UpDownLabel(upDownLabel.group(1),
-					upDownLabel.group(2));
-			t.addItem(l);
-		} else if (gridHeight.matches())
-		{
-			GridHeight g = new GridHeight(gridHeight.group(1));
-			t.addItem(g);
-		} else if (gridOrient.matches())
-		{
-			GridOrient g = new GridOrient(gridOrient.group(1),
-					gridOrient.group(2), gridOrient.group(3));
-			t.addItem(g);
-		} else
-		{
-			PreProcessor p = new PreProcessor(processPreprocessor(ecuData,line));
-			if(t!=null && !t.isDefinitionCompleted())
-			{
-				t.addItem(p);
-			}
-			else
-			{
-	            t = new TableTracker();
-	            tableDefs.add(t);
-	            t.addItem(p);
-			}
-		}
+        if (t == null)
+        {
+            t = new TableTracker();
+            tableDefs.add(t);
+        }
+        if (table.matches())
+        {
+            if (t.isDefinitionCompleted())
+            {
+                t = new TableTracker();
+                tableDefs.add(t);
+            }
+            TableDefinition td = new TableDefinition(t, table.group(1), table.group(2), table.group(3), table.group(4));
+            t.addItem(td);
+        }
+        else if (xBins.matches())
+        {
+            XBins x = new XBins(xBins.group(1), xBins.group(2), xBins.group(4));
+            t.addItem(x);
+        }
+        else if (yBins.matches())
+        {
+            YBins y = new YBins(yBins.group(1), yBins.group(2), yBins.group(4));
+            t.addItem(y);
+        }
+        else if (zBins.matches())
+        {
+            ZBins z = new ZBins(zBins.group(1));
+            t.addItem(z);
+        }
+        else if (upDownLabel.matches())
+        {
+            UpDownLabel l = new UpDownLabel(upDownLabel.group(1), upDownLabel.group(2));
+            t.addItem(l);
+        }
+        else if (gridHeight.matches())
+        {
+            GridHeight g = new GridHeight(gridHeight.group(1));
+            t.addItem(g);
+        }
+        else if (gridOrient.matches())
+        {
+            GridOrient g = new GridOrient(gridOrient.group(1), gridOrient.group(2), gridOrient.group(3));
+            t.addItem(g);
+        }
+        else
+        {
+            PreProcessor p = new PreProcessor(processPreprocessor(ecuData, line));
+            if (t != null && !t.isDefinitionCompleted())
+            {
+                t.addItem(p);
+            }
+            else
+            {
+                t = new TableTracker();
+                tableDefs.add(t);
+                t.addItem(p);
+            }
+        }
 	}
 
 	/**
@@ -708,50 +747,93 @@ public class Process
 			return;
 		}
 
+		line=removeCurlyBrackets(line);
+        
 		Matcher curve = Patterns.curve.matcher(line);
-		Matcher curveColumnLabel = Patterns.curveColumnLabel.matcher(line);
-		Matcher curveXAxis = Patterns.curveXAxis.matcher(line);
-		Matcher curveYAxis = Patterns.curveYAxis.matcher(line);
-		Matcher curveXBins = Patterns.curveXBins.matcher(line);
-		Matcher curveYBins = Patterns.curveYBins.matcher(line);
-		Matcher curveGauge = Patterns.curveGauge.matcher(line);
-		Matcher curveLineLabel = Patterns.curveLineLabel.matcher(line);
+		Matcher columnLabel = Patterns.curveColumnLabel.matcher(line);
+		Matcher xAxis = Patterns.curveXAxis.matcher(line);
+		Matcher yAxis = Patterns.curveYAxis.matcher(line);
+		Matcher xBins = Patterns.curveXBins.matcher(line);
+		Matcher yBins = Patterns.curveYBins.matcher(line);
+		Matcher gauge = Patterns.curveGauge.matcher(line);
+		Matcher lineLabel = Patterns.curveLineLabel.matcher(line);
 
+		final List<CurveTracker> curveDefs = ecuData.getCurveDefs();
+        CurveTracker c = null;
+        if(line.contains("cltlowlim"))
+        {
+        	int x =1;
+        }
+        if (curveDefs.size() > 0)
+        {
+            c = curveDefs.get(curveDefs.size() - 1);
+        }
+        if (c == null)
+        {
+            c = new CurveTracker();
+            curveDefs.add(c);
+        }
+        
 		if (curve.matches())
 		{
-			// System.out.println("curve Name: " + curve.group(1));
-			// System.out.println("curve Label: " + curve.group(2));
-		} else if (curveColumnLabel.matches())
+		    if (c.isDefinitionCompleted())
+            {
+                c = new CurveTracker();
+                curveDefs.add(c);
+            }
+		    CurveDefinition cd = new CurveDefinition(c, curve.group(1), curve.group(2));
+            c.addItem(cd);
+		}
+		else if (columnLabel.matches())
 		{
-			// System.out.println("curve First Label: " +
-			// curveColumnLabel.group(1));
-			// System.out.println("curve Second Label: " +
-			// curveColumnLabel.group(2));
-		} else if (curveXAxis.matches())
+            ColumnLabel x = new ColumnLabel(columnLabel.group(1), columnLabel.group(2));
+            c.addItem(x);
+		}
+		else if (xAxis.matches())
 		{
-			// System.out.println("curve xAxis 1: " + curveXAxis.group(1));
-			// System.out.println("curve xAxis 2: " + curveXAxis.group(2));
-			// System.out.println("curve xAxis 3: " + curveXAxis.group(3));
-		} else if (curveYAxis.matches())
+		    XAxis x = new XAxis(xAxis.group(1), xAxis.group(2), xAxis.group(3));
+		    c.addItem(x);
+		}
+		else if (yAxis.matches())
 		{
 			// System.out.println("curve yAxis 1: " + curveYAxis.group(1));
 			// System.out.println("curve yAxis 2: " + curveYAxis.group(2));
 			// System.out.println("curve yAxis 3: " + curveYAxis.group(3));
-		} else if (curveXBins.matches())
-		{
-			// System.out.println("curve xBins 1: " + curveXBins.group(1));
-			// System.out.println("curve xBins 2: " + curveXBins.group(2));
-		} else if (curveYBins.matches())
-		{
-			// System.out.println("curve yBins 1: " + curveYBins.group(1));
-		} else if (curveGauge.matches())
-		{
-			// System.out.println("curve Gauge: " + curveGauge.group(1));
-		} else if (curveLineLabel.matches())
-		{
-			// System.out.println("curve Line Label: " +
-			// curveLineLabel.group(1));
 		}
+		else if (xBins.matches())
+		{
+            uk.org.smithfamily.utils.normaliser.curveeditor.XBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.XBins(xBins.group(1), xBins.group(3),xBins.group(5));
+            c.addItem(x);
+		}
+		else if (yBins.matches())
+		{
+            uk.org.smithfamily.utils.normaliser.curveeditor.YBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.YBins(yBins.group(1));
+            c.addItem(x);
+		}
+		else if (gauge.matches())
+		{
+		    LineLabel x = new LineLabel(gauge.group(1));
+		    c.addItem(x);
+		}
+		else if (lineLabel.matches())
+        {
+	        LineLabel x = new LineLabel(lineLabel.group(1));
+	        c.addItem(x);
+        }
+		else
+        {
+		    uk.org.smithfamily.utils.normaliser.curveeditor.PreProcessor p = new uk.org.smithfamily.utils.normaliser.curveeditor.PreProcessor(processPreprocessor(ecuData, line));
+            if (c != null && !c.isDefinitionCompleted())
+            {
+                c.addItem(p);
+            }
+            else
+            {
+                c = new CurveTracker();
+                curveDefs.add(c);
+                c.addItem(p);
+            }
+        }
 	}
 
 	/**
@@ -777,13 +859,15 @@ public class Process
 		{
 			// System.out.println("dialog Name: " + dialog.group(1));
 			// System.out.println("dialog Label: " + dialog.group(2));
-		} else if (dialogField.matches())
+		}
+		else if (dialogField.matches())
 		{
 			// System.out.println("dialogField Label: " + dialogField.group(1));
 			// System.out.println("dialogField Name: " + dialogField.group(3));
 			// System.out.println("dialogField Expression: " +
 			// dialogField.group(5));
-		} else if (dialogDisplayOnlyField.matches())
+		}
+		else if (dialogDisplayOnlyField.matches())
 		{
 			// System.out.println("dialogDisplayOnlyField Label: " +
 			// dialogDisplayOnlyField.group(1));
@@ -791,7 +875,8 @@ public class Process
 			// dialogDisplayOnlyField.group(3));
 			// System.out.println("dialogDisplayOnlyField Expression: " +
 			// dialogDisplayOnlyField.group(5));
-		} else if (dialogPanel.matches())
+		}
+		else if (dialogPanel.matches())
 		{
 			// System.out.println("dialogPanel Name: " + dialogPanel.group(1));
 			// System.out.println("dialogPanel Orientation: " +
@@ -812,7 +897,8 @@ public class Process
 			if (definition[1].contains("\""))
 			{
 				statement = "String ";
-			} else
+			}
+			else
 			{
 				statement = "int ";
 			}

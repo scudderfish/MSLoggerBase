@@ -1,8 +1,14 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
 public class ECUData
@@ -12,6 +18,7 @@ public class ECUData
 	private List<String> logRecord = new ArrayList<String>();
 	private List<String> gaugeDef = new ArrayList<String>();
 	private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
+	private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
@@ -92,6 +99,7 @@ public class ECUData
 		pageActivateCommands = new ArrayList<String>();
 		pageIdentifiers = new ArrayList<String>();
 		tableDefs = new ArrayList<TableTracker>();
+		curveDefs = new ArrayList<CurveTracker>();
 		fingerprintSource = "";
 		currentPage = 0;
 		isCRC32Protocol = false;
@@ -331,5 +339,15 @@ public class ECUData
 	{
 		this.tableDefs = tableDefs;
 	}
+	
+   public List<CurveTracker> getCurveDefs()
+    {
+        return curveDefs;
+    }
+
+    public void setCurveDefs(List<CurveTracker> curveDefs)
+    {
+        this.curveDefs = curveDefs;
+    }
 
 }
