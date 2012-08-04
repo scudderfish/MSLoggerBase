@@ -36,6 +36,8 @@ public abstract class Megasquirt
 {
     protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
+    protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
+
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
@@ -79,6 +81,8 @@ public abstract class Megasquirt
     public abstract void refreshFlags();
 
     public abstract boolean isCRC32Protocol();
+
+    public abstract void createTableEditors();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -895,28 +899,65 @@ public abstract class Megasquirt
 
     }
 
-    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         double[][] destination = new double[width][height];
-        
+        int index = 0;
+        for(int y = 0 ; y < height ; y++)
+        {
+            for(int x = 0; x < width ; x++)
+            {
+                double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
+                value = (value + translate) * scale;
+                destination[x][y] = value;
+                index = index + 1;
+            }
+        }
         return destination;
     }
-    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         double[] destination = new double[width];
+        int index = 0;
+        for(int x = 0; x < width ; x++)
+        {
+            double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
+            value = (value + translate) * scale;
+            destination[x] = value;
+            index = index + 1;
+        }
         
         return destination;
     }
 
-    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate)
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         double[][] destination = new double[width][height];
-        
+        int index = 0;
+        for(int y = 0 ; y < height ; y++)
+        {
+            for(int x = 0; x < width ; x++)
+            {
+                double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
+                value = (value + translate) * scale;
+                destination[x][y] = value;
+                index = index + 2;
+            }
+        }
+
         return destination;
     }
-    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate)
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         double[] destination = new double[width];
+        int index = 0;
+        for(int x = 0; x < width ; x++)
+        {
+            double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
+            value = (value + translate) * scale;
+            destination[x] = value;
+            index = index + 2;
+        }
         
         return destination;
 
