@@ -48,7 +48,7 @@ public class Constant
         this.scale = scale;
         this.translate = translate;
         this.low = low;
-        if(high == null || high.trim().equals(""))
+        if (high == null || high.trim().equals(""))
         {
             high="0";
         }
