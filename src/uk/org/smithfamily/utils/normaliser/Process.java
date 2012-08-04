@@ -415,7 +415,7 @@ public class Process
 			return;
 		}
 
-		if (line.contains("idleadvance_rpmsdelta"))
+		if (line.contains("DI_rpm"))
 		{
 			int x=1;
 		}
