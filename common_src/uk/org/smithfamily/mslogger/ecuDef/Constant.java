@@ -6,7 +6,7 @@ public class Constant
 	@Override
     public String toString()
     {
-        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%f,%s,%d)", 
+        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%s,%s,%d)", 
         		page ,
         		name,
         		classType,
@@ -32,11 +32,11 @@ public class Constant
 	private String	units;
 	private double	scale;
 	private double	translate;
-	private double	low;
+	private String	low;
 	private String	name;
 
     public Constant(int page,String name, String classType, String type, int offset, String shape, String units, double scale,
-            double translate, double low, String high, int digits)
+            double translate, String low, String high, int digits)
     {
         this.page = page;
         this.name = name;
@@ -47,6 +47,10 @@ public class Constant
         this.units = units;
         this.scale = scale;
         this.translate = translate;
+        if (low == null || low.trim().equals(""))
+        {
+        	low = "0";
+        }
         this.low = low;
         if (high == null || high.trim().equals(""))
         {
@@ -67,7 +71,7 @@ public class Constant
         this.units = units;
         this.scale = scale;
         this.translate = translate;
-        this.low = low;
+        this.low = Double.toString(low);
         this.high = Double.toString(high);
         this.digits = digits;
     }
@@ -122,7 +126,7 @@ public class Constant
 		return translate;
 	}
 
-	public double getLow()
+	public String getLow()
 	{
 		return low;
 	}
