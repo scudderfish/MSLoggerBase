@@ -9,9 +9,9 @@ public class YBins extends TableItem
 
 	public YBins(String bins1, String label, String readonly)
 	{
-		this.bins1=bins1;
-		this.label=label;
-        this.readOnly=(readonly==null ? "false" : readonly.equals("readonly") ? "true" : "false");
+		this.bins1 = bins1;
+		this.label = label;
+        this.readOnly = (readonly == null ? "false" : readonly.equals("readonly") ? "true" : "false");
 	
 	}
 

@@ -9,9 +9,9 @@ public class GridOrient extends TableItem
 
 	public GridOrient(String x,String y, String z)
 	{
-		this.x=x;
-		this.y=y;
-		this.z=z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	public String getX()

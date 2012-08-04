@@ -7,7 +7,7 @@ public class ZBins extends TableItem
 
 	public ZBins(String bins)
 	{
-		this.bins=bins;
+		this.bins = bins;
 	}
 
 	public String getBins()
@@ -19,6 +19,7 @@ public class ZBins extends TableItem
 	{
 		this.bins = bins;
 	}
+	
     @Override
     public String toString()
     {

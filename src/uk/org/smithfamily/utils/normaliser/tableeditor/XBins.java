@@ -9,9 +9,9 @@ public class XBins extends TableItem
 
 	public XBins(String bins1, String label, String readonly)
 	{
-		this.bins1=bins1;
-		this.label=label;
-		this.readOnly=(readonly==null ? "false" : readonly.equals("readonly") ? "true" : "false");
+		this.bins1 = bins1;
+		this.label = label;
+		this.readOnly = (readonly == null ? "false" : readonly.equals("readonly") ? "true" : "false");
 	}
 
 	public String getReadOnly()
@@ -47,6 +47,6 @@ public class XBins extends TableItem
 	@Override
 	public String toString()
 	{
-	    return String.format("t.setXBins(%s,\"%s\",%s);", bins1,label,readOnly);
+	    return String.format("t.setXBins(%s,\"%s\",%s);", bins1, label, readOnly);
 	}
 }
