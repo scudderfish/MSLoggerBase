@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
+import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableItem;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
@@ -118,6 +121,7 @@ public class Output
         }
         writer.println(TAB + TAB + "createTableEditors();");
         writer.println(TAB + TAB + "createCurveEditors();");
+        writer.println(TAB + TAB + "createMenus();");
         writer.println(TAB + "}");
     	
     }
@@ -257,7 +261,37 @@ public class Output
 
     static void outputMenus(ECUData ecuData, PrintWriter writer)
     {
-
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createMenus()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "MenuDefinition m;");
+        
+        for (MenuTracker m : ecuData.getMenuDefs())
+        {
+            for (Entry<String, List<MenuDefinition>> menuDialog : m.getItems())
+            {
+                String key = menuDialog.getKey();
+                List<MenuDefinition> value = menuDialog.getValue();
+                
+                for (int i = 0; i < value.size(); i++)
+                {
+                    writer.println(TAB + TAB + value.get(i).generateCode());                    
+                    
+                    writer.println(TAB + TAB + "if (menus.containsKey(\"" + key + "\"))");
+                    writer.println(TAB + TAB + "{");
+                    writer.println(TAB + TAB + TAB + "menus.get(\"" + key + "\").add(m);");
+                    writer.println(TAB + TAB + "}");
+                    writer.println(TAB + TAB + "else ");
+                    writer.println(TAB + TAB + "{");
+                    writer.println(TAB + TAB + TAB + "List<MenuDefinition> listMenus = new ArrayList<MenuDefinition>();");
+                    writer.println(TAB + TAB + TAB + "listMenus.add(m);");
+                    writer.println(TAB + TAB + TAB + "menus.put(\"" + key + "\", listMenus);");
+                    writer.println(TAB + TAB + "}");
+                }
+            }
+        }
+        
+        writer.println(TAB + "}\n");
     }
 
     static void outputUserDefined(ECUData ecuData, PrintWriter writer)
