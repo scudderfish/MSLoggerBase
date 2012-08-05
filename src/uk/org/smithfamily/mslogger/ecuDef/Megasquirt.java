@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
@@ -37,7 +38,13 @@ public abstract class Megasquirt
     protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
     protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
-
+    
+    protected Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
+    
+    protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
+    
+    protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
+    
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
@@ -83,6 +90,12 @@ public abstract class Megasquirt
     public abstract boolean isCRC32Protocol();
 
     public abstract void createTableEditors();
+    
+    public abstract void createCurveEditors();
+    
+    public abstract void createMenus();
+    
+    public abstract void createDialogs();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -963,4 +976,24 @@ public abstract class Megasquirt
 
     }
 
+    public TableEditor getTableEditorByName(String name) 
+    {
+        return tableEditors.get(name);
+    }
+    
+    public CurveEditor getCurveEditorByName(String name) 
+    {
+        return curveEditors.get(name);
+    }
+    
+    public List<MenuDefinition> getMenusForDialog(String name)
+    {
+        return menus.get(name);
+    }
+    
+    public Dialog getDialogByName(String name)
+    {
+        return dialogs.get(name);
+    }
+    
 }
