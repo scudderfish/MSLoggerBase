@@ -13,12 +13,14 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.Dialog;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableItem;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
+import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
 
 public class Output
 {
@@ -122,6 +124,7 @@ public class Output
         writer.println(TAB + TAB + "createTableEditors();");
         writer.println(TAB + TAB + "createCurveEditors();");
         writer.println(TAB + TAB + "createMenus();");
+        writer.println(TAB + TAB + "createDialogs();");
         writer.println(TAB + "}");
     	
     }
@@ -295,8 +298,40 @@ public class Output
     }
 
     static void outputUserDefined(ECUData ecuData, PrintWriter writer)
-    {
+    {        
+        for (DialogTracker d : ecuData.getDialogDefs())
+        {
+            for (Entry<String, Dialog> dialog : d.getItems())
+            {                
+                String key = dialog.getKey();
+                Dialog value = dialog.getValue();
+                
+                writer.println(TAB + "public void createDialog_" + key + "()");
+                writer.println(TAB + "{");
+                writer.println(TAB + TAB + "Dialog d;");
 
+                writer.println(TAB + TAB + value.generateCode());
+                writer.println(TAB + TAB + "dialogs.put(\"" + key + "\",d);");
+                
+                writer.println(TAB + "}\n");
+            }
+        }       
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createDialogs()");
+        writer.println(TAB + "{");
+
+        for (DialogTracker d : ecuData.getDialogDefs())
+        {            
+            for (Entry<String, Dialog> dialog : d.getItems())
+            {        
+                String name = dialog.getKey();
+                
+                writer.println(TAB + TAB + "createDialog_" + name + "();");
+            }
+        }
+
+        writer.println(TAB + "}");
     }
 
     static void outputTableEditors(ECUData ecuData, PrintWriter writer)

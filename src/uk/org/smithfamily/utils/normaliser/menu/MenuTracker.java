@@ -11,7 +11,7 @@ import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 
 public class MenuTracker
 {
-    Map<String,List<MenuDefinition>> items = new HashMap<String,List<MenuDefinition>>();
+    private Map<String,List<MenuDefinition>> items = new HashMap<String,List<MenuDefinition>>();
     
     public void addItem(String dialog, MenuDefinition x)
     {

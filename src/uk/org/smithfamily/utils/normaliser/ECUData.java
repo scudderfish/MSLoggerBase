@@ -11,6 +11,7 @@ import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
+import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
 
 public class ECUData
 {
@@ -21,6 +22,7 @@ public class ECUData
 	private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
 	private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
 	private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
+	private List<DialogTracker> dialogDefs = new ArrayList<DialogTracker>(); 
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
@@ -361,5 +363,15 @@ public class ECUData
     public void setMenuDefs(List<MenuTracker> menuDefs)
     {
         this.menuDefs = menuDefs;
+    }
+
+    public List<DialogTracker> getDialogDefs()
+    {
+        return dialogDefs;
+    }
+
+    public void setDialogDefs(List<DialogTracker> dialogDefs)
+    {
+        this.dialogDefs = dialogDefs;
     }
 }

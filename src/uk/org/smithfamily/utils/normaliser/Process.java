@@ -8,6 +8,9 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.Dialog;
+import uk.org.smithfamily.mslogger.ecuDef.DialogField;
+import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.ColumnLabel;
@@ -26,10 +29,12 @@ import uk.org.smithfamily.utils.normaliser.tableeditor.UpDownLabel;
 import uk.org.smithfamily.utils.normaliser.tableeditor.XBins;
 import uk.org.smithfamily.utils.normaliser.tableeditor.YBins;
 import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
+import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
 
 public class Process
 {
     private static String currentMenuDialog = "";
+    private static String currentDialogName = "";
     
 	private static String deBinary(String group)
 	{
@@ -876,34 +881,40 @@ public class Process
 				.matcher(line);
 		Matcher dialogPanel = Patterns.dialogPanel.matcher(line);
 
+		final List<DialogTracker> dialogDefs = ecuData.getDialogDefs();
+		DialogTracker d = null;
+        if (dialogDefs.size() > 0)
+        {
+            d = dialogDefs.get(dialogDefs.size() - 1);
+        }
+        
+        if (d == null)
+        {
+            d = new DialogTracker();
+            dialogDefs.add(d);
+        }
+		
 		if (dialog.matches())
 		{
-			// System.out.println("dialog Name: " + dialog.group(1));
-			// System.out.println("dialog Label: " + dialog.group(2));
+		    currentDialogName = dialog.group(1);
+		    
+		    Dialog x = new Dialog(dialog.group(1), dialog.group(2));
+		    d.addItem(currentDialogName, x);
 		}
 		else if (dialogField.matches())
 		{
-			// System.out.println("dialogField Label: " + dialogField.group(1));
-			// System.out.println("dialogField Name: " + dialogField.group(3));
-			// System.out.println("dialogField Expression: " +
-			// dialogField.group(5));
+		    DialogField x = new DialogField(dialogField.group(1).trim(), dialogField.group(3), dialogField.group(5), false);
+		    d.getDialog(currentDialogName).addField(x);
 		}
 		else if (dialogDisplayOnlyField.matches())
 		{
-			// System.out.println("dialogDisplayOnlyField Label: " +
-			// dialogDisplayOnlyField.group(1));
-			// System.out.println("dialogDisplayOnlyField Name: " +
-			// dialogDisplayOnlyField.group(3));
-			// System.out.println("dialogDisplayOnlyField Expression: " +
-			// dialogDisplayOnlyField.group(5));
+	        DialogField x = new DialogField(dialogDisplayOnlyField.group(1), dialogDisplayOnlyField.group(3), dialogDisplayOnlyField.group(5), true);
+	        d.getDialog(currentDialogName).addField(x);
 		}
 		else if (dialogPanel.matches())
 		{
-			// System.out.println("dialogPanel Name: " + dialogPanel.group(1));
-			// System.out.println("dialogPanel Orientation: " +
-			// dialogPanel.group(2));
-			// System.out.println("dialogPanel Expression: " +
-			// dialogPanel.group(4));
+		    DialogPanel x = new DialogPanel(dialogPanel.group(1), dialogPanel.group(2));
+		    d.getDialog(currentDialogName).addPanel(x);
 		}
 	}
 

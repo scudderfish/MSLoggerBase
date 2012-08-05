@@ -23,6 +23,8 @@ public abstract class Megasquirt
 	
 	protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
 	
+	protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
+	
 	public abstract String getSignature();
 
 	public abstract byte[] getOchCommand();
@@ -60,6 +62,8 @@ public abstract class Megasquirt
     public abstract void createCurveEditors();
     
     public abstract void createMenus();
+    
+    public abstract void createDialogs();
     
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
