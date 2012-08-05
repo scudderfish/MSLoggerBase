@@ -18,6 +18,8 @@ public abstract class Megasquirt
 
 	protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
 	
+	protected Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
+	
 	public abstract String getSignature();
 
 	public abstract byte[] getOchCommand();
@@ -51,6 +53,8 @@ public abstract class Megasquirt
     public abstract boolean isCRC32Protocol();
 
     public abstract void createTableEditors();
+    
+    public abstract void createCurveEditors();
     
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation

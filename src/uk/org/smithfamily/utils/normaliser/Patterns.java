@@ -47,8 +47,7 @@ public class Patterns
      */
     static Pattern constantScalar      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
     static Pattern constantSimple      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
-    static Pattern constantArray       = Pattern.compile("\\s*(\\w*)\\s*=\\s*(array)\\s*,\\s*(.*?)\\s*,\\s*(\\d*),\\s*(\\[.*?\\])\\s*,\\s*\\\"(.*?)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*(.*?)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
-
+    static Pattern constantArray       = Pattern.compile("\\s*(\\w*)\\s*=\\s*(array)\\s*,\\s*(.*?)\\s*,\\s*(\\d*),\\s*(\\[.*?\\])\\s*,\\s*\\\"(.*?)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
     static Pattern booleanConvert      = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
     static Pattern boolAsInt           = Pattern.compile("(.*\\(.*?[<>=].*?\\))(.*?[\\*/].*)");
 
@@ -81,11 +80,11 @@ public class Patterns
     /*
      * Curve Editor
      */
-    static Pattern curve                    = Pattern.compile("\\s*curve\\s*=\\s*(.*)\\s*,\\s*\"(.*)\"");
-    static Pattern curveColumnLabel         = Pattern.compile("\\s*columnLabel\\s*=\\s*\"(.*)\"\\s*,\\s*\"(.*)\"");
-    static Pattern curveXAxis               = Pattern.compile("\\s*xAxis\\s*=\\s*(.*)\\s*,\\s*(.*)\\s*,\\s*(.*)\\s*");
-    static Pattern curveYAxis               = Pattern.compile("\\s*yAxis\\s*=\\s*(.*)\\s*,\\s*(.*)\\s*,\\s*(.*)\\s*");
-    static Pattern curveXBins               = Pattern.compile("\\s*xBins\\s*=\\s*(.*)\\s*,\\s*(.*)\\s*(,\\s*(.*))?\\s*");
+    static Pattern curve                    = Pattern.compile("\\s*curve\\s*=\\s*(.*?)\\s*,\\s*\"(.*)\".*");
+    static Pattern curveColumnLabel         = Pattern.compile("\\s*columnLabel\\s*=\\s*\"(.*?)\"\\s*,\\s*\"(.*)\"");
+    static Pattern curveXAxis               = Pattern.compile("\\s*xAxis\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)\\s*");
+    static Pattern curveYAxis               = Pattern.compile("\\s*yAxis\\s*=\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*(.*)\\s*");
+    static Pattern curveXBins               = Pattern.compile("\\s*xBins\\s*=\\s*(.*?)\\s*(,\\s*(.*?))?\\s*(,\\s*(.*))?\\s*");
     static Pattern curveYBins               = Pattern.compile("\\s*yBins\\s*=\\s*(.*)\\s*");
     static Pattern curveGauge               = Pattern.compile("\\s*gauge\\s*=\\s*(.*)\\s*");
     static Pattern curveLineLabel           = Pattern.compile("\\s*lineLabel\\s*=\\s*\"(.*)\"");

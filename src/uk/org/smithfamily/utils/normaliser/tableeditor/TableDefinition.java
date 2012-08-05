@@ -35,11 +35,11 @@ public class TableDefinition extends TableItem
     {
         return page;
     }
+    
     @Override
     public String toString()
     {
         return String.format("t = new TableEditor(\"%s\",\"%s\",\"%s\",%s); tableEditors.put(\"%s\",t);",name,map3DName,label,page,name);
     }
-
 
 }

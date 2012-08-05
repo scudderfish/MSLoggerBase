@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import java.util.Arrays;
+
 public class TableEditor
 {
 
@@ -17,9 +19,9 @@ public class TableEditor
     private double     height;
     private String     upLabel;
     private String     downLabel;
-	private int xOrient;
-	private int yOrient;
-	private int zOrient;
+	private int        xOrient;
+	private int        yOrient;
+	private int        zOrient;
 
     public TableEditor(String name, String map3DName, String label, int page)
     {
@@ -61,7 +63,6 @@ public class TableEditor
         this.yBins = bins;
         this.yLabel = label;
         this.yReadOnly = b;
-
     }
 
     public void setZBins(double[][] bins)
@@ -133,9 +134,9 @@ public class TableEditor
 
 	public void setGridOrient(int xOrient, int yOrient, int zOrient)
 	{
-		this.xOrient=xOrient;
-		this.yOrient=yOrient;
-		this.zOrient=zOrient;
+		this.xOrient = xOrient;
+		this.yOrient = yOrient;
+		this.zOrient = zOrient;
 	}
 
 	public int getxOrient()
@@ -152,5 +153,13 @@ public class TableEditor
 	{
 		return zOrient;
 	}
+
+    @Override
+    public String toString()
+    {
+        return "TableEditor [page=" + page + ", label=" + label + ", map3DName=" + map3DName + ", name=" + name + ", xBins=" + Arrays.toString(xBins) + ", xLabel=" + xLabel + ", xReadOnly=" + xReadOnly + ", yBins=" + Arrays.toString(yBins)
+                + ", yLabel=" + yLabel + ", yReadOnly=" + yReadOnly + ", zBins=" + Arrays.toString(zBins) + ", height=" + height + ", upLabel=" + upLabel + ", downLabel=" + downLabel + ", xOrient=" + xOrient + ", yOrient=" + yOrient + ", zOrient="
+                + zOrient + "]";
+    }
 
 }

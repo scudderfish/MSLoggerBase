@@ -12,13 +12,15 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableItem;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 
 public class Output
 {
     static final String        TAB          = "    ";
-	private static final int MAX_LINES = 100;
+	private static final int   MAX_LINES    = 100;
     private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
             "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
@@ -43,6 +45,7 @@ public class Output
         writer.println(TAB + TAB + "refreshFlags();");
         writer.println(TAB + "}");
     }
+    
     /**
      * This is nasty.  We need to have a set of methods to init the constants as there is
      * a hard limit of 64K on the size of a method, and MS3 will break that.  We also
@@ -58,47 +61,47 @@ public class Output
     	int bracketNesting = 0;
     	boolean needDeclaration = true;
     	int lookahead = 3;
-    	for(Constant c : ecuData.getConstants())
+    	for (Constant c : ecuData.getConstants())
     	{
-    		if(needDeclaration)
+    		if (needDeclaration)
     		{
     			constantMethodCount++;
-    			writer.println(TAB + "private void initConstants"+constantMethodCount+"()\n"+TAB+"{\n");
+    			writer.println(TAB + "private void initConstants" + constantMethodCount + "()\n" + TAB + "{\n");
     			needDeclaration = false;
     		}
-    		if(bracketNesting == 0 && lookahead > 0)
+    		if (bracketNesting == 0 && lookahead > 0)
     		{
     			lookahead--;
     		}
     		lineCount++;
 
-            if(c.getName().contains("{"))
+            if (c.getName().contains("{"))
             {
                 bracketNesting++;
             }
-            if(c.getName().contains("}"))
+            if (c.getName().contains("}"))
             {
                 bracketNesting--;
             }
 
-    		if("PREPROC".equals(c.getType()))
+    		if ("PREPROC".equals(c.getType()))
         	{
         		writer.println(TAB + TAB + c.getName());
     			lookahead = 3;
         	}
         	else
         	{
-        		writer.println(TAB + TAB + "constants.put(\""+c.getName()+"\", new "+c.toString()+");");
+        		writer.println(TAB + TAB + "constants.put(\"" + c.getName() + "\", new " + c.toString() + ");");
         	}
         	
-            if(lineCount > MAX_LINES && bracketNesting == 0 && lookahead == 0)
+            if (lineCount > MAX_LINES && bracketNesting == 0 && lookahead == 0)
         	{
         		writer.println(TAB + "}\n");
         		needDeclaration = true;
         		lineCount = 0;
         	}
     	}
-    	if(!needDeclaration)
+    	if (!needDeclaration)
     	{
     		writer.println(TAB + "}\n");
     	}
@@ -109,11 +112,12 @@ public class Output
         {
             writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
         }
-        for(int i=1; i <= constantMethodCount ; i++)
+        for (int i = 1; i <= constantMethodCount; i++)
         {
-        	writer.println(TAB + TAB + "initConstants"+i+"();\n");
+        	writer.println(TAB + TAB + "initConstants" + i + "();\n");
         }
         writer.println(TAB + TAB + "createTableEditors();");
+        writer.println(TAB + TAB + "createCurveEditors();");
         writer.println(TAB + "}");
     	
     }
@@ -263,13 +267,13 @@ public class Output
 
     static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
-        for(TableTracker t : ecuData.getTableDefs())
+        for (TableTracker t : ecuData.getTableDefs())
         {
-            writer.println(TAB + "private void createTableEditor_"+t.getName()+"()");
+            writer.println(TAB + "private void createTableEditor_" + t.getName() + "()");
             writer.println(TAB + "{");
             writer.println(TAB + TAB + "TableEditor t = null;");
             
-            for(TableItem i : t.getItems())
+            for (TableItem i : t.getItems())
             {
                 writer.println(TAB + TAB + i);
             }
@@ -281,18 +285,40 @@ public class Output
         writer.println(TAB + "public void createTableEditors()");
         writer.println(TAB + "{");
 
-        for(TableTracker t : ecuData.getTableDefs())
+        for (TableTracker t : ecuData.getTableDefs())
         {
-            writer.println(TAB + TAB + "createTableEditor_"+t.getName()+"();");
+            writer.println(TAB + TAB + "createTableEditor_" + t.getName() + "();");
         }
 
         writer.println(TAB + "}");
-
     }
 
     static void outputCurves(ECUData ecuData, PrintWriter writer)
     {
+        for (CurveTracker c : ecuData.getCurveDefs())
+        {
+            writer.println(TAB + "private void createCurveEditor_" + c.getName() + "()");
+            writer.println(TAB + "{");
+            writer.println(TAB + TAB + "CurveEditor c = null;");
+            
+            for (CurveItem i : c.getItems())
+            {
+                writer.println(TAB + TAB + i);
+            }
+            writer.println(TAB + "}");
+        }
+        
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createCurveEditors()");
+        writer.println(TAB + "{");
 
+        for (CurveTracker c : ecuData.getCurveDefs())
+        {
+            writer.println(TAB + TAB + "createCurveEditor_" + c.getName() + "();");
+        }
+
+        writer.println(TAB + "}");
     }
 
     static void outputLoadConstants(ECUData ecuData, PrintWriter writer)
@@ -332,10 +358,7 @@ public class Output
             // getScalar(String bufferName,String name, String dataType, String
             // offset, String scale, String numOffset)
             String name = c.getName();
-            if("afrBins1".equals(name))
-            {
-                name = name;
-            }
+
             if (!"PREPROC".equals(c.getType()))
             {
                 String def;
