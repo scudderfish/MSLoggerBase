@@ -14,7 +14,7 @@ public class CurveTracker
         items.add(x);
 
         // TODO: There might be a gauge and/or one or multiple lineLabel after yBins, so we don't necessarily want to stop there
-        if (x instanceof YBins)
+        if (x instanceof YAxis)
         {
             this.definitionCompleted = true;
         }
