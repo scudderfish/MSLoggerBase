@@ -106,14 +106,21 @@ public class CurveEditor
     {
         this.yLabel = yLabel;
     }
+
     public void setyLabel(String yLabel1,String yLabel2)
     {
     	this.yLabel = yLabel1;
     	this.yLabel2 = yLabel2;
     }
+
     public String getyLabel()
     {
         return yLabel;
+    }
+    
+    public String getyLabel2()
+    {
+        return yLabel2;
     }
     
     public String getGauge()

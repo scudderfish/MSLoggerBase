@@ -8,11 +8,18 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.Dialog;
+import uk.org.smithfamily.mslogger.ecuDef.DialogField;
+import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
+import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
+import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.ColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.curveeditor.LineLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.XAxis;
+import uk.org.smithfamily.utils.normaliser.curveeditor.YAxis;
+import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
 import uk.org.smithfamily.utils.normaliser.tableeditor.PreProcessor;
@@ -22,9 +29,13 @@ import uk.org.smithfamily.utils.normaliser.tableeditor.UpDownLabel;
 import uk.org.smithfamily.utils.normaliser.tableeditor.XBins;
 import uk.org.smithfamily.utils.normaliser.tableeditor.YBins;
 import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
+import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
 
 public class Process
 {
+    private static String currentMenuDialog = "";
+    private static String currentDialogName = "";
+    
 	private static String deBinary(String group)
 	{
 		Matcher binNumber = Patterns.binary.matcher(group);
@@ -417,7 +428,9 @@ public class Process
 
 		if (line.contains("DI_rpm"))
 		{
-			int x=1;
+		    // Break point hook
+			@SuppressWarnings("unused")
+            int x = 1;
 		}
 		if (line.contains("messageEnvelopeFormat"))
 		{
@@ -480,7 +493,7 @@ public class Process
 			return;
 		}
 		//To allow for MS2GS27
-		line=removeCurlyBrackets(line);
+		line = removeCurlyBrackets(line);
 		Matcher bitsM = Patterns.bits.matcher(line);
 		Matcher constantM = Patterns.constantScalar.matcher(line);
 		Matcher constantSimpleM = Patterns.constantSimple.matcher(line);
@@ -629,20 +642,32 @@ public class Process
 		Matcher menu = Patterns.menu.matcher(line);
 		Matcher subMenu = Patterns.subMenu.matcher(line);
 
+		final List<MenuTracker> menuDefs = ecuData.getMenuDefs();
+        MenuTracker m = null;
+        if (menuDefs.size() > 0)
+        {
+            m = menuDefs.get(menuDefs.size() - 1);
+        }
+		
+        if (m == null)
+        {
+            m = new MenuTracker();
+            menuDefs.add(m);
+        }
+        
 		if (menuDialog.matches())
-		{
-			// System.out.println("menuDialog Name: " + menuDialog.group(1));
+		{		
+		    currentMenuDialog = menuDialog.group(1);	
 		}
 		else if (menu.matches())
 		{
-			// System.out.println("menu Label: " + menu.group(1));
+		    MenuDefinition x = new MenuDefinition(currentMenuDialog, menu.group(1));
+		    m.addItem(currentMenuDialog, x);
 		}
 		else if (subMenu.matches())
 		{
-			// System.out.println("subMenu Name: " + subMenu.group(1));
-			// System.out.println("subMenu Label: " + subMenu.group(3));
-			// System.out.println("subMenu RandomNumber: " + subMenu.group(5));
-			// System.out.println("subMenu Expression: " + subMenu.group(7));
+		    SubMenuDefinition x = new SubMenuDefinition(subMenu.group(1), subMenu.group(3), subMenu.group(5), subMenu.group(7));
+			m.getLast(currentMenuDialog).addSubMenu(x);
 		}
 	}
 
@@ -747,7 +772,7 @@ public class Process
 			return;
 		}
 
-		line=removeCurlyBrackets(line);
+		line = removeCurlyBrackets(line);
         
 		Matcher curve = Patterns.curve.matcher(line);
 		Matcher columnLabel = Patterns.curveColumnLabel.matcher(line);
@@ -760,9 +785,11 @@ public class Process
 
 		final List<CurveTracker> curveDefs = ecuData.getCurveDefs();
         CurveTracker c = null;
-        if(line.contains("cltlowlim"))
+        if (line.contains("cltlowlim"))
         {
-        	int x =1;
+            // Break point hook
+        	@SuppressWarnings("unused")
+            int x = 1;
         }
         if (curveDefs.size() > 0)
         {
@@ -796,9 +823,8 @@ public class Process
 		}
 		else if (yAxis.matches())
 		{
-			// System.out.println("curve yAxis 1: " + curveYAxis.group(1));
-			// System.out.println("curve yAxis 2: " + curveYAxis.group(2));
-			// System.out.println("curve yAxis 3: " + curveYAxis.group(3));
+		    YAxis x = new YAxis(yAxis.group(1), yAxis.group(2), yAxis.group(3));
+			c.addItem(x);
 		}
 		else if (xBins.matches())
 		{
@@ -855,34 +881,40 @@ public class Process
 				.matcher(line);
 		Matcher dialogPanel = Patterns.dialogPanel.matcher(line);
 
+		final List<DialogTracker> dialogDefs = ecuData.getDialogDefs();
+		DialogTracker d = null;
+        if (dialogDefs.size() > 0)
+        {
+            d = dialogDefs.get(dialogDefs.size() - 1);
+        }
+        
+        if (d == null)
+        {
+            d = new DialogTracker();
+            dialogDefs.add(d);
+        }
+		
 		if (dialog.matches())
 		{
-			// System.out.println("dialog Name: " + dialog.group(1));
-			// System.out.println("dialog Label: " + dialog.group(2));
+		    currentDialogName = dialog.group(1);
+		    
+		    Dialog x = new Dialog(dialog.group(1), dialog.group(2));
+		    d.addItem(currentDialogName, x);
 		}
 		else if (dialogField.matches())
 		{
-			// System.out.println("dialogField Label: " + dialogField.group(1));
-			// System.out.println("dialogField Name: " + dialogField.group(3));
-			// System.out.println("dialogField Expression: " +
-			// dialogField.group(5));
+		    DialogField x = new DialogField(dialogField.group(1).trim(), dialogField.group(3), dialogField.group(5), false);
+		    d.getDialog(currentDialogName).addField(x);
 		}
 		else if (dialogDisplayOnlyField.matches())
 		{
-			// System.out.println("dialogDisplayOnlyField Label: " +
-			// dialogDisplayOnlyField.group(1));
-			// System.out.println("dialogDisplayOnlyField Name: " +
-			// dialogDisplayOnlyField.group(3));
-			// System.out.println("dialogDisplayOnlyField Expression: " +
-			// dialogDisplayOnlyField.group(5));
+	        DialogField x = new DialogField(dialogDisplayOnlyField.group(1), dialogDisplayOnlyField.group(3), dialogDisplayOnlyField.group(5), true);
+	        d.getDialog(currentDialogName).addField(x);
 		}
 		else if (dialogPanel.matches())
 		{
-			// System.out.println("dialogPanel Name: " + dialogPanel.group(1));
-			// System.out.println("dialogPanel Orientation: " +
-			// dialogPanel.group(2));
-			// System.out.println("dialogPanel Expression: " +
-			// dialogPanel.group(4));
+		    DialogPanel x = new DialogPanel(dialogPanel.group(1), dialogPanel.group(2));
+		    d.getDialog(currentDialogName).addPanel(x);
 		}
 	}
 

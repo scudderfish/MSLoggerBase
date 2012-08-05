@@ -46,6 +46,6 @@ public class YAxis  extends CurveItem
     @Override
     public String toString()
     {
-        return String.format("c.setyAxis(%s,%s,%s);",yAxis1,yAxis2,yAxis3);
+        return String.format("c.setyAxis(new double[] {%s,%s,%s});",yAxis1,yAxis2,yAxis3);
     }  
 }

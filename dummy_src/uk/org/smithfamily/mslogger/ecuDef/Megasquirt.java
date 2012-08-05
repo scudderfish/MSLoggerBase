@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -19,6 +20,10 @@ public abstract class Megasquirt
 	protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
 	
 	protected Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
+	
+	protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
+	
+	protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
 	
 	public abstract String getSignature();
 
@@ -55,6 +60,10 @@ public abstract class Megasquirt
     public abstract void createTableEditors();
     
     public abstract void createCurveEditors();
+    
+    public abstract void createMenus();
+    
+    public abstract void createDialogs();
     
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation
