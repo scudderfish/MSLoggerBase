@@ -20,7 +20,7 @@ import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 public class Output
 {
     static final String        TAB          = "    ";
-	private static final int   MAX_LINES    = 100;
+    private static final int   MAX_LINES    = 100;
     private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
             "accDecEnrich", "accDecEnrichPcnt", "accEnrichPcnt", "accEnrichMS", "decEnrichPcnt", "decEnrichMS", "time",
@@ -45,35 +45,34 @@ public class Output
         writer.println(TAB + TAB + "refreshFlags();");
         writer.println(TAB + "}");
     }
-    
+
     /**
-     * This is nasty.  We need to have a set of methods to init the constants as there is
-     * a hard limit of 64K on the size of a method, and MS3 will break that.  We also
-     * need to ensure that if there is any preprocessor type logic that we don't stop and
-     * start the next method in the middle of it. 
+     * This is nasty. We need to have a set of methods to init the constants as there is a hard limit of 64K on the size of a method, and MS3 will break that. We also need to ensure that if there is
+     * any preprocessor type logic that we don't stop and start the next method in the middle of it.
+     * 
      * @param ecuData
      * @param writer
      */
     static void outputFlagsAndConstants(ECUData ecuData, PrintWriter writer)
     {
-    	int constantMethodCount = 0;
-    	int lineCount = 0;
-    	int bracketNesting = 0;
-    	boolean needDeclaration = true;
-    	int lookahead = 3;
-    	for (Constant c : ecuData.getConstants())
-    	{
-    		if (needDeclaration)
-    		{
-    			constantMethodCount++;
-    			writer.println(TAB + "private void initConstants" + constantMethodCount + "()\n" + TAB + "{\n");
-    			needDeclaration = false;
-    		}
-    		if (bracketNesting == 0 && lookahead > 0)
-    		{
-    			lookahead--;
-    		}
-    		lineCount++;
+        int constantMethodCount = 0;
+        int lineCount = 0;
+        int bracketNesting = 0;
+        boolean needDeclaration = true;
+        int lookahead = 3;
+        for (Constant c : ecuData.getConstants())
+        {
+            if (needDeclaration)
+            {
+                constantMethodCount++;
+                writer.println(TAB + "private void initConstants" + constantMethodCount + "()\n" + TAB + "{\n");
+                needDeclaration = false;
+            }
+            if (bracketNesting == 0 && lookahead > 0)
+            {
+                lookahead--;
+            }
+            lineCount++;
 
             if (c.getName().contains("{"))
             {
@@ -84,27 +83,27 @@ public class Output
                 bracketNesting--;
             }
 
-    		if ("PREPROC".equals(c.getType()))
-        	{
-        		writer.println(TAB + TAB + c.getName());
-    			lookahead = 3;
-        	}
-        	else
-        	{
-        		writer.println(TAB + TAB + "constants.put(\"" + c.getName() + "\", new " + c.toString() + ");");
-        	}
-        	
+            if ("PREPROC".equals(c.getType()))
+            {
+                writer.println(TAB + TAB + c.getName());
+                lookahead = 3;
+            }
+            else
+            {
+                writer.println(TAB + TAB + "constants.put(\"" + c.getName() + "\", new " + c.toString() + ");");
+            }
+
             if (lineCount > MAX_LINES && bracketNesting == 0 && lookahead == 0)
-        	{
-        		writer.println(TAB + "}\n");
-        		needDeclaration = true;
-        		lineCount = 0;
-        	}
-    	}
-    	if (!needDeclaration)
-    	{
-    		writer.println(TAB + "}\n");
-    	}
+            {
+                writer.println(TAB + "}\n");
+                needDeclaration = true;
+                lineCount = 0;
+            }
+        }
+        if (!needDeclaration)
+        {
+            writer.println(TAB + "}\n");
+        }
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void refreshFlags()");
         writer.println(TAB + "{");
@@ -114,13 +113,14 @@ public class Output
         }
         for (int i = 1; i <= constantMethodCount; i++)
         {
-        	writer.println(TAB + TAB + "initConstants" + i + "();\n");
+            writer.println(TAB + TAB + "initConstants" + i + "();\n");
         }
         writer.println(TAB + TAB + "createTableEditors();");
         writer.println(TAB + TAB + "createCurveEditors();");
         writer.println(TAB + "}");
-    	
+
     }
+
     static void outputPackageAndIncludes(ECUData ecuData, PrintWriter writer)
     {
         writer.println("package uk.org.smithfamily.mslogger.ecuDef.gen;");
@@ -272,15 +272,14 @@ public class Output
             writer.println(TAB + "private void createTableEditor_" + t.getName() + "()");
             writer.println(TAB + "{");
             writer.println(TAB + TAB + "TableEditor t = null;");
-            
+
             for (TableItem i : t.getItems())
             {
                 writer.println(TAB + TAB + i);
             }
             writer.println(TAB + "}");
         }
-        
-        
+
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createTableEditors()");
         writer.println(TAB + "{");
@@ -297,25 +296,30 @@ public class Output
     {
         for (CurveTracker c : ecuData.getCurveDefs())
         {
-            writer.println(TAB + "private void createCurveEditor_" + c.getName() + "()");
-            writer.println(TAB + "{");
-            writer.println(TAB + TAB + "CurveEditor c = null;");
-            
-            for (CurveItem i : c.getItems())
+            if (c.getName() != null && !c.getName().trim().equals(""))
             {
-                writer.println(TAB + TAB + i);
+                writer.println(TAB + "private void createCurveEditor_" + c.getName() + "()");
+                writer.println(TAB + "{");
+                writer.println(TAB + TAB + "CurveEditor c = null;");
+
+                for (CurveItem i : c.getItems())
+                {
+                    writer.println(TAB + TAB + i);
+                }
+                writer.println(TAB + "}");
             }
-            writer.println(TAB + "}");
         }
-        
-        
+
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createCurveEditors()");
         writer.println(TAB + "{");
 
         for (CurveTracker c : ecuData.getCurveDefs())
         {
-            writer.println(TAB + TAB + "createCurveEditor_" + c.getName() + "();");
+            if (c.getName() != null && !c.getName().trim().equals(""))
+            {
+                writer.println(TAB + TAB + "createCurveEditor_" + c.getName() + "();");
+            }
         }
 
         writer.println(TAB + "}");
@@ -324,23 +328,23 @@ public class Output
     static void outputLoadConstants(ECUData ecuData, PrintWriter writer)
     {
         int pageNo = 0;
-        
+
         List<Integer> pageNumbers = new ArrayList<Integer>();
-        
+
         for (Constant c : ecuData.getConstants())
         {
             if (c.getPage() != pageNo)
             {
-                if(pageNo > 0)
+                if (pageNo > 0)
                 {
                     writer.println(TAB + "}");
                 }
                 pageNo = c.getPage();
                 pageNumbers.add(pageNo);
-                writer.println(TAB + "public void loadConstantsPage"+pageNo+"(boolean simulated)");
+                writer.println(TAB + "public void loadConstantsPage" + pageNo + "(boolean simulated)");
                 writer.println(TAB + "{");
                 writer.println(TAB + TAB + "byte[] pageBuffer = null;");
-        
+
                 int pageSize = Integer.parseInt(ecuData.getPageSizes().get(pageNo - 1).trim());
                 String activateCommand = null;
                 if (pageNo - 1 < ecuData.getPageActivateCommands().size())
@@ -391,7 +395,7 @@ public class Output
             }
             else
             {
-                if(pageNo > 0)
+                if (pageNo > 0)
                 {
                     writer.println(TAB + TAB + name);
                 }
@@ -402,9 +406,9 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void loadConstants(boolean simulated)");
         writer.println(TAB + "{");
-        for(int i : pageNumbers)
+        for (int i : pageNumbers)
         {
-            writer.println(TAB + TAB + "loadConstantsPage"+i+"(simulated);");
+            writer.println(TAB + TAB + "loadConstantsPage" + i + "(simulated);");
         }
         writer.println(TAB + "}");
     }
@@ -418,24 +422,26 @@ public class Output
         int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
         String functionName = "loadByte";
         String signed = "false";
-        if(c.getType().contains("16"))
+        if (c.getType().contains("16"))
         {
-            functionName="loadWord";
+            functionName = "loadWord";
         }
-        if(c.getType().contains("S"))
+        if (c.getType().contains("S"))
         {
             signed = "true";
         }
-        if(height == -1)
+        if (height == -1)
         {
             functionName += "Vector";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s);",c.getName(),functionName,c.getOffset(),width,c.getScale(),c.getTranslate(),signed);
-                       
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(), width,
+                    c.getScale(), c.getTranslate(), signed);
+
         }
         else
         {
             functionName += "Array";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s);",c.getName(),functionName,c.getOffset(),width,height,c.getScale(),c.getTranslate(),signed);
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(),
+                    width, height, c.getScale(), c.getTranslate(), signed);
         }
         return loadArray;
     }
