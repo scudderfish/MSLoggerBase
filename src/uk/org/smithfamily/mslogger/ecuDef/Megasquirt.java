@@ -43,6 +43,8 @@ public abstract class Megasquirt
     
     protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
     
+    protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
+    
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
@@ -88,6 +90,12 @@ public abstract class Megasquirt
     public abstract boolean isCRC32Protocol();
 
     public abstract void createTableEditors();
+    
+    public abstract void createCurveEditors();
+    
+    public abstract void createMenus();
+    
+    public abstract void createDialogs();
 
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -981,6 +989,11 @@ public abstract class Megasquirt
     public List<MenuDefinition> getMenusForDialog(String name)
     {
         return menus.get(name);
+    }
+    
+    public Dialog getDialogByName(String name)
+    {
+        return dialogs.get(name);
     }
     
 }
