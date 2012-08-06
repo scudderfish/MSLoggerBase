@@ -723,6 +723,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             loggingItem.setIcon(R.drawable.ic_menu_start_logging);
             loggingItem.setTitle(R.string.start_logging);
         }
+        
+        MenuItem tuningItem = menu.findItem(R.id.tuning);
+        tuningItem.setEnabled(ecuDefinition != null);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -755,6 +758,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         else if (itemId == R.id.manageDatalogs)
         {
             openManageDatalogs();
+            return true;
+        }
+        else if (itemId == R.id.tuning)
+        {
+            openTuning();
             return true;
         }
         else if (itemId == R.id.preferences)
@@ -950,6 +958,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         Intent lauchManageDatalogs = new Intent(this, ManageDatalogsActivity.class);
         startActivity(lauchManageDatalogs);        
+    }
+    
+    /**
+     * Open the tuning activity
+     */
+    private void openTuning()
+    {
+        Intent launchTuning = new Intent(this, TuningActivity.class);
+        startActivity(launchTuning);
     }
     
     /**
@@ -1149,7 +1166,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (action.equals(Megasquirt.CONNECTED))
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-
+                
                 DebugLogManager.INSTANCE.log(action,Log.INFO);
                 indicatorManager.setDisabled(false);
                 if (autoLoggingEnabled && ecu != null)
