@@ -8,9 +8,9 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.Dialog;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
 import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
+import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.ColumnLabel;
@@ -898,7 +898,7 @@ public class Process
 		{
 		    currentDialogName = dialog.group(1);
 		    
-		    Dialog x = new Dialog(dialog.group(1), dialog.group(2));
+		    MSDialog x = new MSDialog(dialog.group(1), dialog.group(2));
 		    d.addItem(currentDialogName, x);
 		}
 		else if (dialogField.matches())

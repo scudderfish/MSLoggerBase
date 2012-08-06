@@ -7,10 +7,13 @@ public class SubMenuDefinition
     private String randomNumber = "0";
     private String expression = "";
     
-    public SubMenuDefinition(String label, String name, String randomNumber, String expression)
+    public SubMenuDefinition(String name, String label, String randomNumber, String expression)
     {
-        this.label = label;
         this.name = name;
+        if (label != null) label = label.replace("&", "");
+        this.label = label;
+        this.randomNumber = randomNumber;
+        this.expression = expression;
     }
     
     public String getLabel()
@@ -55,7 +58,7 @@ public class SubMenuDefinition
 
     public String generateCode()
     {
-        return String.format("        m.addSubMenu(new SubMenuDefinition(\"%s\",\"%s\",\"%s\",\"%s\"));\n", label, name, randomNumber, expression);
+        return String.format("        m.addSubMenu(new SubMenuDefinition(\"%s\",\"%s\",\"%s\",\"%s\"));\n", name, label, randomNumber, expression);
     }
 
     @Override

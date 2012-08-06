@@ -5,23 +5,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import uk.org.smithfamily.mslogger.ecuDef.Dialog;
+import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 
 public class DialogTracker
 {
-    private Map<String,Dialog> items = new HashMap<String,Dialog>();
+    private Map<String,MSDialog> items = new HashMap<String,MSDialog>();
     
-    public void addItem(String dialog, Dialog x)
+    public void addItem(String dialog, MSDialog x)
     {
         items.put(dialog, x);
     }
     
-    public Dialog getDialog(String dialog)
+    public MSDialog getDialog(String dialog)
     {
         return items.get(dialog);
     }
     
-    public Set<Entry<String, Dialog>> getItems()
+    public Set<Entry<String, MSDialog>> getItems()
     {
         return items.entrySet();
     }

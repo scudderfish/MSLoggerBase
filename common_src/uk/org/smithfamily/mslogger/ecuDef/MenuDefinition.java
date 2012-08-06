@@ -13,6 +13,7 @@ public class MenuDefinition
     public MenuDefinition(String dialog, String label)
     {
         this.dialog = dialog;
+        if (label != null) label = label.replace("&", "");
         this.label = label;
     }
 
@@ -39,6 +40,16 @@ public class MenuDefinition
     public void addSubMenu(SubMenuDefinition subMenu)
     {
         this.subMenus.add(subMenu);
+    }
+
+    public List<SubMenuDefinition> getSubMenus()
+    {
+        return subMenus;
+    }
+
+    public SubMenuDefinition getSubMenuAt(int pos)
+    {
+        return subMenus.get(pos);
     }
 
     public String generateCode()
