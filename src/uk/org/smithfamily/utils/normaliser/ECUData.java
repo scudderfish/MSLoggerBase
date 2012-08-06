@@ -9,7 +9,9 @@ import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
+import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
+import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
 
 public class ECUData
 {
@@ -19,6 +21,8 @@ public class ECUData
 	private List<String> gaugeDef = new ArrayList<String>();
 	private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
 	private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
+	private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
+	private List<DialogTracker> dialogDefs = new ArrayList<DialogTracker>(); 
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
@@ -100,6 +104,7 @@ public class ECUData
 		pageIdentifiers = new ArrayList<String>();
 		tableDefs = new ArrayList<TableTracker>();
 		curveDefs = new ArrayList<CurveTracker>();
+		menuDefs = new ArrayList<MenuTracker>();
 		fingerprintSource = "";
 		currentPage = 0;
 		isCRC32Protocol = false;
@@ -340,7 +345,7 @@ public class ECUData
 		this.tableDefs = tableDefs;
 	}
 	
-   public List<CurveTracker> getCurveDefs()
+    public List<CurveTracker> getCurveDefs()
     {
         return curveDefs;
     }
@@ -350,4 +355,23 @@ public class ECUData
         this.curveDefs = curveDefs;
     }
 
+    public List<MenuTracker> getMenuDefs()
+    {
+        return menuDefs;
+    }
+
+    public void setMenuDefs(List<MenuTracker> menuDefs)
+    {
+        this.menuDefs = menuDefs;
+    }
+
+    public List<DialogTracker> getDialogDefs()
+    {
+        return dialogDefs;
+    }
+
+    public void setDialogDefs(List<DialogTracker> dialogDefs)
+    {
+        this.dialogDefs = dialogDefs;
+    }
 }

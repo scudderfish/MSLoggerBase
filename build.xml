@@ -9,10 +9,10 @@
     <property name="output.file" value="${output.file.location}/${jar.file}" />
 
 	<property name="mslogger.jar.location" value="../MSLoggerBase/libs/${jar.file}" />
-    
-	<target name="compile_normaliser" >
+
+	<target name="compile_normaliser" depends=".compile_support" >
         <javac
-            classpath="lib/commons-lang3-3.0.1.jar"
+            classpath="lib/commons-lang3-3.0.1.jar:common_bin"
             destdir="bin"
             includeantruntime="false"
             srcdir="src" />
@@ -23,6 +23,7 @@
             <arg value="${ini_path}" />
             <arg value="." />
             <classpath>
+                <pathelement location="common_bin" />
                 <pathelement location="bin" />
                 <pathelement location="lib/commons-lang3-3.0.1.jar" />
             </classpath>
