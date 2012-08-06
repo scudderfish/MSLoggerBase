@@ -1,4 +1,4 @@
-package uk.org.smithfamily.mslogger.activity;
+package uk.org.smithfamily.mslogger.dialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;

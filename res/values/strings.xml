@@ -112,4 +112,11 @@
 	<string name="view">View</string>
 	<string name="email">Email</string>
 	<string name="delete">Delete</string>
+	
+	<!-- Tuning -->
+	<string name="tuning">Tuning</string>
+	<string name="tuning_section">Select a tuning section below:</string>
+	
+	<!-- Edit Table / Edit Curve -->
+	<string name="bt_burn">Burn</string>
 </resources>

@@ -43,7 +43,7 @@ public abstract class Megasquirt
     
     protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
     
-    protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
+    protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
     
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
@@ -991,7 +991,7 @@ public abstract class Megasquirt
         return menus.get(name);
     }
     
-    public Dialog getDialogByName(String name)
+    public MSDialog getDialogByName(String name)
     {
         return dialogs.get(name);
     }
