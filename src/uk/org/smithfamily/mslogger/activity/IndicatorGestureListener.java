@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import uk.org.smithfamily.mslogger.dialog.EditGaugeDialog;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
