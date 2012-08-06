@@ -23,7 +23,7 @@ public abstract class Megasquirt
 	
 	protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
 	
-	protected Map<String,Dialog> dialogs = new HashMap<String,Dialog>();
+	protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
 	
 	public abstract String getSignature();
 

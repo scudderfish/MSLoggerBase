@@ -3,7 +3,7 @@ package uk.org.smithfamily.mslogger.ecuDef;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dialog
+public class MSDialog
 {
     private String name = "";
     private String label = "";
@@ -11,7 +11,7 @@ public class Dialog
     private List<DialogField> fieldsList = new ArrayList<DialogField>();
     private List<DialogPanel> panelsList = new ArrayList<DialogPanel>();
 
-    public Dialog(String name, String label)
+    public MSDialog(String name, String label)
     {
         this.name = name;
         this.label = label;
@@ -51,7 +51,7 @@ public class Dialog
 
     public String generateCode()
     {
-        String output = String.format("d = new Dialog(\"%s\",\"%s\");\n", name, label);
+        String output = String.format("d = new MSDialog(\"%s\",\"%s\");\n", name, label);
         
         for (DialogField df : fieldsList)
         {
@@ -64,6 +64,6 @@ public class Dialog
     @Override
     public String toString()
     {
-        return "Dialog [name=" + name + ", label=" + label + ", fieldsList=" + fieldsList + ", panelsList=" + panelsList + "]";
+        return "MSDialog [name=" + name + ", label=" + label + ", fieldsList=" + fieldsList + ", panelsList=" + panelsList + "]";
     }   
 }

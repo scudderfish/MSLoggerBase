@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.Dialog;
+import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
@@ -267,6 +267,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createMenus()");
         writer.println(TAB + "{");
+        writer.println(TAB + TAB + "menus = new HashMap<String,List<MenuDefinition>>();");
         writer.println(TAB + TAB + "MenuDefinition m;");
         
         for (MenuTracker m : ecuData.getMenuDefs())
@@ -301,14 +302,14 @@ public class Output
     {        
         for (DialogTracker d : ecuData.getDialogDefs())
         {
-            for (Entry<String, Dialog> dialog : d.getItems())
+            for (Entry<String, MSDialog> dialog : d.getItems())
             {                
                 String key = dialog.getKey();
-                Dialog value = dialog.getValue();
+                MSDialog value = dialog.getValue();
                 
                 writer.println(TAB + "public void createDialog_" + key + "()");
                 writer.println(TAB + "{");
-                writer.println(TAB + TAB + "Dialog d;");
+                writer.println(TAB + TAB + "MSDialog d;");
 
                 writer.println(TAB + TAB + value.generateCode());
                 writer.println(TAB + TAB + "dialogs.put(\"" + key + "\",d);");
@@ -320,10 +321,11 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createDialogs()");
         writer.println(TAB + "{");
+        writer.println(TAB + TAB + "dialogs = new HashMap<String,MSDialog>();");
 
         for (DialogTracker d : ecuData.getDialogDefs())
         {            
-            for (Entry<String, Dialog> dialog : d.getItems())
+            for (Entry<String, MSDialog> dialog : d.getItems())
             {        
                 String name = dialog.getKey();
                 
@@ -353,6 +355,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createTableEditors()");
         writer.println(TAB + "{");
+        writer.println(TAB + TAB + "tableEditors = new HashMap<String,TableEditor>();");
 
         for (TableTracker t : ecuData.getTableDefs())
         {
@@ -381,6 +384,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createCurveEditors()");
         writer.println(TAB + "{");
+        writer.println(TAB + TAB + "curveEditors = new HashMap<String,CurveEditor>();");
 
         for (CurveTracker c : ecuData.getCurveDefs())
         {
