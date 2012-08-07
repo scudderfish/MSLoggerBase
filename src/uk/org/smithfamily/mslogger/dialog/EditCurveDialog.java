@@ -20,6 +20,8 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -49,6 +51,15 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         
         drawCurve();
         createTable();
+        
+        Button buttonBurn = (Button) findViewById(R.id.burn);
+        buttonBurn.setOnClickListener(this);
+        
+        Button buttonCancel = (Button) findViewById(R.id.cancel);
+        buttonCancel.setOnClickListener(this);
+        
+        // Hide keyboard
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     
     private void createTable()
@@ -146,8 +157,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         XYMultipleSeriesRenderer renderer = buildRenderer(titles.length, colors);
         setChartSettings(renderer, "", "", "", minXaxis, maxXaxis, minYaxis, maxYaxis, Color.GRAY, Color.LTGRAY);
         
-        renderer.setXTitle("Coolant (F)");
-        renderer.setYTitle("WUE %", 0);
+        renderer.setXTitle(curve.getxLabel());
+        renderer.setYTitle(curve.getyLabel(), 0);
         
         renderer.setPanLimits(new double[] { minXaxis, maxXaxis, minYaxis, maxYaxis });
         renderer.setShowLabels(true);
