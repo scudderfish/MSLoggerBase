@@ -47,7 +47,6 @@ public class Output
         writer.println(TAB + "public " + className + "(Context c)");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "super(c);");
-        writer.println(TAB + TAB + "refreshFlags();");
         writer.println(TAB + "}");
     }
 
@@ -483,6 +482,7 @@ public class Output
         {
             writer.println(TAB + TAB + "loadConstantsPage" + i + "(simulated);");
         }
+        writer.println(TAB + TAB + "refreshFlags();");
         writer.println(TAB + "}");
     }
 
