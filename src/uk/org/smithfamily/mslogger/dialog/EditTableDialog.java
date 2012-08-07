@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.FloatMath;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,20 +35,18 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     /**
      * 
      * @param context
-     * @param tableNbX
-     * @param tableNbY
+     * @param table
      */
-    public EditTableDialog(Context context, TableEditor table, int tableNbX, int tableNbY)
+    public EditTableDialog(Context context, TableEditor table)
     {
         super(context);
         
-        System.out.println("bleh" + table);
-        
         this.table = table;
-        this.tableNbX = tableNbX;
-        this.tableNbY = tableNbY;
     }
     
+    /**
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -57,8 +56,16 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
      
         setTitle("Edit " + table.getLabel());
         
-        final int tableNbX = 12;
-        final int tableNbY = 12;
+        drawTable();
+    }
+    
+    /**
+     * 
+     */
+    private void drawTable()
+    {
+        this.tableNbX = table.getzBins().length;
+        this.tableNbY = table.getzBins()[0].length;
         
         TableLayout tableLayout = (TableLayout) findViewById(R.id.table);
         
@@ -69,45 +76,32 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         
         TableRow tableRow;     
         
-        /*
-         *  Fake VE table
-         */
+        double xBins[] = table.getxBins();
+        double yBins[] = table.getyBins();
         
-        double veTable[][] = {{48.5,49.8,53.8,57.6,57.4,63.2,58.7,34.4,20.3,16.8,22.2,36.7},
-                                {50.2,50.2,47.9,48.8,49.7,50.2,41.9,34.3,18.5,17.9,31.3,39.4},
-                                {50.2,50.2,47.1,48.0,49.2,51.9,50.7,52.6,35.3,32.9,37.5,50.4},
-                                {50.2,50.2,49.7,50.5,51.4,52.7,53.0,53.0,47.1,34.4,43.1,52.4},
-                                {51.3,53.1,51.4,52.3,53.0,54.6,54.4,55.9,48.3,39.5,46.5,53.2},
-                                {53.1,53.2,53.3,54.5,55.1,56.6,55.9,57.6,54.5,48.8,53.4,54.7},
-                                {53.8,54.3,54.7,55.7,56.0,58.1,57.1,58.0,58.4,53.9,60.9,66.3},
-                                {54.0,53.1,56.4,57.3,58.1,59.9,58.4,60.7,59.7,57.2,64.0,66.5},
-                                {55.2,54.0,56.9,57.5,58.3,60.2,58.9,59.8,60.4,58.3,64.5,70.6},
-                                {55.5,55.5,57.3,58.8,58.3,60.1,58.8,61.0,61.4,62.9,68.2,70.8},
-                                {55.8,57.1,58.0,58.0,58.1,60.0,60.0,61.2,62.3,64.0,68.6,70.7},
-                                {56.8,57.4,57.9,59.1,59.0,60.4,60.7,59.7,60.6,62.0,65.6,69.5}};
-        
-        int xBins[] = {600, 1000, 1300, 1600, 2000, 2700, 3000, 3800, 4500, 4900, 5500, 6000};
-        int yBins[] = {20, 30, 35, 40, 50, 55, 70, 85, 100, 140, 170, 250};
-        
-        for (int y = 1; y <= tableNbX; y++)
+        double zBins[][] = table.getzBins();
+         
+        for (int x = 1; x <= tableNbX; x++)
         {
             tableRow = new TableRow(getContext());
             tableRow.setLayoutParams(lp);
             
             // Row header
             TextView rowHeader = new TextView(getContext());
-            rowHeader.setText(Integer.toString(yBins[tableNbY - y]));
+            rowHeader.setText(Double.toString(yBins[tableNbX - x]));
             rowHeader.setLayoutParams(rowHeaderLayout);
             tableRow.addView(rowHeader);
             
-            for (int x = 1; x <= tableNbY; x++)
+            for (int y = 1; y <= tableNbY; y++)
             {
                 EditText cell = new EditText(getContext());
-                cell.setText(Double.toString(veTable[tableNbY - y][x - 1]));
+                cell.setText(Double.toString(zBins[y - 1][tableNbX - x]));
                 cell.setId(getCellId(x,y));
                 cell.setLayoutParams(lp);
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 cell.setSingleLine(true);
+                cell.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+                cell.setPadding(8, 5, 8, 5);
                 
                 // Refresh background color when one edit text lost focus
                 cell.addTextChangedListener(new TextWatcher()
@@ -142,7 +136,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
             
             if (x > 1)
             {
-                columnHeader.setText(Integer.toString(xBins[x - 2]));
+                columnHeader.setText(Double.toString(xBins[x - 2]));
                 columnHeader.setGravity(Gravity.CENTER);
             }          
                         
@@ -153,13 +147,13 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         
         tableLayout.addView(tableRow,lp);
                 
-        TextView xBinsLabel = (TextView) findViewById(R.id.xBinsLabel);
-        xBinsLabel.setText("RPM");
+        final TextView xBinsLabel = (TextView) findViewById(R.id.xBinsLabel);
+        xBinsLabel.setText(table.getxLabel());
         
-        // Apply animation on text view so it's vertical (90 degree rotation with 0 duration animation)
         final TextView yBinsLabel = (TextView) findViewById(R.id.yBinsLabel);
-        yBinsLabel.setText("MAP");        
+        yBinsLabel.setText(table.getyLabel());
         
+        // Apply animation on text view so it's vertical (90 degree rotation with 0ms duration animation)
         RotateAnimation ranim = (RotateAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.verticaltextview);
         ranim.setFillAfter(true);
         yBinsLabel.setAnimation(ranim);

@@ -169,7 +169,7 @@ public class TuningActivity extends Activity
         // It's a table!
         if (table != null)
         {
-            EditTableDialog tableDialog = new EditTableDialog(TuningActivity.this, table, 12, 12);
+            EditTableDialog tableDialog = new EditTableDialog(TuningActivity.this, table);
             tableDialog.show();
         }
         else
