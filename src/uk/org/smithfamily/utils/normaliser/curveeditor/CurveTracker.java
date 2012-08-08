@@ -5,10 +5,11 @@ import java.util.List;
 
 public class CurveTracker
 {
-    String          name;
-    List<CurveItem> items = new ArrayList<CurveItem>();
+    private String          name;
+    private List<CurveItem> items = new ArrayList<CurveItem>();
     private boolean definitionCompleted;
-    int interestingItemCount = 0;
+    private int interestingItemCount = 0;
+    
     public void addItem(CurveItem x)
     {
         items.add(x);

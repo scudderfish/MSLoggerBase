@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class XBins extends TableItem
 {
-
 	private String readOnly;
 	private String label;
 	private String bins1;

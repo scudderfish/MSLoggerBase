@@ -53,6 +53,8 @@ public abstract class Megasquirt
 
 	public abstract String[] defaultGauges();
 
+	public abstract void setFlags();
+	
     public abstract void refreshFlags();
 
     public abstract boolean isCRC32Protocol();
@@ -186,20 +188,22 @@ public abstract class Megasquirt
 		return buffer;
 	}
 	
-    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
+    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         return null;
     }
-    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
+    
+    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         return null;
     }
 
-    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
+    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         return null;
     }
-    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
+    
+    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         return null;
     }

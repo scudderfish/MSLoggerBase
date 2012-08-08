@@ -57,8 +57,13 @@ public class MSDialog
         {
             output += df.generateCode();
         }
-        
-        return output;        
+
+        for (DialogPanel dp : panelsList)
+        {
+            output += dp.generateCode();
+        }
+
+        return output;
     }
     
     @Override

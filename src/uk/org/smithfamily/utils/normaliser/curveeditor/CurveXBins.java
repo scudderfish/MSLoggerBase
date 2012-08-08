@@ -3,13 +3,13 @@ package uk.org.smithfamily.utils.normaliser.curveeditor;
 public class CurveXBins extends CurveItem
 {
     private String readOnly;
-    private String label;
     private String bins1;
+    private String bins2;
 
     public CurveXBins(String bins1, String label, String readonly)
     {
         this.bins1 = bins1;
-        this.label = label;
+        this.bins2 = bins2;
         this.readOnly = (readonly == null ? "false" : readonly.equals("readonly") ? "true" : "false");
     }
 
@@ -23,14 +23,14 @@ public class CurveXBins extends CurveItem
         this.readOnly = readOnly;
     }
 
-    public String label()
+    public String getBins2()
     {
-        return label;
+        return bins2;
     }
 
-    public void label(String label)
+    public void setBins2(String bins2)
     {
-        this.label = label;
+        this.bins2 = bins2;
     }
 
     public String getBins1()
@@ -46,6 +46,6 @@ public class CurveXBins extends CurveItem
     @Override
     public String toString()
     {
-        return String.format("c.setXBins(%s,\"%s\",%s);", bins1, label, readOnly);
+        return String.format("c.setXBins(%s,%s,%s);", bins1, bins2, readOnly);
     }
 }
