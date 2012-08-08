@@ -514,15 +514,15 @@ public class Output
         if (height == -1)
         {
             functionName += "Vector";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(), width,
-                    c.getScale(), c.getTranslate(), signed);
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s, %s);", c.getName(), functionName, c.getOffset(), width,
+                    c.getScale(), c.getTranslate(), c.getDigits(), signed);
 
         }
         else
         {
             functionName += "Array";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(),
-                    width, height, c.getScale(), c.getTranslate(), signed);
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s, %s);", c.getName(), functionName, c.getOffset(),
+                    width, height, c.getScale(), c.getTranslate(), c.getDigits(), signed);
         }
         return loadArray;
     }
