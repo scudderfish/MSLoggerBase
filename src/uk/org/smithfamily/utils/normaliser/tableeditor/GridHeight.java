@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class GridHeight extends TableItem
 {
-
 	private String height;
 
 	public GridHeight(String height)
@@ -19,6 +18,7 @@ public class GridHeight extends TableItem
 	{
 		this.height = height;
 	}
+	
 	@Override
 	public String toString()
 	{

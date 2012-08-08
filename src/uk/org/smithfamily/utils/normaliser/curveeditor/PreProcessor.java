@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.curveeditor;
 
 public class PreProcessor extends CurveItem
 {
-
     private String text;
 
     public PreProcessor(String text)

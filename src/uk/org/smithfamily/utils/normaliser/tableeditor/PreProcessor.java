@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class PreProcessor extends TableItem
 {
-
 	private String text;
 
 	public PreProcessor(String text)
