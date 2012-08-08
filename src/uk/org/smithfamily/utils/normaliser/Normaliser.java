@@ -109,8 +109,7 @@ public class Normaliser
      */
     private static void process(File f, boolean subRead) throws IOException
     {
-
-        BufferedReader br = new BufferedReader(new FileReader(f));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "CP1252"));
 
         String line;
 
@@ -273,7 +272,7 @@ public class Normaliser
         new File(directory).mkdirs();
         classFile = directory + className + ".java";
         System.out.println("Writing to " + classFile);
-        PrintWriter writer = new PrintWriter(new FileWriter(classFile));
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(classFile), "CP1252"));
         String fingerprint = getFingerprint();
         System.out.println(fingerprint + " : " + className);
 
