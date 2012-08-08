@@ -85,6 +85,8 @@ public abstract class Megasquirt
 
     public abstract String[] defaultGauges();
 
+    public abstract void setFlags();
+    
     public abstract void refreshFlags();
 
     public abstract boolean isCRC32Protocol();
