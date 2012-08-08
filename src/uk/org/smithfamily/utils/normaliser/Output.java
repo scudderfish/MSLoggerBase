@@ -47,6 +47,7 @@ public class Output
         writer.println(TAB + "public " + className + "(Context c)");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "super(c);");
+        writer.println(TAB + TAB + "setFlags();");
         writer.println(TAB + "}");
     }
 
@@ -108,16 +109,23 @@ public class Output
         {
             writer.println(TAB + "}\n");
         }
+        
         writer.println(TAB + "@Override");
-        writer.println(TAB + "public void refreshFlags()");
+        writer.println(TAB + "public void setFlags()");
         writer.println(TAB + "{");
         for (String flag : ecuData.getFlags())
         {
             writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
         }
+        writer.println(TAB + "}");
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void refreshFlags()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "setFlags();");
         for (int i = 1; i <= constantMethodCount; i++)
         {
-            writer.println(TAB + TAB + "initConstants" + i + "();\n");
+            writer.println(TAB + TAB + "initConstants" + i + "();");
         }
         writer.println(TAB + TAB + "createTableEditors();");
         writer.println(TAB + TAB + "createCurveEditors();");

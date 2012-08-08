@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class UpDownLabel extends TableItem
 {
-
 	private String down;
 	private String up;
 

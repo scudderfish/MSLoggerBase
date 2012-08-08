@@ -2,7 +2,6 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class GridOrient extends TableItem
 {
-
 	private String x;
 	private String y;
 	private String z;

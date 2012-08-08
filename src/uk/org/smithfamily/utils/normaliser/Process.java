@@ -828,7 +828,10 @@ public class Process
 		}
 		else if (xBins.matches())
 		{
-            uk.org.smithfamily.utils.normaliser.curveeditor.XBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.XBins(xBins.group(1), xBins.group(3),xBins.group(5));
+		    String xBins2 = "0";
+		    if (xBins.group(3) != null) xBins2 = xBins.group(3);
+
+            uk.org.smithfamily.utils.normaliser.curveeditor.XBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.XBins(xBins.group(1), xBins2, xBins.group(5));
             c.addItem(x);
 		}
 		else if (yBins.matches())

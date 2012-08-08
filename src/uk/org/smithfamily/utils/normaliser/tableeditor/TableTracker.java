@@ -5,8 +5,8 @@ import java.util.List;
 
 public class TableTracker
 {
-    String          name;
-    List<TableItem> items = new ArrayList<TableItem>();
+    private String          name;
+    private List<TableItem> items = new ArrayList<TableItem>();
     private boolean definitionCompleted;
 
     public void addItem(TableItem x)
