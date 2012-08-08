@@ -1,12 +1,12 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class XBins extends CurveItem
+public class CurveXBins extends CurveItem
 {
     private String readOnly;
     private String label;
     private String bins1;
 
-    public XBins(String bins1, String label, String readonly)
+    public CurveXBins(String bins1, String label, String readonly)
     {
         this.bins1 = bins1;
         this.label = label;

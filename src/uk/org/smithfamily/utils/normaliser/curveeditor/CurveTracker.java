@@ -13,7 +13,7 @@ public class CurveTracker
     {
         items.add(x);
 
-	if(! (x instanceof PreProcessor))
+	if(! (x instanceof CurvePreProcessor))
 	{
 		interestingItemCount++;
 	}

@@ -1,12 +1,12 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class YAxis  extends CurveItem
+public class CurveYAxis  extends CurveItem
 {
     private String yAxis1;
     private String yAxis2;
     private String yAxis3;
 
-    public YAxis(String xAxis1, String xAxis2, String xAxis3)
+    public CurveYAxis(String xAxis1, String xAxis2, String xAxis3)
     {
         this.yAxis1 = xAxis1;
         this.yAxis2 = xAxis2;

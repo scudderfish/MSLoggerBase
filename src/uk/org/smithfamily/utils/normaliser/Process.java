@@ -13,12 +13,7 @@ import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
-import uk.org.smithfamily.utils.normaliser.curveeditor.ColumnLabel;
-import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
-import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
-import uk.org.smithfamily.utils.normaliser.curveeditor.LineLabel;
-import uk.org.smithfamily.utils.normaliser.curveeditor.XAxis;
-import uk.org.smithfamily.utils.normaliser.curveeditor.YAxis;
+import uk.org.smithfamily.utils.normaliser.curveeditor.*;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
@@ -813,42 +808,42 @@ public class Process
 		}
 		else if (columnLabel.matches())
 		{
-            ColumnLabel x = new ColumnLabel(columnLabel.group(1), columnLabel.group(2));
+            CurveColumnLabel x = new CurveColumnLabel(columnLabel.group(1), columnLabel.group(2));
             c.addItem(x);
 		}
 		else if (xAxis.matches())
 		{
-		    XAxis x = new XAxis(xAxis.group(1), xAxis.group(2), xAxis.group(3));
+		    CurveXAxis x = new CurveXAxis(xAxis.group(1), xAxis.group(2), xAxis.group(3));
 		    c.addItem(x);
 		}
 		else if (yAxis.matches())
 		{
-		    YAxis x = new YAxis(yAxis.group(1), yAxis.group(2), yAxis.group(3));
+		    CurveYAxis x = new CurveYAxis(yAxis.group(1), yAxis.group(2), yAxis.group(3));
 			c.addItem(x);
 		}
 		else if (xBins.matches())
 		{
-            uk.org.smithfamily.utils.normaliser.curveeditor.XBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.XBins(xBins.group(1), xBins.group(3),xBins.group(5));
+            uk.org.smithfamily.utils.normaliser.curveeditor.CurveXBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.CurveXBins(xBins.group(1), xBins.group(3),xBins.group(5));
             c.addItem(x);
 		}
 		else if (yBins.matches())
 		{
-            uk.org.smithfamily.utils.normaliser.curveeditor.YBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.YBins(yBins.group(1));
+            CurveYBins x = new CurveYBins(yBins.group(1));
             c.addItem(x);
 		}
 		else if (gauge.matches())
 		{
-		    LineLabel x = new LineLabel(gauge.group(1));
+		    CurveLineLabel x = new CurveLineLabel(gauge.group(1));
 		    c.addItem(x);
 		}
 		else if (lineLabel.matches())
         {
-	        LineLabel x = new LineLabel(lineLabel.group(1));
+	        CurveLineLabel x = new CurveLineLabel(lineLabel.group(1));
 	        c.addItem(x);
         }
 		else
         {
-		    uk.org.smithfamily.utils.normaliser.curveeditor.PreProcessor p = new uk.org.smithfamily.utils.normaliser.curveeditor.PreProcessor(processPreprocessor(ecuData, line));
+		    uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor p = new uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor(processPreprocessor(ecuData, line));
             if (c != null && !c.isDefinitionCompleted())
             {
                 c.addItem(p);

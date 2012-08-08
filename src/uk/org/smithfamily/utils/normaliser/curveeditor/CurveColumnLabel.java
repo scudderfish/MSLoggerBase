@@ -1,11 +1,11 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class ColumnLabel extends CurveItem
+public class CurveColumnLabel extends CurveItem
 {
     private String xLabel;
     private String yLabel;
 
-    public ColumnLabel(String xLabel, String yLabel)
+    public CurveColumnLabel(String xLabel, String yLabel)
     {
         this.xLabel = xLabel;
         this.yLabel = yLabel;

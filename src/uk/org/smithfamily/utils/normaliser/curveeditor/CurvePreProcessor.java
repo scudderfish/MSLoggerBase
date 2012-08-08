@@ -1,11 +1,11 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class PreProcessor extends CurveItem
+public class CurvePreProcessor extends CurveItem
 {
 
     private String text;
 
-    public PreProcessor(String text)
+    public CurvePreProcessor(String text)
     {
         this.text = text;
     }

@@ -1,10 +1,10 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class LineLabel extends CurveItem
+public class CurveLineLabel extends CurveItem
 {
     private String lineLabel;
 
-    public LineLabel(String lineLabel)
+    public CurveLineLabel(String lineLabel)
     {
         this.lineLabel = lineLabel;
     }

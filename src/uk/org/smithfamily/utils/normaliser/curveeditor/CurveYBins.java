@@ -1,10 +1,10 @@
 package uk.org.smithfamily.utils.normaliser.curveeditor;
 
-public class YBins extends CurveItem
+public class CurveYBins extends CurveItem
 {
     private String bins;
 
-    public YBins(String bins)
+    public CurveYBins(String bins)
     {
         this.bins = bins;
     }
