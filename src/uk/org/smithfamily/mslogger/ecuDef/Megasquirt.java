@@ -925,7 +925,7 @@ public abstract class Megasquirt
     protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
-        int index = 0;
+        int index = offset;
         for(int y = 0 ; y < height ; y++)
         {
             for(int x = 0; x < width ; x++)
@@ -941,7 +941,7 @@ public abstract class Megasquirt
     protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
-        int index = 0;
+        int index = offset;
         for(int x = 0; x < width ; x++)
         {
             double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
@@ -956,7 +956,7 @@ public abstract class Megasquirt
     protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
-        int index = 0;
+        int index = offset;
         for(int y = 0 ; y < height ; y++)
         {
             for(int x = 0; x < width ; x++)
@@ -973,7 +973,7 @@ public abstract class Megasquirt
     protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
-        int index = 0;
+        int index = offset;
         for(int x = 0; x < width ; x++)
         {
             double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
