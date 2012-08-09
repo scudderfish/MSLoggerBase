@@ -11,7 +11,7 @@ import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
-import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedTracker;
 
 public class ECUData
 {
@@ -22,7 +22,8 @@ public class ECUData
 	private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
 	private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
 	private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
-	private List<DialogTracker> dialogDefs = new ArrayList<DialogTracker>(); 
+	private List<UserDefinedTracker> dialogDefs = new ArrayList<UserDefinedTracker>();
+	private Map<String, String> fieldControlExpressions;
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
@@ -91,6 +92,7 @@ public class ECUData
 		runtime = new ArrayList<String>();
 		logHeader = new ArrayList<String>();
 		logRecord = new ArrayList<String>();
+		fieldControlExpressions = new HashMap<String, String>();
 		runtimeVars = new HashMap<String, String>();
 		evalVars = new HashMap<String, String>();
 		constantVars = new HashMap<String, String>();
@@ -344,34 +346,34 @@ public class ECUData
 	{
 		this.tableDefs = tableDefs;
 	}
-	
-    public List<CurveTracker> getCurveDefs()
-    {
-        return curveDefs;
-    }
 
-    public void setCurveDefs(List<CurveTracker> curveDefs)
-    {
-        this.curveDefs = curveDefs;
-    }
+	public List<CurveTracker> getCurveDefs()
+	{
+		return curveDefs;
+	}
 
-    public List<MenuTracker> getMenuDefs()
-    {
-        return menuDefs;
-    }
+	public void setCurveDefs(List<CurveTracker> curveDefs)
+	{
+		this.curveDefs = curveDefs;
+	}
 
-    public void setMenuDefs(List<MenuTracker> menuDefs)
-    {
-        this.menuDefs = menuDefs;
-    }
+	public List<MenuTracker> getMenuDefs()
+	{
+		return menuDefs;
+	}
 
-    public List<DialogTracker> getDialogDefs()
-    {
-        return dialogDefs;
-    }
+	public void setMenuDefs(List<MenuTracker> menuDefs)
+	{
+		this.menuDefs = menuDefs;
+	}
 
-    public void setDialogDefs(List<DialogTracker> dialogDefs)
-    {
-        this.dialogDefs = dialogDefs;
-    }
+	public List<UserDefinedTracker> getDialogDefs()
+	{
+		return dialogDefs;
+	}
+
+	public void setDialogDefs(List<UserDefinedTracker> dialogDefs)
+	{
+		this.dialogDefs = dialogDefs;
+	}
 }

@@ -88,4 +88,7 @@ public class Patterns
     static Pattern curveYBins               = Pattern.compile("\\s*yBins\\s*=\\s*(.*)\\s*");
     static Pattern curveGauge               = Pattern.compile("\\s*gauge\\s*=\\s*(.*)\\s*");
     static Pattern curveLineLabel           = Pattern.compile("\\s*lineLabel\\s*=\\s*\"(.*)\"");
+	
+    
+    static Pattern int2boolean 				= Pattern.compile("(\\w*)");
 }

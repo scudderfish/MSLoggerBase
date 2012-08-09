@@ -1,30 +1,15 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 
-import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.DialogField;
-import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
-import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
-import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
-import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.utils.normaliser.curveeditor.*;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
-import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
-import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
-import uk.org.smithfamily.utils.normaliser.tableeditor.PreProcessor;
-import uk.org.smithfamily.utils.normaliser.tableeditor.TableDefinition;
-import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
-import uk.org.smithfamily.utils.normaliser.tableeditor.UpDownLabel;
-import uk.org.smithfamily.utils.normaliser.tableeditor.XBins;
-import uk.org.smithfamily.utils.normaliser.tableeditor.YBins;
-import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
-import uk.org.smithfamily.utils.normaliser.userdefined.DialogTracker;
+import uk.org.smithfamily.utils.normaliser.tableeditor.*;
+import uk.org.smithfamily.utils.normaliser.userdefined.*;
 
 public class Process
 {
@@ -55,6 +40,59 @@ public class Process
 		return line;
 	}
 
+	private static String convertIntsToBoolean(String expression)
+	{
+
+		boolean inWord = false;
+		boolean negate = false;
+		boolean addition = false;
+		StringBuffer result = new StringBuffer(expression.length());
+		for(int i=0;i<expression.length();i++)
+		{
+			char c = expression.charAt(i);
+			if(c=='!')
+			{
+				negate = true;
+				continue;
+			}
+			if(c=='+')
+			{
+				addition = true;
+			}
+			if((Character.isLetterOrDigit(c) || c =='_' ) && !inWord)
+			{
+				inWord = true;
+				result.append("(");
+				result.append(c);
+				continue;
+			}
+			if(inWord && !(Character.isLetterOrDigit(c) || c == '_'))
+			{
+				inWord = false;
+				if(negate)
+				{
+					result.append(" == 0) ");
+				}
+				else
+				{
+					result.append(" != 0) ");
+				}
+				
+				negate=false;
+			}
+			result.append(c);
+			
+		}
+		if(addition)
+		{
+			expression="("+result.toString()+") > 0";
+		}
+		else
+		{
+			expression = result.toString();
+		}
+		return expression;
+	}
 	private static String convertC2JavaBoolean(String expression)
 	{
 		Matcher matcher = Patterns.booleanConvert.matcher(expression);
@@ -826,7 +864,7 @@ public class Process
 		    String xBins2 = "0";
 		    if (xBins.group(3) != null) xBins2 = xBins.group(3);
 
-            uk.org.smithfamily.utils.normaliser.curveeditor.XBins x = new uk.org.smithfamily.utils.normaliser.curveeditor.XBins(xBins.group(1), xBins2, xBins.group(5));
+            CurveXBins x = new CurveXBins(xBins.group(1), xBins2, xBins.group(5));
             c.addItem(x);
 		}
 		else if (yBins.matches())
@@ -846,7 +884,7 @@ public class Process
         }
 		else
         {
-		    uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor p = new uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor(processPreprocessor(ecuData, line));
+		    CurvePreProcessor p = new CurvePreProcessor(processPreprocessor(ecuData, line));
             if (c != null && !c.isDefinitionCompleted())
             {
                 c.addItem(p);
@@ -879,8 +917,8 @@ public class Process
 				.matcher(line);
 		Matcher dialogPanel = Patterns.dialogPanel.matcher(line);
 
-		final List<DialogTracker> dialogDefs = ecuData.getDialogDefs();
-		DialogTracker d = null;
+		final List<UserDefinedTracker> dialogDefs = ecuData.getDialogDefs();
+		UserDefinedTracker d = null;
         if (dialogDefs.size() > 0)
         {
             d = dialogDefs.get(dialogDefs.size() - 1);
@@ -888,7 +926,7 @@ public class Process
         
         if (d == null)
         {
-            d = new DialogTracker();
+            d = new UserDefinedTracker();
             dialogDefs.add(d);
         }
 		
@@ -896,23 +934,44 @@ public class Process
 		{
 		    currentDialogName = dialog.group(1);
 		    
-		    MSDialog x = new MSDialog(dialog.group(1), dialog.group(2));
-		    d.addItem(currentDialogName, x);
+		    UserDefinedDefinition x = new UserDefinedDefinition(d,dialog.group(1), dialog.group(2));
+		    if(d.isDefinitionCompleted())
+		    {
+		    	d = new UserDefinedTracker();
+		    	dialogDefs.add(d);
+		    }
+		    
+		    d.addItem(x);
 		}
 		else if (dialogField.matches())
 		{
-		    DialogField x = new DialogField(dialogField.group(1).trim(), dialogField.group(3), dialogField.group(5), false);
-		    d.getDialog(currentDialogName).addField(x);
+		    final String label = dialogField.group(1).trim();
+			final String name = dialogField.group(3);
+			String expression = dialogField.group(5);
+			if(expression == null || StringUtils.isEmpty(expression))
+			{
+				expression = "1";
+			}
+			else
+			{
+				expression = removeCurlyBrackets(expression);
+				
+				expression = convertIntsToBoolean(expression);
+			}
+			
+			
+			UserDefinedField x = new UserDefinedField(label, name, expression, false);
+		    d.addItem(x);
 		}
 		else if (dialogDisplayOnlyField.matches())
 		{
-	        DialogField x = new DialogField(dialogDisplayOnlyField.group(1), dialogDisplayOnlyField.group(3), dialogDisplayOnlyField.group(5), true);
-	        d.getDialog(currentDialogName).addField(x);
+			UserDefinedField x = new UserDefinedField(dialogDisplayOnlyField.group(1), dialogDisplayOnlyField.group(3), dialogDisplayOnlyField.group(5), true);
+			d.addItem(x);
 		}
 		else if (dialogPanel.matches())
 		{
-		    DialogPanel x = new DialogPanel(dialogPanel.group(1), dialogPanel.group(2));
-		    d.getDialog(currentDialogName).addPanel(x);
+		    UserDefinedPanel x = new UserDefinedPanel(dialogPanel.group(1), dialogPanel.group(2));
+		    d.addItem(x);
 		}
 	}
 

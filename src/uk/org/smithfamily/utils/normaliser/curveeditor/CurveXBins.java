@@ -6,7 +6,7 @@ public class CurveXBins extends CurveItem
     private String bins1;
     private String bins2;
 
-    public CurveXBins(String bins1, String label, String readonly)
+    public CurveXBins(String bins1, String bins2, String readonly)
     {
         this.bins1 = bins1;
         this.bins2 = bins2;
