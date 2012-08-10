@@ -985,6 +985,11 @@ public abstract class Megasquirt
         return destination;
 
     }
+    
+    public Constant getConstantByName(String name)
+    {
+        return constants.get(name);
+    }
 
     public TableEditor getTableEditorByName(String name) 
     {

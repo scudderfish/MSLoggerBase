@@ -3,13 +3,17 @@
 	android:layout_margin="8dp" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="100"
 	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-
-    <LinearLayout
+	
+	<ScrollView android:id="@+id/scrollView1"
+		android:layout_weight="100" android:layout_width="match_parent"
+		android:layout_height="0px">
+		
+    	<LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/content">
-
-	</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
     
 	<LinearLayout
 	    android:orientation="horizontal"
