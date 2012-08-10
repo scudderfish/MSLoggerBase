@@ -6,22 +6,28 @@ import java.util.List;
 public class CurveTracker
 {
     private String          name;
-    private List<CurveItem> items = new ArrayList<CurveItem>();
-    private boolean definitionCompleted;
-    private int interestingItemCount = 0;
-    
+    private List<CurveItem> items                = new ArrayList<CurveItem>();
+    private int             interestingItemCount = 0;
+    private int             curlyBracketCount    = 0;
+
     public void addItem(CurveItem x)
     {
         items.add(x);
 
-	if(! (x instanceof CurvePreProcessor))
-	{
-		interestingItemCount++;
-	}
-        // TODO: There might be a gauge and/or one or multiple lineLabel after yBins, so we don't necessarily want to stop there
-        if (interestingItemCount > 5)
+        if (!(x instanceof CurvePreProcessor))
         {
-            this.definitionCompleted = true;
+            interestingItemCount++;
+        }
+        else
+        {
+            if(x.toString().contains("{"))
+            {
+                curlyBracketCount++;
+            }
+            if(x.toString().contains("}"))
+            {
+                curlyBracketCount--;
+            }
         }
     }
 
@@ -32,7 +38,7 @@ public class CurveTracker
 
     public boolean isDefinitionCompleted()
     {
-        return definitionCompleted;
+        return (interestingItemCount >= 5 && curlyBracketCount == 0);
     }
 
     public String getName()
