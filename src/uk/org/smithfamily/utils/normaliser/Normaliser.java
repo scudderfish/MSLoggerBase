@@ -299,6 +299,7 @@ public class Normaliser
         Output.outputUserDefined(ecuData,writer);
         Output.outputTableEditors(ecuData,writer);
         Output.outputCurves(ecuData,writer);
+        Output.outputVisibilityFlags(ecuData,writer);
 
         // outputGaugeDoc(writer);
 

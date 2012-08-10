@@ -107,6 +107,7 @@ public class ECUData
 		tableDefs = new ArrayList<TableTracker>();
 		curveDefs = new ArrayList<CurveTracker>();
 		menuDefs = new ArrayList<MenuTracker>();
+		dialogDefs = new ArrayList<UserDefinedTracker>();
 		fingerprintSource = "";
 		currentPage = 0;
 		isCRC32Protocol = false;
@@ -376,4 +377,9 @@ public class ECUData
 	{
 		this.dialogDefs = dialogDefs;
 	}
+
+    public Map<String, String> getFieldControlExpressions()
+    {
+        return fieldControlExpressions;
+    }
 }
