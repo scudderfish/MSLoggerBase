@@ -45,6 +45,8 @@ public abstract class Megasquirt
     
     protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
     
+    protected Map<String,Boolean> visibilityFlags = new HashMap<String,Boolean>();
+    
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
@@ -99,6 +101,8 @@ public abstract class Megasquirt
     
     public abstract void createDialogs();
 
+    public abstract void setVisibilityFlags();
+    
     private boolean            logging;
     private boolean            constantsLoaded;
     private String             trueSignature = "Unknown";
