@@ -1,15 +1,38 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 
-import uk.org.smithfamily.mslogger.ecuDef.*;
-import uk.org.smithfamily.utils.normaliser.curveeditor.*;
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
+import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveLineLabel;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveXAxis;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveXBins;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveYAxis;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveYBins;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
-import uk.org.smithfamily.utils.normaliser.tableeditor.*;
-import uk.org.smithfamily.utils.normaliser.userdefined.*;
+import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
+import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
+import uk.org.smithfamily.utils.normaliser.tableeditor.PreProcessor;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableDefinition;
+import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
+import uk.org.smithfamily.utils.normaliser.tableeditor.UpDownLabel;
+import uk.org.smithfamily.utils.normaliser.tableeditor.XBins;
+import uk.org.smithfamily.utils.normaliser.tableeditor.YBins;
+import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedDefinition;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedField;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedPanel;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedTracker;
 
 public class Process
 {
@@ -555,9 +578,17 @@ public class Process
             String offset = bitsM.group(3);
             String start = bitsM.group(4);
             String end = bitsM.group(5);
+            
+            String strBitsValues = bitsM.group(7);
+            
+            String[] bitsValues = new String[]{};
+            if (strBitsValues != null)
+            {
+                bitsValues = Patterns.bitsValues.split(strBitsValues);
+            }
 
             Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start
-                    + ":" + end + "]", "", 1, 0, "0", "0", 0);
+                    + ":" + end + "]", "", 1, 0, "0", "0", 0, bitsValues);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
 
@@ -857,11 +888,11 @@ public class Process
         }
         else if (dialogDisplayOnlyField.matches())
         {
-            createDialogField(ecuData, dialogDisplayOnlyField, d, false);
+            createDialogField(ecuData, dialogDisplayOnlyField, d, true);
         }
         else if (dialogPanel.matches())
         {
-            UserDefinedPanel x = new UserDefinedPanel(dialogPanel.group(1), dialogPanel.group(2));
+            UserDefinedPanel x = new UserDefinedPanel(dialogPanel.group(1), dialogPanel.group(3));
             d.addItem(x);
         }
     }
@@ -872,9 +903,11 @@ public class Process
         final String name = dialogField.group(3);
         String expression = dialogField.group(5);
         String visibilityFlag = "ud_" + d.getName() + "_" + name + "_flg";
-        if(visibilityFlag.equals("ud_null_staged_extended_opts_simult_flg"))
+        if (visibilityFlag.equals("ud_null_staged_extended_opts_simult_flg"))
         {
-        	int x =1;
+            // Break point hook
+        	@SuppressWarnings("unused")
+            int x =1;
         }
         if (expression == null || StringUtils.isEmpty(expression))
         {
