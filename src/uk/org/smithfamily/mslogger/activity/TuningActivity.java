@@ -13,10 +13,10 @@ import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -174,8 +174,10 @@ public class TuningActivity extends Activity
         }
         else
         {
+            ecu.setVisibilityFlags();
+
             CurveEditor curve = ecu.getCurveEditorByName(name);
-            
+
             // It's a curve!
             if (curve != null)
             {
@@ -194,7 +196,19 @@ public class TuningActivity extends Activity
                 // No idea what it is, we're screwed!
                 else
                 {
-                    DebugLogManager.INSTANCE.log("Unsupported tuning object: " + name, Log.ERROR);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
+                    builder.setMessage("Cannot find anything named \"" + name + "\"")
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .setTitle("Missing component")
+                            .setCancelable(true)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {}
+                            });
+                    
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
         }

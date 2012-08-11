@@ -1015,4 +1015,9 @@ public abstract class Megasquirt
         return dialogs.get(name);
     }
     
+    public boolean getVisibilityFlagsByName(String name)
+    {
+        return visibilityFlags.get(name);
+    }
+    
 }
