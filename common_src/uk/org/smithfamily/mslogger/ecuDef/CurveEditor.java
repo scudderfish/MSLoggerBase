@@ -139,7 +139,7 @@ public class CurveEditor
         return gauge;
     }
 
-    public void setGauges(String gauge)
+    public void setGauge(String gauge)
     {
         this.gauge = gauge;
     }

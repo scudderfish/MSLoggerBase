@@ -12,7 +12,7 @@ public class UserDefinedField extends UserDefinedItem
     {
         this.label = label;
         this.name = name;
-        if(expression == null)
+        if (expression == null)
         {
         	expression = "true";
         }
@@ -39,10 +39,10 @@ public class UserDefinedField extends UserDefinedItem
 	{
 		return displayOnly;
 	}
+	
 	@Override
 	public String toString()
 	{
 		return String.format("d.addField(new DialogField(\"%s\",\"%s\",\"%s\",%s));", label, name, expression, displayOnly);
-	    
 	}
 }

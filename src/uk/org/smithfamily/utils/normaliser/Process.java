@@ -12,6 +12,7 @@ import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
+import uk.org.smithfamily.utils.normaliser.curveeditor.CurveGauge;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveLineLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurvePreProcessor;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
@@ -823,7 +824,7 @@ public class Process
         }
         else if (gauge.matches())
         {
-            CurveLineLabel x = new CurveLineLabel(gauge.group(1));
+            CurveGauge x = new CurveGauge(gauge.group(1));
             c.addItem(x);
         }
         else if (lineLabel.matches())

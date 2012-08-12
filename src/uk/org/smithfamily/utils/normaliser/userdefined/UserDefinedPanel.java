@@ -21,10 +21,10 @@ public class UserDefinedPanel extends UserDefinedItem
 	{
 		return orientation;
 	}
+	
 	@Override
 	public String toString()
 	{
 		return String.format("d.addPanel(new DialogPanel(\"%s\",\"%s\"));\n", name, orientation);
-	    
 	}
 }

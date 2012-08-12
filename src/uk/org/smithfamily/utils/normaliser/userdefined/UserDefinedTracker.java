@@ -21,7 +21,6 @@ public class UserDefinedTracker
 	public void setName(String name)
 	{
 		this.name = name;
-		
 	}
 
 	public String getName()
