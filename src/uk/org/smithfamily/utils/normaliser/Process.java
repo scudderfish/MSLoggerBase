@@ -841,22 +841,15 @@ public class Process
             d = dialogDefs.get(dialogDefs.size() - 1);
         }
 
-        if (d == null)
-        {
-            d = new UserDefinedTracker();
-            dialogDefs.add(d);
-        }
-
         if (dialog.matches())
         {
-            UserDefinedDefinition x = new UserDefinedDefinition(d, dialog.group(1), dialog.group(2));
-            if (d.isDefinitionCompleted())
-            {
-                d = new UserDefinedTracker();
-                dialogDefs.add(d);
-            }
-
+            String name = dialog.group(1);
+            d = new UserDefinedTracker();
+            dialogDefs.add(d);
+            UserDefinedDefinition x = new UserDefinedDefinition(d, name, dialog.group(2));
+            
             d.addItem(x);
+            d.setName(name);
         }
         else if (dialogField.matches())
         {

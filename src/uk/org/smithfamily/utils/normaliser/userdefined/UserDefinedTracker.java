@@ -28,9 +28,4 @@ public class UserDefinedTracker
 	{
 		return name;
 	}
-
-	public boolean isDefinitionCompleted()
-	{
-		return true;
-	}
 }
