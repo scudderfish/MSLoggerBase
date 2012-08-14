@@ -366,7 +366,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
-     * Triggered when the two bottoms button are clicked ("Burn" and "Cancel") 
+     * Triggered when one of the two bottoms button are clicked ("Burn" and "Cancel")
      * 
      * @param v The view that was clicked on
      */
