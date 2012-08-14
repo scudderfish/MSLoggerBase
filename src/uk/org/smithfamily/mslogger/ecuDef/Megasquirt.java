@@ -918,7 +918,7 @@ public abstract class Megasquirt
 
     }
 
-    public static double roundDouble(double number, int decimals)
+    public double roundDouble(double number, int decimals)
     {
         double p = (double) Math.pow(10,decimals);
         number = number * p;
@@ -930,13 +930,13 @@ public abstract class Megasquirt
     {
         double[][] destination = new double[width][height];
         int index = offset;
-        for(int y = 0 ; y < height ; y++)
+        for (int y = 0 ; y < height ; y++)
         {
-            for(int x = 0; x < width ; x++)
+            for (int x = 0; x < width ; x++)
             {
                 double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
                 value = (value + translate) * scale;
-                destination[x][y] = roundDouble(value, digits);
+                destination[x][y] = this.roundDouble(value, digits);
                 index = index + 1;
             }
         }
@@ -946,11 +946,11 @@ public abstract class Megasquirt
     {
         double[] destination = new double[width];
         int index = offset;
-        for(int x = 0; x < width ; x++)
+        for (int x = 0; x < width ; x++)
         {
             double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
             value = (value + translate) * scale;
-            destination[x] = roundDouble(value, digits);
+            destination[x] = this.roundDouble(value, digits);
             index = index + 1;
         }
         
@@ -961,13 +961,13 @@ public abstract class Megasquirt
     {
         double[][] destination = new double[width][height];
         int index = offset;
-        for(int y = 0 ; y < height ; y++)
+        for (int y = 0 ; y < height ; y++)
         {
-            for(int x = 0; x < width ; x++)
+            for (int x = 0; x < width ; x++)
             {
                 double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
                 value = (value + translate) * scale;
-                destination[x][y] = roundDouble(value, digits);
+                destination[x][y] = this.roundDouble(value, digits);
                 index = index + 2;
             }
         }
@@ -978,11 +978,11 @@ public abstract class Megasquirt
     {
         double[] destination = new double[width];
         int index = offset;
-        for(int x = 0; x < width ; x++)
+        for (int x = 0; x < width ; x++)
         {
             double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
             value = (value + translate) * scale;
-            destination[x] = roundDouble(value, digits);
+            destination[x] = this.roundDouble(value, digits);
             index = index + 2;
         }
         
@@ -1013,6 +1013,11 @@ public abstract class Megasquirt
     public MSDialog getDialogByName(String name)
     {
         return dialogs.get(name);
+    }
+    
+    public boolean getVisibilityFlagsByName(String name)
+    {
+        return visibilityFlags.get(name);
     }
     
 }
