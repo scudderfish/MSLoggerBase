@@ -14,7 +14,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
+import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
@@ -157,10 +157,13 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         final TextView yBinsLabel = (TextView) findViewById(R.id.yBinsLabel);
         yBinsLabel.setText(table.getyLabel());
         
-        // Apply animation on text view so it's vertical (90 degree rotation with 0ms duration animation)
-        RotateAnimation ranim = (RotateAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.verticaltextview);
-        ranim.setFillAfter(true);
-        yBinsLabel.setAnimation(ranim);
+        // Apply animation on text view so it's vertical (-90 degree rotation with 0ms duration animation)
+        RotateAnimation rotAnim = new RotateAnimation(0, -90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotAnim.setDuration(0);
+        rotAnim.setFillAfter(true); // stay at the last position of the animation
+        rotAnim.setFillEnabled(true);
+        
+        yBinsLabel.setAnimation(rotAnim);
         
         refreshCellsBackgroundColor();
         
