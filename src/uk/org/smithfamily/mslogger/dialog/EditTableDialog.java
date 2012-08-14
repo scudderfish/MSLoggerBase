@@ -32,6 +32,10 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     private int tableNbX = 0;
     private int tableNbY = 0;
     
+    // An array of 5 colors:  (blue, cyan, green, yellow, red) using {R,G,B} for each
+    final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
+    final int NUM_COLORS = 5;
+    
     /**
      * 
      * @param context
@@ -109,7 +113,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
                     @Override
                     public void afterTextChanged(Editable s)
                     {
-                        refreshCellsBackgroundColor();        
+                        refreshCellsBackgroundColor();
                     }
 
                     @Override
@@ -247,11 +251,6 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
      */
     private int getHeatMapColor(float value)
     {
-        final int NUM_COLORS = 5;
-        
-        // An array of 5 colors:  (blue, cyan, green, yellow, red) using {R,G,B} for each
-        float color[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
-       
         int idx1, idx2;
         
         // Fraction between "idx1" and "idx2" where our value is
@@ -267,21 +266,26 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         }
         else
         {
-          value = value * (NUM_COLORS - 1);        
-          idx1  = (int) FloatMath.floor(value);             
+          value = value * (NUM_COLORS - 1);
+          idx1  = (int) FloatMath.floor(value);
           idx2  = idx1 + 1;
           
           // Distance between the two indexes (0-1)
           fractBetween = value - (float) idx1;
         }
         
-        int red = (int) ((color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]);
-        int green = (int) ((color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]);
-        int blue = (int) ((color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]);
+        int red = (int) ((COLORS[idx2][0] - COLORS[idx1][0]) * fractBetween + COLORS[idx1][0]);
+        int green = (int) ((COLORS[idx2][1] - COLORS[idx1][1]) * fractBetween + COLORS[idx1][1]);
+        int blue = (int) ((COLORS[idx2][2] - COLORS[idx1][2]) * fractBetween + COLORS[idx1][2]);
         
         return Color.rgb(red, green, blue);
     }
     
+    /**
+     * Triggered when the two bottoms button are clicked ("Burn" and "Cancel") 
+     * 
+     * @param v The view that was clicked on
+     */
     @Override
     public void onClick(View v)
     {

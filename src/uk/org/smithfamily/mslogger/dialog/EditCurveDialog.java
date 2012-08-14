@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.chart.ChartFactory;
 import uk.org.smithfamily.mslogger.chart.GraphicalView;
@@ -11,7 +12,9 @@ import uk.org.smithfamily.mslogger.chart.model.TimeSeries;
 import uk.org.smithfamily.mslogger.chart.model.XYMultipleSeriesDataset;
 import uk.org.smithfamily.mslogger.chart.renderer.XYMultipleSeriesRenderer;
 import uk.org.smithfamily.mslogger.chart.renderer.XYSeriesRenderer;
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -35,6 +38,10 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
 {
     private CurveEditor curve;
     private GraphicalView mChartView;
+    private Megasquirt ecu;
+    
+    // The curve dataset
+    private XYMultipleSeriesDataset dataset;
     
     /**
      * 
@@ -44,8 +51,11 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     public EditCurveDialog(Context context, CurveEditor curve)
     {
         super(context);
-        
+
         this.curve = curve;
+        this.ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        this.dataset = new XYMultipleSeriesDataset();
     }
     
     /**
@@ -60,8 +70,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         
         setTitle("Edit " + curve.getLabel());
         
-        drawCurve();
         createTable();
+        drawCurve();
         
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);
@@ -80,6 +90,9 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     {
         TableLayout table = (TableLayout) findViewById(R.id.table);
         
+        // All columns should have the same width
+        table.setStretchAllColumns(true);
+        
         LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
         
         final int tableNbX = 2;
@@ -88,6 +101,9 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         // Column headers
         TableRow tableRow = new TableRow(getContext());
         tableRow.setLayoutParams(lp);
+        
+        Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
+        Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
         
         for (int x = 1; x <= tableNbX; x++)
         {
@@ -98,10 +114,22 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
             if (x == 1)
             {
                 label = curve.getxLabel();
+                
+                // Add units, if they exists
+                if (!xBinsConstant.getUnits().equals("")) 
+                {
+                    label += " (" + xBinsConstant.getUnits() + ")";
+                }
             }
             else
             {
                 label = curve.getyLabel();
+                
+                // Add units, if they exists
+                if (!yBinsConstant.getUnits().equals(""))
+                {
+                    label += " (" + yBinsConstant.getUnits() + ")";
+                }
             }
             
             columnHeader.setText(label);
@@ -111,8 +139,10 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
             tableRow.addView(columnHeader);
         }
         
+        // Add first row with the X and Y labels
         table.addView(tableRow,lp);
         
+        // Add all the X and Y values in two columns
         for (int y = 1; y <= tableNbY; y++)
         {
             tableRow = new TableRow(getContext());
@@ -124,6 +154,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
                 
                 double value;
                 
+                // x = 1 is the X column
+                // x = 2 is the Y column
                 if (x == 1)
                 {
                     value = curve.getxBins()[y - 1];
@@ -161,11 +193,10 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     }
     
     /**
-     * 
+     * Draw the actual curve
      */
     private void drawCurve()
     {
-        String[] titles = {"Curve"};
         int colors[] = {Color.rgb(255, 0, 0)};
         
         double[] xAxis = curve.getxAxis();
@@ -177,13 +208,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         double minYaxis = yAxis[0];
         double maxYaxis = yAxis[1];
         
-        List<double[]> x = new ArrayList<double[]>();
-        List<double[]> values = new ArrayList<double[]>();
-        
-        x.add(curve.getxBins());
-        values.add(curve.getyBins());
-        
-        XYMultipleSeriesRenderer renderer = buildRenderer(titles.length, colors);
+        XYMultipleSeriesRenderer renderer = buildRenderer(1, colors);
         setChartSettings(renderer, "", "", "", minXaxis, maxXaxis, minYaxis, maxYaxis, Color.GRAY, Color.LTGRAY);
         
         renderer.setXTitle(curve.getxLabel());
@@ -196,16 +221,68 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         renderer.setZoomEnabled(true);
         renderer.setShowLegend(false);
         
+        // Make sure the curve points are filled
+        int length = renderer.getSeriesRendererCount();
+        for (int i = 0; i < length; i++) {
+          ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
+        }
+        
         LinearLayout layout = (LinearLayout) findViewById(R.id.curve);
 
         if (mChartView == null)
         {
-            mChartView = ChartFactory.getLineChartView(getContext(), buildDateDataset(titles, x, values), renderer);     
+            updateDataset();
+            mChartView = ChartFactory.getLineChartView(getContext(), dataset, renderer);     
             
             layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         }
         else
         {
+            mChartView.repaint();
+        }
+    }
+    
+    /**
+     * Function called to update the chart dataset with values that are in the table
+     */
+    private void updateDataset()
+    {
+        boolean isUpdate = false;
+        
+        // If it's not the first time we're building the dataset, remove the old one first
+        if (dataset.getSeries().length > 0)
+        {
+            dataset.removeSeries(0);
+            
+            isUpdate = true;
+        }
+        
+        List<double[]> x = new ArrayList<double[]>();
+        List<double[]> values = new ArrayList<double[]>();
+        
+        double[] xBins = new double[curve.getxBins().length];
+        double[] yBins = new double[curve.getyBins().length];
+        
+        // Build the arrays of values from the EditTexts
+        for (int i = 0; i < curve.getxBins().length; i++)
+        {
+            EditText edit = (EditText) findViewById(getCellId(1,i + 1));
+            xBins[i] = Double.valueOf(edit.getText().toString());
+            
+            edit = (EditText) findViewById(getCellId(2,i + 1));
+            yBins[i] = Double.valueOf(edit.getText().toString());
+        }
+        
+        x.add(xBins);
+        values.add(yBins);
+        
+        // Create the new dataset
+        buildDateDataset(new String[]{""}, x, values);
+        
+        // If it's not the first time we're doing this, trigger a refresh of the curve
+        if (isUpdate)
+        {
+            mChartView.refreshDrawableState();
             mChartView.repaint();
         }
     }
@@ -218,25 +295,18 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
      * @param yValues the values for the Y axis
      * @return the XY multiple time dataset
      */
-    protected XYMultipleSeriesDataset buildDateDataset(String[] titles, List<double[]> xValues, List<double[]> yValues)
+    protected void buildDateDataset(String[] titles, List<double[]> xValues, List<double[]> yValues)
     {
-        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-        
-        int length = titles.length;
-        for (int i = 0; i < length; i++)
+        TimeSeries series = new TimeSeries(titles[0]);
+        double[] xV = xValues.get(0);
+        double[] yV = yValues.get(0);
+        int seriesLength = xV.length;
+        for (int k = 0; k < seriesLength; k++)
         {
-            TimeSeries series = new TimeSeries(titles[i]);
-            double[] xV = xValues.get(i);
-            double[] yV = yValues.get(i);
-            int seriesLength = xV.length;
-            for (int k = 0; k < seriesLength; k++)
-            {
-                series.add(xV[k], yV[k]);
-            }
-            dataset.addSeries(series);
+            series.add(xV[k], yV[k]);
         }
         
-        return dataset;
+        dataset.addSeries(series);
     }
     
     /**
@@ -272,7 +342,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         {
             XYSeriesRenderer r = new XYSeriesRenderer();
             r.setColor(colors[i]);
-            r.setPointStyle(PointStyle.POINT);
+            r.setPointStyle(PointStyle.CIRCLE);
             renderer.addSeriesRenderer(r);
         }
     }
@@ -305,7 +375,9 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     }
     
     /**
-     * @param v
+     * Triggered when the two bottoms button are clicked ("Burn" and "Cancel") 
+     * 
+     * @param v The view that was clicked on
      */
     @Override
     public void onClick(View v)

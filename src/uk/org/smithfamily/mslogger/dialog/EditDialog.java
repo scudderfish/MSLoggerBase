@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
@@ -22,7 +23,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -32,8 +33,9 @@ import android.widget.TextView;
 public class EditDialog extends Dialog implements android.view.View.OnClickListener
 {
     private MSDialog dialog;
-    private LinearLayout content;
+    private RelativeLayout content;
     private Megasquirt ecu;
+    private int nbPanels = 0;
     
     /**
      * Constructor for dialog which set the current dialog and ECU object
@@ -59,7 +61,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         setContentView(R.layout.editdialog);
         
-        content = (LinearLayout) findViewById(R.id.content);
+        content = (RelativeLayout) findViewById(R.id.content);
         
         setTitle(dialog.getLabel());
         
@@ -69,7 +71,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         Button buttonCancel = (Button) findViewById(R.id.cancel);
         buttonCancel.setOnClickListener(this);
         
-        drawDialogFields(dialog, false);
+        drawDialogFields(dialog, false, "");
         
         // Hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -81,16 +83,61 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * 
      * @param dialog
      * @param isPanel
+     * @param orientation
      */
-    private void drawDialogFields(MSDialog dialog, boolean isPanel)
+    private void drawDialogFields(MSDialog dialog, boolean isPanel, String orientation)
     {
         TableLayout tl = new TableLayout(getContext());
         LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        
+
+        // Used on label in table row with field beside label, add a margin right
+        // so the label and field are separated
         LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.span = 2;
+        lpSpan.setMargins(0, 0, 8, 0);
+
+        // Used on label in table row with no field beside
+        // Those are usually used as separator so add top and bottom margins
+        LayoutParams lpSpanWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpSpanWithMargins.setMargins(0, 10, 0, 15);
+        lpSpanWithMargins.span = 2;
+        
+        tl.setId(nbPanels);
+        
+        // This is not the first panel we add on this dialog
+        if (nbPanels > 0)
+        {
+            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+            
+            /*
+            if (orientation.equals("North"))
+            {
+                tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
+                tl.setPadding(0, 0, 0, 10);
+            }
+            else if (orientation.equals("South"))
+            {
+                tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
+                tl.setPadding(0, 10, 0, 0);
+            }
+            else if (orientation.equals("West"))
+            {
+                tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
+                tl.setPadding(0, 0, 10, 0);
+            }
+            else
+            {
+                tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
+                tl.setPadding(10, 0, 0, 0);
+            }*/
+            
+            tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
+            tl.setPadding(10, 0, 0, 0);
+            
+            tl.setLayoutParams(tlp);
+        }
         
         content.addView(tl);
+        nbPanels++;
         
         TableRow tableRow;
         
@@ -123,6 +170,17 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 
                 TextView label = new TextView(getContext());
                 label.setText(labelText);
+                
+                // If the first character of the label is a #, we need to highlight that label
+                // It means it is used as a section separator
+                if (labelText.length() > 0 && labelText.substring(0,1).equals("#"))
+                {
+                    label.setText(" " + label.getText().toString().substring(1)); // Replace the # by a space
+                    label.setBackgroundColor(Color.rgb(110, 110, 110));
+                }
+                
+                label.setLayoutParams(lpSpan);
+                
                 tableRow.addView(label);
                 
                 // For empty label or empty field name, we just insert an empty text view as second column of the row
@@ -130,7 +188,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 {
                     // No second column so label is used to separate so make it bold and merge columns
                     label.setTypeface(null, Typeface.BOLD);
-                    label.setLayoutParams(lpSpan);
+                    
+                    // If it's not an empty label and not , add some top and bottom margins
+                    if (!df.getLabel().equals(""))
+                    {
+                        label.setLayoutParams(lpSpanWithMargins);
+                    }
                 }
                 else 
                 {
@@ -231,7 +294,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-              drawDialogFields(dialogPanel, true);
+              drawDialogFields(dialogPanel, true, dp.getOrientation());
             }
             else
             {

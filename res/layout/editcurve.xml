@@ -18,13 +18,13 @@
 			android:layout_height="fill_parent"
 		    android:orientation="vertical"
 		    android:id="@+id/curve"
-		    android:layout_weight="88" />
+		    android:layout_weight="85" />
 		
 		<TableLayout
 		        android:layout_width="0dp"
 		        android:layout_height="fill_parent" 
 		        android:id="@+id/table"
-		        android:layout_weight="12"
+		        android:layout_weight="15"
 		        android:gravity="bottom"
 		        android:layout_marginBottom="25dp" />
 	</LinearLayout>

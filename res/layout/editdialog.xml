@@ -15,11 +15,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 	    
-	    	<LinearLayout
+	    	<RelativeLayout
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:id="@+id/content">
-			</LinearLayout>
+			</RelativeLayout>
 		</HorizontalScrollView>
 	</ScrollView>
     
