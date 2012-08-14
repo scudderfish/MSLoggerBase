@@ -223,7 +223,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         
         // Make sure the curve points are filled
         int length = renderer.getSeriesRendererCount();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++)
+        {
           ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
         }
         
