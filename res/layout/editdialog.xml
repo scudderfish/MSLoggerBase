@@ -4,15 +4,23 @@
 	android:layout_height="fill_parent" android:weightSum="100"
 	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 	
-	<ScrollView android:id="@+id/scrollView1"
-		android:layout_weight="100" android:layout_width="match_parent"
+	<ScrollView
+	    android:id="@+id/scrollView1"
+		android:layout_weight="100"
+		android:layout_width="match_parent"
 		android:layout_height="0px">
 		
-    	<LinearLayout
+		<HorizontalScrollView 
+            android:id="@+id/horizontalView" 
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/content">
-		</LinearLayout>
+            android:layout_height="wrap_content">
+	    
+	    	<RelativeLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:id="@+id/content">
+			</RelativeLayout>
+		</HorizontalScrollView>
 	</ScrollView>
     
 	<LinearLayout
@@ -21,12 +29,18 @@
 		android:layout_width="fill_parent"
 		android:paddingTop="5dp">
 		
-		<Button android:text="@string/bt_burn" android:id="@+id/burn"
-			android:layout_weight="1" android:layout_width="fill_parent"
+		<Button
+		    android:text="@string/bt_burn"
+		    android:id="@+id/burn"
+			android:layout_weight="1"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
 		
-		<Button android:text="@string/bt_cancel" android:id="@+id/cancel"
-			android:layout_weight="1" android:layout_width="fill_parent"
+		<Button
+		    android:text="@string/bt_cancel"
+		    android:id="@+id/cancel"
+			android:layout_weight="1"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
 	</LinearLayout>
     
