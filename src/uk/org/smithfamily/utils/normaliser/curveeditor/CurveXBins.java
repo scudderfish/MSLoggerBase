@@ -46,6 +46,6 @@ public class CurveXBins extends CurveItem
     @Override
     public String toString()
     {
-        return String.format("c.setXBins(%s,%s,%s);", bins1, bins2, readOnly);
+        return String.format("c.setXBins(%s,\"%s\",%s,%s);", bins1, bins1, bins2, readOnly);
     }
 }

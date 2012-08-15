@@ -22,6 +22,6 @@ public class CurveYBins extends CurveItem
     @Override
     public String toString()
     {
-        return String.format("c.setYBins(%s);", bins);
+        return String.format("c.setYBins(%s,\"%s\");", bins, bins);
     }
 }

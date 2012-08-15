@@ -53,7 +53,7 @@
             fork="true"
             includeantruntime="false"
             memoryinitialsize="256m"
-            memorymaximumsize="256m"
+            memorymaximumsize="512m"
             srcdir="gen_src" />
 	</target>
 	

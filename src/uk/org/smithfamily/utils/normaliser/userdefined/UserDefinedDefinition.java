@@ -22,10 +22,10 @@ public class UserDefinedDefinition extends UserDefinedItem
 	{
 		return label;
 	}
+	
 	@Override
 	public String toString()
 	{
         return String.format("d = new MSDialog(\"%s\",\"%s\"); dialogs.put(\"%s\",d);",name,label,name);
-
 	}
 }

@@ -338,6 +338,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setVisibilityFlags()");
         writer.println(TAB + "{");
+        writer.println(TAB + TAB + "visibilityFlags = new HashMap<String,Boolean>();");
         
         for (String key : ecuData.getFieldControlExpressions().keySet())
         {

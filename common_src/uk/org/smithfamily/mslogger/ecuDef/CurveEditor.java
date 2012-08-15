@@ -11,10 +11,12 @@ public class CurveEditor
     private double[]        xAxis;
     private double[]        yAxis;
     private double[]        xBins;
+    private String          xBinsName;
     private double          xBins2;
     private String          xLabel;
     private boolean         xReadOnly;
     private double[]        yBins;
+    private String          yBinsName;
     private String          yLabel;
     private String          gauge;
     private List<String>    lineLabel = new ArrayList<String>();
@@ -66,21 +68,28 @@ public class CurveEditor
         this.yAxis = yAxis;
     }
     
-    public void setXBins(double[] bins, double bins2, boolean b)
+    public void setXBins(double[] bins, String binsName, double bins2, boolean b)
     {
         this.xBins = bins;
+        this.xBinsName = binsName;
         this.xBins2 = bins2;
         this.xReadOnly = b;
     }
 
-    public void setYBins(double[] bins)
+    public void setYBins(double[] bins, String binsName)
     {
         this.yBins = bins;
+        this.yBinsName = binsName;
     }
     
     public double[] getxBins()
     {
         return xBins;
+    }
+    
+    public String getxBinsName()
+    {
+        return xBinsName;
     }
     
     public double getxBins2()
@@ -112,6 +121,11 @@ public class CurveEditor
     {
         return yBins;
     }
+    
+    public String getyBinsName()
+    {
+        return yBinsName;
+    }
 
     public void setyLabel(String yLabel)
     {
@@ -139,7 +153,7 @@ public class CurveEditor
         return gauge;
     }
 
-    public void setGauges(String gauge)
+    public void setGauge(String gauge)
     {
         this.gauge = gauge;
     }
@@ -157,8 +171,8 @@ public class CurveEditor
     @Override
     public String toString()
     {
-        return "CurveEditor [name=" + name + ", label=" + label + ", xAxis=" + Arrays.toString(xAxis) + ", yAxis=" + Arrays.toString(yAxis) + ", xBins=" + Arrays.toString(xBins) + ", xBins2=" + xBins2 + ", xLabel=" + xLabel + ", xReadOnly="
-                + xReadOnly + ", yBins=" + Arrays.toString(yBins) + ", yLabel=" + yLabel + ", gauge=" + gauge + ", lineLabel=" + lineLabel + ", yLabel2=" + yLabel2 + "]";
+        return "CurveEditor [name=" + name + ", label=" + label + ", xAxis=" + Arrays.toString(xAxis) + ", yAxis=" + Arrays.toString(yAxis) + ", xBins=" + Arrays.toString(xBins) + ", xBinsName=" + xBinsName + ", xBins2=" + xBins2 + ", xLabel="
+                + xLabel + ", xReadOnly=" + xReadOnly + ", yBins=" + Arrays.toString(yBins) + ", yBinsName=" + yBinsName + ", yLabel=" + yLabel + ", gauge=" + gauge + ", lineLabel=" + lineLabel + ", yLabel2=" + yLabel2 + "]";
     }
     
 }
