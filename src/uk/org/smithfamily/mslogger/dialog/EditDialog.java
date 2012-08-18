@@ -213,118 +213,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     // Multi-choice constant
                     if (constant.getClassType().equals("bits"))
                     {
-                        Spinner spin = new Spinner(getContext());
-                        
-                        // Field is ready only or disabled
-                        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
-                        {
-                            spin.setEnabled(false);
-                        }
-                        
-                        /*
-                        // Remove INVALID from values
-                        List<String> valuesWithoutInvalid = new ArrayList<String>();
-                        for (int i = 0; i < constant.getValues().length; i++)
-                        {
-                            String value = constant.getValues()[i];
-                            if (!value.equals("INVALID"))
-                            {
-                                valuesWithoutInvalid.add(value);
-                            }
-                        }
-                        
-                        valuesWithoutInvalid.toArray(new String[valuesWithoutInvalid.size()])
-                        */
-                        
-                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, constant.getValues());
-                        
-                        // Specify the layout to use when the list of choices appears
-                        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        
-                        spin.setAdapter(spinAdapter);
-                        
-                        int selectedValue = (int) ecu.getField(df.getName());                        
-                        spin.setSelection(selectedValue);
-                        spin.setTag(df.getName());
-                        
-                        final MSDialog msDialog = this.dialog;
-                        
-                        spin.setOnItemSelectedListener(new OnItemSelectedListener()
-                        {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
-                            {
-                                String constantName = parentView.getTag().toString();
-                                
-                                long value = parentView.getSelectedItemPosition();
-                                
-                                // Value changed, update field in ECU class
-                                if (ecu.getField(constantName) != value)
-                                {
-                                    // Constant has been modified and will need to be burn to ECU
-                                    Constant constant = ecu.getConstantByName(constantName);
-                                    constant.setModified(true);
-                                    
-                                    // Update ecu field with new value
-                                    ecu.setField(constantName, value); 
-                                    
-                                    // Re-evaluate the expressions with the data updated
-                                    ecu.setVisibilityFlags();
-                                    
-                                    // Refresh the UI
-                                    refreshFieldsVisibility(msDialog);
-                                }
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parentView){}
-                        });
+                        Spinner spin = buildMultiValuesConstantField(df, constant);
                         
                         tableRow.addView(spin);
                     }
                     // Single value constant
                     else
                     {
-                        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
-                        String displayedValue = "";
-                        
-                        if (constant.getDigits() == 0)
-                        {
-                            displayedValue = String.valueOf((int) constantValue);
-                        }
-                        else
-                        {
-                            displayedValue = String.valueOf(constantValue);
-                        }
+                        EditText edit = buildSingleValueConstantField(df, constant);
 
-                        EditText edit = new EditText(getContext());
-                        edit.setText(displayedValue);
-                        edit.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                        edit.setSingleLine(true);
-                        edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                        edit.setPadding(8, 5, 8, 5);
-                        edit.setTag(df.getName());
-                        edit.addTextChangedListener(new TextWatcher()
-                        {
-                            @Override
-                            public void afterTextChanged(Editable s)
-                            {
-
-                            }
-
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-                            
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count){}                
-                        });
-                        
-                        // Field is ready only or disabled
-                        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
-                        {
-                            edit.setEnabled(false);
-                        }
-                        
                         tableRow.addView(edit);
                     }
                 }
@@ -354,6 +251,146 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
               //
             }
         }
+    }
+    
+    /**
+     * Build an EditText for displaying single value constant
+     * 
+     * @param df The dialog field to build the display for
+     * @param constant The constant associated with the dialog field
+     * @return The EditText that can be displayed
+     */
+    private EditText buildSingleValueConstantField(DialogField df, Constant constant)
+    {
+        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
+        String displayedValue = "";
+        
+        if (constant.getDigits() == 0)
+        {
+            displayedValue = String.valueOf((int) constantValue);
+        }
+        else
+        {
+            displayedValue = String.valueOf(constantValue);
+        }
+        
+        EditText edit = new EditText(getContext());
+        edit.setText(displayedValue);
+        edit.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        edit.setSingleLine(true);
+        edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        edit.setPadding(8, 5, 8, 5);
+        edit.setTag(df.getName());
+        edit.addTextChangedListener(new TextWatcher()
+        {
+            /**
+             * Set the constant to modified when value is changed
+             * 
+             * @param s
+             */
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                EditText edit = (EditText) getCurrentFocus();
+                String constantName = edit.getTag().toString();
+                
+                Constant constant = ecu.getConstantByName(constantName);
+                constant.setModified(true);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){}                
+        });
+        
+        // Field is ready only or disabled
+        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
+        {
+            edit.setEnabled(false);
+        }
+        
+        return edit;
+    }
+    
+    /**
+     *  Build a Spinner for displaying multi values constant
+     *
+     * @param df The dialog field to build the display for
+     * @param constant The constant associated with the dialog field
+     * @return The Spinner that can be displayed
+     */    
+    private Spinner buildMultiValuesConstantField(DialogField df, Constant constant)
+    {
+        Spinner spin = new Spinner(getContext());
+        
+        // Field is ready only or disabled
+        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
+        {
+            spin.setEnabled(false);
+        }
+        
+        /*
+        // Remove INVALID from values
+        List<String> valuesWithoutInvalid = new ArrayList<String>();
+        for (int i = 0; i < constant.getValues().length; i++)
+        {
+            String value = constant.getValues()[i];
+            if (!value.equals("INVALID"))
+            {
+                valuesWithoutInvalid.add(value);
+            }
+        }
+        
+        valuesWithoutInvalid.toArray(new String[valuesWithoutInvalid.size()])
+        */
+        
+        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, constant.getValues());
+        
+        // Specify the layout to use when the list of choices appears
+        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        spin.setAdapter(spinAdapter);
+        
+        int selectedValue = (int) ecu.getField(df.getName());                        
+        spin.setSelection(selectedValue);
+        spin.setTag(df.getName());
+        
+        final MSDialog msDialog = this.dialog;
+        
+        spin.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                String constantName = parentView.getTag().toString();
+                
+                long value = parentView.getSelectedItemPosition();
+                
+                // Value changed, update field in ECU class
+                if (ecu.getField(constantName) != value)
+                {
+                    // Constant has been modified and will need to be burn to ECU
+                    Constant constant = ecu.getConstantByName(constantName);
+                    constant.setModified(true);
+                    
+                    // Update ecu field with new value
+                    ecu.setField(constantName, value); 
+                    
+                    // Re-evaluate the expressions with the data updated
+                    ecu.setVisibilityFlags();
+                    
+                    // Refresh the UI
+                    refreshFieldsVisibility(msDialog);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView){}
+        });
+        
+        return spin;
     }
     
     /**
@@ -443,6 +480,24 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
+     * Burn the change to the ECU
+     */
+    private void burnToECU()
+    {
+        for (String constantName : ecu.getAllConstantsNamesForDialog(dialog))
+        {
+            Constant constant = ecu.getConstantByName(constantName);
+            
+            if (constant.isModified())
+            {
+                System.out.println("Constant \"" + constantName + "\" was modified, need to write change to ECU");
+                
+                constant.setModified(false);
+            }
+        }
+    }
+    
+    /**
      * Triggered when one of the two bottoms button are clicked ("Burn" and "Cancel")
      * 
      * @param v The view that was clicked on
@@ -454,7 +509,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         if (which == R.id.burn)
         {
-            
+            burnToECU();
         }
         else if (which == R.id.cancel)
         {

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1040,5 +1041,46 @@ public abstract class Megasquirt
     {
         return visibilityFlags.get(name);
     }
-    
+  
+    /**
+     * Used to get a list of all constants name used in a specific dialog
+     * 
+     * @param dialog The dialog to get the list of constants name
+     * @return A list of constants name
+     */
+    public List<String> getAllConstantsNamesForDialog(MSDialog dialog)
+    {
+        List<String> constants = new ArrayList<String>();
+        return buildListOfConstants(constants, dialog);
+    }
+
+    /**
+     * Helper function for getAllConstantsNamesForDialog() which builds the array of constants name
+     * 
+     * @param constants
+     * @param dialog
+     */
+    private List<String> buildListOfConstants(List<String> constants, MSDialog dialog)
+    {       
+        for (DialogField df : dialog.getFieldsList())
+        {
+            if (!df.getName().equals("null"))
+            {
+                constants.add(df.getName());
+            }
+        }
+        
+        for (DialogPanel dp : dialog.getPanelsList())
+        {
+            MSDialog dialogPanel = this.getDialogByName(dp.getName());
+            
+            if (dialogPanel != null)
+            {
+                buildListOfConstants(constants, dialogPanel);
+            }
+        }
+        
+        return constants;
+    }
+
 }
