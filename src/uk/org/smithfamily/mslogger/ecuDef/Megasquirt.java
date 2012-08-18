@@ -900,22 +900,43 @@ public abstract class Megasquirt
 
     public double getField(String channelName)
     {
+        double value = 0;
+        Class<?> c = this.getClass();
+        try
         {
-            double value = 0;
-            Class<?> c = this.getClass();
-            try
-            {
-                Field f = c.getDeclaredField(channelName);
-                value = f.getDouble(this);
-            }
-            catch (Exception e)
-            {
-                DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
-                Log.e(ApplicationSettings.TAG, "Megasquirt.getValue()", e);
-            }
-            return value;
+            Field f = c.getDeclaredField(channelName);
+            value = f.getDouble(this);
         }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.getField()", e);
+        }
+        return value;
+    }
+    
+    public void setField(String channelName, double value)
+    {
+        Class<?> c = this.getClass();
 
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            
+            if (f.getType().toString().equals("int"))
+            {
+                f.setInt(this, (int) value);
+            }
+            else
+            {
+                f.setDouble(this, value); 
+            }
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.setFeidl()", e);
+        }
     }
 
     public double roundDouble(double number, int decimals)

@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
@@ -107,33 +109,42 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         if (nbPanels > 0)
         {
             RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-            
+
             /*
             if (orientation.equals("North"))
             {
                 tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
                 tl.setPadding(0, 0, 0, 10);
+                System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
             }
             else if (orientation.equals("South"))
             {
                 tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
                 tl.setPadding(0, 10, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
             }
             else if (orientation.equals("West"))
             {
                 tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
                 tl.setPadding(0, 0, 10, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
             }
             else
             {
                 tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
                 tl.setPadding(10, 0, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
             }*/
             
             tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
             tl.setPadding(10, 0, 0, 0);
             
             tl.setLayoutParams(tlp);
+        }
+        else {
+            System.out.println("PANEL first at " + nbPanels + ": " + dialog.getName());
         }
         
         content.addView(tl);
@@ -236,12 +247,33 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         spin.setSelection(selectedValue);
                         spin.setTag(df.getName());
                         
+                        final MSDialog msDialog = this.dialog;
+                        
                         spin.setOnItemSelectedListener(new OnItemSelectedListener()
                         {
                             @Override
                             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
                             {
-                                refreshFieldsVisibility();
+                                String constantName = parentView.getTag().toString();
+                                
+                                long value = parentView.getSelectedItemPosition();
+                                
+                                // Value changed, update field in ECU class
+                                if (ecu.getField(constantName) != value)
+                                {
+                                    // Constant has been modified and will need to be burn to ECU
+                                    Constant constant = ecu.getConstantByName(constantName);
+                                    constant.setModified(true);
+                                    
+                                    // Update ecu field with new value
+                                    ecu.setField(constantName, value); 
+                                    
+                                    // Re-evaluate the expressions with the data updated
+                                    ecu.setVisibilityFlags();
+                                    
+                                    // Refresh the UI
+                                    refreshFieldsVisibility(msDialog);
+                                }
                             }
 
                             @Override
@@ -272,6 +304,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
                         edit.setPadding(8, 5, 8, 5);
                         edit.setTag(df.getName());
+                        edit.addTextChangedListener(new TextWatcher()
+                        {
+                            @Override
+                            public void afterTextChanged(Editable s)
+                            {
+
+                            }
+
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+                            
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count){}                
+                        });
                         
                         // Field is ready only or disabled
                         if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
@@ -355,14 +401,45 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         AlertDialog alert = builder.create();
         alert.show();  
     }
-    
+        
     /**
      * When value are changed, it's possible dialog fields change state
-     * so we need to refresh fields visibility and reply them
+     * so we need to refresh fields visibility and re-apply them recursivly 
+     * on all the panels
      */
-    private void refreshFieldsVisibility()
+    private void refreshFieldsVisibility(MSDialog dialog)
     {
-       
+        for (DialogField df : dialog.getFieldsList())
+        {
+            Constant constant = ecu.getConstantByName(df.getName());
+            
+            if (constant != null)
+            {
+                // Field is not ready only and not disabled
+                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getVisibilityFlagsByName(df.getExpression());
+                
+                if (constant.getClassType().equals("bits"))
+                {
+                    Spinner spin = (Spinner) content.findViewWithTag(df.getName());
+                    spin.setEnabled(isFieldEnabled);
+                }
+                else
+                {
+                    EditText edit = (EditText) content.findViewWithTag(df.getName());
+                    edit.setEnabled(isFieldEnabled);
+                }
+            }
+        }
+        
+        for (DialogPanel dp : dialog.getPanelsList())
+        {
+            MSDialog dialogPanel = ecu.getDialogByName(dp.getName());
+            
+            if (dialogPanel != null)
+            {
+                refreshFieldsVisibility(dialogPanel);
+            }
+        }
     }
     
     /**
