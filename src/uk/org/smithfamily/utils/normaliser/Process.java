@@ -942,10 +942,15 @@ public class Process
             {
                 statement = "int ";
             }
+            
             statement += definition[0] + " = " + definition[1] + ";";
             ecuData.getDefaults().add(statement);
         }
-
+        else if (line.contains("requiresPowerCycle"))
+        {      
+            String field = line.split("=")[1];
+            ecuData.getRequiresPowerCycle().add(field.trim());
+        }
     }
 
     static void processPcVariables(ECUData ecuData, String line)

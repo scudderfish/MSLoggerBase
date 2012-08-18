@@ -209,6 +209,23 @@ public class Output
 
     }
 
+    static void outputRequiresPowerCycle(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println("\n    //Fields that requires power cycle");
+        
+        writer.println("    public List<String> getRequiresPowerCycle()");
+        writer.println("    {");
+        writer.println(TAB + TAB + "List<String> requiresPowerCycle = new ArrayList<String>();");
+        
+        for (String field : ecuData.getRequiresPowerCycle())
+        {
+            writer.println(TAB + TAB + "requiresPowerCycle.add(\"" + field + "\");");
+        }
+        
+        writer.println(TAB + TAB + "return requiresPowerCycle;"); 
+        writer.println(TAB + "}\n");
+    }
+    
     static void outputRTCalcs(ECUData ecuData, PrintWriter writer)
     {
         writer.println("    @Override");

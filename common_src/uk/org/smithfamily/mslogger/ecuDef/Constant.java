@@ -15,6 +15,8 @@ public class Constant
     private String     low;
     private String     name;
     private String[]   values;
+    
+    private boolean    modified;
 
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
             double translate, double low, double high, int digits, String[] values)
@@ -200,5 +202,15 @@ public class Constant
                 digits,
                 valuesOutput);
                 
+    }
+
+    public boolean isModified()
+    {
+        return modified;
+    }
+
+    public void setModified(boolean modified)
+    {
+        this.modified = modified;
     }
 }

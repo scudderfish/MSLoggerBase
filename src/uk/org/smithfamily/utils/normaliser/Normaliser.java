@@ -292,6 +292,7 @@ public class Normaliser
         writer.println(TAB + ecuData.getOchGetCommandStr());
         writer.println(TAB + ecuData.getOchBlockSizeStr());
         Output.outputGlobalVars(ecuData,writer);
+        Output.outputRequiresPowerCycle(ecuData,writer);
         Output.outputRTCalcs(ecuData,writer);
         Output.outputLogInfo(ecuData,writer);
         Output.outputGauges(ecuData,writer);
