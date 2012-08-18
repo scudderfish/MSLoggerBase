@@ -95,7 +95,6 @@ public class TuningActivity extends Activity
                 
                 b.setOnClickListener(new OnClickListener()
                 {
-                    
                     @Override
                     public void onClick(View v)
                     {    
@@ -130,7 +129,6 @@ public class TuningActivity extends Activity
         
         Button b = (Button) v;
         int indexMenu = Integer.parseInt(b.getTag().toString());
-
         
         MenuDefinition menuDef = menus.get(indexMenu);
         List<SubMenuDefinition> subMenus = menuDef.getSubMenus();
@@ -197,9 +195,9 @@ public class TuningActivity extends Activity
                 else
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
-                    builder.setMessage("Cannot find anything named \"" + name + "\"")
+                    builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
                             .setIcon(android.R.drawable.ic_dialog_info)
-                            .setTitle("Missing component")
+                            .setTitle("Unsupported")
                             .setCancelable(true)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener()
                             {
