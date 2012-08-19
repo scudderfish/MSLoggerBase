@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
@@ -107,33 +109,42 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         if (nbPanels > 0)
         {
             RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-            
+
             /*
             if (orientation.equals("North"))
             {
                 tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
                 tl.setPadding(0, 0, 0, 10);
+                System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
             }
             else if (orientation.equals("South"))
             {
                 tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
                 tl.setPadding(0, 10, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
             }
             else if (orientation.equals("West"))
             {
                 tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
                 tl.setPadding(0, 0, 10, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
             }
             else
             {
                 tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
                 tl.setPadding(10, 0, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
             }*/
             
             tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
             tl.setPadding(10, 0, 0, 0);
             
             tl.setLayoutParams(tlp);
+        }
+        else {
+            System.out.println("PANEL first at " + nbPanels + ": " + dialog.getName());
         }
         
         content.addView(tl);
@@ -202,83 +213,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     // Multi-choice constant
                     if (constant.getClassType().equals("bits"))
                     {
-                        Spinner spin = new Spinner(getContext());
-                        
-                        // Field is ready only or disabled
-                        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
-                        {
-                            spin.setEnabled(false);
-                        }
-                        
-                        /*
-                        // Remove INVALID from values
-                        List<String> valuesWithoutInvalid = new ArrayList<String>();
-                        for (int i = 0; i < constant.getValues().length; i++)
-                        {
-                            String value = constant.getValues()[i];
-                            if (!value.equals("INVALID"))
-                            {
-                                valuesWithoutInvalid.add(value);
-                            }
-                        }
-                        
-                        valuesWithoutInvalid.toArray(new String[valuesWithoutInvalid.size()])
-                        */
-                        
-                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, constant.getValues());
-                        
-                        // Specify the layout to use when the list of choices appears
-                        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        
-                        spin.setAdapter(spinAdapter);
-                        
-                        int selectedValue = (int) ecu.getField(df.getName());                        
-                        spin.setSelection(selectedValue);
-                        spin.setTag(df.getName());
-                        
-                        spin.setOnItemSelectedListener(new OnItemSelectedListener()
-                        {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
-                            {
-                                refreshFieldsVisibility();
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parentView){}
-                        });
+                        Spinner spin = buildMultiValuesConstantField(df, constant);
                         
                         tableRow.addView(spin);
                     }
                     // Single value constant
                     else
                     {
-                        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
-                        String displayedValue = "";
-                        
-                        if (constant.getDigits() == 0)
-                        {
-                            displayedValue = String.valueOf((int) constantValue);
-                        }
-                        else
-                        {
-                            displayedValue = String.valueOf(constantValue);
-                        }
+                        EditText edit = buildSingleValueConstantField(df, constant);
 
-                        EditText edit = new EditText(getContext());
-                        edit.setText(displayedValue);
-                        edit.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                        edit.setSingleLine(true);
-                        edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                        edit.setPadding(8, 5, 8, 5);
-                        edit.setTag(df.getName());
-                        
-                        // Field is ready only or disabled
-                        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
-                        {
-                            edit.setEnabled(false);
-                        }
-                        
                         tableRow.addView(edit);
                     }
                 }
@@ -308,6 +251,146 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
               //
             }
         }
+    }
+    
+    /**
+     * Build an EditText for displaying single value constant
+     * 
+     * @param df The dialog field to build the display for
+     * @param constant The constant associated with the dialog field
+     * @return The EditText that can be displayed
+     */
+    private EditText buildSingleValueConstantField(DialogField df, Constant constant)
+    {
+        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
+        String displayedValue = "";
+        
+        if (constant.getDigits() == 0)
+        {
+            displayedValue = String.valueOf((int) constantValue);
+        }
+        else
+        {
+            displayedValue = String.valueOf(constantValue);
+        }
+        
+        EditText edit = new EditText(getContext());
+        edit.setText(displayedValue);
+        edit.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        edit.setSingleLine(true);
+        edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        edit.setPadding(8, 5, 8, 5);
+        edit.setTag(df.getName());
+        edit.addTextChangedListener(new TextWatcher()
+        {
+            /**
+             * Set the constant to modified when value is changed
+             * 
+             * @param s
+             */
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                EditText edit = (EditText) getCurrentFocus();
+                String constantName = edit.getTag().toString();
+                
+                Constant constant = ecu.getConstantByName(constantName);
+                constant.setModified(true);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){}                
+        });
+        
+        // Field is ready only or disabled
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
+        {
+            edit.setEnabled(false);
+        }
+        
+        return edit;
+    }
+    
+    /**
+     *  Build a Spinner for displaying multi values constant
+     *
+     * @param df The dialog field to build the display for
+     * @param constant The constant associated with the dialog field
+     * @return The Spinner that can be displayed
+     */    
+    private Spinner buildMultiValuesConstantField(DialogField df, Constant constant)
+    {
+        Spinner spin = new Spinner(getContext());
+        
+        // Field is ready only or disabled
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
+        {
+            spin.setEnabled(false);
+        }
+        
+        /*
+        // Remove INVALID from values
+        List<String> valuesWithoutInvalid = new ArrayList<String>();
+        for (int i = 0; i < constant.getValues().length; i++)
+        {
+            String value = constant.getValues()[i];
+            if (!value.equals("INVALID"))
+            {
+                valuesWithoutInvalid.add(value);
+            }
+        }
+        
+        valuesWithoutInvalid.toArray(new String[valuesWithoutInvalid.size()])
+        */
+        
+        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, constant.getValues());
+        
+        // Specify the layout to use when the list of choices appears
+        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        spin.setAdapter(spinAdapter);
+        
+        int selectedValue = (int) ecu.getField(df.getName());                        
+        spin.setSelection(selectedValue);
+        spin.setTag(df.getName());
+        
+        final MSDialog msDialog = this.dialog;
+        
+        spin.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                String constantName = parentView.getTag().toString();
+                
+                long value = parentView.getSelectedItemPosition();
+                
+                // Value changed, update field in ECU class
+                if (ecu.getField(constantName) != value)
+                {
+                    // Constant has been modified and will need to be burn to ECU
+                    Constant constant = ecu.getConstantByName(constantName);
+                    constant.setModified(true);
+                    
+                    // Update ecu field with new value
+                    ecu.setField(constantName, value); 
+                    
+                    // Re-evaluate the expressions with the data updated
+                    ecu.setUserDefinedVisibilityFlags();
+
+                    // Refresh the UI
+                    refreshFieldsVisibility(msDialog);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView){}
+        });
+        
+        return spin;
     }
     
     /**
@@ -355,14 +438,63 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         AlertDialog alert = builder.create();
         alert.show();  
     }
-    
+        
     /**
      * When value are changed, it's possible dialog fields change state
-     * so we need to refresh fields visibility and reply them
+     * so we need to refresh fields visibility and re-apply them recursivly 
+     * on all the panels
      */
-    private void refreshFieldsVisibility()
+    private void refreshFieldsVisibility(MSDialog dialog)
     {
-       
+        for (DialogField df : dialog.getFieldsList())
+        {
+            Constant constant = ecu.getConstantByName(df.getName());
+            
+            if (constant != null)
+            {
+                // Field is not ready only and not disabled
+                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(df.getExpression());
+                
+                if (constant.getClassType().equals("bits"))
+                {
+                    Spinner spin = (Spinner) content.findViewWithTag(df.getName());
+                    spin.setEnabled(isFieldEnabled);
+                }
+                else
+                {
+                    EditText edit = (EditText) content.findViewWithTag(df.getName());
+                    edit.setEnabled(isFieldEnabled);
+                }
+            }
+        }
+        
+        for (DialogPanel dp : dialog.getPanelsList())
+        {
+            MSDialog dialogPanel = ecu.getDialogByName(dp.getName());
+            
+            if (dialogPanel != null)
+            {
+                refreshFieldsVisibility(dialogPanel);
+            }
+        }
+    }
+    
+    /**
+     * Burn the change to the ECU
+     */
+    private void burnToECU()
+    {
+        for (String constantName : ecu.getAllConstantsNamesForDialog(dialog))
+        {
+            Constant constant = ecu.getConstantByName(constantName);
+            
+            if (constant.isModified())
+            {
+                System.out.println("Constant \"" + constantName + "\" was modified, need to write change to ECU");
+                
+                constant.setModified(false);
+            }
+        }
     }
     
     /**
@@ -377,7 +509,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         if (which == R.id.burn)
         {
-            
+            burnToECU();
         }
         else if (which == R.id.cancel)
         {
