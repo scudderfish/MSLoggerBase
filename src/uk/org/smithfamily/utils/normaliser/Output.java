@@ -350,21 +350,36 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    public static void outputVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    static void outputUserDefinedVisibilityFlags(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "@Override");
-        writer.println(TAB + "public void setVisibilityFlags()");
+        writer.println(TAB + "public void setUserDefinedVisibilityFlags()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "visibilityFlags = new HashMap<String,Boolean>();");
+        writer.println(TAB + TAB + "userDefinedVisibilityFlags = new HashMap<String,Boolean>();");
         
         for (String key : ecuData.getFieldControlExpressions().keySet())
         {
             String expr = ecuData.getFieldControlExpressions().get(key);
-            writer.println(String.format(TAB + TAB +"visibilityFlags.put(\"%s\",%s);",key,expr));
+            writer.println(String.format(TAB + TAB +"userDefinedVisibilityFlags.put(\"%s\",%s);",key,expr));
         }
         writer.println(TAB + "}");
     }
 
+    static void outputMenuVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void setMenuVisibilityFlags()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "menuVisibilityFlags = new HashMap<String,Boolean>();");
+        
+        for (String key : ecuData.getMenuControlExpressions().keySet())
+        {
+            String expr = ecuData.getMenuControlExpressions().get(key);
+            writer.println(String.format(TAB + TAB +"menuVisibilityFlags.put(\"%s\",%s);",key,expr));
+        }
+        writer.println(TAB + "}");
+    }
+    
     static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
         for (TableTracker t : ecuData.getTableDefs())

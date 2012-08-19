@@ -25,7 +25,9 @@ public abstract class Megasquirt
 	
 	protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
 	
-	protected Map<String,Boolean> visibilityFlags = new HashMap<String,Boolean>();
+	protected Map<String,Boolean> userDefinedVisibilityFlags = new HashMap<String,Boolean>();
+	
+	protected Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
 	
 	public abstract String getSignature();
 
@@ -69,7 +71,9 @@ public abstract class Megasquirt
     
     public abstract void createDialogs();
     
-    public abstract void setVisibilityFlags();
+    public abstract void setUserDefinedVisibilityFlags();
+    
+    public abstract void setMenuVisibilityFlags();
     
 	/**
 	 * Shortcut function to access data tables. Makes the INI->Java translation

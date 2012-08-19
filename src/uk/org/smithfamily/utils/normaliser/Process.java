@@ -648,8 +648,26 @@ public class Process
         }
         else if (subMenu.matches())
         {
-            SubMenuDefinition x = new SubMenuDefinition(subMenu.group(1), subMenu.group(3), subMenu.group(5), subMenu.group(7));
+            String name = subMenu.group(1);
+            String label = subMenu.group(3);
+            String randomNumber = subMenu.group(5);
+            String expression = subMenu.group(7);
+            
+            SubMenuDefinition x = new SubMenuDefinition(name, label, randomNumber);
             m.getLast(currentMenuDialog).addSubMenu(x);
+            
+            // Add the expression too
+            if (expression == null || StringUtils.isEmpty(expression))
+            {
+                expression = "true";
+            }
+            else
+            {
+                expression = removeCurlyBrackets(expression);
+                expression = ExpressionWrangler.convertExpr(expression);
+            }
+            
+            ecuData.getMenuControlExpressions().put(name, expression);
         }
     }
 
@@ -903,8 +921,8 @@ public class Process
         final String label = dialogField.group(1).trim();
         final String name = dialogField.group(3);
         String expression = dialogField.group(5);
-        String visibilityFlag = "ud_" + d.getName() + "_" + name + "_flg";
-        if (visibilityFlag.equals("ud_null_staged_extended_opts_simult_flg"))
+        String visibilityFlag = d.getName() + "_" + name;
+        if (visibilityFlag.equals("null_staged_extended_opts_simult"))
         {
             // Break point hook
         	@SuppressWarnings("unused")
@@ -918,7 +936,6 @@ public class Process
         {
             expression = removeCurlyBrackets(expression);
             expression = ExpressionWrangler.convertExpr(expression);
-
         }
         ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
 

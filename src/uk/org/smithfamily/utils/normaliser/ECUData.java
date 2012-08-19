@@ -24,6 +24,7 @@ public class ECUData
 	private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
 	private List<UserDefinedTracker> dialogDefs = new ArrayList<UserDefinedTracker>();
 	private Map<String, String> fieldControlExpressions;
+	private Map<String, String> menuControlExpressions;
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
@@ -94,6 +95,7 @@ public class ECUData
 		logHeader = new ArrayList<String>();
 		logRecord = new ArrayList<String>();
 		fieldControlExpressions = new HashMap<String, String>();
+		menuControlExpressions = new HashMap<String, String>();
 		runtimeVars = new HashMap<String, String>();
 		evalVars = new HashMap<String, String>();
 		constantVars = new HashMap<String, String>();
@@ -393,5 +395,10 @@ public class ECUData
     public Map<String, String> getFieldControlExpressions()
     {
         return fieldControlExpressions;
+    }
+    
+    public Map<String, String> getMenuControlExpressions()
+    {
+        return menuControlExpressions;
     }
 }
