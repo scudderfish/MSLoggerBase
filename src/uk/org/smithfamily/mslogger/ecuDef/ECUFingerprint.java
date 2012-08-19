@@ -2,15 +2,11 @@ package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import android.bluetooth.BluetoothAdapter;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 
 /**
@@ -22,16 +18,14 @@ public class ECUFingerprint implements Runnable
     
     private boolean             located = false;
     private Handler             handler;
-    private BluetoothAdapter    adapter;
-
+ 
     /**
      * 
      * @param h
      * @param mBluetoothAdapter
      */
-    public ECUFingerprint(Handler h, BluetoothAdapter mBluetoothAdapter)
+    public ECUFingerprint(Handler h)
     {
-        this.adapter = mBluetoothAdapter;
         this.handler = h;
     }
 
@@ -44,11 +38,10 @@ public class ECUFingerprint implements Runnable
         Thread.currentThread().setName("ECUFingerprintThread:" + System.currentTimeMillis());
         String fingerprint = UNKNOWN;
         DebugLogManager.INSTANCE.log("Starting fingerprint", Log.INFO);
-        String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
         
         while (!located)
         {
-            Connection.INSTANCE.init(btAddr, adapter, handler);
+            Connection.INSTANCE.init(handler);
             try
             {
                 fingerprint = getFingerprint();

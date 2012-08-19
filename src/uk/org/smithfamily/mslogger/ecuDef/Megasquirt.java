@@ -1,30 +1,18 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.Connection;
-import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import android.bluetooth.BluetoothAdapter;
+import uk.org.smithfamily.mslogger.log.*;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 
 /**
@@ -50,8 +38,6 @@ public abstract class Megasquirt
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
     private boolean            simulated         = false;
-
-    private BluetoothAdapter   mAdapter;
 
     public static final String CONNECTED         = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
     public static final String DISCONNECTED      = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
@@ -490,22 +476,8 @@ public abstract class Megasquirt
          */
         public void initialiseConnection()
         {
-            if (!ApplicationSettings.INSTANCE.btDeviceSelected())
-            {
-                sendMessage("Bluetooth device not selected");
-                return;
-            }
-            mAdapter = ApplicationSettings.INSTANCE.getDefaultAdapter();
-            if (mAdapter == null)
-            {
-                sendMessage("Could not find the default Bluetooth adapter!");
-                return;
-            }
-            String btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
-
             sendMessage("Launching connection");
-            Connection.INSTANCE.init(btAddr, mAdapter, handler);
-
+            Connection.INSTANCE.init(handler);
         }
 
         /**

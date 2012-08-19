@@ -1,22 +1,12 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.*;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 
 /**
@@ -45,12 +35,9 @@ public enum Connection
 
     }
 
-    private String            btAddr;
-    private BluetoothAdapter  adapter;
-    private BluetoothSocket   socket;
+    private IConnection       conn;
     private InputStream       mmInStream;
     private OutputStream      mmOutStream;
-    private BluetoothDevice   remote;
     private Handler           handler;
     private static final long IO_TIMEOUT     = 5000;
     volatile boolean          timerTriggered = false;
@@ -96,21 +83,21 @@ public enum Connection
 
     /**
      * Initialise the Bluetooth connection
+     * @param handler 
      * 
      * @param btAddr
      * @param adapter
      * @param h
      */
-    public synchronized void init(String btAddr, BluetoothAdapter adapter, Handler h)
+    public synchronized void init(Handler handler)
     {
-        if (currentState != ConnectionState.STATE_DISCONNECTED && !btAddr.equals(this.btAddr))
+        this.handler = handler;
+        conn = ConnectionFactory.INSTANCE.getConn();
+        if (currentState != ConnectionState.STATE_DISCONNECTED && !conn.isInitialised())
         {
             tearDown();
             setState(ConnectionState.STATE_DISCONNECTED);
         }
-        this.btAddr = btAddr;
-        this.adapter = adapter;
-        this.handler = h;
         this.ownerThread = Thread.currentThread();
         timerTriggered = false;
     }
@@ -142,16 +129,12 @@ public enum Connection
         }
         setState(ConnectionState.STATE_CONNECTING);
         DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
-        remote = adapter.getRemoteDevice(btAddr);
-        getSocket(remote);
-
-        adapter.cancelDiscovery();
 
         try
         {
         	DebugLogManager.INSTANCE.log("connect() : Attempting connection", Log.DEBUG);
             
-            socket.connect();
+            conn.connect();
         }
         catch (IOException e)
         {
@@ -160,17 +143,15 @@ public enum Connection
 
             try
             {
-                socket.close();
+                conn.disconnect();
             }
             catch (Exception e1)
             {
                 DebugLogManager.INSTANCE.logException(e1);
             }
-            ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
-            getSocket(remote);
-            
+            conn.switchSettings();
             try {
-                socket.connect();
+                conn.connect();
             }
             catch (Exception e1)
             {
@@ -184,8 +165,8 @@ public enum Connection
         // Get the BluetoothSocket input and output streams
         try
         {
-            tmpIn = socket.getInputStream();
-            tmpOut = socket.getOutputStream();
+            tmpIn = conn.getInputStream();
+            tmpOut = conn.getOutputStream();
         }
         catch (IOException e)
         {
@@ -208,26 +189,6 @@ public enum Connection
         }
         return;
     }
-
-    /**
-     * Get socket to the Bluetooth device
-     * 
-     * @param remote Remote Bluetooth device
-     * @throws IOException
-     */
-    private void getSocket(BluetoothDevice remote) throws IOException
-    {
-        try
-        {
-            socket = BTSocketFactory.getSocket(remote);
-        }
-        catch (Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get a socket!", Log.ERROR);
-            throw new IOException(e.getLocalizedMessage());
-        }
-    }
-
     /**
      * Check if the application should auto-connect and automatically connect if it should
      * 
@@ -273,56 +234,12 @@ public enum Connection
         }
     }
 
-    /**
-     * @return Return the remote Bluetooth device
-     */
-    public BluetoothDevice getRemote()
-    {
-        return remote;
-    }
-
-    /**
+      /**
      * Close input and output Bluetooth streams and socket
      */
     public synchronized void tearDown()
     {
-    	DebugLogManager.INSTANCE.log("tearDown()", Log.DEBUG);
-        if (mmInStream != null)
-        {
-            try
-            {
-                mmInStream.close();
-            }
-            catch (IOException e)
-            {
-            }
-            mmInStream = null;
-        }
-        if (mmOutStream != null)
-        {
-            try
-            {
-                mmOutStream.close();
-            }
-            catch (IOException e)
-            {
-            }
-            mmOutStream = null;
-        }
-
-        if (socket != null)
-        {
-            try
-            {
-                DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
-
-                socket.close();
-            }
-            catch (IOException e)
-            {
-            }
-            socket = null;
-        }
+        conn.tearDown();
         setState(ConnectionState.STATE_DISCONNECTED);
     }
 
@@ -335,7 +252,7 @@ public enum Connection
      */
     public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
     {
-        if (socket == null)
+        if (!conn.isConnected())
         {
             throw new IOException("Not connected");
         }

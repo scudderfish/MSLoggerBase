@@ -1,6 +1,10 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.lang.ref.WeakReference;
+
 import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
+import uk.org.smithfamily.mslogger.comms.IConnection;
 import uk.org.smithfamily.mslogger.ecuDef.ECUFingerprint;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.EmailManager;
@@ -26,8 +30,15 @@ public class StartupActivity extends Activity
     /**
      *
      */
-    private class StartupHandler extends Handler
+    private static class StartupHandler extends Handler
     {
+        
+        private WeakReference<StartupActivity> parent;
+
+        StartupHandler(StartupActivity parent)
+        {
+            this.parent =new WeakReference<StartupActivity>(parent);
+        }
 
         @Override
         public void handleMessage(Message msg)
@@ -36,16 +47,15 @@ public class StartupActivity extends Activity
             switch (msg.what)
             {
             case MSLoggerApplication.GOT_SIG:
-                checkSig((String) msg.obj);
+                parent.get().checkSig((String) msg.obj);
                 break;
             case MSLoggerApplication.MESSAGE_TOAST:
-                showMessage(msg);
+                parent.get().showMessage(msg);
             }
         }
     }
 
     private Handler          mHandler = null;
-    private BluetoothAdapter mBluetoothAdapter;
     private TextView         msgBox;
 
     /**
@@ -55,20 +65,21 @@ public class StartupActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mHandler = new StartupHandler();
+        mHandler = new StartupHandler(this);
         setContentView(R.layout.startup);
         msgBox = (TextView) findViewById(R.id.identify_progress_msg);
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+        IConnection conn = ConnectionFactory.INSTANCE.getConn();
+        
+       
         // Bluetooth is not supported on this Android device
-        if (mBluetoothAdapter == null)
+        if (!conn.connectionPossible())
         {
             finishDialogNoBluetooth();
             return;
         }
 
-        boolean bluetoothOK = mBluetoothAdapter.isEnabled();
+        boolean bluetoothOK = conn.connectionEnabled();
         
         // Bluetooth is enabled, we can start!
         if (bluetoothOK)
@@ -235,7 +246,7 @@ public class StartupActivity extends Activity
      */
     private void startFingerprint()
     {
-        Thread t = new Thread(new ECUFingerprint(mHandler, mBluetoothAdapter));
+        Thread t = new Thread(new ECUFingerprint(mHandler));
         t.start();
     }
 
