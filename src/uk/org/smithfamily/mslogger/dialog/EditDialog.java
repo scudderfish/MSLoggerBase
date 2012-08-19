@@ -306,7 +306,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         });
         
         // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
         {
             edit.setEnabled(false);
         }
@@ -326,7 +326,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         Spinner spin = new Spinner(getContext());
         
         // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getVisibilityFlagsByName(df.getExpression()))
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
         {
             spin.setEnabled(false);
         }
@@ -379,8 +379,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     ecu.setField(constantName, value); 
                     
                     // Re-evaluate the expressions with the data updated
-                    ecu.setVisibilityFlags();
-                    
+                    ecu.setUserDefinedVisibilityFlags();
+
                     // Refresh the UI
                     refreshFieldsVisibility(msDialog);
                 }
@@ -453,7 +453,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             if (constant != null)
             {
                 // Field is not ready only and not disabled
-                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getVisibilityFlagsByName(df.getExpression());
+                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(df.getExpression());
                 
                 if (constant.getClassType().equals("bits"))
                 {

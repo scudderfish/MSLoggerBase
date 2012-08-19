@@ -46,7 +46,9 @@ public abstract class Megasquirt
     
     protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
     
-    protected Map<String,Boolean> visibilityFlags = new HashMap<String,Boolean>();
+    protected Map<String,Boolean> userDefinedVisibilityFlags = new HashMap<String,Boolean>();
+    
+    protected Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
     
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
@@ -102,7 +104,9 @@ public abstract class Megasquirt
     
     public abstract void createDialogs();
 
-    public abstract void setVisibilityFlags();
+    public abstract void setUserDefinedVisibilityFlags();
+    
+    public abstract void setMenuVisibilityFlags();
     
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -1037,11 +1041,16 @@ public abstract class Megasquirt
         return dialogs.get(name);
     }
     
-    public boolean getVisibilityFlagsByName(String name)
+    public boolean getUserDefinedVisibilityFlagsByName(String name)
     {
-        return visibilityFlags.get(name);
+        return userDefinedVisibilityFlags.get(name);
     }
   
+    public boolean getMenuVisibilityFlagsByName(String name)
+    {
+        return menuVisibilityFlags.get(name);
+    }
+    
     /**
      * Used to get a list of all constants name used in a specific dialog
      * 

@@ -137,14 +137,18 @@ public class TuningActivity extends Activity
         
         currentIndexMenu = indexMenu;
         
+        // Refresh menu visibility flags
+        ecu.setMenuVisibilityFlags();
+        
         for (int i = 0; i < subMenus.size(); i++)
         {
-            SubMenuDefinition subMenu = subMenus.get(i);     
+            SubMenuDefinition subMenu = subMenus.get(i);
             
             // Don't display separator
             if (!subMenu.getName().equals("std_separator"))
             {
                 menu.add(0, i, 0, subMenu.getLabel());
+                menu.getItem(menu.size() - 1).setEnabled(ecu.getMenuVisibilityFlagsByName(subMenu.getName()));
             }
         }
     }  
@@ -172,8 +176,9 @@ public class TuningActivity extends Activity
         }
         else
         {
-            ecu.setVisibilityFlags();
-
+            // Refresh user defined flags
+            ecu.setUserDefinedVisibilityFlags();
+            
             CurveEditor curve = ecu.getCurveEditorByName(name);
 
             // It's a curve!
