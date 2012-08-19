@@ -376,6 +376,14 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     }
     
     /**
+     * Burn the change to the ECU
+     */
+    private void burnToECU()
+    {
+        
+    }
+    
+    /**
      * Triggered when one of the two bottoms button are clicked ("Burn" and "Cancel")
      * 
      * @param v The view that was clicked on
@@ -387,7 +395,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         
         if (which == R.id.burn)
         {
-            
+            burnToECU();
         }
         else if (which == R.id.cancel)
         {

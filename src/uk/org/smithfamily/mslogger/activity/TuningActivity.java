@@ -95,7 +95,6 @@ public class TuningActivity extends Activity
                 
                 b.setOnClickListener(new OnClickListener()
                 {
-                    
                     @Override
                     public void onClick(View v)
                     {    
@@ -130,7 +129,6 @@ public class TuningActivity extends Activity
         
         Button b = (Button) v;
         int indexMenu = Integer.parseInt(b.getTag().toString());
-
         
         MenuDefinition menuDef = menus.get(indexMenu);
         List<SubMenuDefinition> subMenus = menuDef.getSubMenus();
@@ -139,14 +137,18 @@ public class TuningActivity extends Activity
         
         currentIndexMenu = indexMenu;
         
+        // Refresh menu visibility flags
+        ecu.setMenuVisibilityFlags();
+        
         for (int i = 0; i < subMenus.size(); i++)
         {
-            SubMenuDefinition subMenu = subMenus.get(i);     
+            SubMenuDefinition subMenu = subMenus.get(i);
             
             // Don't display separator
             if (!subMenu.getName().equals("std_separator"))
             {
                 menu.add(0, i, 0, subMenu.getLabel());
+                menu.getItem(menu.size() - 1).setEnabled(ecu.getMenuVisibilityFlagsByName(subMenu.getName()));
             }
         }
     }  
@@ -174,8 +176,9 @@ public class TuningActivity extends Activity
         }
         else
         {
-            ecu.setVisibilityFlags();
-
+            // Refresh user defined flags
+            ecu.setUserDefinedVisibilityFlags();
+            
             CurveEditor curve = ecu.getCurveEditorByName(name);
 
             // It's a curve!
@@ -197,9 +200,9 @@ public class TuningActivity extends Activity
                 else
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
-                    builder.setMessage("Cannot find anything named \"" + name + "\"")
+                    builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
                             .setIcon(android.R.drawable.ic_dialog_info)
-                            .setTitle("Missing component")
+                            .setTitle("Unsupported")
                             .setCancelable(true)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener()
                             {
