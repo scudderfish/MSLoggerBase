@@ -209,6 +209,23 @@ public class Output
 
     }
 
+    static void outputRequiresPowerCycle(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println("\n    //Fields that requires power cycle");
+        
+        writer.println("    public List<String> getRequiresPowerCycle()");
+        writer.println("    {");
+        writer.println(TAB + TAB + "List<String> requiresPowerCycle = new ArrayList<String>();");
+        
+        for (String field : ecuData.getRequiresPowerCycle())
+        {
+            writer.println(TAB + TAB + "requiresPowerCycle.add(\"" + field + "\");");
+        }
+        
+        writer.println(TAB + TAB + "return requiresPowerCycle;"); 
+        writer.println(TAB + "}\n");
+    }
+    
     static void outputRTCalcs(ECUData ecuData, PrintWriter writer)
     {
         writer.println("    @Override");
@@ -333,21 +350,36 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    public static void outputVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    static void outputUserDefinedVisibilityFlags(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "@Override");
-        writer.println(TAB + "public void setVisibilityFlags()");
+        writer.println(TAB + "public void setUserDefinedVisibilityFlags()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "visibilityFlags = new HashMap<String,Boolean>();");
+        writer.println(TAB + TAB + "userDefinedVisibilityFlags = new HashMap<String,Boolean>();");
         
         for (String key : ecuData.getFieldControlExpressions().keySet())
         {
             String expr = ecuData.getFieldControlExpressions().get(key);
-            writer.println(String.format(TAB + TAB +"visibilityFlags.put(\"%s\",%s);",key,expr));
+            writer.println(String.format(TAB + TAB +"userDefinedVisibilityFlags.put(\"%s\",%s);",key,expr));
         }
         writer.println(TAB + "}");
     }
 
+    static void outputMenuVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void setMenuVisibilityFlags()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "menuVisibilityFlags = new HashMap<String,Boolean>();");
+        
+        for (String key : ecuData.getMenuControlExpressions().keySet())
+        {
+            String expr = ecuData.getMenuControlExpressions().get(key);
+            writer.println(String.format(TAB + TAB +"menuVisibilityFlags.put(\"%s\",%s);",key,expr));
+        }
+        writer.println(TAB + "}");
+    }
+    
     static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
         for (TableTracker t : ecuData.getTableDefs())

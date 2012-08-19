@@ -24,10 +24,12 @@ public class ECUData
 	private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
 	private List<UserDefinedTracker> dialogDefs = new ArrayList<UserDefinedTracker>();
 	private Map<String, String> fieldControlExpressions;
+	private Map<String, String> menuControlExpressions;
 	private Map<String, String> runtimeVars;
 	private Map<String, String> evalVars;
 	private Map<String, String> constantVars;
 	private List<String> defaults;
+	private List<String> requiresPowerCycle;
 	private Set<String> flags;
 	private String fingerprintSource;
 	private ArrayList<String> gaugeDoc;
@@ -93,10 +95,12 @@ public class ECUData
 		logHeader = new ArrayList<String>();
 		logRecord = new ArrayList<String>();
 		fieldControlExpressions = new HashMap<String, String>();
+		menuControlExpressions = new HashMap<String, String>();
 		runtimeVars = new HashMap<String, String>();
 		evalVars = new HashMap<String, String>();
 		constantVars = new HashMap<String, String>();
 		defaults = new ArrayList<String>();
+		requiresPowerCycle = new ArrayList<String>();
 		constants = new ArrayList<Constant>();
 		flags = new HashSet<String>();
 		gaugeDef = new ArrayList<String>();
@@ -156,6 +160,16 @@ public class ECUData
 	public void setDefaults(List<String> defaults)
 	{
 		this.defaults = defaults;
+	}
+	
+	public List<String> getRequiresPowerCycle()
+	{
+	    return requiresPowerCycle;
+	}
+	
+	public void setRequiresPowerCycle(List<String> requiresPowerCycle)
+	{
+	    this.requiresPowerCycle = requiresPowerCycle;
 	}
 
 	public Set<String> getFlags()
@@ -381,5 +395,10 @@ public class ECUData
     public Map<String, String> getFieldControlExpressions()
     {
         return fieldControlExpressions;
+    }
+    
+    public Map<String, String> getMenuControlExpressions()
+    {
+        return menuControlExpressions;
     }
 }

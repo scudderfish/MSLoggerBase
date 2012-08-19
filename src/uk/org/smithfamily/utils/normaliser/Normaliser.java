@@ -292,14 +292,16 @@ public class Normaliser
         writer.println(TAB + ecuData.getOchGetCommandStr());
         writer.println(TAB + ecuData.getOchBlockSizeStr());
         Output.outputGlobalVars(ecuData,writer);
-        Output.outputRTCalcs(ecuData,writer);
-        Output.outputLogInfo(ecuData,writer);
-        Output.outputGauges(ecuData,writer);
-        Output.outputMenus(ecuData,writer);
-        Output.outputUserDefined(ecuData,writer);
-        Output.outputTableEditors(ecuData,writer);
-        Output.outputCurves(ecuData,writer);
-        Output.outputVisibilityFlags(ecuData,writer);
+        Output.outputRequiresPowerCycle(ecuData,writer);
+        Output.outputRTCalcs(ecuData, writer);
+        Output.outputLogInfo(ecuData, writer);
+        Output.outputGauges(ecuData, writer);
+        Output.outputMenus(ecuData, writer);
+        Output.outputUserDefined(ecuData, writer);
+        Output.outputTableEditors(ecuData, writer);
+        Output.outputCurves(ecuData, writer);
+        Output.outputUserDefinedVisibilityFlags(ecuData, writer);
+        Output.outputMenuVisibilityFlags(ecuData, writer);
 
         // outputGaugeDoc(writer);
 

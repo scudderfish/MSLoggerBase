@@ -12,6 +12,7 @@ public class ExpressionWrangler
 	static Map<String,String> translations = new HashMap<String,String>();
 	static
 	{
+	    // User defined
 		translations.put("0", "false");
 		translations.put("RevLimCLTbased & 1", "(RevLimCLTbased & 1) != 0");
 		translations.put("RevLimOption & 4", "(RevLimOption & 4) != 0"); 
@@ -22,6 +23,12 @@ public class ExpressionWrangler
 		translations.put("((dualfuel_opt_out || dualfuel_opt_mode) && staged_extended_opts_use_v3) || ((nCylinders > 4) && (dualfuel_opt_out || dualfuel_opt_mode) && hardware_fuel && !(sequential & 0x1))", "((dualfuel_opt_out !=0 || dualfuel_opt_mode !=0) && staged_extended_opts_use_v3 != 0) || ((nCylinders > 4) && (dualfuel_opt_out !=0 || dualfuel_opt_mode !=0) && hardware_fuel !=0 && !((sequential & 0x1)!=0))");	
 		translations.put("(staged_extended_opts_use_v3 && staged_first_param) || ((nCylinders > 4) && (staged_first_param) && (hardware_fuel) && !(sequential & 0x1))", "(staged_extended_opts_use_v3!=0 && staged_first_param!=0) || ((nCylinders > 4) && (staged_first_param!=0) && (hardware_fuel!=0) && !((sequential & 0x1)!=0))");
 		translations.put("(spk_config_trig2 & 0x2) && spk_mode0 == 4", "(spk_config_trig2 & 0x2)!=0 && spk_mode0 == 4");
+		
+		// Menus
+	    translations.put("AE_options & 0x1", "(AE_options & 0x1) != 0");
+	    translations.put("!(AE_options & 0x1)", "!((AE_options & 0x1) != 0)");
+	    translations.put("NoiseFilterOpts & 1", "(NoiseFilterOpts & 1) != 0");
+	    translations.put("(RevLimCLTbased & 1)", "(RevLimCLTbased & 1) != 0");
 	}
 
 	/**
@@ -32,14 +39,15 @@ public class ExpressionWrangler
 	public static String convertExpr(String e)
 	{
 		//Normalise space
-		e=e.trim();
-		e=e.replaceAll("  ", " ");
+		e = e.trim();
+		e = e.replaceAll("  ", " ");
 		
 		//Some expressions are just too much hard work, so use a cheat translation table to do the conversion
-		if(translations.containsKey(e))
+		if (translations.containsKey(e))
 		{
 			return translations.get(e);
 		}
+
 		StringBuffer b = new StringBuffer();
 
 		//Are we processing something that looks like a variable?
@@ -75,7 +83,7 @@ public class ExpressionWrangler
 			//Now fixup some dodgy bitwise vs logical anding in the INIs
 			//where it is doing a bitwise & against a non constant.  All constants appear
 			//to start with a leading zero
-			if(!seenLogical && c=='&' && e.charAt(i+1) != '&' && e.charAt(i+2)!='0')
+			if (!seenLogical && c == '&' && e.charAt(i + 1) != '&' && e.charAt(i + 2) != '0')
 			{
 				needAnAmp = true;
 				seenLogical = true;
@@ -84,7 +92,7 @@ public class ExpressionWrangler
 			{
 				seenComparator = true;
 			}
-			if(!inConstant && Character.isDigit(c))
+			if (!inConstant && Character.isDigit(c))
 			{
 				//Start of a constant
 				inConstant = true;
@@ -116,14 +124,20 @@ public class ExpressionWrangler
 			{
 				//Convert the implicit to the explicit
 				if (negate)
+				{
 					b.append("==0 ");
+				}
 				else
+				{
 					b.append("!=0 ");
+				}
 				pendingEqualityTest = false;
 				negate = false;
-				if(needAnAmp)
+				if (needAnAmp)
+				{
 					b.append('&');
-				needAnAmp=false;
+				}
+				needAnAmp = false;
 			}
 			b.append(c);
 		}
@@ -131,9 +145,13 @@ public class ExpressionWrangler
 		{
 			//We've fallen off the end of the string, but it looks like we still need a comparison
 			if (negate)
+			{
 				b.append("==0 ");
+			}
 			else
+			{
 				b.append("!=0 ");
+			}
 		}
 		String result = b.toString();
 
