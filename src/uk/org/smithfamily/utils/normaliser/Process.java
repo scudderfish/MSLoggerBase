@@ -294,7 +294,7 @@ public class Process
         }
         String[] components = line.split(" ");
         String flagName = components.length > 1 ? sanitize(components[1]) : "";
-        if (components[0].equals("#if"))
+        if (components[0].equals("#if") || components[0].equals("#ifdef"))
         {
             ecuData.getFlags().add(flagName);
             return ("if (" + flagName + ")\n        {");
