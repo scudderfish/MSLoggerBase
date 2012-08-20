@@ -1,19 +1,17 @@
 package uk.org.smithfamily.utils.normaliser.menu;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
-import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
 
 public class MenuTracker
 {
-    private Map<String,List<MenuDefinition>> items = new HashMap<String,List<MenuDefinition>>();
+    private TreeMap<String,List<MenuItem>> items = new TreeMap<String,List<MenuItem>>();
     
-    public void addItem(String dialog, MenuDefinition x)
+    public void addItem(String dialog, MenuItem x)
     {
         // Already have a menu for that dialog name, will add it to the list
         if (items.containsKey(dialog))
@@ -23,7 +21,7 @@ public class MenuTracker
         // No menu for that dialog yet, creating a new list with the menu definition
         else 
         {
-            List<MenuDefinition> m = new ArrayList<MenuDefinition>();
+            List<MenuItem> m = new ArrayList<MenuItem>();
             m.add(x);
             
             items.put(dialog, m);
@@ -32,16 +30,26 @@ public class MenuTracker
 
     /**
      * Get the last menu of the specific dialog
+     * We cannot just take the last item because it might be a MenuPreProcessor
      * 
      * @param dialog
      * @return
      */
-    public MenuDefinition getLast(String dialog)
+    public MenuItem getLast(String dialog)
     {
-        return items.get(dialog).get(items.get(dialog).size() - 1);
+        int index = items.get(dialog).size() - 1;
+        MenuItem menuItem = null;
+
+        do
+        {
+            menuItem = items.get(dialog).get(index);
+        }
+        while (index-- > 0 && !(menuItem instanceof MenuDefinition));
+
+        return menuItem;
     }
     
-    public Set<Entry<String, List<MenuDefinition>>> getItems()
+    public Set<Entry<String, List<MenuItem>>> getItems()
     {
         return items.entrySet();
     }
