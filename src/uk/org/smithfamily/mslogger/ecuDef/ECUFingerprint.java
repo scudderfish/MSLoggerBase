@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
-import uk.org.smithfamily.mslogger.comms.Connection;
+import uk.org.smithfamily.mslogger.comms.ConnectionManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.os.*;
 import android.util.Log;
@@ -41,7 +41,7 @@ public class ECUFingerprint implements Runnable
         
         while (!located)
         {
-            Connection.INSTANCE.init(handler);
+            ConnectionManager.INSTANCE.init(handler);
             try
             {
                 fingerprint = getFingerprint();
@@ -50,13 +50,13 @@ public class ECUFingerprint implements Runnable
             catch (IOException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
-                Connection.INSTANCE.tearDown();
+                ConnectionManager.INSTANCE.tearDown();
                 delay(1000);
             }
             catch (CRC32Exception e)
             {
                 DebugLogManager.INSTANCE.logException(e);
-                Connection.INSTANCE.tearDown();
+                ConnectionManager.INSTANCE.tearDown();
                 delay(1000);
             }
         }
@@ -112,7 +112,7 @@ public class ECUFingerprint implements Runnable
         // IF we don't get it in 20 goes, we're not talking to a Megasquirt
         while (i++ < 20)
         {
-            byte[] response = Connection.INSTANCE.writeAndRead(probeCommand1, 500, false);
+            byte[] response = ConnectionManager.INSTANCE.writeAndRead(probeCommand1, 500, false);
 
             try
             {
@@ -122,7 +122,7 @@ public class ECUFingerprint implements Runnable
                 }
                 else
                 {
-                    response = Connection.INSTANCE.writeAndRead(probeCommand2, 500, false);
+                    response = ConnectionManager.INSTANCE.writeAndRead(probeCommand2, 500, false);
                     if (response != null && response.length > 1)
                     {
                         sig = processResponse(response);
@@ -136,7 +136,7 @@ public class ECUFingerprint implements Runnable
                 /* My ECU also occasionally goes to a Boot> prompt on start up (dodgy electrics) so if we see that, force 
                 * the ECU to start.
                 */
-                response = Connection.INSTANCE.writeAndRead(bootCommand, 500,false);
+                response = ConnectionManager.INSTANCE.writeAndRead(bootCommand, 500,false);
             }
         }
         sendStatus(sig);

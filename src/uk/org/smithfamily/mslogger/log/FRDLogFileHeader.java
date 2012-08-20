@@ -69,7 +69,8 @@ public class FRDLogFileHeader
 	    is.read(firmware);
 	    is.read(beginIndex);
 	    is.read(outputLength);
-	    blockSize = outputLength[0] << 8 + outputLength[1];
+	    this.blockSize = outputLength[1];
+	    this.blockSize += outputLength[0] * 256;
     }
 
 	/**

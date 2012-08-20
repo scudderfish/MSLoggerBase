@@ -1,10 +1,6 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -136,5 +132,12 @@ public enum FRDLogManager
 	public String getAbsolutePath()
 	{
 		return absolutePath;
+	}
+	
+	public FRDLogFile loadFile(FileInputStream fis) throws IOException
+	{
+	    FRDLogFile log = new FRDLogFile(fis);
+	    
+	    return log;
 	}
 }

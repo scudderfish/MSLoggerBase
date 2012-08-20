@@ -3,15 +3,12 @@ package uk.org.smithfamily.mslogger.ecuDef;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
-import uk.org.smithfamily.mslogger.comms.Connection;
+import uk.org.smithfamily.mslogger.comms.ConnectionManager;
 import uk.org.smithfamily.mslogger.log.*;
 import android.content.Context;
 import android.content.Intent;
@@ -247,7 +244,7 @@ public abstract class Megasquirt
             return;
         DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
 
-        Connection.INSTANCE.disconnect();
+        ConnectionManager.INSTANCE.disconnect();
         DatalogManager.INSTANCE.mark("Disconnected");
         FRDLogManager.INSTANCE.close();
         DatalogManager.INSTANCE.close();
@@ -484,7 +481,7 @@ public abstract class Megasquirt
         public void initialiseConnection()
         {
             sendMessage("Launching connection");
-            Connection.INSTANCE.init(handler);
+            ConnectionManager.INSTANCE.init(handler);
         }
 
         /**
@@ -511,14 +508,14 @@ public abstract class Megasquirt
 
                 try
                 {
-                    Connection.INSTANCE.connect();
-                    Connection.INSTANCE.flushAll();
+                    ConnectionManager.INSTANCE.connect();
+                    ConnectionManager.INSTANCE.flushAll();
 
                     if (!verifySignature())
                     {
                         DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
 
-                        Connection.INSTANCE.disconnect();
+                        ConnectionManager.INSTANCE.disconnect();
                         return;
                     }
 
@@ -680,7 +677,7 @@ public abstract class Megasquirt
                 return buffer;
             }
             int d = getInterWriteDelay();
-            Connection.INSTANCE.writeAndRead(getOchCommand(), buffer, d, isCRC32Protocol());
+            ConnectionManager.INSTANCE.writeAndRead(getOchCommand(), buffer, d, isCRC32Protocol());
             return buffer;
         }
 
@@ -695,17 +692,17 @@ public abstract class Megasquirt
         protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException,
                 CRC32Exception
         {
-            Connection.INSTANCE.flushAll();
+            ConnectionManager.INSTANCE.flushAll();
             int delay = getPageActivationDelay();
             if (pageSelectCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageSelectCommand, delay, isCRC32Protocol());
+                ConnectionManager.INSTANCE.writeCommand(pageSelectCommand, delay, isCRC32Protocol());
             }
             if (pageReadCommand != null)
             {
-                Connection.INSTANCE.writeCommand(pageReadCommand, delay, isCRC32Protocol());
+                ConnectionManager.INSTANCE.writeCommand(pageReadCommand, delay, isCRC32Protocol());
             }
-            Connection.INSTANCE.readBytes(pageBuffer, isCRC32Protocol());
+            ConnectionManager.INSTANCE.readBytes(pageBuffer, isCRC32Protocol());
         }
 
         /**
@@ -719,7 +716,7 @@ public abstract class Megasquirt
         {
             String signatureFromMS = "";
             int d = Math.max(getInterWriteDelay(), 300);
-            Connection.INSTANCE.flushAll();
+            ConnectionManager.INSTANCE.flushAll();
 
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
 
@@ -733,7 +730,7 @@ public abstract class Megasquirt
                 byte[] buf;
                 try
                 {
-                    buf = Connection.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
+                    buf = ConnectionManager.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
 
                     try
                     {
@@ -751,13 +748,13 @@ public abstract class Megasquirt
 
                 DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
 
-                Connection.INSTANCE.flushAll();
+                ConnectionManager.INSTANCE.flushAll();
             }
             // We loop until we get a valid signature
             while (signatureFromMS.equals(ECUFingerprint.UNKNOWN));
 
             // Notify the user of the signature we got
-            Connection.INSTANCE.sendStatus("Recieved '" + signatureFromMS + "'");
+            ConnectionManager.INSTANCE.sendStatus("Recieved '" + signatureFromMS + "'");
 
             return signatureFromMS;
         }

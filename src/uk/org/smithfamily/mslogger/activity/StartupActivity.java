@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 
 import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
-import uk.org.smithfamily.mslogger.comms.IConnection;
+import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.ecuDef.ECUFingerprint;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.EmailManager;
@@ -69,7 +69,7 @@ public class StartupActivity extends Activity
         setContentView(R.layout.startup);
         msgBox = (TextView) findViewById(R.id.identify_progress_msg);
 
-        IConnection conn = ConnectionFactory.INSTANCE.getConn();
+        Connection conn = ConnectionFactory.INSTANCE.getConnection();
         
        
         // Bluetooth is not supported on this Android device

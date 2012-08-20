@@ -7,7 +7,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.*;
 import android.util.Log;
 
-public enum BluetoothConnection implements IConnection
+public enum BluetoothConnection implements Connection
 {
     INSTANCE;
     private String btAddr;

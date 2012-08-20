@@ -4,9 +4,15 @@ public enum ConnectionFactory
 {
     INSTANCE;
 
-    public IConnection getConn()
+    /**
+     * Return the Connection instance to use.  This should be switchable somehow
+     * but as I'm in a hotel, I'm hardwiring it to a simulator as my ECU is >1000 miles
+     * away
+     * @return
+     */
+    public Connection getConnection()
     {
-        return BluetoothConnection.INSTANCE;
+        return SocketConnection.INSTANCE;
     }
     
 }

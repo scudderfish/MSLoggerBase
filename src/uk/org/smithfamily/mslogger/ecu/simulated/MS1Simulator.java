@@ -1,103 +1,74 @@
 package uk.org.smithfamily.mslogger.ecu.simulated;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 
-public class MS1Simulator implements Runnable
+import android.util.Log;
+
+public class MS1Simulator extends MSSimulator
 {
 
-    public static final int SERVERPORT = 1052;
-    private ServerSocket serverSocket;
-    private volatile boolean running = false;
-    String signature = "MS1/Extra format 029y3 *********";
+    //Prepopulated FRD file from a previous run
+    static final String fileName = "2012-07-13_13.57.32.frd";
+ 
+    private static final String TAG = "MS1Simulator";
     
+    String signature = "MS1/Extra format 029y3 *********";
+
     @Override
-    public void run()
+    void process(int b, InputStream is, OutputStream os) throws IOException
     {
-       
-        running = true;
-        while (running)
-        {
-            try
-            {
-                Socket client = serverSocket.accept();
-            
-                InputStream is = client.getInputStream();
-                OutputStream os = client.getOutputStream();
-            
-                while(running)
-                {
-                    int b = is.read();
-                    process(b,is,os);
-                }
-            } catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    private void process(int b, InputStream is, OutputStream os) throws IOException
-    {
-        switch(b)
+        Log.i(TAG, "received " + b);
+        switch (b)
         {
         case 'S':
-            os.write(signature.getBytes());
+            speedLimitedWrite(os, signature.getBytes());
             break;
-            
+
         case 'R':
-            os.write(getNextPageOfVars());
+            speedLimitedWrite(os, getNextPageOfVars());
             break;
-        case 80:
+        case 'P':
             int pageNo = is.read();
             int fetch = is.read();
-            if(fetch==86)
+            if (fetch == 'V')
             {
-                os.write(getFirmwarePage(pageNo));
+                speedLimitedWrite(os, getFirmwarePage(pageNo));
             }
             break;
+            //TODO: add page write processing
         }
-        
     }
 
-    private byte[] getFirmwarePage(int pageNo)
+    @Override
+    String getSignature()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return signature;
     }
 
-    private byte[] getNextPageOfVars()
+    @Override
+    String getFirmwareFile()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return fileName;
     }
 
-    public void init()
+    @Override
+    String getFRDFilename()
     {
-        try
-        {
-            serverSocket = new ServerSocket(SERVERPORT);
-        } catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        return "uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y.firmware";
     }
 
-    public void startRunning()
-    {
-        // TODO Auto-generated method stub
-
+    @Override
+    int getBaudRate()
+    {  
+        //Should really be 9600, but keep it nearer to what BT does.
+        return 5000;
     }
 
-    public void stopRunning()
+    @Override
+    int getFirmwarePageSize(int pageNo)
     {
-        // TODO Auto-generated method stub
-
+        //All MS1 pages are the same size
+        return 189;
     }
 
 }
