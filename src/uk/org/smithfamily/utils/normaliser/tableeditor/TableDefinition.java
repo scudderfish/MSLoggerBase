@@ -39,7 +39,7 @@ public class TableDefinition extends TableItem
     @Override
     public String toString()
     {
-        return String.format("t = new TableEditor(\"%s\",\"%s\",\"%s\",%s); tableEditors.put(\"%s\",t);",name,map3DName,label,page,name);
+        return String.format("t = new TableEditor(\"%s\",\"%s\",\"%s\",%s); tableEditors.put(\"%s\",t);",name,map3DName,label,page,map3DName);
     }
 
 }
