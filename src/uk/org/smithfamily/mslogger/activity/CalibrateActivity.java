@@ -40,7 +40,17 @@ public class CalibrateActivity extends Activity
 	private TextView	curValView;
 	private TextView	maxValView;
 	private ProgressBar	tpsDisplay;
-
+	
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            int currentTPS = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentTPS();
+            updateWithRaw(currentTPS);
+        }
+    };
+    
 	/**
 	 * 
 	 * @param savedInstanceState
@@ -150,15 +160,4 @@ public class CalibrateActivity extends Activity
 		
 		return (x - minTPS) * 100 / (maxTPS - minTPS);
 	}
-	
-	private final BroadcastReceiver mReceiver = new BroadcastReceiver()
-                                                {
-                                            
-                                                    @Override
-                                                    public void onReceive(Context context, Intent intent)
-                                                    {
-                                                        int currentTPS = ApplicationSettings.INSTANCE.getEcuDefinition().getCurrentTPS();
-                                                        updateWithRaw(currentTPS);
-                                                    }
-                                                };
 }

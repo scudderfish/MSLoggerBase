@@ -10,8 +10,8 @@ import uk.org.smithfamily.mslogger.dialog.EditTableDialog;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
-import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
+import uk.org.smithfamily.mslogger.ecuDef.Menu;
+import uk.org.smithfamily.mslogger.ecuDef.SubMenu;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,7 +37,7 @@ public class TuningActivity extends Activity
     private int currentIndexMenu = 0;
     
     private Megasquirt ecu;
-    private List<MenuDefinition> menus;
+    private List<Menu> menus;
     
     /**
      * 
@@ -67,13 +67,13 @@ public class TuningActivity extends Activity
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
-        final List<MenuDefinition> menus = ecu.getMenusForDialog("main");
+        final List<Menu> menus = ecu.getMenusForDialog("main");
         
         int nbButtons = 0;
         
         for (int i = 0; i < menus.size(); i++)
         {            
-            MenuDefinition menu = menus.get(i);
+            Menu menu = menus.get(i);
             String menuLabel = menu.getLabel();
             
             boolean found = false;
@@ -130,8 +130,8 @@ public class TuningActivity extends Activity
         Button b = (Button) v;
         int indexMenu = Integer.parseInt(b.getTag().toString());
         
-        MenuDefinition menuDef = menus.get(indexMenu);
-        List<SubMenuDefinition> subMenus = menuDef.getSubMenus();
+        Menu menuDef = menus.get(indexMenu);
+        List<SubMenu> subMenus = menuDef.getSubMenus();
         
         menu.setHeaderTitle(menuDef.getLabel());  
         
@@ -142,7 +142,7 @@ public class TuningActivity extends Activity
         
         for (int i = 0; i < subMenus.size(); i++)
         {
-            SubMenuDefinition subMenu = subMenus.get(i);
+            SubMenu subMenu = subMenus.get(i);
             
             // Don't display separator
             if (!subMenu.getName().equals("std_separator"))
@@ -162,7 +162,7 @@ public class TuningActivity extends Activity
         // Correspond to sub menu index
         int itemId = item.getItemId();
         
-        SubMenuDefinition subMenu = menus.get(currentIndexMenu).getSubMenuAt(itemId);
+        SubMenu subMenu = menus.get(currentIndexMenu).getSubMenuAt(itemId);
         
         String name = subMenu.getName();
         
