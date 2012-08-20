@@ -8,8 +8,6 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.MenuDefinition;
-import uk.org.smithfamily.mslogger.ecuDef.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveGauge;
@@ -20,7 +18,10 @@ import uk.org.smithfamily.utils.normaliser.curveeditor.CurveXAxis;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveXBins;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveYAxis;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveYBins;
+import uk.org.smithfamily.utils.normaliser.menu.MenuDefinition;
+import uk.org.smithfamily.utils.normaliser.menu.MenuPreProcessor;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
+import uk.org.smithfamily.utils.normaliser.menu.SubMenuDefinition;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridHeight;
 import uk.org.smithfamily.utils.normaliser.tableeditor.GridOrient;
 import uk.org.smithfamily.utils.normaliser.tableeditor.PreProcessor;
@@ -653,8 +654,8 @@ public class Process
             String randomNumber = subMenu.group(5);
             String expression = subMenu.group(7);
             
-            SubMenuDefinition x = new SubMenuDefinition(name, label, randomNumber);
-            m.getLast(currentMenuDialog).addSubMenu(x);
+            SubMenuDefinition x = new SubMenuDefinition(name, label, randomNumber);            
+            m.addItem(currentMenuDialog, x);
             
             // Add the expression too
             if (expression == null || StringUtils.isEmpty(expression))
@@ -668,6 +669,11 @@ public class Process
             }
             
             ecuData.getMenuControlExpressions().put(name, expression);
+        }
+        else
+        {
+            MenuPreProcessor p = new MenuPreProcessor(processPreprocessor(ecuData, line));
+            m.addItem(currentMenuDialog, p);
         }
     }
 

@@ -1,6 +1,6 @@
-package uk.org.smithfamily.mslogger.ecuDef;
+package uk.org.smithfamily.utils.normaliser.menu;
 
-public class SubMenuDefinition
+public class SubMenuDefinition extends MenuItem
 {
     private String label = "";
     private String name = "";
@@ -43,15 +43,10 @@ public class SubMenuDefinition
     {
         this.randomNumber = randomNumber;
     }
-
-    public String generateCode()
-    {
-        return String.format("        m.addSubMenu(new SubMenuDefinition(\"%s\",\"%s\",\"%s\"));\n", name, label, randomNumber);
-    }
-
+    
     @Override
     public String toString()
     {
-        return "SubMenuDefinition [label=" + label + ", name=" + name + ", randomNumber=" + randomNumber + "]";
+        return String.format("m.addSubMenu(new SubMenu(\"%s\",\"%s\",\"%s\"));", name, label, randomNumber);
     }
 }

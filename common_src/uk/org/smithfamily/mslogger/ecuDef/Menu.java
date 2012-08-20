@@ -3,14 +3,13 @@ package uk.org.smithfamily.mslogger.ecuDef;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MenuDefinition
+public class Menu
 {
     private String dialog = "";
     private String label = "";
-    private List<SubMenuDefinition> subMenus = new ArrayList<SubMenuDefinition>();
+    private List<SubMenu> subMenus = new ArrayList<SubMenu>();
     
-    public MenuDefinition(String dialog, String label)
+    public Menu(String dialog, String label)
     {
         this.dialog = dialog;
         if (label != null) label = label.replace("&", "");
@@ -37,36 +36,24 @@ public class MenuDefinition
         this.label = label;
     }
     
-    public void addSubMenu(SubMenuDefinition subMenu)
+    public void addSubMenu(SubMenu subMenu)
     {
         this.subMenus.add(subMenu);
     }
 
-    public List<SubMenuDefinition> getSubMenus()
+    public List<SubMenu> getSubMenus()
     {
         return subMenus;
     }
 
-    public SubMenuDefinition getSubMenuAt(int pos)
+    public SubMenu getSubMenuAt(int pos)
     {
         return subMenus.get(pos);
-    }
-
-    public String generateCode()
-    {
-        String output = String.format("m = new MenuDefinition(\"%s\",\"%s\");\n", dialog, label);
-        
-        for (SubMenuDefinition sub : subMenus)
-        {
-            output += sub.generateCode();
-        }
-        
-        return output;        
     }
 
     @Override
     public String toString()
     {
-        return "MenuDefinition [dialog=" + dialog + ", label=" + label + ", subMenus=" + subMenus + "]";
+        return "Menu [dialog=" + dialog + ", label=" + label + ", subMenus=" + subMenus + "]";
     }
 }

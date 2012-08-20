@@ -21,7 +21,7 @@ public abstract class Megasquirt
 	
 	protected Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
 	
-	protected Map<String,List<MenuDefinition>> menus = new HashMap<String,List<MenuDefinition>>();
+	protected Map<String,List<Menu>> menus = new HashMap<String,List<Menu>>();
 	
 	protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
 	
