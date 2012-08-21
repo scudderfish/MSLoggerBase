@@ -119,7 +119,15 @@ public class Output
         writer.println(TAB + "{");
         for (String flag : ecuData.getFlags())
         {
-            writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
+            // INI_VERSION_2 should always be true
+            if (flag.equals("INI_VERSION_2"))
+            {
+                writer.println(TAB + TAB + "INI_VERSION_2 = true;");
+            }
+            else
+            {
+                writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
+            }
         }
         writer.println(TAB + "}");
 
