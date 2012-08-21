@@ -34,6 +34,7 @@ import uk.org.smithfamily.utils.normaliser.tableeditor.ZBins;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedDefinition;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedField;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedPanel;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedPreProcessor;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedTracker;
 
 public class Process
@@ -919,6 +920,24 @@ public class Process
         {
             UserDefinedPanel x = new UserDefinedPanel(dialogPanel.group(1), dialogPanel.group(3));
             d.addItem(x);
+        }
+        else
+        {
+            String preproc = processPreprocessor(ecuData, line);
+            if (!preproc.equals(""))
+            {
+                UserDefinedPreProcessor p = new UserDefinedPreProcessor(preproc);
+                if (d != null)
+                {
+                    d.addItem(p);
+                }
+                else
+                {
+                    d = new UserDefinedTracker();
+                    dialogDefs.add(d);
+                    d.addItem(p);
+                }
+            }
         }
     }
 

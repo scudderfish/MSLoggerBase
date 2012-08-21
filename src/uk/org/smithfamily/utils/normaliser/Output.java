@@ -21,6 +21,7 @@ import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableItem;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedItem;
+import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedPreProcessor;
 import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedTracker;
 
 public class Output
@@ -359,18 +360,81 @@ public class Output
 
     static void outputUserDefined(ECUData ecuData, PrintWriter writer)
     {
-        for (UserDefinedTracker d : ecuData.getDialogDefs())
+        // Keep track of indent of preprocessor
+        int preprocessorIndent = 0;
+        
+        // Keep all the dummy dialogs methods and dump them at the end. Some dialog might get merged with other because 
+        // they are in the same preproc
+        String dummyDialogsMethods = ""; 
+        
+        // Keep track if it's the first dialog of the method or if we already added one
+        boolean wasFirstDialog = false;
+        
+        for (int i = 0; i < ecuData.getDialogDefs().size(); i++)
         {
-            writer.println(TAB + "private void createDialog_" + d.getName() + "()");
-            writer.println(TAB + "{");
-            writer.println(TAB + TAB + "MSDialog d = null;");
-
-            for (UserDefinedItem i : d.getItems())
+            UserDefinedTracker d = ecuData.getDialogDefs().get(i);
+            
+            // We are not in a preproc so write the method signature
+            if (preprocessorIndent == 0)
             {
-                writer.println(TAB + TAB + i);
+                wasFirstDialog = true;
+                
+                writer.println(TAB + "private void createDialog_" + d.getName() + "()");
+                writer.println(TAB + "{");
+                writer.println(TAB + TAB + "MSDialog d = null;");
             }
-            writer.println(TAB + "}");
+            else
+            {
+                wasFirstDialog = false;
+            }
+            
+            boolean ignorePreproc = false;
+            
+            // If it's the last dialog and we are not in preproc,
+            // ignore the preproc, it most likely belong to the other section after [UserDefined] (usually [PortEditor])
+            if (i == ecuData.getDialogDefs().size() - 1 && preprocessorIndent == 0)
+            {
+                ignorePreproc = true;
+            }
+            
+            for (UserDefinedItem j : d.getItems())
+            {
+                // If it's a preproc, we need to keep track of indent
+                if (UserDefinedPreProcessor.class.isInstance(j) && !ignorePreproc)
+                {
+                    if (j.toString().contains("{"))
+                    {
+                        preprocessorIndent++;
+                    }
+                    
+                    if (j.toString().contains("}"))
+                    {
+                        preprocessorIndent--;
+                    }
+                }
+                
+                // Make sure it's not a preproc, or that it's one but we don't ignore them
+                if (!UserDefinedPreProcessor.class.isInstance(j) || (UserDefinedPreProcessor.class.isInstance(j) && !ignorePreproc))
+                {
+                    writer.println(TAB + TAB +  StringUtils.repeat(TAB, preprocessorIndent) + j);
+                }
+            }
+            
+            // We are out of the preproc so we won't add the dialog to the same function
+            // We can close the current function
+            if (preprocessorIndent == 0)
+            {
+                writer.println(TAB + "}");
+            }
+
+            // It wasn't the first dialog of this method, so we will create a dummy method
+            if (!wasFirstDialog)
+            {
+                dummyDialogsMethods += TAB + "private void createDialog_" + d.getName() + "(){}\n";
+            }
         }
+        
+        writer.println(dummyDialogsMethods);
 
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createDialogs()");
