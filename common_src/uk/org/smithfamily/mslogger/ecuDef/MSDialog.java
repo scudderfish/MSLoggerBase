@@ -7,14 +7,16 @@ public class MSDialog
 {
     private String name = "";
     private String label = "";
+    private String axis = "";
     
     private List<DialogField> fieldsList = new ArrayList<DialogField>();
     private List<DialogPanel> panelsList = new ArrayList<DialogPanel>();
 
-    public MSDialog(String name, String label)
+    public MSDialog(String name, String label, String axis)
     {
         this.name = name;
         this.label = label;
+        this.axis = axis;
     }
     
     public String getName() {
@@ -32,6 +34,16 @@ public class MSDialog
     public void setLabel(String label) {
         this.label = label;
     }
+    
+    public String getAxis()
+    {
+        return axis;
+    }
+
+    public void setAxis(String axis)
+    {
+        this.axis = axis;
+    }
 
     public List<DialogField> getFieldsList() {
         return fieldsList;
@@ -48,27 +60,10 @@ public class MSDialog
     public void addPanel(DialogPanel panel) {
         this.panelsList.add(panel);
     }
-
-    public String generateCode()
-    {
-        String output = String.format("d = new MSDialog(\"%s\",\"%s\");\n", name, label);
-        
-        for (DialogField df : fieldsList)
-        {
-            output += df.generateCode();
-        }
-
-        for (DialogPanel dp : panelsList)
-        {
-            output += dp.generateCode();
-        }
-
-        return output;
-    }
     
     @Override
     public String toString()
     {
-        return "MSDialog [name=" + name + ", label=" + label + ", fieldsList=" + fieldsList + ", panelsList=" + panelsList + "]";
-    }   
+        return "MSDialog [name=" + name + ", label=" + label + ", axis=" + axis + ", fieldsList=" + fieldsList + ", panelsList=" + panelsList + "]";
+    }
 }

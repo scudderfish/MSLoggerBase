@@ -901,9 +901,11 @@ public class Process
         if (dialog.matches())
         {
             String name = dialog.group(1);
+            String label = dialog.group(2);
+            String axis = dialog.group(4);
             d = new UserDefinedTracker();
             dialogDefs.add(d);
-            UserDefinedDefinition x = new UserDefinedDefinition(d, name, dialog.group(2));
+            UserDefinedDefinition x = new UserDefinedDefinition(d, name, label, axis);
             
             d.addItem(x);
             d.setName(name);
