@@ -171,6 +171,17 @@ public class Output
     static void outputGlobalVars(ECUData ecuData, PrintWriter writer)
     {
         writer.println("//Flags");
+        
+        List<String> flags = new ArrayList<String>();
+        for (String flag : ecuData.getFlags())
+        {
+            if (!flag.equals("INI_VERSION_2"))
+            {
+                flags.add("\"" + flag + "\"");
+            }
+        }
+        
+        writer.println(TAB + "public String[] flags = {" + StringUtils.join(flags,",") + "};");
         for (String name : ecuData.getFlags())
         {
             writer.println(TAB + "public boolean " + name + ";");
