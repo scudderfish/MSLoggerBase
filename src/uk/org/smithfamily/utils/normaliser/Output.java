@@ -368,7 +368,7 @@ public class Output
         String dummyDialogsMethods = ""; 
         
         // Keep track if it's the first dialog of the method or if we already added one
-        boolean wasFirstDialog = false;
+        boolean isFirstDialog = false;
         
         for (int i = 0; i < ecuData.getDialogDefs().size(); i++)
         {
@@ -377,7 +377,7 @@ public class Output
             // We are not in a preproc so write the method signature
             if (preprocessorIndent == 0)
             {
-                wasFirstDialog = true;
+                isFirstDialog = true;
                 
                 writer.println(TAB + "private void createDialog_" + d.getName() + "()");
                 writer.println(TAB + "{");
@@ -385,7 +385,7 @@ public class Output
             }
             else
             {
-                wasFirstDialog = false;
+                isFirstDialog = false;
             }
             
             boolean ignorePreproc = false;
@@ -428,7 +428,7 @@ public class Output
             }
 
             // It wasn't the first dialog of this method, so we will create a dummy method
-            if (!wasFirstDialog)
+            if (!isFirstDialog)
             {
                 dummyDialogsMethods += TAB + "private void createDialog_" + d.getName() + "(){}\n";
             }
