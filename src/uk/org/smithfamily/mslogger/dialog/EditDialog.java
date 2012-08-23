@@ -1,5 +1,8 @@
 package uk.org.smithfamily.mslogger.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
@@ -315,6 +318,36 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
+     * Helper class for multi values spinner which specify an id and text for each row of the spinner
+     */
+    class MultiValuesSpinnerData
+    {
+        private int id = 0;
+        private String text = "";
+        
+        public MultiValuesSpinnerData(int id, String text)
+        {
+            this.id = id;
+            this.text = text;
+        }
+        
+        public int getId()
+        {
+            return id;
+        }
+        
+        public String getText()
+        {
+            return text;
+        }
+        
+        public String toString()
+        {
+            return text;
+        }
+    }
+    
+    /**
      *  Build a Spinner for displaying multi values constant
      *
      * @param df The dialog field to build the display for
@@ -330,30 +363,27 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         {
             spin.setEnabled(false);
         }
+
+        final List<MultiValuesSpinnerData> spinnerData = new ArrayList<MultiValuesSpinnerData>();
         
-        /*
         // Remove INVALID from values
-        List<String> valuesWithoutInvalid = new ArrayList<String>();
         for (int i = 0; i < constant.getValues().length; i++)
         {
             String value = constant.getValues()[i];
             if (!value.equals("INVALID"))
             {
-                valuesWithoutInvalid.add(value);
+                spinnerData.add(new MultiValuesSpinnerData(i, value));
             }
         }
-        
-        valuesWithoutInvalid.toArray(new String[valuesWithoutInvalid.size()])
-        */
-        
-        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, constant.getValues());
+ 
+        ArrayAdapter<MultiValuesSpinnerData> spinAdapter = new ArrayAdapter<MultiValuesSpinnerData>(getContext(), android.R.layout.simple_spinner_item, spinnerData);
         
         // Specify the layout to use when the list of choices appears
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         spin.setAdapter(spinAdapter);
         
-        int selectedValue = (int) ecu.getField(df.getName());                        
+        int selectedValue = (int) ecu.getField(df.getName());
         spin.setSelection(selectedValue);
         spin.setTag(df.getName());
         
@@ -366,7 +396,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             {
                 String constantName = parentView.getTag().toString();
                 
-                long value = parentView.getSelectedItemPosition();
+                int value = spinnerData.get(position).getId();
                 
                 // Value changed, update field in ECU class
                 if (ecu.getField(constantName) != value)
