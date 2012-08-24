@@ -198,7 +198,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 tableRow.addView(label);
                 
                 // For empty label or empty field name, we just insert an empty text view as second column of the row
-                if (df.getLabel().equals("") || df.getName().equals("null"))
+                if ((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null"))
                 {
                     // No second column so label is used to separate so make it bold and merge columns
                     label.setTypeface(null, Typeface.BOLD);
@@ -305,7 +305,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             public void beforeTextChanged(CharSequence s, int start, int count, int after){}
             
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count){}                
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
         });
         
         // Field is ready only or disabled
@@ -366,13 +366,32 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         final List<MultiValuesSpinnerData> spinnerData = new ArrayList<MultiValuesSpinnerData>();
         
+        int selectedValue = (int) ecu.getField(df.getName());
+        int selectedIndex = 0;
+        int invalidCount = 0;
+        
         // Remove INVALID from values
         for (int i = 0; i < constant.getValues().length; i++)
         {
             String value = constant.getValues()[i];
-            if (!value.equals("INVALID"))
+            
+            if (value.equals("INVALID"))
             {
-                spinnerData.add(new MultiValuesSpinnerData(i, value));
+                invalidCount++;
+            }
+            else
+            {
+                spinnerData.add(new MultiValuesSpinnerData(i + 1, value));
+            }
+            
+            /*
+             *  When we reach the currently selected valid, we need to keep track of how many
+             *  invalid value there was before that, because those won't be displayed in the
+             *  spinner and we need to know which index to select
+             */
+            if (selectedValue == i)
+            {
+                selectedIndex = i - invalidCount;
             }
         }
  
@@ -382,9 +401,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         spin.setAdapter(spinAdapter);
-        
-        int selectedValue = (int) ecu.getField(df.getName());
-        spin.setSelection(selectedValue);
+        spin.setSelection(selectedIndex);
         spin.setTag(df.getName());
         
         final MSDialog msDialog = this.dialog;

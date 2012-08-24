@@ -36,6 +36,11 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
     final int NUM_COLORS = 5;
     
+    private float currentTableMin = 0;
+    private float currentTableMax = 0;
+    
+    private boolean isModified = false;
+    
     /**
      * 
      * @param context
@@ -113,14 +118,15 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
                     @Override
                     public void afterTextChanged(Editable s)
                     {
-                        refreshCellsBackgroundColor();
+                        isModified = true;
+                        refreshCellsBackgroundColor((EditText) getCurrentFocus());
                     }
 
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {}                     
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
                 });
                 
                 // Add EditText to row
@@ -165,7 +171,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         
         yBinsLabel.setAnimation(rotAnim);
         
-        refreshCellsBackgroundColor();
+        refreshCellsBackgroundColor(null);
         
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);
@@ -192,8 +198,10 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     /**
      * This method goes over all the table cells and apply the right background color
      * so all the cells together looks like  a heat map
+     * 
+     * @param cell The cell that triggered the refresh, if any
      */
-    private void refreshCellsBackgroundColor()
+    private void refreshCellsBackgroundColor(EditText cell)
     {
         EditText firstCell = (EditText) findViewById(getCellId(1,1));
         
@@ -226,24 +234,41 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
             }
         }
         
-        // Change background colors
-        for (int y = 1; y <= tableNbX; y++)
+        // Min and/or maximum value of the table changed, we need redraw all background colors
+        if (cell == null || currentTableMin != min || currentTableMax != currentTableMax)
         {
-            for (int x = 1; x <= tableNbY; x++)
+            // Change background colors
+            for (int y = 1; y <= tableNbX; y++)
             {
-                EditText currentCell = (EditText) findViewById(getCellId(x,y));
-                
-                float currentValue = 0;
-                try
+                for (int x = 1; x <= tableNbY; x++)
                 {
-                    currentValue = Float.parseFloat(currentCell.getText().toString());
+                    EditText currentCell = (EditText) findViewById(getCellId(x,y));
+                    
+                    float currentValue = 0;
+                    try
+                    {
+                        currentValue = Float.parseFloat(currentCell.getText().toString());
+                    }
+                    catch (NumberFormatException e) {}
+    
+                    float currentPercent = (currentValue - min) / (max - min);
+                    
+                    currentCell.setBackgroundColor(getHeatMapColor(currentPercent));
                 }
-                catch (NumberFormatException e) {}
-
-                float currentPercent = (currentValue - min) / (max - min);
-                
-                currentCell.setBackgroundColor(getHeatMapColor(currentPercent));
             }
+        }
+        // Just redraw the specific cell that the value changed
+        else
+        {
+            float currentValue = 0;
+            try
+            {
+                currentValue = Float.parseFloat(cell.getText().toString());
+            }
+            catch (NumberFormatException e) {}
+            
+            float currentPercent = (currentValue - min) / (max - min);
+            cell.setBackgroundColor(getHeatMapColor(currentPercent));
         }
     }
     
@@ -289,7 +314,10 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
      */
     private void burnToECU()
     {
-        
+        if (isModified) 
+        {
+            System.out.println("Table " + table.getName() + "was modified, need to write change to ECU");
+        }
     }
     
     /**
