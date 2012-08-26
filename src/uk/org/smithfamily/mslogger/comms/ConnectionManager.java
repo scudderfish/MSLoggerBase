@@ -93,6 +93,7 @@ public enum ConnectionManager
     {
         this.handler = handler;
         conn = ConnectionFactory.INSTANCE.getConnection();
+        conn.init();
         if (currentState != ConnectionState.STATE_DISCONNECTED && !conn.isInitialised())
         {
             tearDown();
