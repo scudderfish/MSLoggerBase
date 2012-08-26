@@ -20,9 +20,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -102,8 +106,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         TableRow tableRow = new TableRow(getContext());
         tableRow.setLayoutParams(lp);
         
-        Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
-        Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
+        final Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
+        final Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
         
         for (int x = 1; x <= tableNbX; x++)
         {
@@ -171,6 +175,55 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 cell.setSingleLine(true);
                 cell.setPadding(10, 10, 10, 10);
+                cell.setTag(x);
+                cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+                cell.setOnFocusChangeListener(new OnFocusChangeListener()
+                {
+                    public void onFocusChange(View v, boolean hasFocus)
+                    {
+                        if (!hasFocus)
+                        {
+                            int column = Integer.parseInt(((EditText) v).getTag().toString());
+                            
+                            Constant constant;
+                            
+                            if (column == 1)
+                            {
+                                constant = xBinsConstant;
+                            }
+                            else 
+                            {
+                                constant = yBinsConstant;
+                            }
+                            
+                            DialogHelper.verifyOutOfBoundValue(getContext(), constant, (EditText) v);
+                        }
+                    }
+                });
+                cell.addTextChangedListener(new TextWatcher()
+                {
+                    @Override
+                    public void afterTextChanged(Editable s)
+                    {
+                        EditText edit = (EditText) getCurrentFocus();
+                        int column = Integer.parseInt(edit.getTag().toString());
+                        
+                        if (column == 1)
+                        {
+                            xBinsConstant.setModified(true);
+                        }
+                        else
+                        {
+                            yBinsConstant.setModified(true);
+                        }
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                });
                 
                 // Add EditText to row
                 tableRow.addView(cell);
@@ -380,7 +433,22 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
      */
     private void burnToECU()
     {
+        Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
+        Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
         
+        if (xBinsConstant.isModified())
+        {
+            System.out.println("Constant \"" + xBinsConstant.getName() + "\" was modified, need to write change to ECU");
+            
+            xBinsConstant.setModified(false);
+        }
+        
+        if (yBinsConstant.isModified())
+        {
+            System.out.println("Constant \"" + yBinsConstant.getName() + "\" was modified, need to write change to ECU");
+            
+            yBinsConstant.setModified(false);
+        }
     }
     
     /**

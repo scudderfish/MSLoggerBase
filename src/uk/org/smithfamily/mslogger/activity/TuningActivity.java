@@ -15,6 +15,7 @@ import uk.org.smithfamily.mslogger.ecuDef.SubMenu;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -38,7 +39,9 @@ public class TuningActivity extends Activity
     
     private Megasquirt ecu;
     private List<Menu> menus;
-    
+
+    private Dialog currentDialog;
+
     /**
      * 
      * @param savedInstanceState
@@ -58,6 +61,20 @@ public class TuningActivity extends Activity
         menus = ecu.getMenusForDialog("main");
         
         drawTuningButtons();
+    }
+    
+    /**
+     * Close the currently open dialog so the activity doesn't blow up with an "Activity has leaked window ..."
+     */
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+          
+        if (currentDialog != null)
+        {
+            currentDialog.dismiss();
+        }
     }
     
     /**
@@ -99,7 +116,7 @@ public class TuningActivity extends Activity
                     public void onClick(View v)
                     {    
                         v.showContextMenu();
-                    }                    
+                    }
                 });
                 
                 if (nbButtons % 2 == 0)
@@ -173,6 +190,8 @@ public class TuningActivity extends Activity
         {
             EditTableDialog tableDialog = new EditTableDialog(TuningActivity.this, table);
             tableDialog.show();
+            
+            this.currentDialog = tableDialog;
         }
         else
         {
@@ -186,6 +205,8 @@ public class TuningActivity extends Activity
             {
                 EditCurveDialog curveDialog = new EditCurveDialog(TuningActivity.this, curve);
                 curveDialog.show();
+                
+                this.currentDialog = curveDialog;
             }
             else {
                 MSDialog dialog = ecu.getDialogByName(name);
@@ -195,6 +216,8 @@ public class TuningActivity extends Activity
                 {
                     EditDialog editDialog = new EditDialog(TuningActivity.this, dialog);
                     editDialog.show();
+
+                    this.currentDialog = editDialog;
                 }
                 // No idea what it is, we're screwed!
                 else
