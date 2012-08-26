@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
@@ -284,6 +285,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         edit.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         edit.setPadding(8, 5, 8, 5);
         edit.setTag(df.getName());
+        edit.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
         edit.addTextChangedListener(new TextWatcher()
         {
             /**

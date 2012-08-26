@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -174,6 +175,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
                 cell.setSingleLine(true);
                 cell.setPadding(10, 10, 10, 10);
                 cell.setTag(x);
+                cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
                 
                 cell.addTextChangedListener(new TextWatcher()
                 {

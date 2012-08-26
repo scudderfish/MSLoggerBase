@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.FloatMath;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -111,6 +112,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
                 cell.setSingleLine(true);
                 cell.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
                 cell.setPadding(8, 5, 8, 5);
+                cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
                 
                 // Refresh background color when one edit text lost focus
                 cell.addTextChangedListener(new TextWatcher()
