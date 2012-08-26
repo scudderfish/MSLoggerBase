@@ -1,27 +1,27 @@
 package uk.org.smithfamily.mslogger.dialog;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.EditText;
 
 /**
- *
+ * Helper class used for dialogs
  */
 public class DialogHelper
 {
     
     /**
+     * This function verify if the user entered value is in range for the specifing constant
+     * Show an alert dialog if it's not with indication to the user on how to fix it
      *
-     * @param context
-     * @param cell
+     * @param context The context the function was called
+     * @param constant The constant to look for min and max value
+     * @param cell The cell the user was typing in
      */
     public static void verifyOutOfBoundValue(Context context, Constant constant, final EditText cell)
     {
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
         double currentValue = Double.parseDouble(cell.getText().toString());
         
