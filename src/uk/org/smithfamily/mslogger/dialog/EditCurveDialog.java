@@ -26,6 +26,7 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -176,7 +177,29 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
                 cell.setPadding(10, 10, 10, 10);
                 cell.setTag(x);
                 cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
-                
+                cell.setOnFocusChangeListener(new OnFocusChangeListener()
+                {
+                    public void onFocusChange(View v, boolean hasFocus)
+                    {
+                        if (!hasFocus)
+                        {
+                            int column = Integer.parseInt(((EditText) v).getTag().toString());
+                            
+                            Constant constant;
+                            
+                            if (column == 1)
+                            {
+                                constant = xBinsConstant;
+                            }
+                            else 
+                            {
+                                constant = yBinsConstant;
+                            }
+                            
+                            DialogHelper.verifyOutOfBoundValue(getContext(), constant, (EditText) v);
+                        }
+                    }
+                });
                 cell.addTextChangedListener(new TextWatcher()
                 {
                     @Override
