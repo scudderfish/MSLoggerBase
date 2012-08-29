@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveGauge;
@@ -143,10 +144,10 @@ public class Process
             }
             String dataType = scalarM.group(2);
             String offset = scalarM.group(3);
-            String scalingRaw = scalarM.group(4);
-            String[] scaling = scalingRaw.split(",");
-            String scale = scaling[1].trim();
-            String numOffset = scaling[2].trim();
+            String units = scalarM.group(4);
+            String scale = scalarM.group(5);
+            String numOffset = scalarM.group(6);
+
             if (Double.parseDouble(scale) != 1)
             {
                 ecuData.getRuntimeVars().put(name, "double");
@@ -159,6 +160,13 @@ public class Process
                     .getScalar("ochBuffer", ecuData.getRuntimeVars().get(name), name, dataType, offset, scale, numOffset);
             ecuData.setFingerprintSource(ecuData.getFingerprintSource() + definition);
             ecuData.getRuntime().add(definition);
+            
+            int offsetOC = Integer.parseInt(offset);
+            double scaleOC = !StringUtils.isEmpty(scale) ? Double.parseDouble(scale) : 0;
+            double translateOC = !StringUtils.isEmpty(numOffset) ? Double.parseDouble(numOffset) : 0;
+            
+            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC);
+            ecuData.getOutputChannels().add(outputChannel);
         }
         else if (exprM.matches())
         {
@@ -230,7 +238,11 @@ public class Process
         }
         else if (line.startsWith("#"))
         {
-            ecuData.getRuntime().add(processPreprocessor(ecuData, line));
+            String preproc = processPreprocessor(ecuData, line);
+            ecuData.getRuntime().add(preproc);
+            
+            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", 0, 0);
+            ecuData.getOutputChannels().add(oc);
         }
         else if (!StringUtils.isEmpty(line))
         {

@@ -2,36 +2,36 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 
 public class YBins extends TableItem
 {
-    private String bins1;
-    private String label;
+    private String bins;
+    private String outputChannel;
     private String readOnly;
 
-    public YBins(String bins1, String label, String readonly)
+    public YBins(String bins, String outputChannel, String readOnly)
     {
-        this.bins1 = bins1;
-        this.label = label;
-        this.readOnly = (readonly == null ? "false" : readonly.equals("readonly") ? "true" : "false");
+        this.bins = bins;
+        this.outputChannel = outputChannel;
+        this.readOnly = (readOnly == null ? "false" : readOnly.equals("readonly") ? "true" : "false");
 
     }
 
-    public String getBins1()
+    public String getBins()
     {
-        return bins1;
+        return bins;
     }
 
-    public void setBins1(String bins1)
+    public void setBins(String bins)
     {
-        this.bins1 = bins1;
+        this.bins = bins;
     }
 
     public String getLabel()
     {
-        return label;
+        return outputChannel;
     }
 
     public void setLabel(String label)
     {
-        this.label = label;
+        this.outputChannel = label;
     }
 
     public String getReadOnly()
@@ -47,7 +47,7 @@ public class YBins extends TableItem
     @Override
     public String toString()
     {
-        return String.format("t.setYBins(%s,\"%s\",%s);", bins1, label, readOnly);
+        return String.format("t.setYBins(%s,\"%s\",%s);", bins, outputChannel, readOnly);
     }
 
 }
