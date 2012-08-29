@@ -24,6 +24,8 @@ import android.util.Log;
 public abstract class Megasquirt
 {
     protected Map<String,Constant> constants = new HashMap<String,Constant>();
+    
+    protected Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
 
     protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
     
@@ -992,6 +994,11 @@ public abstract class Megasquirt
         return constants.get(name);
     }
 
+    public OutputChannel getOutputChannelByName(String name)
+    {
+        return outputChannels.get(name);
+    }
+    
     public TableEditor getTableEditorByName(String name) 
     {
         return tableEditors.get(name);
