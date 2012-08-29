@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuDefinition;
@@ -135,6 +136,7 @@ public class Output
         writer.println(TAB + "public void refreshFlags()");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "setFlags();");
+        writer.println(TAB + TAB + "initOutputChannels();");
         for (int i = 1; i <= constantMethodCount; i++)
         {
             writer.println(TAB + TAB + "initConstants" + i + "();");
@@ -147,6 +149,26 @@ public class Output
 
     }
 
+    static void outputOutputChannels(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println(TAB + "public void initOutputChannels()");
+        writer.println(TAB + "{");
+
+        for (OutputChannel op : ecuData.getOutputChannels())
+        {
+            if (op.getType().equals("PREPROC"))
+            {
+                writer.println(TAB + TAB + op.getName());
+            }
+            else
+            {
+                writer.println(TAB + TAB + "outputChannels.put(\"" + op.getName() + "\", new " + op.toString() + ");");
+            }
+        }
+        
+        writer.println(TAB + "}");
+    }
+    
     static void outputPackageAndIncludes(ECUData ecuData, PrintWriter writer)
     {
         writer.println("package uk.org.smithfamily.mslogger.ecuDef.gen;");

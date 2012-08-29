@@ -16,6 +16,8 @@ import android.content.Context;
 public abstract class Megasquirt
 {
 	protected Map<String,Constant> constants = new HashMap<String,Constant>();
+	
+	protected Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
 
 	protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
 	

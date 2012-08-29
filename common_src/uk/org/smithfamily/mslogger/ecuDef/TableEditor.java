@@ -10,10 +10,10 @@ public class TableEditor
     private String     map3DName;
     private String     name;
     private double[]   xBins;
-    private String     xLabel;
+    private String     xOutputChannel;
     private boolean    xReadOnly;
     private double[]   yBins;
-    private String     yLabel;
+    private String     yOutputChannel;
     private boolean    yReadOnly;
     private double[][] zBins;
     private double     height;
@@ -51,17 +51,17 @@ public class TableEditor
         return name;
     }
 
-    public void setXBins(double[] bins, String label, boolean b)
+    public void setXBins(double[] bins, String outputChannel, boolean b)
     {
         this.xBins = bins;
-        this.xLabel = label;
+        this.xOutputChannel = outputChannel;
         this.xReadOnly = b;
     }
 
-    public void setYBins(double[] bins, String label, boolean b)
+    public void setYBins(double[] bins, String outputChannel, boolean b)
     {
         this.yBins = bins;
-        this.yLabel = label;
+        this.yOutputChannel = outputChannel;
         this.yReadOnly = b;
     }
 
@@ -87,9 +87,9 @@ public class TableEditor
         return xBins;
     }
 
-    public String getxLabel()
+    public String getxOutputChannel()
     {
-        return xLabel;
+        return xOutputChannel;
     }
 
     public boolean isxReadOnly()
@@ -102,9 +102,9 @@ public class TableEditor
         return yBins;
     }
 
-    public String getyLabel()
+    public String getyOutputChannel()
     {
-        return yLabel;
+        return yOutputChannel;
     }
 
     public boolean isyReadOnly()
@@ -157,8 +157,8 @@ public class TableEditor
     @Override
     public String toString()
     {
-        return "TableEditor [page=" + page + ", label=" + label + ", map3DName=" + map3DName + ", name=" + name + ", xBins=" + Arrays.toString(xBins) + ", xLabel=" + xLabel + ", xReadOnly=" + xReadOnly + ", yBins=" + Arrays.toString(yBins)
-                + ", yLabel=" + yLabel + ", yReadOnly=" + yReadOnly + ", zBins=" + Arrays.toString(zBins) + ", height=" + height + ", upLabel=" + upLabel + ", downLabel=" + downLabel + ", xOrient=" + xOrient + ", yOrient=" + yOrient + ", zOrient="
+        return "TableEditor [page=" + page + ", label=" + label + ", map3DName=" + map3DName + ", name=" + name + ", xBins=" + Arrays.toString(xBins) + ", xOutputChannel=" + xOutputChannel + ", xReadOnly=" + xReadOnly + ", yBins=" + Arrays.toString(yBins)
+                + ", yOutputChannel=" + yOutputChannel + ", yReadOnly=" + yReadOnly + ", zBins=" + Arrays.toString(zBins) + ", height=" + height + ", upLabel=" + upLabel + ", downLabel=" + downLabel + ", xOrient=" + xOrient + ", yOrient=" + yOrient + ", zOrient="
                 + zOrient + "]";
     }
 
