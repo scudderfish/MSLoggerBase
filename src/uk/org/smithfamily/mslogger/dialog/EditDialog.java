@@ -6,10 +6,12 @@ import java.util.List;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
 import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,6 +32,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -44,6 +47,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private Megasquirt ecu;
     private int nbPanels = 0;
     
+    // Used on label in table row with no field beside
+    // Those are usually used as separator so add top and bottom margins
+    private LayoutParams lpSpanWithMargins;
+    
+    // Used on label in table row with field beside label, add a margin right
+    // so the label and field are separated
+    private LayoutParams lpSpan;
+    
+    // Regular layout params for dialog row with label and constant
+    private LayoutParams lp;
+    
+    private List<CurveHelper> curveHelpers = new ArrayList<CurveHelper>();
+    private List<TableHelper> tableHelpers = new ArrayList<TableHelper>();
+    
     /**
      * Constructor for dialog which set the current dialog and ECU object
      * 
@@ -56,6 +73,16 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         this.ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         this.dialog = dialog;
+        
+        // Initialise some layout params
+        lpSpanWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpSpanWithMargins.setMargins(0, 10, 0, 15);
+        lpSpanWithMargins.span = 2;
+        
+        lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpSpan.setMargins(0, 0, 8, 0);
+        
+        lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
     }
     
     /**
@@ -84,6 +111,44 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     
+    private void setOrientationLayoutParams(TableLayout tl)
+    {
+        RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        /*
+        if (orientation.equals("North"))
+        {
+            tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
+            tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
+            tl.setPadding(0, 0, 0, 10);
+            System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
+        }
+        else if (orientation.equals("South"))
+        {
+            tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
+            tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
+            tl.setPadding(0, 10, 0, 0);
+            System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
+        }
+        else if (orientation.equals("West"))
+        {
+            tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
+            tl.setPadding(0, 0, 10, 0);
+            System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
+        }
+        else
+        {
+            tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
+            tl.setPadding(10, 0, 0, 0);
+            System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
+        }*/
+        
+        tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
+        tl.setPadding(10, 0, 0, 0);
+        
+        tl.setLayoutParams(tlp);
+    }
+    
     /**
      * Recursive function that will draw fields and panels of a dialog.
      * It's called recursively until all fields and panels were drawn.
@@ -95,58 +160,13 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private void drawDialogFields(MSDialog dialog, boolean isPanel, String orientation)
     {
         TableLayout tl = new TableLayout(getContext());
-        LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 
-        // Used on label in table row with field beside label, add a margin right
-        // so the label and field are separated
-        LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.setMargins(0, 0, 8, 0);
-
-        // Used on label in table row with no field beside
-        // Those are usually used as separator so add top and bottom margins
-        LayoutParams lpSpanWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpanWithMargins.setMargins(0, 10, 0, 15);
-        lpSpanWithMargins.span = 2;
-        
         tl.setId(nbPanels);
         
         // This is not the first panel we add on this dialog
         if (nbPanels > 0)
         {
-            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-
-            /*
-            if (orientation.equals("North"))
-            {
-                tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
-                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-                tl.setPadding(0, 0, 0, 10);
-                System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
-            }
-            else if (orientation.equals("South"))
-            {
-                tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
-                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-                tl.setPadding(0, 10, 0, 0);
-                System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
-            }
-            else if (orientation.equals("West"))
-            {
-                tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
-                tl.setPadding(0, 0, 10, 0);
-                System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
-            }
-            else
-            {
-                tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
-                tl.setPadding(10, 0, 0, 0);
-                System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
-            }*/
-            
-            tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
-            tl.setPadding(10, 0, 0, 0);
-            
-            tl.setLayoutParams(tlp);
+            setOrientationLayoutParams(tl);
         }
         else {
             System.out.println("PANEL first at " + nbPanels + ": " + dialog.getName());
@@ -176,26 +196,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             {
                 tableRow = new TableRow(getContext());
                 
-                String labelText = df.getLabel();
-                
-                // Add units to label
-                if (constant != null && !constant.getUnits().equals(""))
-                {
-                    labelText += " (" + constant.getUnits() + ")";
-                }
-                
-                TextView label = new TextView(getContext());
-                label.setText(labelText);
-                
-                // If the first character of the label is a #, we need to highlight that label
-                // It means it is used as a section separator
-                if (labelText.length() > 0 && labelText.substring(0,1).equals("#"))
-                {
-                    label.setText(" " + label.getText().toString().substring(1)); // Replace the # by a space
-                    label.setBackgroundColor(Color.rgb(110, 110, 110));
-                }
-                
-                label.setLayoutParams(lpSpan);
+                TextView label = getLabel(df, constant);
                 
                 tableRow.addView(label);
                 
@@ -211,6 +212,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         label.setLayoutParams(lpSpanWithMargins);
                     }
                 }
+                // Regular row with label and constant fields
                 else 
                 {
                     tableRow.setLayoutParams(lp);
@@ -242,20 +244,126 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-              drawDialogFields(dialogPanel, true, dp.getOrientation());
+                drawDialogFields(dialogPanel, true, dp.getOrientation());
             }
             else
             {
-              // Maybe it's a curve panel
-              //
-              // CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
-              // if (curvePanel)
-              // {
-              // 
-              // }
-              //
+                // Maybe it's a curve panel
+                CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
+                if (curvePanel != null)
+                {
+                    createCurvePanel(curvePanel);
+                }
+                else
+                {
+                    // Maybe it's a table panel
+                    TableEditor tablePanel = ecu.getTableEditorByName(dp.getName());
+                    
+                    if (tablePanel != null)
+                    {
+                        createTablePanel(tablePanel);
+                    }
+                }
             }
         }
+    }
+    
+    /**
+     * 
+     * @param curvePanel
+     */
+    private void createCurvePanel(CurveEditor curvePanel)
+    {
+        CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel);
+        
+        TableLayout tl = new TableLayout(getContext());
+
+        tl.setId(nbPanels);
+        
+        if (nbPanels > 0) 
+        {
+            setOrientationLayoutParams(tl); 
+        }
+        
+        content.addView(tl);
+        nbPanels++;
+        
+        TableRow tableRow = new TableRow(getContext());
+        
+        LinearLayout curveLayout = curveHelper.getLayout();
+        curveLayout.setLayoutParams(lpSpan);
+        
+        tableRow.addView(curveLayout);
+        
+        tl.addView(tableRow);
+
+        curveHelpers.add(curveHelper);
+    }
+    
+    /**
+     * 
+     * @param tablePanel
+     */
+    private void createTablePanel(TableEditor tablePanel)
+    {
+        TableHelper tableHelper = new TableHelper(getContext(), tablePanel, false);
+        
+        TableLayout tl = new TableLayout(getContext());
+
+        tl.setId(nbPanels);
+        
+        if (nbPanels > 0) 
+        {
+            setOrientationLayoutParams(tl);
+        }
+        
+        content.addView(tl);
+        nbPanels++;
+        
+        TableRow tableRow = new TableRow(getContext());
+        
+        LinearLayout curveLayout = tableHelper.getLayout();
+        curveLayout.setLayoutParams(lpSpan);
+        
+        tableRow.addView(curveLayout);
+        
+        tl.addView(tableRow);
+        
+        tableHelpers.add(tableHelper);
+    }
+    
+    /**
+     * Take information from a dialog field and constant and build the label for the field
+     * 
+     * @param df The DialogField to build the label for
+     * @param constant The Constant to build the label for
+     * 
+     * @return The TextView object
+     */
+    private TextView getLabel(DialogField df, Constant constant)
+    {
+        String labelText = df.getLabel();
+        
+        // Add units to label
+        if (constant != null && !constant.getUnits().equals(""))
+        {
+            labelText += " (" + constant.getUnits() + ")";
+        }
+        
+        TextView label = new TextView(getContext());
+        label.setText(labelText);
+        
+        // If the first character of the label is a #, we need to highlight that label
+        // It means it is used as a section separator
+        if (labelText.length() > 0 && labelText.substring(0,1).equals("#"))
+        {
+            label.setText(" " + label.getText().toString().substring(1)); // Replace the # by a space
+            label.setBackgroundColor(Color.rgb(110, 110, 110));
+        }
+        
+        label.setLayoutParams(lpSpan);
+        
+        return label;
     }
     
     /**
@@ -545,6 +653,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      */
     private void burnToECU()
     {
+        // Burn all constant
         for (String constantName : ecu.getAllConstantsNamesForDialog(dialog))
         {
             Constant constant = ecu.getConstantByName(constantName);
@@ -555,6 +664,18 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 
                 constant.setModified(false);
             }
+        }
+        
+        // Burn all tables
+        for (CurveHelper curveHelper : curveHelpers)
+        {
+            curveHelper.getCurveEditor();
+        }
+        
+        // Burn all curves
+        for (TableHelper tableHelper : tableHelpers)
+        {
+            tableHelper.getTableEditor();
         }
     }
     
