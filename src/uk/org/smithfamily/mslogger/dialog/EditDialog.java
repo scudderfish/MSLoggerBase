@@ -530,28 +530,37 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         spin.setOnItemSelectedListener(new OnItemSelectedListener()
         {
+            boolean ignoreEvent = true;
+            
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                String constantName = parentView.getTag().toString();
-                
-                int value = spinnerData.get(position).getId();
-                
-                // Value changed, update field in ECU class
-                if (ecu.getField(constantName) != value)
+                // First onItemSelected event of the spinner come from populating it, ignore it!
+                if (ignoreEvent) {
+                    ignoreEvent = false;
+                }
+                else 
                 {
-                    // Constant has been modified and will need to be burn to ECU
-                    Constant constant = ecu.getConstantByName(constantName);
-                    constant.setModified(true);
+                    String constantName = parentView.getTag().toString();
                     
-                    // Update ecu field with new value
-                    ecu.setField(constantName, value); 
+                    int value = spinnerData.get(position).getId();
                     
-                    // Re-evaluate the expressions with the data updated
-                    ecu.setUserDefinedVisibilityFlags();
-
-                    // Refresh the UI
-                    refreshFieldsVisibility(msDialog);
+                    // Value changed, update field in ECU class
+                    if (ecu.getField(constantName) != value)
+                    {
+                        // Constant has been modified and will need to be burn to ECU
+                        Constant constant = ecu.getConstantByName(constantName);
+                        constant.setModified(true);
+                        
+                        // Update ecu field with new value
+                        ecu.setField(constantName, value); 
+                        
+                        // Re-evaluate the expressions with the data updated
+                        ecu.setUserDefinedVisibilityFlags();
+    
+                        // Refresh the UI
+                        refreshFieldsVisibility(msDialog);
+                    }
                 }
             }
 
@@ -571,7 +580,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private void showPanelLabel(String title, TableLayout tl)
     {
         LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.span = 2;     
+        lpSpan.span = 2;
         
         TableRow tableRow = new TableRow(getContext());
         tableRow.setLayoutParams(lpSpan);
