@@ -70,7 +70,7 @@ public class ExpressionWrangler
 		{
 			char c = e.charAt(i);
 
-			if (c == '!' && e.charAt(i + 1) != '=')
+			if (c == '!' && e.charAt(i + 1) != '=' && e.charAt(i + 1)!='(')
 			{
 				negate = true;
 				continue;
@@ -162,10 +162,11 @@ public class ExpressionWrangler
 	 * Test expressions
 	 */
 	static String[] exprs = { 
+		"!(als_in_pin && als_opt_pwmout)",
 		"v == 0x0e",
 		"RevLimCLTbased & 1",
 		" pwmIdle & (pwmidlewhen >1) ",
-		"a &  (b >1)","a && !b",
+		"ax &  (bx >1)","ay && !by",
 		"(a & 0x7) != 5", 
 		"staged_first_param && (staged_first_param  & 0x7) != 5",
 		"staged_first_param && staged_transition_on && ((staged_first_param & 0x7) != 5)", "feature3_3 ",
