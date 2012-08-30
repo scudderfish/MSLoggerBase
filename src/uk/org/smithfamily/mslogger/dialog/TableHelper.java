@@ -1,5 +1,8 @@
 package uk.org.smithfamily.mslogger.dialog;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import android.content.Context;
 import android.graphics.Color;
@@ -153,6 +156,23 @@ public class TableHelper
         this.tableNbX = table.getzBins().length;
         this.tableNbY = table.getzBins()[0].length;
         
+        // Apply animation on text view so it's vertical (-90 degree rotation with 0ms duration animation)
+        RotateAnimation rotAnim = new RotateAnimation(0, -90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotAnim.setDuration(0);
+        rotAnim.setFillAfter(true); // stay at the last position of the animation
+        rotAnim.setFillEnabled(true);
+        
+        yBinsLabel.setAnimation(rotAnim);
+        
+        // X and Y axis labels
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        OutputChannel xOutputChannel = ecu.getOutputChannelByName(table.getxOutputChannel());
+        OutputChannel yOutputChannel = ecu.getOutputChannelByName(table.getyOutputChannel());
+        
+        xBinsLabel.setText(table.getxOutputChannel() + " (" + xOutputChannel.getUnits() + ")");
+        yBinsLabel.setText(table.getyOutputChannel() + " (" + yOutputChannel.getUnits() + ")");
+        
         LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
                 
         LayoutParams rowHeaderLayout = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
@@ -171,7 +191,10 @@ public class TableHelper
         double yBins[] = table.getyBins();
         
         double zBins[][] = table.getzBins();
-         
+        
+        int xDigits = getDigitsFromScale(xOutputChannel.getScale());
+        int yDigits = getDigitsFromScale(yOutputChannel.getScale());
+        
         for (int x = 1; x <= tableNbX; x++)
         {
             tableRow = new TableRow(context);
@@ -179,7 +202,18 @@ public class TableHelper
             
             // Row header
             TextView rowHeader = new TextView(context);
-            rowHeader.setText(Double.toString(yBins[tableNbX - x]));
+            
+            String headerLabel = "";
+            if (yDigits == 0)
+            {
+                headerLabel = String.valueOf((int) yBins[tableNbX - x]);
+            }
+            else
+            {
+                headerLabel = String.valueOf(ecu.roundDouble(yBins[tableNbX - x], yDigits));
+            }
+            
+            rowHeader.setText(headerLabel);
             rowHeader.setLayoutParams(rowHeaderLayout);
             tableRow.addView(rowHeader);
             
@@ -215,7 +249,17 @@ public class TableHelper
             
             if (x > 1)
             {
-                columnHeader.setText(Double.toString(xBins[x - 2]));
+                String headerLabel = "";
+                if (xDigits == 0)
+                {
+                    headerLabel = String.valueOf((int) xBins[x - 2]);
+                }
+                else
+                {
+                    headerLabel = String.valueOf(ecu.roundDouble(xBins[x - 2], xDigits));
+                }
+                
+                columnHeader.setText(headerLabel);
                 columnHeader.setGravity(Gravity.CENTER);
             }          
                         
@@ -225,22 +269,37 @@ public class TableHelper
         }       
         
         tableLayout.addView(tableRow,lp);
-
-        // TODO load the output channel instead
-        xBinsLabel.setText(table.getxOutputChannel());
-
-        // TODO load the output channel instead
-        yBinsLabel.setText(table.getyOutputChannel());
-        
-        // Apply animation on text view so it's vertical (-90 degree rotation with 0ms duration animation)
-        RotateAnimation rotAnim = new RotateAnimation(0, -90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotAnim.setDuration(0);
-        rotAnim.setFillAfter(true); // stay at the last position of the animation
-        rotAnim.setFillEnabled(true);
-        
-        yBinsLabel.setAnimation(rotAnim);
         
         refreshCellsBackgroundColor(null);
+    }
+    
+    /**
+     * The INI define digits as scale in the following annoying format: 1.0, 0.1, etc. We need to extract how many digits that represents
+     * 
+     * @param scale
+     * @return
+     */
+    private int getDigitsFromScale(double scale)
+    {
+        String sScale = Double.toString(scale);
+        
+        int digits = 0, separatorPosition = sScale.indexOf(".");
+        
+        if (separatorPosition > -1)
+        {
+            int i = 0;
+            for (i = separatorPosition + 1; i < sScale.length(); i++)
+            {
+                if (sScale.substring(i, i + 1).equals("0"))
+                {
+                    break;
+                }
+            }
+            
+            digits = i - 1 - separatorPosition;
+        }
+        
+        return digits;
     }
     
     /**
