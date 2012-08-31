@@ -195,7 +195,7 @@ public class TableHelper
         int xDigits = getDigitsFromScale(xOutputChannel.getScale());
         int yDigits = getDigitsFromScale(yOutputChannel.getScale());
         
-        for (int x = 1; x <= tableNbX; x++)
+        for (int y = 1; y <= tableNbY; y++)
         {
             tableRow = new TableRow(context);
             tableRow.setLayoutParams(lp);
@@ -206,21 +206,21 @@ public class TableHelper
             String headerLabel = "";
             if (yDigits == 0)
             {
-                headerLabel = String.valueOf((int) yBins[tableNbX - x]);
+                headerLabel = String.valueOf((int) yBins[tableNbY - y]);
             }
             else
             {
-                headerLabel = String.valueOf(ecu.roundDouble(yBins[tableNbX - x], yDigits));
+                headerLabel = String.valueOf(ecu.roundDouble(yBins[tableNbY - y], yDigits));
             }
             
             rowHeader.setText(headerLabel);
             rowHeader.setLayoutParams(rowHeaderLayout);
             tableRow.addView(rowHeader);
             
-            for (int y = 1; y <= tableNbY; y++)
+            for (int x = 1; x <= tableNbX; x++)
             {
                 EditText cell = new EditText(context);
-                cell.setText(Double.toString(zBins[y - 1][tableNbX - x]));
+                cell.setText(Double.toString(zBins[x - 1][tableNbY - y]));
                 cell.setId(getCellId(x,y));
                 cell.setLayoutParams(lp);
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -351,9 +351,9 @@ public class TableHelper
         float max = min;
         
         // Find min/max
-        for (int y = 1; y <= tableNbX; y++)
+        for (int y = 1; y <= tableNbY; y++)
         {
-            for (int x = 1; x <= tableNbY; x++)
+            for (int x = 1; x <= tableNbX; x++)
             {
                 EditText currentCell = (EditText) tableLayout.findViewById(getCellId(x,y));
                 float currentValue = 0;
@@ -380,9 +380,9 @@ public class TableHelper
         if (cell == null || currentTableMin != min || currentTableMax != currentTableMax)
         {
             // Change background colors
-            for (int y = 1; y <= tableNbX; y++)
+            for (int y = 1; y <= tableNbY; y++)
             {
-                for (int x = 1; x <= tableNbY; x++)
+                for (int x = 1; x <= tableNbX; x++)
                 {
                     EditText currentCell = (EditText) tableLayout.findViewById(getCellId(x,y));
                     
