@@ -111,42 +111,49 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     
-    private void setOrientationLayoutParams(TableLayout tl)
+    private void addPanel(TableLayout tl, String orientation)
     {
-        RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-        /*
-        if (orientation.equals("North"))
+        // This is not the first panel we add on this dialog
+        if (nbPanels > 0)
         {
-            tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
-            tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-            tl.setPadding(0, 0, 0, 10);
-            System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
-        }
-        else if (orientation.equals("South"))
-        {
-            tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
-            tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-            tl.setPadding(0, 10, 0, 0);
-            System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
-        }
-        else if (orientation.equals("West"))
-        {
-            tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
-            tl.setPadding(0, 0, 10, 0);
-            System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
-        }
-        else
-        {
+            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+    
+            /*
+            if (orientation.equals("North"))
+            {
+                tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
+                tl.setPadding(0, 0, 0, 10);
+                System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
+            }
+            else if (orientation.equals("South"))
+            {
+                tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
+                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
+                tl.setPadding(0, 10, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
+            }
+            else if (orientation.equals("West"))
+            {
+                tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
+                tl.setPadding(0, 0, 10, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
+            }
+            else
+            {
+                tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
+                tl.setPadding(10, 0, 0, 0);
+                System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
+            }*/
+            
             tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
             tl.setPadding(10, 0, 0, 0);
-            System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
-        }*/
+            
+            tl.setLayoutParams(tlp);
+        }
         
-        tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
-        tl.setPadding(10, 0, 0, 0);
-        
-        tl.setLayoutParams(tlp);
+        content.addView(tl);
+        nbPanels++;
     }
     
     /**
@@ -163,17 +170,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         tl.setId(nbPanels);
         
-        // This is not the first panel we add on this dialog
-        if (nbPanels > 0)
-        {
-            setOrientationLayoutParams(tl);
-        }
-        else {
-            System.out.println("PANEL first at " + nbPanels + ": " + dialog.getName());
-        }
-        
-        content.addView(tl);
-        nbPanels++;
+        addPanel(tl, orientation); 
         
         TableRow tableRow;
         
@@ -252,7 +249,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                 if (curvePanel != null)
                 {
-                    createCurvePanel(curvePanel);
+                    createCurvePanel(curvePanel, dp.getOrientation());
                 }
                 else
                 {
@@ -261,7 +258,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     
                     if (tablePanel != null)
                     {
-                        createTablePanel(tablePanel);
+                        createTablePanel(tablePanel, dp.getOrientation());
                     }
                 }
             }
@@ -272,7 +269,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * 
      * @param curvePanel
      */
-    private void createCurvePanel(CurveEditor curvePanel)
+    private void createCurvePanel(CurveEditor curvePanel, String orientation)
     {
         CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel);
         
@@ -282,12 +279,9 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         if (nbPanels > 0) 
         {
-            setOrientationLayoutParams(tl); 
+            addPanel(tl, orientation); 
         }
-        
-        content.addView(tl);
-        nbPanels++;
-        
+
         TableRow tableRow = new TableRow(getContext());
         
         LinearLayout curveLayout = curveHelper.getLayout();
@@ -304,7 +298,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * 
      * @param tablePanel
      */
-    private void createTablePanel(TableEditor tablePanel)
+    private void createTablePanel(TableEditor tablePanel, String orientation)
     {
         TableHelper tableHelper = new TableHelper(getContext(), tablePanel, false);
         
@@ -314,11 +308,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         if (nbPanels > 0) 
         {
-            setOrientationLayoutParams(tl);
+            addPanel(tl, orientation);
         }
-        
-        content.addView(tl);
-        nbPanels++;
         
         TableRow tableRow = new TableRow(getContext());
         
