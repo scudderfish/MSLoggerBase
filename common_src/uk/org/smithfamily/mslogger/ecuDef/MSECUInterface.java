@@ -26,6 +26,8 @@ public interface MSECUInterface
     Map<String,Boolean> userDefinedVisibilityFlags = new HashMap<String,Boolean>();
     
     Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
+    
+    Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
 
     void setFlags();
     public abstract String getSignature();
