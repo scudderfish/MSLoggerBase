@@ -23,22 +23,7 @@ import android.util.Log;
  */
 public class Megasquirt implements MSControllerInterface
 {
-    private MSECUInterface   ecuImplementation;
-    protected Map<String,Constant> constants = new HashMap<String,Constant>();
-    
-    protected Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
-
-    protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
-    
-    protected Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
-    
-    protected Map<String,List<Menu>> menus = new HashMap<String,List<Menu>>();
-    
-    protected Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
-    
-    protected Map<String,Boolean> userDefinedVisibilityFlags = new HashMap<String,Boolean>();
-    
-    protected Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
+    private MSECUInterface     ecuImplementation;
     
     static Timer               connectionWatcher = new Timer("ConnectionWatcher", true);
 
@@ -947,42 +932,42 @@ public class Megasquirt implements MSControllerInterface
     
     public Constant getConstantByName(String name)
     {
-        return constants.get(name);
+        return MSECUInterface.constants.get(name);
     }
 
     public OutputChannel getOutputChannelByName(String name)
     {
-        return outputChannels.get(name);
+        return MSECUInterface.outputChannels.get(name);
     }
     
     public TableEditor getTableEditorByName(String name) 
     {
-        return tableEditors.get(name);
+        return MSECUInterface.tableEditors.get(name);
     }
     
     public CurveEditor getCurveEditorByName(String name) 
     {
-        return curveEditors.get(name);
+        return MSECUInterface.curveEditors.get(name);
     }
     
     public List<Menu> getMenusForDialog(String name)
     {
-        return menus.get(name);
+        return MSECUInterface.menus.get(name);
     }
     
     public MSDialog getDialogByName(String name)
     {
-        return dialogs.get(name);
+        return MSECUInterface.dialogs.get(name);
     }
     
     public boolean getUserDefinedVisibilityFlagsByName(String name)
     {
-        return userDefinedVisibilityFlags.get(name);
+        return MSECUInterface.userDefinedVisibilityFlags.get(name);
     }
   
     public boolean getMenuVisibilityFlagsByName(String name)
     {
-        return menuVisibilityFlags.get(name);
+        return MSECUInterface.menuVisibilityFlags.get(name);
     }
     
     /**
