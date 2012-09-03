@@ -130,7 +130,7 @@ public class Process
                 end = parts[0];
                 ofs = parts[1];
             }
-            definition = (name + " = MSUtils.getBits(ochBuffer," + offset + "," + start + "," + end + "," + ofs + ");");
+            definition = (name + " = utils.getBits(ochBuffer," + offset + "," + start + "," + end + "," + ofs + ");");
             ecuData.getRuntime().add(definition);
             ecuData.getRuntimeVars().put(name, "int");
         }
@@ -385,7 +385,7 @@ public class Process
             String ld = m.group(12);
 
             String g = String
-                    .format("GaugeRegister.INSTANCE.addGauge(new GaugeDetails(\"Gauge\",\"\",\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));",
+                    .format("gauges.addGauge(new GaugeDetails(\"Gauge\",\"\",\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));",
                             name, channel, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
 
             g = g.replace("{", "").replace("}", "");

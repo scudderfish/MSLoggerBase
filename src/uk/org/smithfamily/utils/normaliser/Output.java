@@ -48,10 +48,32 @@ public class Output
 
     static void outputConstructor(ECUData ecuData, PrintWriter writer, String className)
     {
-        writer.println(TAB + "public " + className + "(Context c)");
+        writer.println(TAB+"private MSControllerInterface parent;");
+        writer.println(TAB+"private MSUtilsInterface utils;");
+        writer.println(TAB+"private GaugeRegisterInterface gauges;");
+        writer.println(TAB + "public " + className + "(MSControllerInterface parent,MSUtilsInterface utils,GaugeRegisterInterface gauges)");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "super(c);");
+        writer.println(TAB + TAB + "this.parent = parent;");
+        writer.println(TAB + TAB + "this.utils  = utils;");
+        writer.println(TAB + TAB + "this.gauges = gauges;");
+        writer.println(TAB + TAB + "this.parent.setImplementation(this);");
         writer.println(TAB + TAB + "setFlags();");
+        writer.println(TAB + "}");
+        writer.println(TAB +"private double table(double x,String t)");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return parent.table(x,t);");
+        writer.println(TAB + "}");
+        writer.println(TAB +"private double round(double x)");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return parent.round(x);");
+        writer.println(TAB + "}");
+        writer.println(TAB +"private double tempCvt(double x)");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return parent.tempCvt(x);");
+        writer.println(TAB + "}");
+        writer.println(TAB +"private int timeNow()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return parent.timeNow();");
         writer.println(TAB + "}");
     }
 
@@ -126,7 +148,7 @@ public class Output
             }
             else
             {
-                writer.println(TAB + TAB + flag + " = isSet(\"" + flag + "\");");
+                writer.println(TAB + TAB + flag + " = parent.isSet(\"" + flag + "\");");
             }
         }
         writer.println(TAB + "}");
@@ -154,11 +176,10 @@ public class Output
         writer.println("import java.io.IOException;");
         writer.println("import java.util.*;");
         writer.println("");
-        writer.println("import android.content.Context;");
         writer.println("");
         writer.println("import uk.org.smithfamily.mslogger.ecuDef.*;");
         writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeDetails;");
-        writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeRegister;");
+        writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeRegisterInterface;");
 
     }
 
@@ -272,7 +293,7 @@ public class Output
         {
             writer.println(TAB + TAB + header);
         }
-        writer.println(TAB + TAB + "b.append(MSUtils.getLocationLogHeader());");
+        writer.println(TAB + TAB + "b.append(utils.getLocationLogHeader());");
         writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
         writer.println(TAB + "@Override");
         writer.println(TAB + "public String getLogRow()");
@@ -283,7 +304,7 @@ public class Output
         {
             writer.println(TAB + TAB + record);
         }
-        writer.println(TAB + TAB + "b.append(MSUtils.getLocationLogRow());");
+        writer.println(TAB + TAB + "b.append(utils.getLocationLogRow());");
         writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
     }
 
@@ -295,7 +316,7 @@ public class Output
         for (String gauge : ecuData.getGaugeDef())
         {
             boolean okToWrite = true;
-            if (gauge.contains("GaugeRegister"))
+            if (gauge.contains("gauges."))
             {
                 String[] parts = gauge.split(",");
                 String channel = parts[4];
@@ -316,7 +337,6 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createMenus()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "menus = new HashMap<String,List<Menu>>();");
         writer.println(TAB + TAB + "Menu m;");
         writer.println(TAB + TAB + "List<Menu> listMenus;");
 
@@ -458,8 +478,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createDialogs()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "dialogs = new HashMap<String,MSDialog>();");
-
+        
         for (UserDefinedTracker d : ecuData.getDialogDefs())
         {
 
@@ -473,7 +492,6 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setUserDefinedVisibilityFlags()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "userDefinedVisibilityFlags = new HashMap<String,Boolean>();");
         
         for (String key : ecuData.getFieldControlExpressions().keySet())
         {
@@ -488,7 +506,6 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setMenuVisibilityFlags()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "menuVisibilityFlags = new HashMap<String,Boolean>();");
         
         for (String key : ecuData.getMenuControlExpressions().keySet())
         {
@@ -516,8 +533,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createTableEditors()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "tableEditors = new HashMap<String,TableEditor>();");
-
+        
         for (TableTracker t : ecuData.getTableDefs())
         {
             writer.println(TAB + TAB + "createTableEditor_" + t.getName() + "();");
@@ -547,8 +563,7 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void createCurveEditors()");
         writer.println(TAB + "{");
-        writer.println(TAB + TAB + "curveEditors = new HashMap<String,CurveEditor>();");
-
+        
         for (CurveTracker c : ecuData.getCurveDefs())
         {
             if (c.getName() != null && !c.getName().trim().equals(""))
@@ -615,7 +630,7 @@ public class Output
                         end = parts[0];
                         ofs = parts[1];
                     }
-                    def = (name + " = MSUtils.getBits(pageBuffer," + offset + "," + start + "," + end + "," + ofs + ");");
+                    def = (name + " = utils.getBits(pageBuffer," + offset + "," + start + "," + end + "," + ofs + ");");
                 }
                 else if ("array".equals(c.getClassType()))
                 {
@@ -656,11 +671,11 @@ public class Output
         String[] sizes = arraySpec.split("x");
         int width = Integer.parseInt(sizes[0].trim());
         int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
-        String functionName = "loadByte";
+        String functionName = "parent.loadByte";
         String signed = "false";
         if (c.getType().contains("16"))
         {
-            functionName = "loadWord";
+            functionName = "parent.loadWord";
         }
         if (c.getType().contains("S"))
         {
@@ -695,7 +710,7 @@ public class Output
             read = processStringToBytes(ecuData, read, pageOffset, pageSize, pageNo);
         }
         writer.println(TAB + TAB
-                + String.format("pageBuffer = loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
+                + String.format("pageBuffer = parent.loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
 
     }
 
@@ -840,7 +855,7 @@ public class Output
         {
             javaType = "int";
         }
-        String definition = name + " = (" + javaType + ")((MSUtils.get";
+        String definition = name + " = (" + javaType + ")((utils.get";
         if (dataType.startsWith("S"))
         {
             definition += "Signed";

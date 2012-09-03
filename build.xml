@@ -11,6 +11,7 @@
 	<property name="mslogger.jar.location" value="../MSLoggerBase/libs/${jar.file}" />
 
 	<target name="compile_normaliser" depends=".compile_support" >
+		<mkdir dir="bin" />
         <javac
             classpath="lib/commons-lang3-3.0.1.jar:common_bin"
             destdir="bin"
@@ -31,23 +32,17 @@
     </target>
 
     <target name=".compile_support" >
-    	<mkdir dir="dummy_bin" />
     	<mkdir dir="common_bin" />
         <javac
             destdir="common_bin"
             includeantruntime="false"
             srcdir="common_src" />
-        <javac
-            destdir="dummy_bin"
-        	classpath="common_bin"
-            includeantruntime="false"
-            srcdir="dummy_src" />
     </target>
 
 	<target name=".compile_firmware" depends="generate_firmware_java,.compile_support">
         <mkdir dir="gen_bin" />
         <javac
-            classpath="dummy_bin:common_bin"
+            classpath="common_bin"
             debug="on"
             destdir="gen_bin"
             fork="true"
@@ -73,6 +68,8 @@
         <delete file="${output.file}" />
         <delete dir="gen_src" />
         <delete dir="gen_bin" />
+    	<delete dir="common_bin" />
+    	<delete dir="bin" />
     </target>
 
     <target name="build_firmwares_jar" description="Build ${jar.location} containing the full set of firmwares">

@@ -119,7 +119,7 @@ public class ECUData
 		// Default for those who don't define it. I'm looking at you
 		// megasquirt-I.ini!
 		ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
-
+		evalVars.put("veTuneValue", "int");
 	}
 
 	public Map<String, String> getRuntimeVars()

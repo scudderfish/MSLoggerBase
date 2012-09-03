@@ -283,7 +283,7 @@ public class Normaliser
         writer.println("*/");
 
         writer.println("@SuppressWarnings(\"unused\")");
-        writer.println("public class " + className + " extends Megasquirt\n{");
+        writer.println("public class " + className + " implements MSECUInterface\n{");
         Output.outputConstructor(ecuData,writer, className);
         Output.outputFlagsAndConstants(ecuData,writer);
         writer.println(TAB + "private Map<String,Double> fields = new HashMap<String,Double>();");
