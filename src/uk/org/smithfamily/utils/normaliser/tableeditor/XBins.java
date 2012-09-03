@@ -3,14 +3,14 @@ package uk.org.smithfamily.utils.normaliser.tableeditor;
 public class XBins extends TableItem
 {
 	private String readOnly;
-	private String label;
-	private String bins1;
+	private String outputChannel;
+	private String bins;
 
-	public XBins(String bins1, String label, String readonly)
+	public XBins(String bins, String outputChannel, String readOnly)
 	{
-		this.bins1 = bins1;
-		this.label = label;
-		this.readOnly = (readonly == null ? "false" : readonly.equals("readonly") ? "true" : "false");
+		this.bins = bins;
+		this.outputChannel = outputChannel;
+		this.readOnly = (readOnly == null ? "false" : readOnly.equals("readonly") ? "true" : "false");
 	}
 
 	public String getReadOnly()
@@ -23,29 +23,29 @@ public class XBins extends TableItem
 		this.readOnly = readOnly;
 	}
 
-	public String label()
+	public String getOutputChannel()
 	{
-		return label;
+		return outputChannel;
 	}
 
-	public void label(String label)
+	public void setOutputChannel(String outputChannel)
 	{
-		this.label = label;
+		this.outputChannel = outputChannel;
 	}
 
-	public String getBins1()
+	public String getBins()
 	{
-		return bins1;
+		return bins;
 	}
 
-	public void setBins1(String bins1)
+	public void setBins(String bins)
 	{
-		this.bins1 = bins1;
+		this.bins = bins;
 	}
 
 	@Override
 	public String toString()
 	{
-	    return String.format("t.setXBins(%s,\"%s\",%s);", bins1, label, readOnly);
+	    return String.format("t.setXBins(%s,\"%s\",%s);", bins, outputChannel, readOnly);
 	}
 }

@@ -285,7 +285,8 @@ public class Normaliser
         writer.println("@SuppressWarnings(\"unused\")");
         writer.println("public class " + className + " implements MSECUInterface\n{");
         Output.outputConstructor(ecuData,writer, className);
-        Output.outputFlagsAndConstants(ecuData,writer);
+        Output.outputFlagsAndConstants(ecuData, writer);
+        Output.outputOutputChannels(ecuData, writer);
         writer.println(TAB + "private Map<String,Double> fields = new HashMap<String,Double>();");
         writer.println(TAB + ecuData.getQueryCommandStr());
         writer.println(TAB + ecuData.getSignatureDeclaration());

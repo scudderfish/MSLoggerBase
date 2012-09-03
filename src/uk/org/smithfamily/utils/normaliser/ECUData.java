@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
@@ -34,6 +35,7 @@ public class ECUData
 	private String fingerprintSource;
 	private ArrayList<String> gaugeDoc;
 	private ArrayList<Constant> constants;
+	private ArrayList<OutputChannel> outputChannels;
 	private ArrayList<String> pageSizes;
 	private ArrayList<String> pageIdentifiers;
 	private ArrayList<String> pageActivateCommands;
@@ -102,6 +104,7 @@ public class ECUData
 		defaults = new ArrayList<String>();
 		requiresPowerCycle = new ArrayList<String>();
 		constants = new ArrayList<Constant>();
+		outputChannels = new ArrayList<OutputChannel>();
 		flags = new HashSet<String>();
 		gaugeDef = new ArrayList<String>();
 		gaugeDoc = new ArrayList<String>();
@@ -115,7 +118,6 @@ public class ECUData
 		fingerprintSource = "";
 		currentPage = 0;
 		isCRC32Protocol = false;
-		constants = new ArrayList<Constant>();
 		// Default for those who don't define it. I'm looking at you
 		// megasquirt-I.ini!
 		ochGetCommandStr = "byte [] ochGetCommand = new byte[]{'A'};";
@@ -206,10 +208,20 @@ public class ECUData
 	{
 		return constants;
 	}
+	
+	public ArrayList<OutputChannel> getOutputChannels()
+	{
+	    return outputChannels;
+	}
 
 	public void setConstants(ArrayList<Constant> constants)
 	{
 		this.constants = constants;
+	}
+	
+	public void setOutputChannels(ArrayList<OutputChannel> outputChannels)
+	{
+	    this.outputChannels = outputChannels;
 	}
 
 	public ArrayList<String> getPageSizes()
