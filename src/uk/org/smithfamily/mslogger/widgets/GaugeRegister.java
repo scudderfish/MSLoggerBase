@@ -11,7 +11,7 @@ import android.util.Log;
 /**
  * Enum that contains all the indicators details for the MegaSquirt firmware
  */
-public enum GaugeRegister
+public enum GaugeRegister implements GaugeRegisterInterface
 {
     INSTANCE;
     private Map<String, GaugeDetails> details       = new HashMap<String, GaugeDetails>();

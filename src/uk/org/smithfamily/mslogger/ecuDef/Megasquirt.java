@@ -21,8 +21,9 @@ import android.util.Log;
  * @author dgs
  * 
  */
-public abstract class Megasquirt
+public class Megasquirt implements MSControllerInterface
 {
+    private MSECUInterface   ecuImplementation;
     protected Map<String,Constant> constants = new HashMap<String,Constant>();
 
     protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
@@ -47,51 +48,6 @@ public abstract class Megasquirt
     
     protected Context          context;
 
-    public abstract String getSignature();
-
-    public abstract byte[] getOchCommand();
-
-    public abstract byte[] getSigCommand();
-
-    public abstract void loadConstants(boolean simulated) throws IOException;
-
-    public abstract void calculate(byte[] ochBuffer);
-
-    public abstract String getLogHeader();
-
-    public abstract String getLogRow();
-
-    public abstract int getBlockSize();
-
-    public abstract int getSigSize();
-
-    public abstract int getPageActivationDelay();
-
-    public abstract int getInterWriteDelay();
-
-    public abstract int getCurrentTPS();
-
-    public abstract void initGauges();
-
-    public abstract String[] defaultGauges();
-
-    public abstract void setFlags();
-    
-    public abstract void refreshFlags();
-
-    public abstract boolean isCRC32Protocol();
-
-    public abstract void createTableEditors();
-    
-    public abstract void createCurveEditors();
-    
-    public abstract void createMenus();
-    
-    public abstract void createDialogs();
-
-    public abstract void setUserDefinedVisibilityFlags();
-    
-    public abstract void setMenuVisibilityFlags();
     
     private boolean            logging;
     private boolean            constantsLoaded;
@@ -118,7 +74,7 @@ public abstract class Megasquirt
         return TableManager.INSTANCE.table(i1, name);
     }
 
-    protected int table(double d1, String name)
+    public int table(double d1, String name)
     {
         return table((int) d1, name);
     }
@@ -156,7 +112,7 @@ public abstract class Megasquirt
      *            temp in F
      * @return temp in C if CELSIUS is set, in F otherwise
      */
-    protected double tempCvt(int t)
+    public double tempCvt(double t)
     {
         if (isSet("CELSIUS"))
         {
@@ -205,7 +161,7 @@ public abstract class Megasquirt
      */
     public void reset()
     {
-        refreshFlags();
+        ecuImplementation.refreshFlags();
         constantsLoaded = false;
         running = false;
     }
@@ -223,7 +179,7 @@ public abstract class Megasquirt
         try
         {
             FRDLogManager.INSTANCE.write(buffer);
-            DatalogManager.INSTANCE.write(getLogRow());
+            DatalogManager.INSTANCE.write(ecuImplementation.getLogRow());
 
         }
         catch (IOException e)
@@ -329,7 +285,7 @@ public abstract class Megasquirt
      * 
      * @return
      */
-    protected int timeNow()
+    public int timeNow()
     {
         return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
     }
@@ -361,7 +317,7 @@ public abstract class Megasquirt
      * @param v
      * @return
      */
-    protected double round(double v)
+    public double round(double v)
     {
         return Math.floor(v * 100 + .5) / 100;
     }
@@ -372,7 +328,7 @@ public abstract class Megasquirt
      * @param name
      * @return
      */
-    protected boolean isSet(String name)
+    public boolean isSet(String name)
     {
         return ApplicationSettings.INSTANCE.isSet(name);
     }
@@ -448,7 +404,7 @@ public abstract class Megasquirt
                 DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
             watch = this;
-            String sig = Megasquirt.this.getSignature();
+            String sig = ecuImplementation.getSignature();
             setName("ECUThread:" + sig + ":" + System.currentTimeMillis());
             calculationThread.start();
         }
@@ -463,7 +419,7 @@ public abstract class Megasquirt
                     while (true)
                     {
                         byte[] buffer = handshake.get();
-                        calculate(buffer);
+                        ecuImplementation.calculate(buffer);
                         logValues(buffer);
                         broadcast();
                     }
@@ -521,11 +477,11 @@ public abstract class Megasquirt
 
                     // Make sure everyone agrees on what flags are set
                     ApplicationSettings.INSTANCE.refreshFlags();
-                    refreshFlags();
+                    ecuImplementation.refreshFlags();
                     if (!constantsLoaded)
                     {
                         // Only do this once so reconnects are quicker
-                        loadConstants(simulated);
+                        ecuImplementation.loadConstants(simulated);
                         constantsLoaded = true;
 
                         sendMessage("Connected to " + getTrueSignature());
@@ -614,9 +570,9 @@ public abstract class Megasquirt
             }
             else
             {
-                byte[] sigCommand = getSigCommand();
+                byte[] sigCommand = ecuImplementation.getSigCommand();
                 sendMessage("Verifying MS");
-                String signature = Megasquirt.this.getSignature();
+                String signature = ecuImplementation.getSignature();
 
                 msSig = getSignature(sigCommand);
                 verified = signature.equals(msSig);
@@ -670,14 +626,14 @@ public abstract class Megasquirt
          */
         private byte[] getRuntimeVars() throws IOException, CRC32Exception
         {
-            byte[] buffer = new byte[Megasquirt.this.getBlockSize()];
+            byte[] buffer = new byte[ecuImplementation.getBlockSize()];
             if (simulated)
             {
                 MSSimulator.INSTANCE.getNextRTV(buffer);
                 return buffer;
             }
-            int d = getInterWriteDelay();
-            ConnectionManager.INSTANCE.writeAndRead(getOchCommand(), buffer, d, isCRC32Protocol());
+            int d = ecuImplementation.getInterWriteDelay();
+            ConnectionManager.INSTANCE.writeAndRead(ecuImplementation.getOchCommand(), buffer, d, ecuImplementation.isCRC32Protocol());
             return buffer;
         }
 
@@ -693,16 +649,16 @@ public abstract class Megasquirt
                 CRC32Exception
         {
             ConnectionManager.INSTANCE.flushAll();
-            int delay = getPageActivationDelay();
+            int delay = ecuImplementation.getPageActivationDelay();
             if (pageSelectCommand != null)
             {
-                ConnectionManager.INSTANCE.writeCommand(pageSelectCommand, delay, isCRC32Protocol());
+                ConnectionManager.INSTANCE.writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
             }
             if (pageReadCommand != null)
             {
-                ConnectionManager.INSTANCE.writeCommand(pageReadCommand, delay, isCRC32Protocol());
+                ConnectionManager.INSTANCE.writeCommand(pageReadCommand, delay, ecuImplementation.isCRC32Protocol());
             }
-            ConnectionManager.INSTANCE.readBytes(pageBuffer, isCRC32Protocol());
+            ConnectionManager.INSTANCE.readBytes(pageBuffer, ecuImplementation.isCRC32Protocol());
         }
 
         /**
@@ -715,7 +671,7 @@ public abstract class Megasquirt
         private String getSignature(byte[] sigCommand) throws IOException
         {
             String signatureFromMS = "";
-            int d = Math.max(getInterWriteDelay(), 300);
+            int d = Math.max(ecuImplementation.getInterWriteDelay(), 300);
             ConnectionManager.INSTANCE.flushAll();
 
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
@@ -730,7 +686,7 @@ public abstract class Megasquirt
                 byte[] buf;
                 try
                 {
-                    buf = ConnectionManager.INSTANCE.writeAndRead(sigCommand, d, isCRC32Protocol());
+                    buf = ConnectionManager.INSTANCE.writeAndRead(sigCommand, d, ecuImplementation.isCRC32Protocol());
 
                     try
                     {
@@ -789,7 +745,7 @@ public abstract class Megasquirt
      * @param read
      * @return
      */
-    protected byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
+    public byte[] loadPage(int pageNo, int pageOffset, int pageSize, byte[] select, byte[] read)
     {
 
         byte[] buffer = new byte[pageSize];
@@ -849,7 +805,7 @@ public abstract class Megasquirt
                 }
             }
 
-            String fileName = this.getClass().getName() + ".firmware";
+            String fileName = ecuImplementation.getClass().getName() + ".firmware";
             File outputFile = new File(dir, fileName);
             BufferedOutputStream out = null;
             try
@@ -877,11 +833,11 @@ public abstract class Megasquirt
     public double getField(String channelName)
     {
         double value = 0;
-        Class<?> c = this.getClass();
+        Class<?> c = ecuImplementation.getClass();
         try
         {
             Field f = c.getDeclaredField(channelName);
-            value = f.getDouble(this);
+            value = f.getDouble(ecuImplementation);
         }
         catch (Exception e)
         {
@@ -893,7 +849,7 @@ public abstract class Megasquirt
     
     public void setField(String channelName, double value)
     {
-        Class<?> c = this.getClass();
+        Class<?> c = ecuImplementation.getClass();
 
         try
         {
@@ -901,11 +857,11 @@ public abstract class Megasquirt
             
             if (f.getType().toString().equals("int"))
             {
-                f.setInt(this, (int) value);
+                f.setInt(ecuImplementation, (int) value);
             }
             else
             {
-                f.setDouble(this, value); 
+                f.setDouble(ecuImplementation, value); 
             }
         }
         catch (Exception e)
@@ -923,7 +879,7 @@ public abstract class Megasquirt
         return tmp / p;
     }
     
-    protected double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
+    public double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
         int index = offset;
@@ -931,7 +887,7 @@ public abstract class Megasquirt
         {
             for (int x = 0; x < width ; x++)
             {
-                double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
+                double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index): MSUtils.INSTANCE.getByte(pageBuffer, index);
                 value = (value + translate) * scale;
                 destination[x][y] = this.roundDouble(value, digits);
                 index = index + 1;
@@ -939,13 +895,13 @@ public abstract class Megasquirt
         }
         return destination;
     }
-    protected double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
+    public double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
         int index = offset;
         for (int x = 0; x < width ; x++)
         {
-            double value = signed ? MSUtils.getSignedByte(pageBuffer, index): MSUtils.getByte(pageBuffer, index);
+            double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index): MSUtils.INSTANCE.getByte(pageBuffer, index);
             value = (value + translate) * scale;
             destination[x] = this.roundDouble(value, digits);
             index = index + 1;
@@ -954,7 +910,7 @@ public abstract class Megasquirt
         return destination;
     }
 
-    protected double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
+    public double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
         int index = offset;
@@ -962,7 +918,7 @@ public abstract class Megasquirt
         {
             for (int x = 0; x < width ; x++)
             {
-                double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
+                double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index): MSUtils.INSTANCE.getWord(pageBuffer, index);
                 value = (value + translate) * scale;
                 destination[x][y] = this.roundDouble(value, digits);
                 index = index + 2;
@@ -971,13 +927,13 @@ public abstract class Megasquirt
 
         return destination;
     }
-    protected double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
+    public double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
         int index = offset;
         for (int x = 0; x < width ; x++)
         {
-            double value = signed ? MSUtils.getSignedWord(pageBuffer, index): MSUtils.getWord(pageBuffer, index);
+            double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index): MSUtils.INSTANCE.getWord(pageBuffer, index);
             value = (value + translate) * scale;
             destination[x] = this.roundDouble(value, digits);
             index = index + 2;
@@ -1061,6 +1017,58 @@ public abstract class Megasquirt
         }
         
         return constants;
+    }
+
+    public String[] defaultGauges()
+    {
+        return ecuImplementation.defaultGauges();
+    }
+
+    public int getBlockSize()
+    {
+        return ecuImplementation.getBlockSize();
+    }
+
+    public int getCurrentTPS()
+    {
+        return ecuImplementation.getCurrentTPS();
+    }
+
+    public String getLogHeader()
+    {
+        return ecuImplementation.getLogHeader();
+    }
+
+    public void initGauges()
+    {
+        ecuImplementation.initGauges();
+    }
+
+    public void refreshFlags()
+    {
+        ecuImplementation.refreshFlags();
+    }
+
+    public void setMenuVisibilityFlags()
+    {
+        ecuImplementation.setMenuVisibilityFlags();
+    }
+
+    public void setUserDefinedVisibilityFlags()
+    {
+        ecuImplementation.setUserDefinedVisibilityFlags();
+        
+    }
+
+    public boolean hasImplementation(Class<? extends MSECUInterface> cls)
+    {
+        return (ecuImplementation != null && ecuImplementation.getClass().equals(cls));
+    }
+
+    @Override
+    public void setImplementation(MSECUInterface i)
+    {
+        this.ecuImplementation = i;
     }
 
 }

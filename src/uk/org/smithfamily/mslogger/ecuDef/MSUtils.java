@@ -5,8 +5,9 @@ import uk.org.smithfamily.mslogger.GPSLocationManager;
 /**
  * Megasquirt utilities class heavily used in the ECU definition Java class
  */
-public class MSUtils
+public enum MSUtils implements MSUtilsInterface
 {
+    INSTANCE;
      /**
      * Get the long for the specified index in the buffer
      * 
@@ -14,7 +15,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getLong(byte[] ochBuffer, int i)
+    public int getLong(byte[] ochBuffer, int i)
     {
         return getWord(ochBuffer, i) * 65536 + getWord(ochBuffer, i + 2);
     }
@@ -26,7 +27,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getWord(byte[] ochBuffer, int i)
+    public int getWord(byte[] ochBuffer, int i)
     {
         return (ochBuffer[i] << 8) | getByte(ochBuffer,i + 1);
     }
@@ -39,7 +40,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getByte(byte[] ochBuffer, int i)
+    public int getByte(byte[] ochBuffer, int i)
     {
         return (int) ochBuffer[i] & 0xFF;
     }
@@ -51,7 +52,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getSignedLong(byte[] ochBuffer, int i)
+    public int getSignedLong(byte[] ochBuffer, int i)
     {
         int x = getLong(ochBuffer, i);
         if (x > 2 << 32 - 1)
@@ -68,7 +69,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getSignedByte(byte[] ochBuffer, int i)
+    public int getSignedByte(byte[] ochBuffer, int i)
     {
         int x = getByte(ochBuffer, i);
         if (x > 127)
@@ -85,7 +86,7 @@ public class MSUtils
      * @param i
      * @return
      */
-    public static int getSignedWord(byte[] ochBuffer, int i)
+    public int getSignedWord(byte[] ochBuffer, int i)
     {
         int x = getWord(ochBuffer, i);
         if (x > 32767)
@@ -105,7 +106,7 @@ public class MSUtils
      * @param bitOffset
      * @return
      */
-    public static int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi,int bitOffset)
+    public int getBits(byte[] pageBuffer, int i, int _bitLo, int _bitHi,int bitOffset)
     {
         int val = 0;
         byte b = pageBuffer[i];
@@ -119,7 +120,7 @@ public class MSUtils
     /**
      * @return The latitude of the last known location
      */
-    public static double getLatitude()
+    public double getLatitude()
     {
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getLatitude();
     }
@@ -127,7 +128,7 @@ public class MSUtils
     /**
      * @return The longitude of the last known location
      */
-    public static double getLongitude()
+    public double getLongitude()
     {
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getLongitude();
     }
@@ -135,7 +136,7 @@ public class MSUtils
     /**
      * @return The speed of the last known location
      */
-    public static double getSpeed()
+    public double getSpeed()
     {
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getSpeed();
     }
@@ -143,7 +144,7 @@ public class MSUtils
     /**
      * @return The bearing of the last known location
      */
-    public static double getBearing()
+    public double getBearing()
     {
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getBearing();
     }
@@ -151,7 +152,7 @@ public class MSUtils
     /**
      * @return The accuracy of the last known location
      */
-    public static double getAccuracy()
+    public double getAccuracy()
     {
         return GPSLocationManager.INSTANCE.getLastKnownLocation().getAccuracy();
     }
@@ -159,7 +160,7 @@ public class MSUtils
     /**
      * @return The time of the last known location
      */
-    public static long getTime()
+    public long getTime()
     {
         long time = GPSLocationManager.INSTANCE.getLastKnownLocation().getTime();
         return time;
@@ -168,7 +169,7 @@ public class MSUtils
     /**
      * @return The location header used in datalog
      */
-    public static String getLocationLogHeader()
+    public String getLocationLogHeader()
     {
         return "Latitude\tLongitude\tSpeed (m/s)\tHeading\tAccuracy\tGPSTime\tGPS_Update";
     }
@@ -176,7 +177,7 @@ public class MSUtils
     /**
      * @return A datalog row of location information
      */
-    public static String getLocationLogRow()
+    public String getLocationLogRow()
     {
         return getLatitude() + "\t" + 
                getLongitude() + "\t" +
@@ -187,7 +188,7 @@ public class MSUtils
                getGPSUpdate();
     }
 
-    private static int getGPSUpdate()
+    private int getGPSUpdate()
     {
         return GPSLocationManager.INSTANCE.getFreshness();
     }
