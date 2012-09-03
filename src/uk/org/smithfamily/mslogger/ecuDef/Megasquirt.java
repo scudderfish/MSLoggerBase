@@ -461,7 +461,23 @@ public class Megasquirt implements MSControllerInterface
                         ConnectionManager.INSTANCE.disconnect();
                         return;
                     }
-
+                    
+                    /*
+                     * Make sure we have calculated runtime vars at least once before refreshing flags.
+                     * The reason is that the refreshFlags() function also trigger the creation of menus/dialogs/tables/curves/etc
+                     * that use variables such as {clthighlim} in curves that need to have their value assigned before
+                     * being used.
+                     */
+                    try 
+                    {
+                        byte[] bufferRV = getRuntimeVars();
+                        ecuImplementation.calculate(bufferRV);
+                    }
+                    catch (CRC32Exception e)
+                    {
+                        DebugLogManager.INSTANCE.logException(e);
+                    }
+                    
                     // Make sure everyone agrees on what flags are set
                     ApplicationSettings.INSTANCE.refreshFlags();
                     ecuImplementation.refreshFlags();
