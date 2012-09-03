@@ -25,6 +25,8 @@ public class Megasquirt implements MSControllerInterface
 {
     private MSECUInterface   ecuImplementation;
     protected Map<String,Constant> constants = new HashMap<String,Constant>();
+    
+    protected Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
 
     protected Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
     
@@ -948,6 +950,11 @@ public class Megasquirt implements MSControllerInterface
         return constants.get(name);
     }
 
+    public OutputChannel getOutputChannelByName(String name)
+    {
+        return outputChannels.get(name);
+    }
+    
     public TableEditor getTableEditorByName(String name) 
     {
         return tableEditors.get(name);
