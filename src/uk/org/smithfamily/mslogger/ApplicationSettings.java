@@ -11,7 +11,6 @@ import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtilsInterface;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
-import uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegisterInterface;
