@@ -932,7 +932,24 @@ public class Process
         }
         else if (dialogPanel.matches())
         {
-            UserDefinedPanel x = new UserDefinedPanel(dialogPanel.group(1), dialogPanel.group(3));
+            String name = dialogPanel.group(1);
+            String orientation = dialogPanel.group(3);
+            
+            String expression = dialogPanel.group(5);
+            String visibilityFlag = d.getName() + "_" + name;
+            
+            if (expression == null || StringUtils.isEmpty(expression))
+            {
+                expression = "true";
+            }
+            else
+            {
+                expression = removeCurlyBrackets(expression);
+                expression = ExpressionWrangler.convertExpr(expression);
+            }
+            ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
+            
+            UserDefinedPanel x = new UserDefinedPanel(name, orientation);
             d.addItem(x);
         }
         else
