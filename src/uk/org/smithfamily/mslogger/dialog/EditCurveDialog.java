@@ -31,7 +31,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
     {
         super(context);
 
-        this.curveHelper = new CurveHelper(context, curveEditor);
+        this.curveHelper = new CurveHelper(context, curveEditor, true);
         this.ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         this.curveEditor = curveEditor;
     }

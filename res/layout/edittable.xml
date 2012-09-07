@@ -2,15 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_gravity="center"
 	android:layout_margin="8dp" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:weightSum="100"
+	android:layout_height="fill_parent" android:weightSum="1"
 	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 	android:id="@+id/mainTable">
-	    
+	
+    <ScrollView
+	    android:id="@+id/scrollView1"
+		android:layout_width="fill_parent"
+		android:layout_height="0dp"
+		android:layout_weight="0.92">
+		
+		<HorizontalScrollView 
+            android:id="@+id/horizontalView" 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+    	</HorizontalScrollView>
+    </ScrollView>
+    	
 	<LinearLayout
 	    android:orientation="horizontal"
-		android:layout_height="wrap_content"
+		android:layout_height="0dp"
 		android:layout_width="fill_parent"
-		android:paddingTop="5dp">
+		android:paddingTop="5dp"
+		android:layout_weight="0.08">
 		
 		<Button
 		    android:text="@string/bt_burn"
