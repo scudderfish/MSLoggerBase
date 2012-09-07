@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.chart.ChartFactory;
 import uk.org.smithfamily.mslogger.chart.GraphicalView;
 import uk.org.smithfamily.mslogger.chart.chart.PointStyle;
@@ -15,13 +16,15 @@ import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
-import android.view.Gravity;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
@@ -47,17 +50,21 @@ public class CurveHelper
     // The curve dataset
     private XYMultipleSeriesDataset dataset;
     
+    private boolean isCurveDialog;
+    
     /**
      * 
      * @param context
      * @param curve
      */
-    public CurveHelper(Context context, CurveEditor curve)
+    public CurveHelper(Context context, CurveEditor curve, boolean isCurveDialog)
     {
         this.curve = curve;
         this.context = context;
         
         this.dataset = new XYMultipleSeriesDataset();
+        
+        this.isCurveDialog = isCurveDialog;
         
         buildLayout();
         createTable();
@@ -79,32 +86,35 @@ public class CurveHelper
      */
     private void buildLayout()
     {
-        LinearLayout.LayoutParams containerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.9f);
-        LinearLayout containerLayout = new LinearLayout(context);    
-        containerLayout.setOrientation(LinearLayout.HORIZONTAL);
-        containerLayout.setLayoutParams(containerLayoutParams);
-        containerLayout.setBaselineAligned(false);
-        containerLayout.setWeightSum(1.0f);
-        
-        LinearLayout.LayoutParams curveLayoutParams = new LinearLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.FILL_PARENT, 0.15f);
-        LinearLayout curveLayout = new LinearLayout(context);
-        curveLayout.setLayoutParams(curveLayoutParams);        
-        
-        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.FILL_PARENT, 0.85f);
-        tableLayoutParams.setMargins(0, 0, 0, 25);
-        TableLayout tableLayout = new TableLayout(context);
-        tableLayout.setGravity(Gravity.BOTTOM);
-        tableLayout.setLayoutParams(tableLayoutParams);
-        
-        // All columns should have the same width
-        tableLayout.setStretchAllColumns(true);
-        
-        containerLayout.addView(curveLayout);
-        containerLayout.addView(tableLayout);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+        LinearLayout containerLayout = (LinearLayout) inflater.inflate(R.layout.curve, null);
         
         this.containerLayout = containerLayout;
-        this.curveLayout = curveLayout;
-        this.tableLayout = tableLayout;
+        this.curveLayout = (LinearLayout) containerLayout.findViewById(R.id.curve);
+        this.tableLayout = (TableLayout) containerLayout.findViewById(R.id.table);
+        
+        LinearLayout.LayoutParams lpCurve;
+        if (isCurveDialog)
+        {
+            lpCurve = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, 0, 0.92f);
+        }
+        else
+        {
+            Resources r = context.getResources();
+            int pxCurve = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, r.getDisplayMetrics());            
+            lpCurve = new LinearLayout.LayoutParams(pxCurve, pxCurve);
+           
+            int pxTableAndGauge = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());            
+            LinearLayout.LayoutParams lpTableAndGauge = new LinearLayout.LayoutParams(pxTableAndGauge, LayoutParams.WRAP_CONTENT);
+            
+            LinearLayout tableAndGauge = (LinearLayout) containerLayout.findViewById(R.id.tableAndGauge);
+            curveLayout.setLayoutParams(lpCurve);
+            tableAndGauge.setLayoutParams(lpTableAndGauge);
+        }
+        
+        containerLayout.setWeightSum(1.0f);
+        containerLayout.setBaselineAligned(false);
+        containerLayout.setLayoutParams(lpCurve);
     }    
     
     /**
