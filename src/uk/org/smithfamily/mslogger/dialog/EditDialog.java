@@ -12,10 +12,12 @@ import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -53,7 +56,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     
     // Used on label in table row with field beside label, add a margin right
     // so the label and field are separated
-    private LayoutParams lpSpan;
+    private LayoutParams lpWithMargins;
     
     // Regular layout params for dialog row with label and constant
     private LayoutParams lp;
@@ -79,8 +82,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         lpSpanWithMargins.setMargins(0, 10, 0, 15);
         lpSpanWithMargins.span = 2;
         
-        lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.setMargins(0, 0, 8, 0);
+        lpWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpWithMargins.setMargins(0, 0, 8, 0);
         
         lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
     }
@@ -105,55 +108,107 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         Button buttonCancel = (Button) findViewById(R.id.cancel);
         buttonCancel.setOnClickListener(this);
         
-        drawDialogFields(dialog, false, "");
+        drawDialogFields(null, dialog, false, "", null);
         
         // Hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
-    
-    private void addPanel(TableLayout tl, String orientation)
+
+    /**
+     * 
+     * @param parentLayout
+     * @param relativeLayoutToAdd
+     * @param orientation
+     * @param dialogName
+     * @param previousPanelLayout
+     */
+    private void addPanel(RelativeLayout parentLayout, RelativeLayout relativeLayoutToAdd, String orientation, String dialogName, String dialogAxis, RelativeLayout previousPanelLayout)
     {
+        RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        
+        DebugLogManager.INSTANCE.log("PANEL tableLayoutToAdd id (" + dialogName + ") is " + relativeLayoutToAdd.getId(), Log.DEBUG);
+        
         // This is not the first panel we add on this dialog
-        if (nbPanels > 0)
+        if (previousPanelLayout != null)
         {
-            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-    
-            /*
             if (orientation.equals("North"))
             {
-                tlp.addRule(RelativeLayout.ABOVE, nbPanels - 1);
-                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-                tl.setPadding(0, 0, 0, 10);
-                System.out.println("PANEL " + dialog.getName() + " + above " + (nbPanels - 1) + ": ");
+                tlp.addRule(RelativeLayout.ABOVE, previousPanelLayout.getId());
+                relativeLayoutToAdd.setPadding(0, 0, 0, 15);
+
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " above " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else if (orientation.equals("South"))
             {
-                tlp.addRule(RelativeLayout.BELOW, nbPanels - 1);
-                tlp.addRule(RelativeLayout.ALIGN_LEFT, nbPanels - 1);
-                tl.setPadding(0, 10, 0, 0);
-                System.out.println("PANEL " + dialog.getName() + " + below " + (nbPanels - 1) + ": ");
+                tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
+                relativeLayoutToAdd.setPadding(0, 15, 0, 0);
+
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else if (orientation.equals("West"))
             {
-                tlp.addRule(RelativeLayout.LEFT_OF, nbPanels - 1);
-                tl.setPadding(0, 0, 10, 0);
-                System.out.println("PANEL " + dialog.getName() + " + at the left of " + (nbPanels - 1) + ": ");
+                tlp.addRule(RelativeLayout.LEFT_OF, previousPanelLayout.getId());
+                relativeLayoutToAdd.setPadding(0, 0, 15, 0);
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at the left of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else
             {
-                tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
-                tl.setPadding(10, 0, 0, 0);
-                System.out.println("PANEL " + dialog.getName() + " + at the right of " + (nbPanels - 1) + ": ");
-            }*/
-            
-            tlp.addRule(RelativeLayout.RIGHT_OF, nbPanels - 1);
-            tl.setPadding(10, 0, 0, 0);
-            
-            tl.setLayoutParams(tlp);
+                // For yAxis orientation, add panel one under the other
+                if (dialogAxis.equals("yAxis"))
+                {
+                    tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
+                    relativeLayoutToAdd.setPadding(0, 15, 0, 0);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                }
+                // For xAxis orientation, add panel at the right of the last one
+                else
+                {
+                    tlp.addRule(RelativeLayout.RIGHT_OF, previousPanelLayout.getId());
+                    relativeLayoutToAdd.setPadding(15, 0, 0, 0);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                }
+            }
+
+            relativeLayoutToAdd.setLayoutParams(tlp);
+        }
+        else
+        {
+            DebugLogManager.INSTANCE.log("PANEL " + dialogName + " previousPanelLayout was null!", Log.DEBUG);
         }
         
-        content.addView(tl);
+        // Panel to add have a parent layout, add view to it
+        if (parentLayout != null)
+        {
+            DebugLogManager.INSTANCE.log("PANEL parentLayout is " + parentLayout.getTag(), Log.DEBUG);
+            parentLayout.addView(relativeLayoutToAdd);
+        }
+        // No parent layout, default to main layout
+        else
+        {
+
+            DebugLogManager.INSTANCE.log("PANEL parentLayout is null, adding to main layout", Log.DEBUG);
+            content.addView(relativeLayoutToAdd);
+        }
+        
         nbPanels++;
+    }
+    
+    /**
+     * Helper function to wrap a table layout into a relative layout
+     * 
+     * @param tl
+     * @param dialogName
+     */
+    private RelativeLayout wrapTableLayoutIntoRelativeLayout(TableLayout tl, String dialogName)
+    {
+        RelativeLayout containerPanelLayout = new RelativeLayout(getContext());
+        RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        containerPanelLayout.setLayoutParams(tlp);
+        containerPanelLayout.setId(nbPanels);
+        containerPanelLayout.setTag(dialogName);
+        containerPanelLayout.addView(tl);
+        
+        return containerPanelLayout;
     }
     
     /**
@@ -163,21 +218,18 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * @param dialog
      * @param isPanel
      * @param orientation
+     * @param previousDialogPanelLayout
+     * 
+     * @return
      */
-    private void drawDialogFields(MSDialog dialog, boolean isPanel, String orientation)
+    private RelativeLayout drawDialogFields(RelativeLayout parentLayout, MSDialog dialog, boolean isPanel, String orientation, RelativeLayout previousDialogPanelLayout)
     {
-        TableLayout tl = new TableLayout(getContext());
-
-        tl.setId(nbPanels);
-        
-        addPanel(tl, orientation); 
-        
-        TableRow tableRow;
+        TableLayout panelLayout = new TableLayout(getContext());
         
         // If it's a panel or at least a dialog with one field or more, we can display its label
         if (isPanel || dialog.getFieldsList().size() > 0)
         {
-            showPanelLabel(dialog.getLabel(), tl);
+            showPanelLabel(dialog.getLabel(), panelLayout);
         }
         
         // For each dialog field, add a row in the table layout
@@ -191,7 +243,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             }
             else 
             {
-                tableRow = new TableRow(getContext());
+                TableRow tableRow = new TableRow(getContext());
                 
                 TextView label = getLabel(df, constant);
                 
@@ -230,9 +282,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     }
                 }
                 
-                tl.addView(tableRow);
+                panelLayout.addView(tableRow);
             }           
         }        
+        
+        // Wrap panel layout into a relative layout so it can be used as parent
+        RelativeLayout containerPanelLayout = wrapTableLayoutIntoRelativeLayout(panelLayout, dialog.getName());        
+        addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), dialog.getAxis(), previousDialogPanelLayout); 
+        
+        RelativeLayout sameDialogPreviousLayoutPanel = null;
         
         // For each dialog panel, add a layout to the dialog
         for (DialogPanel dp : dialog.getPanelsList())
@@ -241,7 +299,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-                drawDialogFields(dialogPanel, true, dp.getOrientation());
+                sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
             }
             else
             {
@@ -249,7 +307,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                 if (curvePanel != null)
                 {
-                    createCurvePanel(curvePanel, dp.getOrientation());
+                    sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
                 }
                 else
                 {
@@ -258,69 +316,85 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     
                     if (tablePanel != null)
                     {
-                        createTablePanel(tablePanel, dp.getOrientation());
+                        sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
                     }
                 }
             }
         }
+        
+        return containerPanelLayout;
     }
     
     /**
      * 
+     * @param parentLayout
      * @param curvePanel
+     * @param orientation
+     * @param previousPanelLayout
+     * 
+     * @return
      */
-    private void createCurvePanel(CurveEditor curvePanel, String orientation)
+    private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, RelativeLayout previousPanelLayout)
     {
-        CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel);
+        CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel, false);
         
-        TableLayout tl = new TableLayout(getContext());
+        // Wrap panel layout into a relative layout so it can be used as parent   
+        RelativeLayout containerPanelLayout = new RelativeLayout(getContext());
 
-        tl.setId(nbPanels);
+        // Convert to density independent pixels so it hopefully looks the same on every screen size
+        Resources r = getContext().getResources();
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 800, r.getDisplayMetrics());
+        RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(px, px);
+        containerPanelLayout.setLayoutParams(tlp);
+        containerPanelLayout.setId(nbPanels);
+        containerPanelLayout.setTag(curvePanel.getName());
         
         if (nbPanels > 0) 
         {
-            addPanel(tl, orientation); 
+            addPanel(parentLayout, containerPanelLayout, orientation, curvePanel.getName(), "", previousPanelLayout); 
         }
 
-        TableRow tableRow = new TableRow(getContext());
-        
         LinearLayout curveLayout = curveHelper.getLayout();
-        curveLayout.setLayoutParams(lpSpan);
+        curveLayout.setLayoutParams(lpWithMargins);
         
-        tableRow.addView(curveLayout);
-        
-        tl.addView(tableRow);
+        containerPanelLayout.addView(curveLayout);
 
         curveHelpers.add(curveHelper);
+        
+        return containerPanelLayout;
     }
     
     /**
      * 
+     * @param parentLayout
      * @param tablePanel
+     * @param orientation
+     * @param previousPanelLayout
+     * 
+     * @return
      */
-    private void createTablePanel(TableEditor tablePanel, String orientation)
+    private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, RelativeLayout previousPanelLayout)
     {
         TableHelper tableHelper = new TableHelper(getContext(), tablePanel, false);
         
-        TableLayout tl = new TableLayout(getContext());
-
-        tl.setId(nbPanels);
+        RelativeLayout panelLayout = new RelativeLayout(getContext());
+        
+        panelLayout.setId(nbPanels);
+        panelLayout.setTag(tablePanel.getName());  
         
         if (nbPanels > 0) 
         {
-            addPanel(tl, orientation);
+            addPanel(parentLayout, panelLayout, orientation, tablePanel.getName(), "", previousPanelLayout);
         }
         
-        TableRow tableRow = new TableRow(getContext());
+        LinearLayout tableLayout = tableHelper.getLayout();
+        tableLayout.setLayoutParams(lpWithMargins);
         
-        LinearLayout curveLayout = tableHelper.getLayout();
-        curveLayout.setLayoutParams(lpSpan);
-        
-        tableRow.addView(curveLayout);
-        
-        tl.addView(tableRow);
+        panelLayout.addView(tableLayout);
         
         tableHelpers.add(tableHelper);
+        
+        return panelLayout;
     }
     
     /**
@@ -352,7 +426,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             label.setBackgroundColor(Color.rgb(110, 110, 110));
         }
         
-        label.setLayoutParams(lpSpan);
+        label.setLayoutParams(lpWithMargins);
         
         return label;
     }
@@ -362,6 +436,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * 
      * @param df The dialog field to build the display for
      * @param constant The constant associated with the dialog field
+     * 
      * @return The EditText that can be displayed
      */
     private EditText buildSingleValueConstantField(DialogField df, Constant constant)

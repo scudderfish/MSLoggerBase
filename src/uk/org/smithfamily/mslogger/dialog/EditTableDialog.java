@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.HorizontalScrollView;
 
 /**
  *
@@ -43,8 +43,8 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
      
         setTitle("Edit " + tableEditor.getLabel());
         
-        LinearLayout ll = (LinearLayout) findViewById(R.id.mainTable);
-        ll.addView(tableHelper.getLayout(), 0);
+        HorizontalScrollView ll = (HorizontalScrollView) findViewById(R.id.horizontalView);
+        ll.addView(tableHelper.getLayout());
         
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);

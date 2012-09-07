@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
@@ -13,8 +14,8 @@ import android.text.method.DigitsKeyListener;
 import android.util.FloatMath;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -80,56 +81,25 @@ public class TableHelper
      */
     private void buildLayout()
     {        
-        LinearLayout.LayoutParams containerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout containerLayout = new LinearLayout(context);    
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+        LinearLayout containerLayout = (LinearLayout) inflater.inflate(R.layout.table, null);
+        LinearLayout.LayoutParams containerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+        
+        containerLayout.setBaselineAligned(false);
         containerLayout.setOrientation(LinearLayout.VERTICAL);
+        containerLayout.setWeightSum(1.0f);
         containerLayout.setLayoutParams(containerLayoutParams);
         
-        TextView tableLabel = new TextView(context);;
-        if (!isTableDialog)
-        {
-            LayoutParams tablelabelLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            tablelabelLayoutParams.setMargins(0, 0, 0, 25);
-
-            tableLabel.setLayoutParams(tablelabelLayoutParams);
-            tableLabel.setTextAppearance(context, android.R.style.TextAppearance_Medium);
-        }
-        
-        LinearLayout tableContainerLayout = new LinearLayout(context);
-        tableContainerLayout.setOrientation(LinearLayout.HORIZONTAL);
-        tableContainerLayout.setLayoutParams(containerLayoutParams);
-        
-        TextView xBinsLabel = new TextView(context);
-        LayoutParams xBinslabelLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        xBinsLabel.setLayoutParams(xBinslabelLayoutParams);
-        xBinsLabel.setGravity(Gravity.CENTER_HORIZONTAL);
-        xBinsLabel.setTextAppearance(context, android.R.style.TextAppearance_Medium);
-        
-        TextView yBinsLabel = new TextView(context);
-        LayoutParams yBinsLabelLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        yBinsLabel.setLayoutParams(yBinsLabelLayoutParams);
-        yBinsLabel.setTextAppearance(context, android.R.style.TextAppearance_Medium);
-        yBinsLabel.setGravity(Gravity.CENTER_VERTICAL);
-        
-        TableLayout tableLayout = new TableLayout(context);
-        TableLayout.LayoutParams tableLayoutLayoutParams = new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        tableLayout.setLayoutParams(tableLayoutLayoutParams);
-        
-        tableContainerLayout.addView(yBinsLabel);
-        tableContainerLayout.addView(tableLayout);
-        
-        if (!isTableDialog) {
-            containerLayout.addView(tableLabel);
-        }
-        
-        containerLayout.addView(tableContainerLayout);
-        containerLayout.addView(xBinsLabel);
-        
         this.containerLayout = containerLayout;
-        this.xBinsLabel = xBinsLabel;
-        this.yBinsLabel = yBinsLabel;
-        this.tableLabel = tableLabel;
-        this.tableLayout = tableLayout;
+        this.xBinsLabel = (TextView) containerLayout.findViewById(R.id.xBinsLabel);
+        this.yBinsLabel = (TextView) containerLayout.findViewById(R.id.yBinsLabel);
+        this.tableLabel = (TextView) containerLayout.findViewById(R.id.tableLabel);
+        this.tableLayout = (TableLayout) containerLayout.findViewById(R.id.tableLayout);
+        
+        if (isTableDialog)
+        {
+            tableLabel.setVisibility(View.GONE);
+        }
     }
     
     /**
@@ -149,6 +119,24 @@ public class TableHelper
     }
     
     /**
+     * Helper function that take a string as input and add a \n after each letter to use in text view so the text is vertical
+     * 
+     * @param text String to convert
+     * @return Converted string
+     */
+    private String convertToVerticalTextView(String text)
+    {
+        String output = "";
+        
+        for (int i = 0; i < text.length(); i++)
+        {
+            output += text.substring(i, i + 1) + "\n";
+        }
+        
+        return output;
+    }
+    
+    /**
      * 
      */
     private void drawTable()
@@ -156,25 +144,29 @@ public class TableHelper
         this.tableNbX = table.getzBins().length;
         this.tableNbY = table.getzBins()[0].length;
         
-        // Apply animation on text view so it's vertical (-90 degree rotation with 0ms duration animation)
-        RotateAnimation rotAnim = new RotateAnimation(0, -90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotAnim.setDuration(0);
-        rotAnim.setFillAfter(true); // stay at the last position of the animation
-        rotAnim.setFillEnabled(true);
-        
-        yBinsLabel.setAnimation(rotAnim);
-        
         // X and Y axis labels
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
         OutputChannel xOutputChannel = ecu.getOutputChannelByName(table.getxOutputChannel());
         OutputChannel yOutputChannel = ecu.getOutputChannelByName(table.getyOutputChannel());
         
-        xBinsLabel.setText(table.getxOutputChannel() + " (" + xOutputChannel.getUnits() + ")");
-        yBinsLabel.setText(table.getyOutputChannel() + " (" + yOutputChannel.getUnits() + ")");
+        String labelText = table.getxOutputChannel();
+        if (xOutputChannel != null)
+        {
+            labelText += " (" + xOutputChannel.getUnits() + ")";
+        }
+        xBinsLabel.setText(labelText);
+        
+        labelText = table.getyOutputChannel();
+        if (yOutputChannel != null)
+        {
+            labelText += " " + yOutputChannel.getUnits();
+        }
+        yBinsLabel.setLineSpacing(0, 0.9f);
+        yBinsLabel.setText(convertToVerticalTextView(labelText));
         
         LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-                
+        
         LayoutParams rowHeaderLayout = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
         rowHeaderLayout.setMargins(0, 0, 10, 0);
         
@@ -226,7 +218,7 @@ public class TableHelper
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 cell.setSingleLine(true);
                 cell.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                cell.setPadding(8, 5, 8, 5);
+                cell.setPadding(7, 4, 7, 4);
                 cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
                 
                 // Refresh background color when one edit text lost focus
@@ -303,7 +295,7 @@ public class TableHelper
     }
     
     /**
-     * Private class that implements TextWatcher. This makes which EditText firing the event way less painful
+     * Private class that implements TextWatcher. This class makes allow us to find which EditText fired the event way less painful
      */
     private class CustomTextWatcher implements TextWatcher
     {
