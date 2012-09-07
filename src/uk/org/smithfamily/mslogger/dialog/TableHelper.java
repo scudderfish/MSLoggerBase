@@ -184,8 +184,17 @@ public class TableHelper
         
         double zBins[][] = table.getzBins();
         
-        int xDigits = getDigitsFromScale(xOutputChannel.getScale());
-        int yDigits = getDigitsFromScale(yOutputChannel.getScale());
+        int xDigits = 0;
+        if (xOutputChannel != null)
+        {
+            xDigits = getDigitsFromScale(xOutputChannel.getScale());
+        }
+        
+        int yDigits = 0;
+        if (yOutputChannel != null)
+        {
+            yDigits = getDigitsFromScale(yOutputChannel.getScale());
+        }
         
         for (int y = 1; y <= tableNbY; y++)
         {
