@@ -140,6 +140,9 @@ public class Output
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setFlags()");
         writer.println(TAB + "{");
+        
+        Map<String, String> vars = ecuData.getConstantVars();
+        
         for (String flag : ecuData.getFlags())
         {
             // INI_VERSION_2 should always be true
@@ -154,15 +157,40 @@ public class Output
             }
             else if (flag.equals("SPEED_DENSITY"))
             {
-                writer.println(TAB + TAB + "SPEED_DENSITY = (algorithm1 == 1);"); 
+                String varName = "algorithm1";
+                
+                // MS1 B&G
+                if (vars.containsKey("algorithm"))
+                {
+                    varName = "algorithm";
+                }
+                
+                writer.println(TAB + TAB + "SPEED_DENSITY = (" + varName + " == 1);"); 
             }
             else if (flag.equals("ALPHA_N"))
             {
-                writer.println(TAB + TAB + "ALPHA_N = (algorithm1 == 2);"); 
+                String varName = "algorithm1";
+                
+                // MS1 B&G
+                if (vars.containsKey("algorithm"))
+                {
+                    varName = "algorithm";
+                }
+                
+                writer.println(TAB + TAB + "ALPHA_N = (" + varName + " == 2);"); 
             }
             else if (flag.equals("AIR_FLOW_METER"))
             {
-                writer.println(TAB + TAB + "AIR_FLOW_METER = (AFMUse == 2);");
+                
+                if (vars.containsKey("AFMUse"))
+                {
+                    writer.println(TAB + TAB + "AIR_FLOW_METER = (AFMUse == 2);");
+                }
+                // MS1 B&G doesn't support MAF
+                else
+                {
+                    writer.println(TAB + TAB + "AIR_FLOW_METER = false;");
+                }
             }
             else
             {
