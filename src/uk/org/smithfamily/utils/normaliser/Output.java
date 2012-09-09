@@ -147,6 +147,23 @@ public class Output
             {
                 writer.println(TAB + TAB + "INI_VERSION_2 = true;");
             }
+            // MEMPAGES, LOGPAGES and MSLVV_COMPATIBLE should always be false
+            else if (flag.equals("MEMPAGES") || flag.equals("LOGPAGES") || flag.equals("MSLVV_COMPATIBLE"))
+            {
+                writer.println(TAB + TAB + flag + " = false;");
+            }
+            else if (flag.equals("SPEED_DENSITY"))
+            {
+                writer.println(TAB + TAB + "SPEED_DENSITY = (algorithm1 == 1);"); 
+            }
+            else if (flag.equals("ALPHA_N"))
+            {
+                writer.println(TAB + TAB + "ALPHA_N = (algorithm1 == 2);"); 
+            }
+            else if (flag.equals("AIR_FLOW_METER"))
+            {
+                writer.println(TAB + TAB + "AIR_FLOW_METER = (AFMUse == 2);");
+            }
             else
             {
                 writer.println(TAB + TAB + flag + " = parent.isSet(\"" + flag + "\");");
@@ -226,7 +243,9 @@ public class Output
         List<String> flags = new ArrayList<String>();
         for (String flag : ecuData.getFlags())
         {
-            if (!flag.equals("INI_VERSION_2"))
+            if (!flag.equals("INI_VERSION_2") && !flag.equals("MEMPAGES") && !flag.equals("LOGPAGES") 
+                    && !flag.equals("SPEED_DENSITY") && !flag.equals("ALPHA_N") && !flag.equals("MSLVV_COMPATIBLE")
+                    && !flag.equals("AIR_FLOW_METER"))
             {
                 flags.add("\"" + flag + "\"");
             }
