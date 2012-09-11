@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.dialog.DialogHelper;
 import uk.org.smithfamily.mslogger.dialog.EditCurveDialog;
 import uk.org.smithfamily.mslogger.dialog.EditDialog;
 import uk.org.smithfamily.mslogger.dialog.EditTableDialog;
@@ -208,7 +209,8 @@ public class TuningActivity extends Activity
                 
                 this.currentDialog = curveDialog;
             }
-            else {
+            else
+            {
                 MSDialog dialog = ecu.getDialogByName(name);
                 
                 // It's a dialog!
@@ -219,27 +221,40 @@ public class TuningActivity extends Activity
 
                     this.currentDialog = editDialog;
                 }
-                // No idea what it is, we're screwed!
                 else
                 {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
-                    builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
-                            .setIcon(android.R.drawable.ic_dialog_info)
-                            .setTitle("Unsupported")
-                            .setCancelable(true)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int id)
-                                {}
-                            });
+                    // Not a regular dialog, but maybe it's an std_* dialog
+                    dialog = DialogHelper.getStdDialog(getBaseContext(), name);
                     
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    if (dialog != null)
+                    {
+                        EditDialog editDialog = new EditDialog(TuningActivity.this, dialog);
+                        editDialog.show();
+
+                        this.currentDialog = editDialog;
+                    }
+                    // No idea what it is, we're screwed!
+                    else
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
+                        builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .setTitle("Unsupported")
+                                .setCancelable(true)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                                {
+                                    public void onClick(DialogInterface dialog, int id)
+                                    {}
+                                });
+                        
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
                 }
             }
         }
         
         
-        return true;  
-    }  
+        return true;
+    }
 }

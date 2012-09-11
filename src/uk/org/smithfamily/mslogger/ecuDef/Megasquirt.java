@@ -1,18 +1,28 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
 import uk.org.smithfamily.mslogger.comms.ConnectionManager;
-import uk.org.smithfamily.mslogger.log.*;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 /**
@@ -833,6 +843,23 @@ public class Megasquirt implements MSControllerInterface
         }
     }
 
+    public double[] getVector(String channelName)
+    {
+        double[] value = {0};
+        Class<?> c = ecuImplementation.getClass();
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            value = (double[]) f.get(ecuImplementation);
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.getVector()", e);
+        }
+        return value;
+    }
+    
     public double getField(String channelName)
     {
         double value = 0;
@@ -946,6 +973,11 @@ public class Megasquirt implements MSControllerInterface
 
     }
     
+    public boolean isConstantExists(String name)
+    {
+        return MSECUInterface.constants.containsKey(name);
+    }
+    
     public Constant getConstantByName(String name)
     {
         return MSECUInterface.constants.get(name);
@@ -978,12 +1010,27 @@ public class Megasquirt implements MSControllerInterface
     
     public boolean getUserDefinedVisibilityFlagsByName(String name)
     {
-        return MSECUInterface.userDefinedVisibilityFlags.get(name);
+        if (MSECUInterface.userDefinedVisibilityFlags.containsKey(name))
+        {
+            return MSECUInterface.userDefinedVisibilityFlags.get(name);
+        }
+        
+        return true;
     }
   
     public boolean getMenuVisibilityFlagsByName(String name)
     {
         return MSECUInterface.menuVisibilityFlags.get(name);
+    }
+    
+    public void addDialog(MSDialog dialog)
+    {
+        MSECUInterface.dialogs.put(dialog.getName(), dialog);
+    }
+    
+    public void addCurve(CurveEditor curve)
+    {
+        MSECUInterface.curveEditors.put(curve.getName(), curve);
     }
     
     /**

@@ -27,6 +27,7 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
@@ -43,6 +44,9 @@ import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 
+/**
+ *
+ */
 public class EditDialog extends Dialog implements android.view.View.OnClickListener
 {
     private MSDialog dialog;
@@ -108,19 +112,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         Button buttonCancel = (Button) findViewById(R.id.cancel);
         buttonCancel.setOnClickListener(this);
         
-        drawDialogFields(null, dialog, false, "", null);
+        drawDialogFields(null, dialog, dialog, false, "", null);
         
         // Hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     /**
+     * Add the panel to the layout by looking at the orientation to insert the panel at the right place
      * 
-     * @param parentLayout
-     * @param relativeLayoutToAdd
-     * @param orientation
-     * @param dialogName
-     * @param previousPanelLayout
+     * @param parentLayout The parent layout the panel to add will be inserted into
+     * @param relativeLayoutToAdd The layout to be added with all the dialog fields already there
+     * @param orientation The orientation of the new panel
+     * @param dialogName The name of the dialog (for debugging purpose only)
+     * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      */
     private void addPanel(RelativeLayout parentLayout, RelativeLayout relativeLayoutToAdd, String orientation, String dialogName, String dialogAxis, RelativeLayout previousPanelLayout)
     {
@@ -158,14 +163,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 {
                     tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(0, 15, 0, 0);
-                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
                 // For xAxis orientation, add panel at the right of the last one
                 else
                 {
                     tlp.addRule(RelativeLayout.RIGHT_OF, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(15, 0, 0, 0);
-                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
             }
 
@@ -196,8 +201,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     /**
      * Helper function to wrap a table layout into a relative layout
      * 
-     * @param tl
-     * @param dialogName
+     * @param tl The table layout that will be wrapped into a relative layout
+     * @param dialogName The dialog name of the panel we want to wrap
      */
     private RelativeLayout wrapTableLayoutIntoRelativeLayout(TableLayout tl, String dialogName)
     {
@@ -215,14 +220,16 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * Recursive function that will draw fields and panels of a dialog.
      * It's called recursively until all fields and panels were drawn.
      * 
-     * @param dialog
-     * @param isPanel
-     * @param orientation
-     * @param previousDialogPanelLayout
+     * @param parentLayout The parent layout in which the dialog fields should be added
+     * @param dialog The dialog object
+     * @param parentDialog If it's a panel, this is the instance of the parent dialog
+     * @param isPanel true if the dialog object is a panel, false otherwise
+     * @param orientation The orientation of the panel
+     * @param previousDialogPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
-     * @return
+     * @return A relative layout with all fields in it
      */
-    private RelativeLayout drawDialogFields(RelativeLayout parentLayout, MSDialog dialog, boolean isPanel, String orientation, RelativeLayout previousDialogPanelLayout)
+    private RelativeLayout drawDialogFields(RelativeLayout parentLayout, MSDialog dialog, MSDialog parentDialog, boolean isPanel, String orientation, RelativeLayout previousDialogPanelLayout)
     {
         TableLayout panelLayout = new TableLayout(getContext());
         
@@ -245,25 +252,44 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             {
                 TableRow tableRow = new TableRow(getContext());
                 
-                TextView label = getLabel(df, constant);
-                
-                tableRow.addView(label);
-                
                 // For empty label or empty field name, we just insert an empty text view as second column of the row
                 if ((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null"))
                 {
-                    // No second column so label is used to separate so make it bold and merge columns
-                    label.setTypeface(null, Typeface.BOLD);
-                    
-                    // If it's not an empty label and not , add some top and bottom margins
-                    if (!df.getLabel().equals(""))
+                    // Special label used to identify hard coded required fuel panel in dialog
+                    if (df.getLabel().equals("std_required_fuel"))
                     {
-                        label.setLayoutParams(lpSpanWithMargins);
+                       RelativeLayout requiredFuel = getRequiredFuelPanel();
+                       requiredFuel.setLayoutParams(lpSpanWithMargins);
+                       tableRow.addView(requiredFuel);
+                    }
+                    // Special label used to identify hard coded seek bar in std_accel dialog
+                    else if (df.getLabel().equals("std_accel_seek_bar"))
+                    {
+                        RelativeLayout accelSeekBar = getAccelSeekBar();
+                        accelSeekBar.setLayoutParams(lpSpanWithMargins);
+                        tableRow.addView(accelSeekBar);
+                    }
+                    else
+                    {
+                        TextView label = getLabel(df, constant);
+                        tableRow.addView(label);
+                        
+                        // No second column so label is used to separate so make it bold and merge columns
+                        label.setTypeface(null, Typeface.BOLD);
+                        
+                        // If it's not an empty label and not , add some top and bottom margins
+                        if (!df.getLabel().equals(""))
+                        {
+                            label.setLayoutParams(lpSpanWithMargins);
+                        }
                     }
                 }
                 // Regular row with label and constant fields
                 else 
                 {
+                    TextView label = getLabel(df, constant);
+                    tableRow.addView(label);
+                    
                     tableRow.setLayoutParams(lp);
                     
                     // Multi-choice constant
@@ -288,7 +314,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         // Wrap panel layout into a relative layout so it can be used as parent
         RelativeLayout containerPanelLayout = wrapTableLayoutIntoRelativeLayout(panelLayout, dialog.getName());        
-        addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), dialog.getAxis(), previousDialogPanelLayout); 
+        addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), parentDialog.getAxis(), previousDialogPanelLayout); 
         
         RelativeLayout sameDialogPreviousLayoutPanel = null;
         
@@ -299,24 +325,38 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-                sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
             }
             else
             {
-                // Maybe it's a curve panel
-                CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
-                if (curvePanel != null)
+                // Not a regular dialog, but maybe it's an std_* dialog
+                dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+                
+                if (dialogPanel != null)
                 {
-                    sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                    sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
                 }
                 else
                 {
-                    // Maybe it's a table panel
-                    TableEditor tablePanel = ecu.getTableEditorByName(dp.getName());
-                    
-                    if (tablePanel != null)
+                    // Maybe it's a curve panel
+                    CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
+                    if (curvePanel != null)
                     {
-                        sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                    }
+                    else
+                    {
+                        // Maybe it's a table panel
+                        TableEditor tablePanel = ecu.getTableEditorByName(dp.getName());
+                        
+                        if (tablePanel != null)
+                        {
+                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                        }
+                        else
+                        {
+                            DebugLogManager.INSTANCE.log("Invalid panel name " + dp.getName(), Log.DEBUG);
+                        }
                     }
                 }
             }
@@ -326,13 +366,98 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
+     * Inflate the layout for the required fuel panel, do the initialization work and return the layout
      * 
-     * @param parentLayout
-     * @param curvePanel
-     * @param orientation
-     * @param previousPanelLayout
+     * @return The relative layout containing the required fuel stuff
+     */
+    private RelativeLayout getRequiredFuelPanel()
+    {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+        RelativeLayout requiredFuelLayout = (RelativeLayout) inflater.inflate(R.layout.required_fuel_panel, null);
+        
+        Button requiredFuelButton = (Button) requiredFuelLayout.findViewById(R.id.bt_required_fuel);
+        
+        double reqFuel = 0;
+        
+        // MS1
+        if (ecu.isConstantExists("reqFuel1"))
+        {
+            reqFuel = ecu.getField("reqFuel1");
+        }
+        else 
+        {
+            reqFuel = ecu.getField("reqFuel");
+        }
+        
+        EditText reqFuelEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel);
+        reqFuelEdit.setText(String.valueOf(reqFuel));
+        
+        EditText reqFuelDownloadedEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel_downloaded);
+        reqFuelDownloadedEdit.setText(String.valueOf(reqFuel));
+        
+        requiredFuelButton.setOnClickListener(new Button.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                EditRequiredFuel dialog = new EditRequiredFuel(getContext());
+                dialog.show();
+            }
+        });
+        
+        return requiredFuelLayout;
+    }
+    
+    /** 
+     * Build a seek bar used to choose between MAP/TPS based accel enrichement
      * 
-     * @return
+     * @return The relative layout containing the seek bar
+     */
+    private RelativeLayout getAccelSeekBar()
+    {
+        RelativeLayout seekBarLayout = new RelativeLayout(getContext());
+        /*
+        SeekBar sb = new SeekBar(getContext());
+        sb.setMax(100);
+        sb.setProgress(50);
+        sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() 
+        {
+            @Override
+            public void onProgressChanged(SeekBar v, int progress, boolean fromUser)
+            {
+                if (fromUser)
+                {
+                
+                }
+            }
+            
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });       
+        
+        seekBarLayout.addView(sb);
+        */
+        
+        TextView blah = new TextView(getContext());
+        blah.setText("fdafadsfj fjdaskl fjklsajflksda jfdsa");
+        
+        seekBarLayout.addView(blah);
+        
+        return seekBarLayout;
+    }
+    
+    /**
+     * Create a curve panel to insert in a dialog
+     * 
+     * @param parentLayout The parent layout the panel to add will be inserted into
+     * @param curvePanel The curve panel itself
+     * @param orientation The orientation of the panel
+     * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
+     * 
+     * @return The relative layout with the curve panel in it
      */
     private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, RelativeLayout previousPanelLayout)
     {
@@ -365,13 +490,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
+     * Create a table panel to insert in a dialog
      * 
-     * @param parentLayout
-     * @param tablePanel
-     * @param orientation
-     * @param previousPanelLayout
+     * @param parentLayout The parent layout the panel to add will be inserted into
+     * @param tablePanel The table panel itself
+     * @param orientation The orientation of the panel
+     * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
-     * @return
+     * @return The relative layout with the table panel in it
      */
     private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, RelativeLayout previousPanelLayout)
     {
@@ -687,6 +813,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * When value are changed, it's possible dialog fields change state
      * so we need to refresh fields visibility and re-apply them recursivly 
      * on all the panels
+     * 
+     * @param dialog The dialog to refresh fields visibility for
      */
     private void refreshFieldsVisibility(MSDialog dialog)
     {
@@ -719,6 +847,16 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             if (dialogPanel != null)
             {
                 refreshFieldsVisibility(dialogPanel);
+            }
+            else
+            {
+                // Not a regular dialog, but maybe it's an std_* dialog
+                dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+                
+                if (dialogPanel != null)
+                {
+                    refreshFieldsVisibility(dialogPanel);
+                }
             }
         }
     }
