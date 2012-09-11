@@ -101,7 +101,7 @@ public class CurveHelper
         else
         {
             Resources r = context.getResources();
-            int pxCurve = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, r.getDisplayMetrics());            
+            int pxCurve = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());            
             lpCurve = new LinearLayout.LayoutParams(pxCurve, pxCurve);
            
             int pxTableAndGauge = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());            
@@ -126,7 +126,7 @@ public class CurveHelper
     }
     
     /**
-     * 
+     * Create the table of data that will be added beside the graph
      */
     private void createTable()
     {        
@@ -155,7 +155,7 @@ public class CurveHelper
                 label = curve.getxLabel();
                 
                 // Add units, if they exists
-                if (!xBinsConstant.getUnits().equals("")) 
+                if (xBinsConstant != null && !xBinsConstant.getUnits().equals("")) 
                 {
                     label += " (" + xBinsConstant.getUnits() + ")";
                 }
@@ -211,31 +211,42 @@ public class CurveHelper
                 cell.setSingleLine(true);
                 cell.setPadding(10, 10, 10, 10);
                 cell.setTag(x);
-                cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
-                cell.setOnFocusChangeListener(new OnFocusChangeListener()
+                
+                
+                // X is not really a constant, used for MS1 for Warmup Wizard, see DialogHelper.getStdDialog
+                // Make the cell read only
+                if (x == 1 && xBinsConstant == null)
                 {
-                    public void onFocusChange(View v, boolean hasFocus)
+                    cell.setEnabled(false);
+                }
+                else 
+                {
+                    cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+                    cell.setOnFocusChangeListener(new OnFocusChangeListener()
                     {
-                        if (!hasFocus)
+                        public void onFocusChange(View v, boolean hasFocus)
                         {
-                            int column = Integer.parseInt(((EditText) v).getTag().toString());
-                            
-                            Constant constant;
-                            
-                            if (column == 1)
+                            if (!hasFocus)
                             {
-                                constant = xBinsConstant;
+                                int column = Integer.parseInt(((EditText) v).getTag().toString());
+                                
+                                Constant constant;
+                                
+                                if (column == 1)
+                                {
+                                    constant = xBinsConstant;
+                                }
+                                else 
+                                {
+                                    constant = yBinsConstant;
+                                }
+                                
+                                DialogHelper.verifyOutOfBoundValue(context, constant, (EditText) v);
                             }
-                            else 
-                            {
-                                constant = yBinsConstant;
-                            }
-                            
-                            DialogHelper.verifyOutOfBoundValue(context, constant, (EditText) v);
                         }
-                    }
-                });
-                cell.addTextChangedListener(new CustomTextWatcher(cell));
+                    });
+                    cell.addTextChangedListener(new CustomTextWatcher(cell));
+                }
                 
                 // Add EditText to row
                 tableRow.addView(cell);

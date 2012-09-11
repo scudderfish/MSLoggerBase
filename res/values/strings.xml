@@ -119,4 +119,20 @@
 	
 	<!-- Edit Table / Edit Curve -->
 	<string name="bt_burn">Burn</string>
+	
+	<!-- Required Fuel -->
+	<string name="required_fuel_calculator">Required Fuel Calculator</string>
+	
+	<string name="engine_displacement">Engine Displacement</string>
+	<string name="number_of_cylinders">Number of Cylinders</string>
+	<string name="injector_flow">Injector Flow</string>
+	<string name="air_fuel_ratio">Air-Fuel Ratio</string>
+	
+	<string name="CID">CID</string>
+	<string name="CC">CC</string>
+	<string name="lb_hr">lb/hr</string>
+	<string name="cc_min">cc/min</string>
+	
+	<string name="required_fuel_button">Required Fuel…</string>
+	<string name="ms">(ms)</string>
 </resources>
