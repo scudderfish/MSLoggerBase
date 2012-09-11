@@ -49,6 +49,10 @@ public class StartupActivity extends Activity
             case MSLoggerApplication.GOT_SIG:
                 parent.get().checkSig((String) msg.obj);
                 break;
+            case MSLoggerApplication.COMMS_ERROR:
+                parent.get().finishCommsError();
+                break;
+                
             case MSLoggerApplication.MESSAGE_TOAST:
                 parent.get().showMessage(msg);
             }
@@ -250,6 +254,23 @@ public class StartupActivity extends Activity
         t.start();
     }
 
+    /**
+     * We didn't manage to get a connection to the ECU, so tell the user and bail out
+     */
+    public void finishCommsError()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_comms).setIcon(android.R.drawable.ic_dialog_info).setTitle(R.string.app_name).setCancelable(false)
+                .setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
     /**
      * It was determinated that the android device don't support Bluetooth, so we tell the user
      */

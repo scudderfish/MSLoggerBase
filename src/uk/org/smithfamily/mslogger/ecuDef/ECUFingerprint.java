@@ -15,9 +15,12 @@ import android.util.Log;
 public class ECUFingerprint implements Runnable
 {
     public static final String  UNKNOWN = "UNKNOWN";
+
+    private static final int MAX_ERROR = 5;
     
     private boolean             located = false;
     private Handler             handler;
+    private int errorCount = 0;
  
     /**
      * 
@@ -39,7 +42,7 @@ public class ECUFingerprint implements Runnable
         String fingerprint = UNKNOWN;
         DebugLogManager.INSTANCE.log("Starting fingerprint", Log.INFO);
         
-        while (!located)
+        while (!located  && errorCount < MAX_ERROR)
         {
             ConnectionManager.INSTANCE.init(handler);
             try
@@ -52,6 +55,7 @@ public class ECUFingerprint implements Runnable
                 DebugLogManager.INSTANCE.logException(e);
                 ConnectionManager.INSTANCE.tearDown();
                 delay(1000);
+                errorCount++;
             }
             catch (CRC32Exception e)
             {
@@ -61,7 +65,17 @@ public class ECUFingerprint implements Runnable
             }
         }
 
-        Message msg = handler.obtainMessage(MSLoggerApplication.GOT_SIG, fingerprint);
+        Message msg;
+        
+        if(errorCount < MAX_ERROR)
+        { 
+            msg = handler.obtainMessage(MSLoggerApplication.GOT_SIG, fingerprint);
+            located = true;
+        }
+        else
+        {
+            msg = handler.obtainMessage(MSLoggerApplication.COMMS_ERROR);
+        }
         handler.sendMessage(msg);
     }
 

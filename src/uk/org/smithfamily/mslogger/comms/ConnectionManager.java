@@ -154,9 +154,12 @@ public enum ConnectionManager
             try {
                 conn.connect();
             }
-            catch (Exception e1)
+            catch (IOException e1)
             {
+                //that didn't work, switch back and throw
                 DebugLogManager.INSTANCE.logException(e1);
+                conn.switchSettings();
+                throw e1;
             }
         }
         InputStream tmpIn = null;

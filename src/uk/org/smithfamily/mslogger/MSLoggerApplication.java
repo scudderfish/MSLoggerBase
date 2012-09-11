@@ -13,6 +13,7 @@ public class MSLoggerApplication extends Application
     public static final int MESSAGE_TOAST = 1054;
     public static final String MSG_ID = "msgId";
     public static final int PROBE_ECU = 1055;
+    public static final int COMMS_ERROR = 1056;
     
     /**
      * Do application initialisation work
