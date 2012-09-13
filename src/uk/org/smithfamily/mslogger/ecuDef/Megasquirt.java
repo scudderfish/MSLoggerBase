@@ -1115,6 +1115,11 @@ public class Megasquirt implements MSControllerInterface
         
     }
 
+    public String[] getControlFlags()
+    {
+        return ecuImplementation.getControlFlags();
+    }
+    
     public boolean hasImplementation(Class<? extends MSECUInterface> cls)
     {
         return (ecuImplementation != null && ecuImplementation.getClass().equals(cls));
