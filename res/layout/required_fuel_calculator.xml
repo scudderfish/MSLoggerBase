@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="4"
-                android:inputType="number" />
+                android:inputType="number|numberDecimal" />
 
             <RadioGroup
                 android:id="@+id/displacementUnits"
@@ -58,14 +58,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/number_of_cylinders"
-                android:id="@+id/numberOfCylinders"
                 android:layout_marginLeft="5dip"
                 android:layout_marginRight="5dip" />
             
             <EditText 
-                android:inputType="number"
+                android:inputType="number|numberDecimal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/numberOfCylinders"
                 android:ems="4" />
             
         </TableRow>
@@ -82,7 +82,7 @@
                 android:layout_marginRight="5dip" />
             
             <EditText 
-                android:inputType="number"
+                android:inputType="number|numberDecimal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/injectorFlow"
@@ -122,7 +122,7 @@
                 android:layout_marginRight="5dip" />
             
             <EditText 
-                android:inputType="number"
+                android:inputType="number|numberDecimal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/airFuelRatio"
