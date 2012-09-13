@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.dialog.EditRequiredFuel.OnReqFuelResult;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
@@ -389,10 +390,10 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             reqFuel = ecu.getField("reqFuel");
         }
         
-        EditText reqFuelEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel);
+        final EditText reqFuelEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel);
         reqFuelEdit.setText(String.valueOf(reqFuel));
         
-        EditText reqFuelDownloadedEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel_downloaded);
+        final EditText reqFuelDownloadedEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel_downloaded);
         reqFuelDownloadedEdit.setText(String.valueOf(reqFuel));
         
         requiredFuelButton.setOnClickListener(new Button.OnClickListener()
@@ -401,6 +402,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             public void onClick(View v)
             {
                 EditRequiredFuel dialog = new EditRequiredFuel(getContext());
+                dialog.setDialogResult(new OnReqFuelResult()
+                {
+                    public void finish(double reqFuel, double dReqFuel)
+                    {
+                        reqFuelEdit.setText(String.valueOf(reqFuel));
+                        reqFuelDownloadedEdit.setText(String.valueOf(dReqFuel));
+                    }
+                });
                 dialog.show();
             }
         });

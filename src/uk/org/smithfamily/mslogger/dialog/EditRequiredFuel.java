@@ -21,6 +21,8 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
     private RadioGroup displacementUnits;
     private RadioGroup injectorFlowUnits;
     
+    private OnReqFuelResult mDialogResult;
+    
     public EditRequiredFuel(Context context)
     {
         super(context);
@@ -57,7 +59,8 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
         
         if (which == R.id.bt_ok)
         {        
-            double reqFuel    = 0.0;
+            double reqFuel = 0.0;
+            double dReqFuel = 0.0;
     
             double dispUnits = displacementUnits.getCheckedRadioButtonId() == R.id.rbCID ? 1.0 : 16.38706;
             double flowUnits = injectorFlowUnits.getCheckedRadioButtonId() == R.id.rbLbHr ? 1.0 : 10.5;
@@ -72,26 +75,38 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
     
             Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
             
-            int nCylinders = 0;
+            int nCylinders = (int) Integer.parseInt(numberOfCylinders.getText().toString());
+            int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
+            int nInjectors = (int) (ecu.isConstantExists("nInjectors") ? ecu.getField("nInjectors") : ecu.getField("nInjectors1"));
+            double injectorStaging = ecu.getField("alternate");
             
-            if (ecu.isConstantExists("nCylinders"))
-            {
-                nCylinders = (int) ecu.getField("nCylinders"); 
-            }
-            else 
-            {
-                nCylinders = (int) ecu.getField("nCylinders1");
-            }
-    
             reqFuel = (36.0E6 * cid * 4.27793e-05) / (nCylinders * afr * injectorFlowValue) / 10.0;
+            dReqFuel = reqFuel * (injectorStaging * divider) / nInjectors;
+
+            mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
             
-            System.out.println("test " + engineDisplacement.getText());
-            System.out.println("test " + numberOfCylinders.getText());
-            System.out.println("test " + injectorFlow.getText());
-            System.out.println("test " + airFuelRatio.getText());
-            System.out.println("test " + displacementUnits.getCheckedRadioButtonId());
-            System.out.println("test " + injectorFlowUnits.getCheckedRadioButtonId());
-            System.out.println("test " + reqFuel);
+            dismiss();
         }
+        else if (which == R.id.bt_cancel)
+        {
+            cancel();
+        }
+    }
+    
+    /**
+     * 
+     * @param dialogResult
+     */
+    public void setDialogResult(OnReqFuelResult dialogResult)
+    {
+        mDialogResult = dialogResult;
+    }
+
+    /**
+     *
+     */
+    public interface OnReqFuelResult
+    {
+       void finish(double reqFuel, double dReqFuel);
     }
 }
