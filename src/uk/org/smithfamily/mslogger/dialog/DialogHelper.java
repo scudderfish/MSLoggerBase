@@ -245,8 +245,10 @@ public class DialogHelper
         dialog.addField(new DialogField("std_required_fuel", "null", "", false));
         dialog.addField(new DialogField("Control Algorithm", "algorithm", "", false));
         
-        // TODO I think "Squirts Per Engine Cycle" should be this formula
-        // int nbSquirt = (int) (0.00001 + (ecu.getField("nCylinders") / ecu.getField("divider")));
+        // TODO 
+        // int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
+        // int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
+        // int nbSquirt = (int) (nCylinders / divider);
         //dialog.addField(new DialogField("Squirts Per Engine Cycle", "", "", false));
         
         dialog.addField(new DialogField("Injector Staging", "alternate", "", false));
@@ -319,9 +321,13 @@ public class DialogHelper
         MSDialog eastPanel = new MSDialog("std_constants_east", "", "");
         
         eastPanel.addField(new DialogField("Control Algorithm", "", "", false));
-        // TODO I think "Squirts Per Engine Cycle" should be this formula
-        // int nbSquirt = (int) (0.00001 + (ecu.getField("nCylinders") / ecu.getField("divider")));
+        
+        // TODO
+        // int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
+        // int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
+        // int nbSquirt = (int) (nCylinders / divider);
         //eastPanel.addField(new DialogField("Squirts Per Engine Cycle", "", "", false));
+        
         eastPanel.addField(new DialogField("Injector Staging", "alternate1", "", false));
         eastPanel.addField(new DialogField("Engine Stroke", "twoStroke1", "", false));
         eastPanel.addField(new DialogField("Number of Cylinders", "nCylinders1", "", false));
