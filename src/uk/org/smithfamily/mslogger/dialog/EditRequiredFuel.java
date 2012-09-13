@@ -81,7 +81,7 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
             double injectorStaging = ecu.getField("alternate");
             
             reqFuel = (36.0E6 * cid * 4.27793e-05) / (nCylinders * afr * injectorFlowValue) / 10.0;
-            dReqFuel = reqFuel * (injectorStaging * divider) / nInjectors;
+            dReqFuel = reqFuel * (injectorStaging * nCylinders / divider) / nInjectors;
 
             mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
             

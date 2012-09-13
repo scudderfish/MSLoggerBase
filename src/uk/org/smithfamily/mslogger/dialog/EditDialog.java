@@ -394,10 +394,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         reqFuelEdit.setText(String.valueOf(reqFuel));
         
         final EditText reqFuelDownloadedEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel_downloaded);
+        final int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
         final int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
         final int nInjectors = (int) (ecu.isConstantExists("nInjectors") ? ecu.getField("nInjectors") : ecu.getField("nInjectors1"));
         final double injectorStaging = ecu.getField("alternate");
-        reqFuelDownloadedEdit.setText(String.valueOf(reqFuel * (injectorStaging * divider) / nInjectors));
+        
+        reqFuelDownloadedEdit.setText(String.valueOf(reqFuel * (injectorStaging * nCylinders / divider) / nInjectors));
         
         requiredFuelButton.setOnClickListener(new Button.OnClickListener()
         {
