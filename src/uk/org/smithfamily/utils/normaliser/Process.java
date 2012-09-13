@@ -210,14 +210,19 @@ public class Process
             }
 
             ecuData.getRuntime().add(definition);
+            String dataType;
             if (isFloatingExpression(ecuData, expression))
             {
-                ecuData.getEvalVars().put(name, "double");
+                dataType = "double";
             }
             else
             {
-                ecuData.getEvalVars().put(name, "int");
+                dataType = "int";
             }
+            ecuData.getEvalVars().put(name, dataType);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", 1, 0);
+            ecuData.getOutputChannels().add(outputChannel);
+            
         }
         else if (ochGetCommandM.matches())
         {

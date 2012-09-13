@@ -319,6 +319,12 @@ public class Output
             writer.print(TAB + TAB + "\"" + dg + "\"");
         }
         writer.println("\n" + TAB + "};");
+        writer.println("\n@Override");
+        writer.println(TAB + "public String[] getControlFlags()\n");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return flags;");
+        writer.println(TAB + "}");
+        
 
     }
 

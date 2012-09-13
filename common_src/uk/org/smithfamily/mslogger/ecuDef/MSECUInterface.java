@@ -73,5 +73,7 @@ public interface MSECUInterface
     public abstract void setUserDefinedVisibilityFlags();
     
     public abstract void setMenuVisibilityFlags();
+    
+    public abstract String[] getControlFlags();
 
 }
