@@ -260,7 +260,7 @@ public enum Connection
      * 
      * @param d Delay
      */
-    private void delay(int d)
+    public void delay(int d)
     {
         DebugLogManager.INSTANCE.log("Sleeping for "+d+"ms", Log.DEBUG);
     	try

@@ -699,6 +699,7 @@ public abstract class Megasquirt
             {
                 Connection.INSTANCE.writeCommand(pageReadCommand, delay, isCRC32Protocol());
             }
+            Connection.INSTANCE.delay(200);
             Connection.INSTANCE.readBytes(pageBuffer, isCRC32Protocol());
         }
 
