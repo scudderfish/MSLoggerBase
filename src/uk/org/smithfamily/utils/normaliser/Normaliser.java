@@ -13,7 +13,7 @@ public class Normaliser
 {
     enum Section
     {
-        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, UserDefined
+        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, UserDefined, SettingGroups
     }
 
     private static final String        TAB          = "    ";
@@ -178,6 +178,10 @@ public class Normaliser
             {
                 currentSection = Section.ConstantsExtensions;
             }
+            else if (line.trim().equals("[SettingGroups]"))
+            {
+                currentSection = Section.SettingGroups;
+            }
             else if (line.trim().startsWith("["))
             {
                 currentSection = Section.None;
@@ -222,6 +226,8 @@ public class Normaliser
             case UserDefined:
                 Process.processUserDefined(ecuData,line);
                 break;
+            case SettingGroups:
+                Process.processSettingGroups(ecuData,line);
             case None:
                 break;
             default:
@@ -285,14 +291,12 @@ public class Normaliser
         writer.println("@SuppressWarnings(\"unused\")");
         writer.println("public class " + className + " implements MSECUInterface\n{");
         Output.outputConstructor(ecuData,writer, className);
-        Output.outputFlagsAndConstants(ecuData, writer);
         Output.outputOutputChannels(ecuData, writer);
         writer.println(TAB + "private Map<String,Double> fields = new HashMap<String,Double>();");
         writer.println(TAB + ecuData.getQueryCommandStr());
         writer.println(TAB + ecuData.getSignatureDeclaration());
         writer.println(TAB + ecuData.getOchGetCommandStr());
         writer.println(TAB + ecuData.getOchBlockSizeStr());
-        Output.outputGlobalVars(ecuData,writer);
         Output.outputRequiresPowerCycle(ecuData,writer);
         Output.outputRTCalcs(ecuData, writer);
         Output.outputLogInfo(ecuData, writer);
@@ -303,11 +307,13 @@ public class Normaliser
         Output.outputCurves(ecuData, writer);
         Output.outputUserDefinedVisibilityFlags(ecuData, writer);
         Output.outputMenuVisibilityFlags(ecuData, writer);
-
+        Output.outputSettingGroups(ecuData,writer);
         // outputGaugeDoc(writer);
 
         Output.outputOverrides(ecuData,writer);
         Output.outputLoadConstants(ecuData,writer);
+        Output.outputFlagsAndConstants(ecuData, writer);
+        Output.outputGlobalVars(ecuData,writer);
         writer.println("\n}\n");
 
         writer.close();

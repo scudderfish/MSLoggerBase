@@ -9,6 +9,7 @@ import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;
@@ -50,6 +51,7 @@ public class ECUData
 	private int interWriteDelay;
 	private int pageActivationDelayVal;
 	private String classSignature;
+	private ArrayList<SettingGroup> settingGroups;
 
 	public List<String> getRuntime()
 	{
@@ -115,6 +117,7 @@ public class ECUData
 		curveDefs = new ArrayList<CurveTracker>();
 		menuDefs = new ArrayList<MenuTracker>();
 		dialogDefs = new ArrayList<UserDefinedTracker>();
+		settingGroups = new  ArrayList<SettingGroup>();
 		fingerprintSource = "";
 		currentPage = 0;
 		isCRC32Protocol = false;
@@ -412,5 +415,10 @@ public class ECUData
     public Map<String, String> getMenuControlExpressions()
     {
         return menuControlExpressions;
+    }
+
+    public ArrayList<SettingGroup> getSettingGroups()
+    {
+        return settingGroups;
     }
 }

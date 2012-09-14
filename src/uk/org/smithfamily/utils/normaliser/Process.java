@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveGauge;
@@ -1034,6 +1035,30 @@ public class Process
     static void processPcVariables(ECUData ecuData, String line)
     {
 
+    }
+
+    public static void processSettingGroups(ECUData ecuData, String line)
+    {
+        line = removeComments(line);
+        ArrayList<SettingGroup> groups = ecuData.getSettingGroups();
+        if(line.contains("settingGroup"))
+        {
+            String data = line.split("=")[1];
+            int commaIndex = data.indexOf(',');
+            String groupName = data.substring(0, commaIndex).trim();
+            String description = data.substring(commaIndex+1).replaceAll("\"", "").trim();
+            SettingGroup group = new SettingGroup(groupName,description);
+            groups.add(group);
+        }
+        else if (line.contains("settingOption"))
+        {
+            SettingGroup currentGroup = groups.get(groups.size()-1);
+            String data = line.split("=")[1];
+            int commaIndex = data.indexOf(',');
+            String flagName = data.substring(0, commaIndex).trim();
+            String description = data.substring(commaIndex+1).replaceAll("\"", "").trim();
+            currentGroup.addOption(flagName, description);
+        }
     }
 
 }

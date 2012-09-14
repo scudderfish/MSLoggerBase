@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public interface MSECUInterface
     Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
     
     Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
+    
+    List<SettingGroup> settingGroups = new ArrayList<SettingGroup>();
 
     void setFlags();
     public abstract String getSignature();
@@ -76,4 +79,6 @@ public interface MSECUInterface
     
     public abstract String[] getControlFlags();
 
+    public abstract void createSettingGroups();
+    
 }

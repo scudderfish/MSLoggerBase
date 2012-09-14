@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuDefinition;
@@ -955,4 +956,28 @@ public class Output
         return definition;
     }
 
+    public static void outputSettingGroups(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createSettingGroups()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "settingGroups.clear();");
+        writer.println(TAB + TAB + "SettingGroup g;");
+        
+        for(SettingGroup group : ecuData.getSettingGroups())
+        {
+            String desc = group.getDescription();
+            if(desc.trim().length() > 1)
+            {
+                writer.println(TAB + TAB + String.format("g = new SettingGroup(\"%s\",\"%s\");",group.getName(),group.getDescription()));
+                for(SettingGroup.SettingOption o : group.getOptions())
+                {
+                    writer.println(TAB + TAB + String.format("g.addOption(\"%s\",\"%s\");",o.getFlag(),o.getDescription()));
+                }
+                writer.println(TAB + TAB + "settingGroups.add(g);");
+            }
+        }
+        writer.println(TAB + "}");
+
+    }
 }
