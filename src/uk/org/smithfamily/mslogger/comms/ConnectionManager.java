@@ -267,11 +267,26 @@ public enum ConnectionManager
         }
 
         DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
-
-        this.mmOutStream.write(command);
+        
+        if(command.length == 7 && command[0]=='r')
+        {
+            //MS2 hack
+        	byte[] select = new byte[3];
+        	byte[] range = new byte[4];
+        	System.arraycopy(command, 0, select, 0 , 3);
+        	System.arraycopy(command, 3, range, 0, 4);
+        	this.mmOutStream.write(select);
+        	delay(200);
+        	this.mmOutStream.write(range);
+        }
+        else
+        {
+        	this.mmOutStream.write(command);
+        }
+        
         this.mmOutStream.flush();
-
         delay(d);
+
     }
 
     /**

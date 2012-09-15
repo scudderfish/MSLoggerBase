@@ -50,7 +50,7 @@ public enum GPSLocationManager implements LocationListener
 
 		if(providerName != null)
 		{
-		    locationManager.requestLocationUpdates(providerName, 1000, 0, this);
+		    locationManager.requestLocationUpdates(providerName, 100, 0, this);
 		}
 		else
 		{

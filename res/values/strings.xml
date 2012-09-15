@@ -10,7 +10,6 @@
 	<string name="hertz">Hertz</string>
 	<string name="quit">Quit</string>
 	<string name="connecting_to_ms">Connecting to MS…</string>
-	<string name="bluetooth">Bluetooth</string>
 	<string name="map_sensor">MAP Sensor</string>
 	<string name="ego_sensor">EGO Sensor</string>
 	<string name="temp_unit">Temperature Unit</string>
@@ -136,4 +135,7 @@
 	
 	<string name="required_fuel_button">Required Fuel…</string>
 	<string name="ms">(ms)</string>
+	<string name="gps">GPS</string>
+	<string name="userexternal">Enable external GPS</string>
+	<string name="userexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
 </resources>

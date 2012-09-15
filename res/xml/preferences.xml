@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/bluetooth">
+    <PreferenceCategory android:title="@string/megasquirt">
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
             android:dialogTitle="Choose Bluetooth Device"
             android:key="bluetooth_mac"
             android:title="Bluetooth Device" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/megasquirt">
         <ListPreference
             android:entries="@array/mapnames"
             android:entryValues="@array/maptypes"
@@ -29,6 +26,19 @@
             android:title="@string/temp_unit" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/gps">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="userexternal"
+            android:summary="@string/userexternal_summary"
+            android:title="@string/userexternal" />
+        <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
+            android:dialogTitle="Choose Bluetooth Device"
+            android:key="gps_bluetooth_mac"
+            android:title="Bluetooth Device" 
+            android:dependency="userexternal"/>
+    </PreferenceCategory>
+    
     <PreferenceCategory android:title="@string/app_settings">
         <EditTextPreference
             android:defaultValue="@string/app_name"
@@ -47,7 +57,8 @@
             android:inputType="textEmailAddress"
             android:key="autoemail_target"
             android:summary="@string/autoemail_target_summary"
-            android:title="@string/autoemail_target" />
+            android:title="@string/autoemail_target" 
+            android:dependency="autoemail_enabled"/>
 
         <CheckBoxPreference
             android:defaultValue="true"

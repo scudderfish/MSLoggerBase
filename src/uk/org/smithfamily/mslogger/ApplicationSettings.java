@@ -150,7 +150,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Triggered whenever the prefenrece change to reset MAC address and settings
+     * Triggered whenever the preference change to reset MAC address and settings
      * 
      * @param sharedPreferences
      * @param key
