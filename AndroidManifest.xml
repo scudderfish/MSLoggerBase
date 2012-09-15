@@ -63,6 +63,7 @@
         <activity android:name="uk.org.smithfamily.mslogger.activity.ViewDatalogActivity"></activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.DatalogFieldsActivity"></activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.TuningActivity"></activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.EditSettingsActivity"></activity>
     </application>
 
 </manifest>

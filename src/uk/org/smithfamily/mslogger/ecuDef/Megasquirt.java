@@ -1130,5 +1130,10 @@ public class Megasquirt implements MSControllerInterface
     {
         this.ecuImplementation = i;
     }
-
+    
+    public List<SettingGroup> getSettingGroups()
+    {
+        ecuImplementation.createSettingGroups();
+        return ecuImplementation.settingGroups;
+    }
 }

@@ -9,7 +9,6 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.dialog.EditPropertiesDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -760,7 +759,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             openTuning();
             return true;
         case R.id.properties:
-            openProperties();
+            openSettings();
             return true;
         case R.id.preferences:
             openPreferences();
@@ -782,11 +781,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
     
-    private void openProperties()
+    private void openSettings()
     {
-        EditPropertiesDialog propertiesDialog = new EditPropertiesDialog(this);
-        propertiesDialog.show();
-        
+        Intent launchSettings = new Intent(this, EditSettingsActivity.class);
+        startActivity(launchSettings);
     }
 
     /**
