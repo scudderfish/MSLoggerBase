@@ -245,11 +245,12 @@ public class DialogHelper
         dialog.addField(new DialogField("std_required_fuel", "null", "", false));
         dialog.addField(new DialogField("Control Algorithm", "algorithm", "", false));
         
-        // TODO 
-        // int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
-        // int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
-        // int nbSquirt = (int) (nCylinders / divider);
-        //dialog.addField(new DialogField("Squirts Per Engine Cycle", "", "", false));
+        // Custom constant for number of squirts per engine cycle since this should modify
+        // the divider constant but save the result as "divider = nCylinders / MSLogger_nSquirts"
+        Constant constant = new Constant(1,"MSLogger_nSquirts","bits","",0,"[0:4]","",1.000000,0.000000,0,0,0,new String[] {"1","2","3","4","5","6","7","8"});
+        ecu.addConstant(constant);
+        
+        dialog.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", "", false));
         
         dialog.addField(new DialogField("Injector Staging", "alternate", "", false));
         dialog.addField(new DialogField("Engine Stroke/Rotary", "twoStroke", "", false));
@@ -322,11 +323,12 @@ public class DialogHelper
         
         eastPanel.addField(new DialogField("Control Algorithm", "", "", false));
         
-        // TODO
-        // int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
-        // int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
-        // int nbSquirt = (int) (nCylinders / divider);
-        //eastPanel.addField(new DialogField("Squirts Per Engine Cycle", "", "", false));
+        // Custom constant for number of squirts per engine cycle since this should modify 
+        // the divider constant but save the result as "divider = nCylinders / MSLogger_nSquirts"
+        Constant constant = new Constant(1,"MSLogger_nSquirts","bits","",0,"[0:4]","",1.000000,0.000000,0,0,0,new String[] {"1","2","3","4","5","6","7","8"});
+        ecu.addConstant(constant);
+        
+        eastPanel.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", "", false));
         
         eastPanel.addField(new DialogField("Injector Staging", "alternate1", "", false));
         eastPanel.addField(new DialogField("Engine Stroke", "twoStroke1", "", false));

@@ -3,8 +3,10 @@ package uk.org.smithfamily.mslogger.dialog;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -50,6 +52,39 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
         
         Button calculate = (Button) findViewById(R.id.bt_ok);
         calculate.setOnClickListener(this);
+        
+        Button cancel = (Button) findViewById(R.id.bt_cancel);
+        cancel.setOnClickListener(this);
+    }
+    
+    /**
+     * Check if a value is between the specified min/max value. Display an alert dialog if it's not.
+     * 
+     * @param value Current value
+     * @param minBound Minimum allowed
+     * @param maxBound Maximum allowed
+     */
+    private boolean showRequiredFuelOutOfBounds(double value, double minBound, double maxBound, String name)
+    {
+        if (value < minBound || value > maxBound)
+        {            
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage(name + " should be between " + minBound + " and " + maxBound + ". You currently have it set to " + value)
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setTitle("Out of bound required fuel parameter")
+                    .setCancelable(true)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int id){}
+                    });
+            
+            AlertDialog alert = builder.create();
+            alert.show();
+            
+            return true;
+        }
+        
+        return false;
     }
     
     @Override
@@ -65,27 +100,71 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
             double dispUnits = displacementUnits.getCheckedRadioButtonId() == R.id.rbCID ? 1.0 : 16.38706;
             double flowUnits = injectorFlowUnits.getCheckedRadioButtonId() == R.id.rbLbHr ? 1.0 : 10.5;
     
-            double cid = Double.parseDouble(engineDisplacement.getText().toString()); // TODO validate between 1 and 25000
+            int errorsCount = 0;
+            boolean error = false;
+            
+            // Engine displacement
+            double cid = 0;
+            try 
+            {
+                cid = Double.parseDouble(engineDisplacement.getText().toString());
+            }
+            catch (NumberFormatException e){}
+            
+            error = showRequiredFuelOutOfBounds(cid, 1, 25000, "Engine displacement");
+            if (error)
+            {
+                errorsCount++;
+            }
             cid = (int) (cid / dispUnits);
     
-            double injectorFlowValue = Double.parseDouble(injectorFlow.getText().toString()); // TODO validate between 0 and 2000
+            // Injectors flow
+            double injectorFlowValue = 0;
+            try
+            {
+                injectorFlowValue = Double.parseDouble(injectorFlow.getText().toString());
+            }
+            catch (NumberFormatException e){}
+            
+            error = showRequiredFuelOutOfBounds(injectorFlowValue, 0, 2000, "Injectors flow");
+            if (error)
+            {
+                errorsCount++;
+            }
+            
             injectorFlowValue = injectorFlowValue / flowUnits;
-    
-            double afr = Double.parseDouble(airFuelRatio.getText().toString()); // TODO validate betwen 0 and 25
-    
-            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
             
-            int nCylinders = (int) Integer.parseInt(numberOfCylinders.getText().toString());
-            int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
-            int nInjectors = (int) (ecu.isConstantExists("nInjectors") ? ecu.getField("nInjectors") : ecu.getField("nInjectors1"));
-            double injectorStaging = ecu.getField("alternate");
+            // Air/Fuel ratio
+            double afr = 0;
+            try
+            {
+                afr = Double.parseDouble(airFuelRatio.getText().toString());
+            }
+            catch (NumberFormatException e){}
             
-            reqFuel = (36.0E6 * cid * 4.27793e-05) / (nCylinders * afr * injectorFlowValue) / 10.0;
-            dReqFuel = reqFuel * (injectorStaging * nCylinders / divider) / nInjectors;
-
-            mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
+            error = showRequiredFuelOutOfBounds(injectorFlowValue, 0, 25, "Air/Fuel Ratio");
+            if (error)
+            {
+                errorsCount++;
+            }
             
-            dismiss();
+            // Only close dialog if there was no error
+            if (errorsCount == 0) 
+            {
+                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+                
+                int nCylinders = (int) Integer.parseInt(numberOfCylinders.getText().toString());
+                int divider = ecu.getDivider();
+                int nInjectors = ecu.getInjectorsCount();
+                double injectorStaging = ecu.getInjectorStating() + 1;
+                
+                reqFuel = (36.0E6 * cid * 4.27793e-05) / (nCylinders * afr * injectorFlowValue) / 10.0;
+                dReqFuel = reqFuel * (injectorStaging * divider) / nInjectors;
+                
+                // Populate this so the parent dialog can get that info
+                mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
+                dismiss();
+            }
         }
         else if (which == R.id.bt_cancel)
         {
