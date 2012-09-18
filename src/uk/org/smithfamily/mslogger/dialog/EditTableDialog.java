@@ -63,7 +63,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     {
         if (tableHelper.isModified()) 
         {
-            System.out.println("Table " + tableEditor.getName() + "was modified, need to write change to ECU");
+            System.out.println("Table " + tableEditor.getName() + " was modified, need to write change to ECU");
         }
     }
     
