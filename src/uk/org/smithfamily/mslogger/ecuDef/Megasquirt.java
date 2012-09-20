@@ -1033,6 +1033,11 @@ public class Megasquirt implements MSControllerInterface
         MSECUInterface.curveEditors.put(curve.getName(), curve);
     }
     
+    public void addConstant(Constant constant)
+    {
+        MSECUInterface.constants.put(constant.getName(), constant);
+    }
+    
     /**
      * Used to get a list of all constants name used in a specific dialog
      * 
@@ -1136,4 +1141,43 @@ public class Megasquirt implements MSControllerInterface
         ecuImplementation.createSettingGroups();
         return ecuImplementation.settingGroups;
     }
+    /**
+     * Helper functions to get specific value out of ECU
+     * Different MS version have different name for the same thing so get the right one depending on the MS version we're connected to
+     */
+    
+    /**
+     * @return Return the current ECU cylinders count
+     */
+    public int getCylindersCount()
+    {
+        return  (int) (isConstantExists("nCylinders") ? getField("nCylinders") : getField("nCylinders1"));
+    }    
+    
+    /**
+     * @return Return the current ECU injectors count
+     */
+    public int getInjectorsCount()
+    {
+        return (int) (isConstantExists("nInjectors") ? getField("nInjectors") : getField("nInjectors1"));
+    }
+    
+    /**
+     * @return Return the current ECU divider
+     */
+    public int getDivider()
+    {
+        return (int) (isConstantExists("divider") ? getField("divider") : getField("divider1"));
+    }
+    
+    /**
+     * Return the current ECU injector staging
+     * 
+     * @return 0 = Simultaneous, 1 = Alternating
+     */
+    public int getInjectorStating()
+    {
+        return (int) (isConstantExists("alternate") ? getField("alternate") : getField("alternate1"));
+    }
+
 }
