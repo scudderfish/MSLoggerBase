@@ -35,8 +35,8 @@ public class TableHelper
     private int tableNbY = 0;
     
     // An array of 5 colors:  (blue, cyan, green, yellow, red) using {R,G,B} for each
-    final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
-    final int NUM_COLORS = 5;
+    private final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
+    private final int NUM_COLORS = 5;
     
     private float currentTableMin = 0;
     private float currentTableMax = 0;
@@ -52,9 +52,11 @@ public class TableHelper
     private boolean isTableDialog;
     
     /**
+     * Construtor that trigger the build of the table
      * 
      * @param context
      * @param table
+     * @param isTableDialog
      */
     public TableHelper(Context context, TableEditor table, boolean isTableDialog)
     {
@@ -96,6 +98,7 @@ public class TableHelper
         this.tableLabel = (TextView) containerLayout.findViewById(R.id.tableLabel);
         this.tableLayout = (TableLayout) containerLayout.findViewById(R.id.tableLayout);
         
+        // If the generated table is a table dialog
         if (isTableDialog)
         {
             tableLabel.setVisibility(View.GONE);
@@ -103,7 +106,7 @@ public class TableHelper
     }
     
     /**
-     * 
+     * Return the container layout of the 2D table
      */
     public LinearLayout getLayout()
     {
@@ -111,7 +114,7 @@ public class TableHelper
     }
     
     /**
-     * 
+     * @return true if the table has been modified, false otherwise
      */
     public boolean isModified()
     {
@@ -137,7 +140,7 @@ public class TableHelper
     }
     
     /**
-     * 
+     * Create all the headers and cells to generate the 2D table into the main table layout
      */
     private void drawTable()
     {
@@ -378,7 +381,7 @@ public class TableHelper
         }
         
         // Min and/or maximum value of the table changed, we need redraw all background colors
-        if (cell == null || currentTableMin != min || currentTableMax != currentTableMax)
+        if (cell == null || currentTableMin != min || currentTableMax != max)
         {
             // Change background colors
             for (int y = 1; y <= tableNbY; y++)
@@ -416,9 +419,10 @@ public class TableHelper
     }
     
     /**
+     * Used in table to generate background color based on the cell value
      * 
-     * @param value
-     * @return
+     * @param value Between 0 and 1 representing the percent (based on the min/max) of the color to return 
+     * @return An int of the color
      */
     private int getHeatMapColor(float value)
     {
@@ -450,5 +454,39 @@ public class TableHelper
         int blue = (int) ((COLORS[idx2][2] - COLORS[idx1][2]) * fractBetween + COLORS[idx1][2]);
         
         return Color.rgb(red, green, blue);
+    }
+
+    /**
+     * Set all cells of table to enabled or disabled
+     * 
+     * @param isPanelEnabled
+     */
+    public void refreshFieldsVisibility(boolean isPanelEnabled)
+    {
+        for (int i = 0; i < getCellsCount(); i++)
+        {
+            EditText cell = getCellAt(i);
+            cell.setEnabled(isPanelEnabled);
+        }
+    }
+    
+    /**
+     * @param index Index of the cell
+     * @return The cell (EditText) associated with the index
+     */
+    private EditText getCellAt(int index)
+    {
+        int x = index % tableNbX + 1;
+        int y = index / tableNbX + 1;
+        
+        return (EditText) tableLayout.findViewById(getCellId(x,y));
+    }
+    
+    /**
+     * @return The number of cells for the table
+     */
+    private int getCellsCount()
+    {
+        return tableNbX * tableNbY;
     }
 }
