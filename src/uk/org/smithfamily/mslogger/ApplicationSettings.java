@@ -10,6 +10,7 @@ import uk.org.smithfamily.mslogger.ecuDef.MSECUInterface;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtilsInterface;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
@@ -139,6 +140,16 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
         boolean val = false;
 
+        for(SettingGroup g : ecuDefinition.getSettingGroups())
+        {
+            String groupName = g.getName();
+            if(prefs.getString(groupName, MISSING_VALUE).equals(name))
+            {
+                val = true;
+            }
+        }
+        
+        //This probably needs to be retired in light of the above code.
         if (prefs.getString("temptype", MISSING_VALUE).equals(name) || prefs.getString("maptype", MISSING_VALUE).equals(name)
                 || prefs.getString("egotype", MISSING_VALUE).equals(name))
         {
