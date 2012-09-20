@@ -1,7 +1,9 @@
 package uk.org.smithfamily.mslogger.dialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -66,8 +68,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     // Regular layout params for dialog row with label and constant
     private LayoutParams lp;
     
-    private List<CurveHelper> curveHelpers = new ArrayList<CurveHelper>();
-    private List<TableHelper> tableHelpers = new ArrayList<TableHelper>();
+    private HashMap<String, CurveHelper> curveHelpers = new HashMap<String, CurveHelper>();
+    private HashMap<String, TableHelper> tableHelpers = new HashMap<String, TableHelper>();
     
     /**
      * Constructor for dialog which set the current dialog and ECU object
@@ -343,7 +345,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                     if (curvePanel != null)
                     {
-                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                     }
                     else
                     {
@@ -352,7 +354,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         
                         if (tablePanel != null)
                         {
-                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                         }
                         else
                         {
@@ -468,11 +470,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * @param parentLayout The parent layout the panel to add will be inserted into
      * @param curvePanel The curve panel itself
      * @param orientation The orientation of the panel
+     * @param parentDialogName The name of the dialog parent to the panel
      * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
      * @return The relative layout with the curve panel in it
      */
-    private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, RelativeLayout previousPanelLayout)
+    private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, String parentDialogName, RelativeLayout previousPanelLayout)
     {
         CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel, false);
         
@@ -496,8 +499,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         curveLayout.setLayoutParams(lpWithMargins);
         
         containerPanelLayout.addView(curveLayout);
-
-        curveHelpers.add(curveHelper);
+        
+        boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + curvePanel.getName());
+        // Table panel is disabled, make it look like it is
+        if (!isPanelEnabled) 
+        {
+            curveHelper.refreshFieldsVisibility(false);
+        }
+        
+        curveHelpers.put(curvePanel.getName(), curveHelper);
         
         return containerPanelLayout;
     }
@@ -508,11 +518,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * @param parentLayout The parent layout the panel to add will be inserted into
      * @param tablePanel The table panel itself
      * @param orientation The orientation of the panel
+     * @param parentDialogName The name of the dialog parent to the panel
      * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
      * @return The relative layout with the table panel in it
      */
-    private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, RelativeLayout previousPanelLayout)
+    private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, String parentDialogName, RelativeLayout previousPanelLayout)
     {
         TableHelper tableHelper = new TableHelper(getContext(), tablePanel, false);
         
@@ -531,7 +542,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         panelLayout.addView(tableLayout);
         
-        tableHelpers.add(tableHelper);
+        boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + tablePanel.getName());
+        // Table panel is disabled, make it look like it is
+        if (!isPanelEnabled) 
+        {
+            tableHelper.refreshFieldsVisibility(false);
+        }
+        
+        tableHelpers.put(tablePanel.getName(), tableHelper);
         
         return panelLayout;
     }
@@ -719,7 +737,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             }
             else
             {
-                spinnerData.add(new MultiValuesSpinnerData(i + 1, value));
+                spinnerData.add(new MultiValuesSpinnerData(i, value));
             }
             
             /*
@@ -810,26 +828,29 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     /**
      * Add a label at the top of a panel
      * 
-     * @param title
-     * @param tl
+     * @param title The label of the panel
+     * @param tl Table layout to add the table row to
      */
     private void showPanelLabel(String title, TableLayout tl)
     {
-        LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.span = 2;
-        
-        TableRow tableRow = new TableRow(getContext());
-        tableRow.setLayoutParams(lpSpan);
-        
-        TextView label = new TextView(getContext());
-        label.setText(title);
-        label.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
-        label.setPadding(0, 0, 0, 10);
-        label.setLayoutParams(lpSpan);
-        
-        tableRow.addView(label);
-        
-        tl.addView(tableRow);
+        if (!title.equals(""))
+        {
+            LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+            lpSpan.span = 2;
+            
+            TableRow tableRow = new TableRow(getContext());
+            tableRow.setLayoutParams(lpSpan);
+            
+            TextView label = new TextView(getContext());
+            label.setText(title);
+            label.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
+            label.setPadding(0, 0, 0, 10);
+            label.setLayoutParams(lpSpan);
+            
+            tableRow.addView(label);
+            
+            tl.addView(tableRow);
+        }
     }
     
     /**
@@ -907,16 +928,35 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         for (DialogPanel dp : dialog.getPanelsList())
         {
-            MSDialog dialogPanel = ecu.getDialogByName(dp.getName());
+            MSDialog dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
             
+            // It's an std_* panel
             if (dialogPanel != null)
             {
                 refreshFieldsVisibility(dialogPanel);
+            }            
+            // It's a table panel
+            else if (tableHelpers.containsKey(dp.getName()))
+            {
+                TableHelper tableHelper = tableHelpers.get(dp.getName());
+                
+                boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + dp.getName());
+                tableHelper.refreshFieldsVisibility(isPanelEnabled);
+            }
+            // It's a curve panel
+            else if (curveHelpers.containsKey(dp.getName()))
+            {
+                CurveHelper curveHelper = curveHelpers.get(dp.getName());
+                
+                boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + dp.getName());
+                curveHelper.refreshFieldsVisibility(isPanelEnabled);
             }
             else
             {
-                // Not a regular dialog, but maybe it's an std_* dialog
-                dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+                // Check regular panel last as a table panel or curve panel will
+                // have a regular dialog too but we want to do specific processing
+                // for them
+                dialogPanel = ecu.getDialogByName(dp.getName());
                 
                 if (dialogPanel != null)
                 {
@@ -951,15 +991,17 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             }
         }
         
-        // Burn all tables
-        for (CurveHelper curveHelper : curveHelpers)
+        // Burn all curves
+        for (Entry<String, CurveHelper> entry : curveHelpers.entrySet())
         {
+            CurveHelper curveHelper = entry.getValue();
             curveHelper.getCurveEditor();
         }
-        
-        // Burn all curves
-        for (TableHelper tableHelper : tableHelpers)
+
+        // Burn all tables
+        for (Entry<String, TableHelper> entry : tableHelpers.entrySet())
         {
+            TableHelper tableHelper = entry.getValue();
             tableHelper.getTableEditor();
         }
     }

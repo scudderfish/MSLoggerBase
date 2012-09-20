@@ -47,6 +47,9 @@ public class CurveHelper
     private LinearLayout curveLayout;
     private TableLayout tableLayout;
     
+    private int tableNbX = 0;
+    private int tableNbY = 0;
+    
     // The curve dataset
     private XYMultipleSeriesDataset dataset;
     
@@ -132,8 +135,8 @@ public class CurveHelper
     {        
         LayoutParams lp = new LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         
-        final int tableNbX = 2;
-        final int tableNbY = curve.getxBins().length;
+        tableNbX = 2;
+        tableNbY = curve.getyBins().length;
         
         // Column headers
         TableRow tableRow = new TableRow(context);
@@ -486,5 +489,39 @@ public class CurveHelper
         renderer.setYAxisMax(yMax);
         renderer.setAxesColor(axesColor);
         renderer.setLabelsColor(labelsColor);
+    }
+    
+    /**
+     * Set all cells of curve table to enabled or disabled
+     * 
+     * @param isPanelEnabled
+     */
+    public void refreshFieldsVisibility(boolean isPanelEnabled)
+    {
+        for (int i = 0; i < getCellsCount(); i++)
+        {
+            EditText cell = getCellAt(i);
+            cell.setEnabled(isPanelEnabled);
+        }
+    }
+    
+    /**
+     * @param index Index of the cell
+     * @return The cell (EditText) associated with the index
+     */
+    private EditText getCellAt(int index)
+    {
+        int x = index % tableNbX + 1;
+        int y = index / tableNbX + 1;
+        
+        return (EditText) tableLayout.findViewById(getCellId(x,y));
+    }
+    
+    /**
+     * @return The number of cells for the table
+     */
+    private int getCellsCount()
+    {
+        return tableNbX * tableNbY;
     }
 }
