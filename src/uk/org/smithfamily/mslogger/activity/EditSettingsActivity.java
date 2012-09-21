@@ -1,6 +1,9 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -22,6 +25,10 @@ import android.widget.TextView;
 
 public class EditSettingsActivity extends Activity implements OnItemSelectedListener
 {
+    private static final String[] STATES       = { "Enabled", "Disabled" };
+
+    private Set<String>           settingFlags = new HashSet<String>();
+
     /**
      * 
      * @param savedInstanceState
@@ -33,16 +40,21 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
         setContentView(R.layout.editsettings);
 
         setTitle(R.string.edit_properties);
-        ;
 
         TableLayout table = (TableLayout) findViewById(R.id.settingsTable);
 
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         populateControls(table, ecu);
-
+        populateFlags(table, ecu);
     }
 
+    /**
+     * Add the drop downs for any SettingGroup entries
+     * 
+     * @param table
+     * @param ecu
+     */
     private void populateControls(TableLayout table, Megasquirt ecu)
     {
         List<SettingGroup> groups = ecu.getSettingGroups();
@@ -51,8 +63,10 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
         {
             LayoutParams groupHeadingSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
             LayoutParams controls = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-            // groupHeadingSpan.span = 2;
+            groupHeadingSpan.span = 2;
+            controls.span = 2;
 
+            // Create the header row
             TableRow tableRow = new TableRow(this);
             tableRow.setLayoutParams(groupHeadingSpan);
 
@@ -68,10 +82,12 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
             tableRow = new TableRow(this);
             tableRow.setLayoutParams(controls);
 
+            // Create the drop down, and add all the options
             Spinner control = new Spinner(this);
             SettingsAdapter adapter = new SettingsAdapter(this, android.R.layout.simple_spinner_item);
             for (SettingOption o : g.getOptions())
             {
+                settingFlags.add(o.getFlag());
                 adapter.add(o);
             }
             control.setAdapter(adapter);
@@ -84,7 +100,60 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
             control.setOnItemSelectedListener(this);
             tableRow.addView(control);
             table.addView(tableRow);
+        }
+    }
 
+    /**
+     * Create drop downs for any random flags we found parsing the INI file
+     * 
+     * @param table
+     * @param ecu
+     */
+    private void populateFlags(TableLayout table, Megasquirt ecu)
+    {
+        LayoutParams groupHeadingSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams controls = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        groupHeadingSpan.span = 2;
+        controls.span = 1;
+
+        // Header row
+        TableRow tableRow = new TableRow(this);
+        tableRow.setLayoutParams(groupHeadingSpan);
+
+        TextView label = new TextView(this);
+        label.setText(R.string.other_flags);
+        label.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+        label.setPadding(0, 0, 0, 10);
+        label.setLayoutParams(groupHeadingSpan);
+
+        tableRow.addView(label);
+        table.addView(tableRow);
+        String[] flags = ecu.getControlFlags();
+        Arrays.sort(flags, String.CASE_INSENSITIVE_ORDER);
+
+        for (String flag : flags)
+        {
+            if (!settingFlags.contains(flag))
+            {
+                tableRow = new TableRow(this);
+                tableRow.setLayoutParams(controls);
+
+                // Label the flag
+                label = new TextView(this);
+                label.setText(flag);
+                label.setTextAppearance(this, android.R.style.TextAppearance_Small);
+                // label.setPadding(0, 0, 0, 10);
+                tableRow.addView(label);
+
+                // Enabled/Disabled choice
+                Spinner control = new Spinner(this);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, STATES);
+
+                control.setAdapter(adapter);
+                control.setLayoutParams(controls);
+                tableRow.addView(control);
+                table.addView(tableRow);
+            }
         }
     }
 
@@ -121,8 +190,6 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
     @Override
     public void onNothingSelected(AdapterView<?> arg0)
     {
-        // TODO Auto-generated method stub
-
     }
 
 }

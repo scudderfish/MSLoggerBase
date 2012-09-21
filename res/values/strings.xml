@@ -140,4 +140,6 @@
 	<!--  Edit Properties -->
 	<string name="properties">Properties</string>
 	<string name="edit_properties">Edit Properties</string>
+	<string name="other_flags">Other Flags</string>
+
 </resources>
