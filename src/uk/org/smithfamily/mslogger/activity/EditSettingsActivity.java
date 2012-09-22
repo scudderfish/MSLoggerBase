@@ -85,6 +85,8 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
             // Create the drop down, and add all the options
             Spinner control = new Spinner(this);
             SettingsAdapter adapter = new SettingsAdapter(this, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            
             for (SettingOption o : g.getOptions())
             {
                 settingFlags.add(o.getFlag());
@@ -146,9 +148,10 @@ public class EditSettingsActivity extends Activity implements OnItemSelectedList
                 tableRow.addView(label);
 
                 // Enabled/Disabled choice
-                Spinner control = new Spinner(this);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, STATES);
-
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                
+                Spinner control = new Spinner(this);
                 control.setAdapter(adapter);
                 control.setLayoutParams(controls);
                 tableRow.addView(control);
