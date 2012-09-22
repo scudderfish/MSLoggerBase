@@ -81,4 +81,6 @@ public interface MSECUInterface
 
     public abstract void createSettingGroups();
     
+    public abstract List<SettingGroup> getSettingGroups();
+    
 }
