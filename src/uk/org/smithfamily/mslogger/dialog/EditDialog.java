@@ -1,7 +1,9 @@
 package uk.org.smithfamily.mslogger.dialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -66,8 +68,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     // Regular layout params for dialog row with label and constant
     private LayoutParams lp;
     
-    private List<CurveHelper> curveHelpers = new ArrayList<CurveHelper>();
-    private List<TableHelper> tableHelpers = new ArrayList<TableHelper>();
+    private HashMap<String, CurveHelper> curveHelpers = new HashMap<String, CurveHelper>();
+    private HashMap<String, TableHelper> tableHelpers = new HashMap<String, TableHelper>();
     
     /**
      * Constructor for dialog which set the current dialog and ECU object
@@ -343,7 +345,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                     if (curvePanel != null)
                     {
-                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                     }
                     else
                     {
@@ -352,7 +354,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         
                         if (tablePanel != null)
                         {
-                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                         }
                         else
                         {
@@ -394,12 +396,11 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         reqFuelEdit.setText(String.valueOf(reqFuel));
         
         final EditText reqFuelDownloadedEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel_downloaded);
-        final int nCylinders = (int) (ecu.isConstantExists("nCylinders") ? ecu.getField("nCylinders") : ecu.getField("nCylinders1"));
-        final int divider = (int) (ecu.isConstantExists("divider") ? ecu.getField("divider") : ecu.getField("divider1"));
-        final int nInjectors = (int) (ecu.isConstantExists("nInjectors") ? ecu.getField("nInjectors") : ecu.getField("nInjectors1"));
-        final double injectorStaging = ecu.getField("alternate");
+        final int divider = ecu.getDivider();
+        final int nInjectors = ecu.getInjectorsCount();
+        final double injectorStaging = ecu.getInjectorStating() + 1;
         
-        reqFuelDownloadedEdit.setText(String.valueOf(reqFuel * (injectorStaging * nCylinders / divider) / nInjectors));
+        reqFuelDownloadedEdit.setText(String.valueOf(reqFuel * (injectorStaging * divider) / nInjectors));
         
         requiredFuelButton.setOnClickListener(new Button.OnClickListener()
         {
@@ -469,11 +470,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * @param parentLayout The parent layout the panel to add will be inserted into
      * @param curvePanel The curve panel itself
      * @param orientation The orientation of the panel
+     * @param parentDialogName The name of the dialog parent to the panel
      * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
      * @return The relative layout with the curve panel in it
      */
-    private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, RelativeLayout previousPanelLayout)
+    private RelativeLayout createCurvePanel(RelativeLayout parentLayout, CurveEditor curvePanel, String orientation, String parentDialogName, RelativeLayout previousPanelLayout)
     {
         CurveHelper curveHelper = new CurveHelper(getContext(), curvePanel, false);
         
@@ -497,8 +499,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         curveLayout.setLayoutParams(lpWithMargins);
         
         containerPanelLayout.addView(curveLayout);
-
-        curveHelpers.add(curveHelper);
+        
+        boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + curvePanel.getName());
+        // Table panel is disabled, make it look like it is
+        if (!isPanelEnabled) 
+        {
+            curveHelper.refreshFieldsVisibility(false);
+        }
+        
+        curveHelpers.put(curvePanel.getName(), curveHelper);
         
         return containerPanelLayout;
     }
@@ -509,11 +518,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * @param parentLayout The parent layout the panel to add will be inserted into
      * @param tablePanel The table panel itself
      * @param orientation The orientation of the panel
+     * @param parentDialogName The name of the dialog parent to the panel
      * @param previousPanelLayout An instance of the previous layout added since the new one will be added in relation to the previous one
      * 
      * @return The relative layout with the table panel in it
      */
-    private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, RelativeLayout previousPanelLayout)
+    private RelativeLayout createTablePanel(RelativeLayout parentLayout, TableEditor tablePanel, String orientation, String parentDialogName, RelativeLayout previousPanelLayout)
     {
         TableHelper tableHelper = new TableHelper(getContext(), tablePanel, false);
         
@@ -532,7 +542,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         panelLayout.addView(tableLayout);
         
-        tableHelpers.add(tableHelper);
+        boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + tablePanel.getName());
+        // Table panel is disabled, make it look like it is
+        if (!isPanelEnabled) 
+        {
+            tableHelper.refreshFieldsVisibility(false);
+        }
+        
+        tableHelpers.put(tablePanel.getName(), tableHelper);
         
         return panelLayout;
     }
@@ -694,7 +711,18 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         final List<MultiValuesSpinnerData> spinnerData = new ArrayList<MultiValuesSpinnerData>();
         
-        int selectedValue = (int) ecu.getField(df.getName());
+        int selectedValue = 0;
+        
+        // Special case for custom constant build at runtime
+        if (df.getName().equals("MSLogger_nSquirts"))
+        {            
+            selectedValue = (int) ecu.getCylindersCount() / ecu.getDivider() - 1;
+        }
+        else
+        {
+            selectedValue = (int) ecu.getField(df.getName());
+        }
+        
         int selectedIndex = 0;
         int invalidCount = 0;
         
@@ -709,12 +737,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             }
             else
             {
-                spinnerData.add(new MultiValuesSpinnerData(i + 1, value));
+                spinnerData.add(new MultiValuesSpinnerData(i, value));
             }
             
             /*
              *  When we reach the currently selected valid, we need to keep track of how many
-             *  invalid value there was before that, because those won't be displayed in the
+             *  invalid values there was before that, because those won't be displayed in the
              *  spinner and we need to know which index to select
              */
             if (selectedValue == i)
@@ -742,7 +770,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
                 // First onItemSelected event of the spinner come from populating it, ignore it!
-                if (ignoreEvent) {
+                if (ignoreEvent)
+                {
                     ignoreEvent = false;
                 }
                 else 
@@ -751,21 +780,40 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     
                     int value = spinnerData.get(position).getId();
                     
-                    // Value changed, update field in ECU class
-                    if (ecu.getField(constantName) != value)
+                    // Special case for this constant which should do some extra validation
+                    if (constantName.equals("MSLogger_nSquirts"))
                     {
-                        // Constant has been modified and will need to be burn to ECU
-                        Constant constant = ecu.getConstantByName(constantName);
-                        constant.setModified(true);
+                        int nCylinders = ecu.getCylindersCount();
                         
-                        // Update ecu field with new value
-                        ecu.setField(constantName, value); 
-                        
-                        // Re-evaluate the expressions with the data updated
-                        ecu.setUserDefinedVisibilityFlags();
-    
-                        // Refresh the UI
-                        refreshFieldsVisibility(msDialog);
+                        // nCylinders should divide by value without remainder
+                        if (nCylinders % value > 0)
+                        {
+                            showInvalidNumberOfSquirts(nCylinders + " cylinders is not valid with " + value + " squirts (Number of cylinders / number of squirts should divide without remainder)");
+                        }
+                        // If injector staging is alternating
+                        else if (ecu.getInjectorStating() == 1 && !(nCylinders / value < nCylinders && nCylinders / (value * 2) == 0))
+                        {
+                            showInvalidNumberOfSquirts("Cannot alternate this Squirts per engine cycle with this number of cylinders.");
+                        }
+                    }
+                    else
+                    {
+                        // Value changed, update field in ECU class
+                        if (ecu.getField(constantName) != value)
+                        {
+                            // Constant has been modified and will need to be burn to ECU
+                            Constant constant = ecu.getConstantByName(constantName);
+                            constant.setModified(true);
+                            
+                            // Update ecu field with new value
+                            ecu.setField(constantName, value); 
+                            
+                            // Re-evaluate the expressions with the data updated
+                            ecu.setUserDefinedVisibilityFlags();
+        
+                            // Refresh the UI
+                            refreshFieldsVisibility(msDialog);
+                        }
                     }
                 }
             }
@@ -780,26 +828,50 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     /**
      * Add a label at the top of a panel
      * 
-     * @param title
-     * @param tl
+     * @param title The label of the panel
+     * @param tl Table layout to add the table row to
      */
     private void showPanelLabel(String title, TableLayout tl)
     {
-        LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-        lpSpan.span = 2;
+        if (!title.equals(""))
+        {
+            LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+            lpSpan.span = 2;
+            
+            TableRow tableRow = new TableRow(getContext());
+            tableRow.setLayoutParams(lpSpan);
+            
+            TextView label = new TextView(getContext());
+            label.setText(title);
+            label.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
+            label.setPadding(0, 0, 0, 10);
+            label.setLayoutParams(lpSpan);
+            
+            tableRow.addView(label);
+            
+            tl.addView(tableRow);
+        }
+    }
+    
+    /**
+     * Display an alert dialog whenever the number of squirts is invalid
+     * 
+     * @param message The error message to display
+     */
+    private void showInvalidNumberOfSquirts(String message)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(message)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("Invalid number of squirts per engine cycle")
+                .setCancelable(true)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id){}
+                });
         
-        TableRow tableRow = new TableRow(getContext());
-        tableRow.setLayoutParams(lpSpan);
-        
-        TextView label = new TextView(getContext());
-        label.setText(title);
-        label.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
-        label.setPadding(0, 0, 0, 10);
-        label.setLayoutParams(lpSpan);
-        
-        tableRow.addView(label);
-        
-        tl.addView(tableRow);
+        AlertDialog alert = builder.create();
+        alert.show();
     }
     
     /**
@@ -820,7 +892,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 });
         
         AlertDialog alert = builder.create();
-        alert.show();  
+        alert.show();
     }
         
     /**
@@ -856,16 +928,35 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         for (DialogPanel dp : dialog.getPanelsList())
         {
-            MSDialog dialogPanel = ecu.getDialogByName(dp.getName());
+            MSDialog dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
             
+            // It's an std_* panel
             if (dialogPanel != null)
             {
                 refreshFieldsVisibility(dialogPanel);
+            }            
+            // It's a table panel
+            else if (tableHelpers.containsKey(dp.getName()))
+            {
+                TableHelper tableHelper = tableHelpers.get(dp.getName());
+                
+                boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + dp.getName());
+                tableHelper.refreshFieldsVisibility(isPanelEnabled);
+            }
+            // It's a curve panel
+            else if (curveHelpers.containsKey(dp.getName()))
+            {
+                CurveHelper curveHelper = curveHelpers.get(dp.getName());
+                
+                boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + dp.getName());
+                curveHelper.refreshFieldsVisibility(isPanelEnabled);
             }
             else
             {
-                // Not a regular dialog, but maybe it's an std_* dialog
-                dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+                // Check regular panel last as a table panel or curve panel will
+                // have a regular dialog too but we want to do specific processing
+                // for them
+                dialogPanel = ecu.getDialogByName(dp.getName());
                 
                 if (dialogPanel != null)
                 {
@@ -891,17 +982,26 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 
                 constant.setModified(false);
             }
-        }
-        
-        // Burn all tables
-        for (CurveHelper curveHelper : curveHelpers)
-        {
-            curveHelper.getCurveEditor();
+            
+            // Special case for custom constant MSLogger_nSquirts
+            // The value of it should be saved into divider constant
+            if (constantName.equals("MSLogger_nSquirts"))
+            {
+                constant = ecu.isConstantExists("divider") ? ecu.getConstantByName("divider") : ecu.getConstantByName("divider1");
+            }
         }
         
         // Burn all curves
-        for (TableHelper tableHelper : tableHelpers)
+        for (Entry<String, CurveHelper> entry : curveHelpers.entrySet())
         {
+            CurveHelper curveHelper = entry.getValue();
+            curveHelper.getCurveEditor();
+        }
+
+        // Burn all tables
+        for (Entry<String, TableHelper> entry : tableHelpers.entrySet())
+        {
+            TableHelper tableHelper = entry.getValue();
             tableHelper.getTableEditor();
         }
     }

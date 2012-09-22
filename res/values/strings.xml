@@ -138,4 +138,10 @@
 	<string name="gps">GPS</string>
 	<string name="userexternal">Enable external GPS</string>
 	<string name="userexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
+	
+	<!--  Edit Properties -->
+	<string name="properties">Properties</string>
+	<string name="edit_properties">Edit Properties</string>
+	<string name="other_flags">Other Flags</string>
+
 </resources>

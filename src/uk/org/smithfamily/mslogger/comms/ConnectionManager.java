@@ -285,8 +285,8 @@ public enum ConnectionManager
         }
         
         this.mmOutStream.flush();
+        
         delay(d);
-
     }
 
     /**

@@ -1,36 +1,23 @@
-package uk.org.smithfamily.mslogger.dialog;
+package uk.org.smithfamily.mslogger.activity;
 
+import com.android.debug.hv.ViewServer;
+
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.dialog.TableHelper;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
-import android.app.Dialog;
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 
-/**
- *
- */
-public class EditTableDialog extends Dialog implements android.view.View.OnClickListener
-{    
+public class EditTableActivity extends Activity implements android.view.View.OnClickListener
+{
     private TableHelper tableHelper;
     private TableEditor tableEditor;
-    
-    /**
-     * 
-     * @param context
-     * @param tableEditor
-     */
-    public EditTableDialog(Context context, TableEditor tableEditor)
-    {
-        super(context);
-        
-        this.tableHelper = new TableHelper(context, tableEditor, true);
-        this.tableEditor = tableEditor;
-    }
-    
     /**
      * @param savedInstanceState
      */
@@ -38,13 +25,17 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        ViewServer.get(this).addWindow(this);
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        this.tableEditor = ecu.getTableEditorByName("veTable1Tbl");
+        this.tableHelper = new TableHelper(this, tableEditor, true);
         
         setContentView(R.layout.edittable);
      
         setTitle("Edit " + tableEditor.getLabel());
         
-        HorizontalScrollView ll = (HorizontalScrollView) findViewById(R.id.horizontalView);
-        ll.addView(tableHelper.getLayout());
+        LinearLayout ll = (LinearLayout) findViewById(R.id.mainTable);
+        ll.addView(tableHelper.getLayout(), 0);
         
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);
@@ -63,7 +54,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
     {
         if (tableHelper.isModified()) 
         {
-            System.out.println("Table " + tableEditor.getName() + " was modified, need to write change to ECU");
+            System.out.println("Table " + tableEditor.getName() + "was modified, need to write change to ECU");
         }
     }
     
@@ -83,7 +74,18 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         }
         else if (which == R.id.cancel)
         {
-            cancel();
+            finish();
         }
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ViewServer.get(this).removeWindow(this);
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        ViewServer.get(this).setFocusedWindow(this);
     }
 }

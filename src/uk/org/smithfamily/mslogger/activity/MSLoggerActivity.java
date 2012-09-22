@@ -740,62 +740,53 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         checkBTDeviceSet();
         int itemId = item.getItemId();
-        if (itemId == R.id.forceConnection)
+        switch(itemId)
         {
+        
+        case  R.id.forceConnection:
             toggleConnection();
             return true;
-        }
-        else if (itemId == R.id.gaugeEditing)
-        {
+        case R.id.gaugeEditing:
             toggleEditing();
             return true;
-        }
-        else if (itemId == R.id.forceLogging)
-        {
+        case R.id.forceLogging:
             toggleLogging();
             return true;
-        }
-        else if (itemId == R.id.manageDatalogs)
-        {
+        case R.id.manageDatalogs:
             openManageDatalogs();
             return true;
-        }
-        else if (itemId == R.id.tuning)
-        {
+        case R.id.tuning:
             openTuning();
             return true;
-        }
-        else if (itemId == R.id.preferences)
-        {
+        case R.id.properties:
+            openSettings();
+            return true;
+        case R.id.preferences:
             openPreferences();
             return true;
-        }        
-        else if (itemId == R.id.resetGauges)
-        {
+        case R.id.resetGauges:
             resetGuages();
             return true;
-        }
-        else if (itemId == R.id.calibrate)
-        {
+        case R.id.calibrate:
             openCalibrateTPS();
             return true;
-        }
-        else if (itemId == R.id.about)
-        {
+        case R.id.about:
             showAbout();
             return true;
-        }
-        else if (itemId == R.id.quit)
-        {
+        case R.id.quit:
             quit();
             return true;
-        }
-        else
-        {
+        default:
             return super.onOptionsItemSelected(item);
         }
     }
     
+    private void openSettings()
+    {
+        Intent launchSettings = new Intent(this, EditSettingsActivity.class);
+        startActivity(launchSettings);
+    }
+
     /**
      * Start the background task to reset the gauges
      */
