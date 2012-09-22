@@ -1001,7 +1001,7 @@ public class Process
         }
         ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
 
-        UserDefinedField x = new UserDefinedField(label, name, visibilityFlag, readOnly);
+        UserDefinedField x = new UserDefinedField(label, name, readOnly);
         d.addItem(x);
     }
 
