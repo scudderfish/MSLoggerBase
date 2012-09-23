@@ -978,6 +978,12 @@ public class Output
             }
         }
         writer.println(TAB + "}");
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public List<SettingGroup> getSettingGroups()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return settingGroups;");
+        writer.println(TAB + "}");
 
     }
 }

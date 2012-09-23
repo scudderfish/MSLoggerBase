@@ -5,18 +5,12 @@ public class UserDefinedField extends UserDefinedItem
 
 	private String label;
 	private String name;
-	private String expression;
 	private boolean displayOnly;
 
-	public UserDefinedField(String label, String name, String expression, boolean displayOnly)
+	public UserDefinedField(String label, String name, boolean displayOnly)
     {
         this.label = label;
         this.name = name;
-        if (expression == null)
-        {
-        	expression = "true";
-        }
-        this.expression = expression;
         this.displayOnly = displayOnly;
     }
 
@@ -30,11 +24,6 @@ public class UserDefinedField extends UserDefinedItem
 		return name;
 	}
 
-	public String getExpression()
-	{
-		return expression;
-	}
-
 	public boolean isDisplayOnly()
 	{
 		return displayOnly;
@@ -43,6 +32,6 @@ public class UserDefinedField extends UserDefinedItem
 	@Override
 	public String toString()
 	{
-		return String.format("d.addField(new DialogField(\"%s\",\"%s\",\"%s\",%s));", label, name, expression, displayOnly);
+		return String.format("d.addField(new DialogField(\"%s\",\"%s\",%s));", label, name, displayOnly);
 	}
 }
