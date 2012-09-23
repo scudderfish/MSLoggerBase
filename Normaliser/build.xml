@@ -4,11 +4,10 @@
     default="build_firmwares_jar" >
 
 	<property name="jar.file" value="firmwares.jar" />
-    <property name="output.file.location" value="../MSLoggerBase/libs" />
+	
+    <property name="output.file.location" value="../MSLogger/libs" />
 
     <property name="output.file" value="${output.file.location}/${jar.file}" />
-
-	<property name="mslogger.jar.location" value="../MSLoggerBase/libs/${jar.file}" />
 
 	<target name="compile_normaliser" depends=".compile_support" >
 		<mkdir dir="bin" />
@@ -55,8 +54,8 @@
     <target
         name=".construct_firmware_jar" 
         depends="clean,.compile_firmware" >
-    	<delete file="${mslogger.jar.location}" />
-        <jar destfile="${mslogger.jar.location}" >
+    	<delete file="${output.file}" />
+        <jar destfile="${output.file}" >
             <fileset dir="gen_bin" />
             <fileset dir="gen_src" />
             <fileset dir="common_bin" />
