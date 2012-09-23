@@ -156,6 +156,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             val = true;
         }
 
+        if(prefs.getString(name, MISSING_VALUE).equalsIgnoreCase("true"))
+        {
+            val = true;
+        }
         settings.put(name, val);
         return val;
     }
