@@ -1139,7 +1139,7 @@ public class Megasquirt implements MSControllerInterface
     public List<SettingGroup> getSettingGroups()
     {
         ecuImplementation.createSettingGroups();
-        return ecuImplementation.settingGroups;
+        return ecuImplementation.getSettingGroups();
     }
     /**
      * Helper functions to get specific value out of ECU

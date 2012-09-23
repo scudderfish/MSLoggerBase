@@ -198,35 +198,35 @@ public class DialogHelper
         MSDialog dialogCenterSeekBar = new MSDialog("std_accel_seek_bar_panel", "", "");
         ecu.addDialog(dialogCenterSeekBar);
         
-        dialogCenterSeekBar.addField(new DialogField("std_accel_seek_bar", "null", "", false));
+        dialogCenterSeekBar.addField(new DialogField("std_accel_seek_bar", "null", false));
 
         // MAP section
         MSDialog dialogMap = new MSDialog("std_accel_map","","null");
         ecu.addDialog(dialogMap);
         
-        dialogMap.addField(new DialogField("MAPdot Threshold", "mapThresh", "", false));
-        dialogMap.addField(new DialogField("Accel Time", "taeTime", "", false));
+        dialogMap.addField(new DialogField("MAPdot Threshold", "mapThresh", false));
+        dialogMap.addField(new DialogField("Accel Time", "taeTime", false));
         
         // Not all MS version have support for taper time
         if (ecu.getConstantByName("aeTaperTime") != null)
         {
-            dialogMap.addField(new DialogField("Accel Taper Time", "aeTaperTime", "", false));
+            dialogMap.addField(new DialogField("Accel Taper Time", "aeTaperTime", false));
         }
         
         // Not all MS version have support for end pulsewidth
         if (ecu.getConstantByName("aeEndPW") != null)
         {
-            dialogMap.addField(new DialogField("End Pulsewidth", "aeEndPW", "", false));
+            dialogMap.addField(new DialogField("End Pulsewidth", "aeEndPW", false));
         }
         
         // TPS section
         MSDialog dialogSouthTps = new MSDialog("std_accel_tps","","null");
         ecu.addDialog(dialogSouthTps);
         
-        dialogSouthTps.addField(new DialogField("TPSdot Threshold", "tpsThresh", "", false));
-        dialogSouthTps.addField(new DialogField("Decel Fuel Amount", "tdePct", "", false));
-        dialogSouthTps.addField(new DialogField("Cold Accel Enrichment", "taeColdA", "", false));
-        dialogSouthTps.addField(new DialogField("Cold Accel Multiplier", "taeColdM", "", false));
+        dialogSouthTps.addField(new DialogField("TPSdot Threshold", "tpsThresh", false));
+        dialogSouthTps.addField(new DialogField("Decel Fuel Amount", "tdePct", false));
+        dialogSouthTps.addField(new DialogField("Cold Accel Enrichment", "taeColdA", false));
+        dialogSouthTps.addField(new DialogField("Cold Accel Multiplier", "taeColdM", false));
         
         return dialogAccel;
     }
@@ -242,22 +242,22 @@ public class DialogHelper
         MSDialog dialog = new MSDialog("std_injection", "Calculate Required Fuel", "");
         ecu.addDialog(dialog);
         
-        dialog.addField(new DialogField("std_required_fuel", "null", "", false));
-        dialog.addField(new DialogField("Control Algorithm", "algorithm", "", false));
+        dialog.addField(new DialogField("std_required_fuel", "null", false));
+        dialog.addField(new DialogField("Control Algorithm", "algorithm", false));
         
         // Custom constant for number of squirts per engine cycle since this should modify
         // the divider constant but save the result as "divider = nCylinders / MSLogger_nSquirts"
         Constant constant = new Constant(1,"MSLogger_nSquirts","bits","",0,"[0:4]","",1.000000,0.000000,0,0,0,new String[] {"1","2","3","4","5","6","7","8"});
         ecu.addConstant(constant);
         
-        dialog.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", "", false));
+        dialog.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", false));
         
-        dialog.addField(new DialogField("Injector Staging", "alternate", "", false));
-        dialog.addField(new DialogField("Engine Stroke/Rotary", "twoStroke", "", false));
-        dialog.addField(new DialogField("No. Cylinders/Rotors", "nCylinders", "", false));
-        dialog.addField(new DialogField("Injector Port Type", "injType", "", false));
-        dialog.addField(new DialogField("Number of Injectors", "nInjectors", "", false));
-        dialog.addField(new DialogField("Engine Type", "engineType", "", false));
+        dialog.addField(new DialogField("Injector Staging", "alternate", false));
+        dialog.addField(new DialogField("Engine Stroke/Rotary", "twoStroke", false));
+        dialog.addField(new DialogField("No. Cylinders/Rotors", "nCylinders", false));
+        dialog.addField(new DialogField("Injector Port Type", "injType", false));
+        dialog.addField(new DialogField("Number of Injectors", "nInjectors", false));
+        dialog.addField(new DialogField("Engine Type", "engineType", false));
         
         return dialog;
     }
@@ -311,31 +311,31 @@ public class DialogHelper
         
         MSDialog weastPanel = new MSDialog("std_constants_west", "", "");
         
-        weastPanel.addField(new DialogField("std_required_fuel", "null", "", false));
-        weastPanel.addField(new DialogField("Injector Opening Time", "injOpen1", "", false));
-        weastPanel.addField(new DialogField("Battery Voltage Correction", "battFac1", "", false));
-        weastPanel.addField(new DialogField("PWM Current Limit", "injPwmP1", "", false));
-        weastPanel.addField(new DialogField("PWM Time", "injPwmT1", "", false));
-        weastPanel.addField(new DialogField("Fast Idle Threshold", "fastIdleT1", "", false));
-        weastPanel.addField(new DialogField("Barometric Correction", "baroCorr1", "", false));
+        weastPanel.addField(new DialogField("std_required_fuel", "null", false));
+        weastPanel.addField(new DialogField("Injector Opening Time", "injOpen1", false));
+        weastPanel.addField(new DialogField("Battery Voltage Correction", "battFac1", false));
+        weastPanel.addField(new DialogField("PWM Current Limit", "injPwmP1", false));
+        weastPanel.addField(new DialogField("PWM Time", "injPwmT1", false));
+        weastPanel.addField(new DialogField("Fast Idle Threshold", "fastIdleT1", false));
+        weastPanel.addField(new DialogField("Barometric Correction", "baroCorr1", false));
         
         MSDialog eastPanel = new MSDialog("std_constants_east", "", "");
         
-        eastPanel.addField(new DialogField("Control Algorithm", "", "", false));
+        eastPanel.addField(new DialogField("Control Algorithm", "", false));
         
         // Custom constant for number of squirts per engine cycle since this should modify 
         // the divider constant but save the result as "divider = nCylinders / MSLogger_nSquirts"
         Constant constant = new Constant(1,"MSLogger_nSquirts","bits","",0,"[0:4]","",1.000000,0.000000,0,0,0,new String[] {"1","2","3","4","5","6","7","8"});
         ecu.addConstant(constant);
         
-        eastPanel.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", "", false));
+        eastPanel.addField(new DialogField("Squirts Per Engine Cycle", "MSLogger_nSquirts", false));
         
-        eastPanel.addField(new DialogField("Injector Staging", "alternate1", "", false));
-        eastPanel.addField(new DialogField("Engine Stroke", "twoStroke1", "", false));
-        eastPanel.addField(new DialogField("Number of Cylinders", "nCylinders1", "", false));
-        eastPanel.addField(new DialogField("Number of Injectors", "nInjectors1", "", false));
-        eastPanel.addField(new DialogField("MAP Type", "mapType1", "", false));
-        eastPanel.addField(new DialogField("Engine Type", "engineType1", "", false));
+        eastPanel.addField(new DialogField("Injector Staging", "alternate1", false));
+        eastPanel.addField(new DialogField("Engine Stroke", "twoStroke1", false));
+        eastPanel.addField(new DialogField("Number of Cylinders", "nCylinders1", false));
+        eastPanel.addField(new DialogField("Number of Injectors", "nInjectors1", false));
+        eastPanel.addField(new DialogField("MAP Type", "mapType1", false));
+        eastPanel.addField(new DialogField("Engine Type", "engineType1", false));
         
         dialog.addPanel(new DialogPanel("std_constants_west", "West"));
         dialog.addPanel(new DialogPanel("std_constants_east", "East"));
