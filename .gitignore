@@ -1,0 +1,11 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+/gen_src
+bin
+/dummy_bin
+/gen_bin
+/common_bin
