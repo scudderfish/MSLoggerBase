@@ -1,13 +1,24 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup.SettingOption;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceScreen;
 
 /**
  * 
@@ -15,8 +26,10 @@ import android.preference.PreferenceActivity;
  */
 public class PreferencesActivity extends PreferenceActivity
 {
-    public  static final String DIRTY = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
-    private Boolean ecuDirty = false;
+    public static final String DIRTY        = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
+    private Boolean            ecuDirty     = false;
+    private Set<String>        settingFlags = new HashSet<String>();
+    private Set<String> alreadyDefined = new HashSet<String>();
 
     /**
      *
@@ -39,6 +52,11 @@ public class PreferencesActivity extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         ecuDirty = false;
+        
+        buildAlreadyDefined(R.array.egotypes);
+        buildAlreadyDefined(R.array.maptypes);
+        buildAlreadyDefined(R.array.tempvalues);
+        
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
@@ -48,6 +66,86 @@ public class PreferencesActivity extends PreferenceActivity
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("egotype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
+
+        PreferenceScreen ps = this.getPreferenceScreen();
+
+        populateProjectSettings(ps);
+
+    }
+
+    private void buildAlreadyDefined(int id)
+    {
+        String[] values = getResources().getStringArray(id);
+        for(String value : values)
+        {
+            alreadyDefined.add(value);
+        }
+        
+    }
+
+    private void populateProjectSettings(PreferenceScreen ps)
+    {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        List<SettingGroup> groups = ecu.getSettingGroups();
+
+        if (groups == null || groups.size() == 0)
+        {
+            return;
+        }
+        PreferenceCategory inlinePrefCat = new PreferenceCategory(this);
+        inlinePrefCat.setTitle("Project Settings");
+        ps.addPreference(inlinePrefCat);
+
+        for (SettingGroup g : groups)
+        {
+            ListPreference lp = new ListPreference(this);
+            lp.setTitle(g.getDescription());
+            lp.setKey(g.getName());
+            lp.setEntries(getEntries(g));
+            lp.setEntryValues(getEntryValues(g));
+            inlinePrefCat.addPreference(lp);
+        }
+        String[] flags = ecu.getControlFlags();
+        Arrays.sort(flags, String.CASE_INSENSITIVE_ORDER);
+
+        for (String flag : flags)
+        {
+            if (!settingFlags.contains(flag)  && !alreadyDefined .contains(flag))
+            {
+                ListPreference lp = new ListPreference(this);
+                lp.setTitle(flag);
+                lp.setKey(flag);
+                lp.setEntries(R.array.booleanTypes);
+                lp.setEntryValues(R.array.booleanDisplayValues);
+                inlinePrefCat.addPreference(lp);
+            }
+        }
+
+    }
+
+    private String[] getEntryValues(SettingGroup g)
+    {
+        List<SettingOption> options = g.getOptions();
+        String[] values = new String[options.size()];
+        for (int i = 0; i < options.size(); i++)
+        {
+            values[i] = options.get(i).getFlag();
+            settingFlags.add(values[i]);
+        }
+
+        return values;
+    }
+
+    private String[] getEntries(SettingGroup g)
+    {
+        List<SettingOption> options = g.getOptions();
+        String[] values = new String[options.size()];
+        for (int i = 0; i < options.size(); i++)
+        {
+            values[i] = options.get(i).getDescription();
+        }
+
+        return values;
     }
 
     /**

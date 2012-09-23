@@ -758,9 +758,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         case R.id.tuning:
             openTuning();
             return true;
-        case R.id.properties:
-            openSettings();
-            return true;
         case R.id.preferences:
             openPreferences();
             return true;
@@ -781,12 +778,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
     
-    private void openSettings()
-    {
-        Intent launchSettings = new Intent(this, EditSettingsActivity.class);
-        startActivity(launchSettings);
-    }
-
+    
     /**
      * Start the background task to reset the gauges
      */

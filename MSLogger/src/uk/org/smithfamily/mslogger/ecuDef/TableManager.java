@@ -60,7 +60,8 @@ public enum TableManager
 	 * @param fileName
 	 * @param values
 	 */
-	private void readTable(String fileName, List<Integer> values)
+	@SuppressWarnings("resource")
+    private void readTable(String fileName, List<Integer> values)
 	{
 		values.clear();
 		Pattern p = Pattern.compile("\\s*[Dd][BbWw]\\s*(\\d*).*");

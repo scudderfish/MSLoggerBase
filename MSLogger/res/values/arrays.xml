@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string-array name="egotypes">
+	
+	<string-array name="booleanDisplayValues">
+	    <item >true</item>
+	    <item>false</item>
+	</string-array>
+	
+	<string-array name="booleanTypes">
+	    <item>Enabled</item>
+	    <item>Disabled</item>
+	</string-array>
+	
+    <string-array name="egotypes">
 		<item>NARROW_BAND_EGO</item>
 		<item>WB_1_0_LINEAR</item>
 		<item>DIYWB_NON_LINEAR</item>
