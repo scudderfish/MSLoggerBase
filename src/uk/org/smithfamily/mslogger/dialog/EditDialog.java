@@ -298,14 +298,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     // Multi-choice constant
                     if (constant.getClassType().equals("bits"))
                     {
-                        Spinner spin = buildMultiValuesConstantField(df, constant);
+                        Spinner spin = buildMultiValuesConstantField(dialog.getName(), df, constant);
                         
                         tableRow.addView(spin);
                     }
                     // Single value constant
                     else
                     {
-                        EditText edit = buildSingleValueConstantField(df, constant);
+                        EditText edit = buildSingleValueConstantField(dialog.getName(), df, constant);
 
                         tableRow.addView(edit);
                     }
@@ -591,12 +591,13 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     /**
      * Build an EditText for displaying single value constant
      * 
+     * @param dialogName Name of the dialog the field is included in
      * @param df The dialog field to build the display for
      * @param constant The constant associated with the dialog field
      * 
      * @return The EditText that can be displayed
      */
-    private EditText buildSingleValueConstantField(DialogField df, Constant constant)
+    private EditText buildSingleValueConstantField(String dialogName, DialogField df, Constant constant)
     {
         double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
         String displayedValue = "";
@@ -654,7 +655,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         });
         
         // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(dialogName + "_" + df.getName()))
         {
             edit.setEnabled(false);
         }
@@ -695,16 +696,17 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     /**
      *  Build a Spinner for displaying multi values constant
      *
+     * @param dialogName Name of the dialog the field is included in
      * @param df The dialog field to build the display for
      * @param constant The constant associated with the dialog field
      * @return The Spinner that can be displayed
      */    
-    private Spinner buildMultiValuesConstantField(DialogField df, Constant constant)
+    private Spinner buildMultiValuesConstantField(String dialogName, DialogField df, Constant constant)
     {
         Spinner spin = new Spinner(getContext());
         
         // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(df.getExpression()))
+        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(dialogName + "_" + df.getName()))
         {
             spin.setEnabled(false);
         }
@@ -911,7 +913,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             if (constant != null)
             {
                 // Field is not ready only and not disabled
-                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(df.getExpression());
+                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName());
                 
                 if (constant.getClassType().equals("bits"))
                 {
