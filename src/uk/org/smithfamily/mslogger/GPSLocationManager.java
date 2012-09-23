@@ -93,6 +93,7 @@ public enum GPSLocationManager implements LocationListener
 	@Override
 	public synchronized void onLocationChanged(Location location)
 	{
+		//TODO update lastLocation regularly (by somehow calling onLocationChanged whenever the BT GPS is updated)
 		lastLocation = location;
 		freshFlag = 1;
 	}

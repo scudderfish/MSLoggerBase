@@ -138,6 +138,8 @@
 	<string name="gps">GPS</string>
 	<string name="userexternal">Enable external GPS</string>
 	<string name="userexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
+	<string name="usephonetime">Enable hires GPS Time</string>
+	<string name="usephonetime_summary">Use the device timesource for GPS Time (better accuarcy of elapsed time)</string>	
 	
 	<!--  Edit Properties -->
 	<string name="properties">Properties</string>
