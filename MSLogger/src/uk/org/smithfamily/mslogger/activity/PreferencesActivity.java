@@ -29,10 +29,10 @@ import android.preference.PreferenceScreen;
  */
 public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-    public static final String DIRTY        = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
-    private Boolean            ecuDirty     = false;
-    private Set<String>        settingFlags = new HashSet<String>();
-    private Set<String> 	   alreadyDefined = new HashSet<String>();
+    public static final String DIRTY = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
+    private Boolean ecuDirty = false;
+    private Set<String> settingFlags = new HashSet<String>();
+    private Set<String> alreadyDefined = new HashSet<String>();
 
     /**
      *
@@ -55,15 +55,15 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     protected void onCreate(Bundle savedInstanceState)
     {
         ecuDirty = false;
-        
+
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        for(int i=0;i<getPreferenceScreen().getPreferenceCount();i++)
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++)
         {
-        	initSummary(getPreferenceScreen().getPreference(i));
+            initSummary(getPreferenceScreen().getPreference(i));
         }
-        
+
         Preference p = this.getPreferenceManager().findPreference("temptype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("maptype");
@@ -72,43 +72,43 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
 
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-    	if (ecu != null)
-    	{
-    		PreferenceScreen ps = this.getPreferenceScreen();
+        if (ecu != null)
+        {
+            PreferenceScreen ps = this.getPreferenceScreen();
 
-    		buildAlreadyDefined(R.array.egotypes);
-    		buildAlreadyDefined(R.array.maptypes);
-    		buildAlreadyDefined(R.array.tempvalues);
-    		populateProjectSettings(ps);
-    	}
+            buildAlreadyDefined(R.array.egotypes);
+            buildAlreadyDefined(R.array.maptypes);
+            buildAlreadyDefined(R.array.tempvalues);
+            populateProjectSettings(ps);
+        }
 
     }
 
-    @Override 
+    @Override
     protected void onResume()
     {
         super.onResume();
-        // Set up a listener whenever a key changes             
+        // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
-    @Override 
-    protected void onPause() 
-    { 
+    @Override
+    protected void onPause()
+    {
         super.onPause();
-        // Unregister the listener whenever a key changes             
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);     
-    } 
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     private void initSummary(Preference p)
     {
-    	if (p instanceof PreferenceCategory)
+        if (p instanceof PreferenceCategory)
         {
-             PreferenceCategory pCat = (PreferenceCategory)p;
-             for(int i=0;i<pCat.getPreferenceCount();i++)
-             {
-                 initSummary(pCat.getPreference(i));
-             }
+            PreferenceCategory pCat = (PreferenceCategory) p;
+            for (int i = 0; i < pCat.getPreferenceCount(); i++)
+            {
+                initSummary(pCat.getPreference(i));
+            }
         }
         else
         {
@@ -118,19 +118,19 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updatePrefSummary(Preference p)
     {
-    	if (p instanceof ListPreference) 
-    	{
-    		ListPreference listPref = (ListPreference) p; 
-            p.setSummary(listPref.getEntry()); 
-        }
-    	
-    	if (p instanceof EditTextPreference) 
+        if (p instanceof ListPreference)
         {
-            EditTextPreference editTextPref = (EditTextPreference) p; 
-            p.setSummary(editTextPref.getText()); 
+            ListPreference listPref = (ListPreference) p;
+            p.setSummary(listPref.getEntry());
+        }
+
+        if (p instanceof EditTextPreference)
+        {
+            EditTextPreference editTextPref = (EditTextPreference) p;
+            p.setSummary(editTextPref.getText());
         }
     }
-    
+
     private void buildAlreadyDefined(int id)
     {
         String[] values = getResources().getStringArray(id);
@@ -138,7 +138,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         {
             alreadyDefined.add(value);
         }
-        
+
     }
 
     private void populateProjectSettings(PreferenceScreen ps)
@@ -229,8 +229,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         ecuDirty = true;
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) 
-    { 
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
         updatePrefSummary(findPreference(key));
     }
 }
