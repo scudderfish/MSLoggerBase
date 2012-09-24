@@ -173,7 +173,7 @@ public enum MSUtils implements MSUtilsInterface
     public String getLocationLogHeader()
     {
     	String s = "Latitude\tLongitude\tSpeed (m/s)\tHeading\tAccuracy\tGPSTime\tGPS_Update";
-    	if (ApplicationSettings.INSTANCE.useDeviceTimeEnabled()) 
+    	if (ApplicationSettings.INSTANCE.isDeviceTimeEnabled()) 
     	{
     		s +="\tDeviceTime";
     	}
@@ -193,7 +193,7 @@ public enum MSUtils implements MSUtilsInterface
     			   getTime() +"\t"+
     			   getGPSUpdate();
 
-    	if (ApplicationSettings.INSTANCE.useDeviceTimeEnabled()) 
+    	if (ApplicationSettings.INSTANCE.isDeviceTimeEnabled()) 
     	{
             long time = System.currentTimeMillis();
     		s +="\t"+time;
