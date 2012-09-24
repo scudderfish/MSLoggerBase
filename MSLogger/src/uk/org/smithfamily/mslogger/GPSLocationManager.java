@@ -12,134 +12,135 @@ import android.util.Log;
  */
 public enum GPSLocationManager implements LocationListener
 {
-	INSTANCE;
+    INSTANCE;
 
-	private Location		lastLocation	= new Location("null");
-	private LocationManager	locationManager	= null;
+    private Location lastLocation = new Location("null");
+    private LocationManager locationManager = null;
     private int freshFlag;
 
-	/**
-	 * @return Last known location object
-	 */
-	public synchronized Location getLastKnownLocation()
-	{
-		return lastLocation;
-	}
+    /**
+     * @return Last known location object
+     */
+    public synchronized Location getLastKnownLocation()
+    {
+        return lastLocation;
+    }
 
-	/**
-	 * Indicates freshness of the update.  Set to 1 if this is the first call since the last update
-	 * @return
-	 */
-	public synchronized int getFreshness()
-	{
-	    int value = freshFlag;
-	    freshFlag = 0;
-	    return value;
-	}
-	/**
-	 * Start the location service
-	 */
-	public synchronized void start()
-	{
-		locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
-		Criteria c = new Criteria();
-		c.setAccuracy(Criteria.ACCURACY_FINE);
-		String providerName = locationManager.getBestProvider(c, false);
+    /**
+     * Indicates freshness of the update. Set to 1 if this is the first call since the last update
+     * 
+     * @return
+     */
+    public synchronized int getFreshness()
+    {
+        int value = freshFlag;
+        freshFlag = 0;
+        return value;
+    }
 
-		DebugLogManager.INSTANCE.log("Using location provider " + providerName,Log.INFO);
+    /**
+     * Start the location service
+     */
+    public synchronized void start()
+    {
+        locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_FINE);
+        String providerName = locationManager.getBestProvider(c, false);
 
-		if(providerName != null)
-		{
-		    locationManager.requestLocationUpdates(providerName, 100, 0, this);
-		}
-		else
-		{
-		    sendMessage("No location provider available");
-		}
-	}
+        DebugLogManager.INSTANCE.log("Using location provider " + providerName, Log.INFO);
 
-	/**
-	 * Stop the location service
-	 */
-	public synchronized void stop()
-	{
+        if (providerName != null)
+        {
+            locationManager.requestLocationUpdates(providerName, 100, 0, this);
+        }
+        else
+        {
+            sendMessage("No location provider available");
+        }
+    }
 
-		if (locationManager != null)
-		{
-			locationManager.removeUpdates(this);
-		}
-		locationManager = null;
+    /**
+     * Stop the location service
+     */
+    public synchronized void stop()
+    {
 
-	}
+        if (locationManager != null)
+        {
+            locationManager.removeUpdates(this);
+        }
+        locationManager = null;
 
-	/**
-	 * Broadcast a message to the application
-	 * 
-	 * @param msg Message to be broadcasted
-	 */
-	protected void sendMessage(String msg)
-	{
-		Intent broadcast = new Intent();
-		broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);
-		broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
-		ApplicationSettings.INSTANCE.getContext().sendBroadcast(broadcast);
-	}
-	
+    }
+
+    /**
+     * Broadcast a message to the application
+     * 
+     * @param msg Message to be broadcasted
+     */
+    protected void sendMessage(String msg)
+    {
+        Intent broadcast = new Intent();
+        broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);
+        broadcast.putExtra(ApplicationSettings.MESSAGE, msg);
+        ApplicationSettings.INSTANCE.getContext().sendBroadcast(broadcast);
+    }
+
     /**
      * Triggered when the location change
      * 
      * @param location The new location
      */
-	@Override
-	public synchronized void onLocationChanged(Location location)
-	{
-		//TODO update lastLocation regularly (by somehow calling onLocationChanged whenever the BT GPS is updated)
-		lastLocation = location;
-		freshFlag = 1;
-	}
+    @Override
+    public synchronized void onLocationChanged(Location location)
+    {
+        // TODO update lastLocation regularly (by somehow calling onLocationChanged whenever the BT GPS is updated)
+        lastLocation = location;
+        freshFlag = 1;
+    }
 
-	/**
+    /**
      * @param provider The provider that was disabled
      */
-	@Override
-	public void onProviderDisabled(String provider)
-	{
+    @Override
+    public void onProviderDisabled(String provider)
+    {
 
-	}
-	
-	/**
-	 * @param provider The provider that was enabled
-	 */
-	@Override
-	public void onProviderEnabled(String provider)
-	{
-	}
+    }
 
-	
-	/**
-	 * Triggered when a status change
-	 * 
-	 * @param provider The provider
-	 * @param status   The new status
-	 * @param extras   Other useful information
-	 */
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras)
-	{
-		if (status == LocationProvider.OUT_OF_SERVICE)
-		{
-			sendMessage(provider + " is out of service");
-		}
+    /**
+     * @param provider The provider that was enabled
+     */
+    @Override
+    public void onProviderEnabled(String provider)
+    {
+    }
 
-		if (status == LocationProvider.AVAILABLE)
-		{
-			sendMessage(provider + " is available");
-		}
+    /**
+     * Triggered when a status change
+     * 
+     * @param provider The provider
+     * @param status The new status
+     * @param extras Other useful information
+     */
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras)
+    {
+        if (status == LocationProvider.OUT_OF_SERVICE)
+        {
+            sendMessage(provider + " is out of service");
+        }
 
-		if (status == LocationProvider.TEMPORARILY_UNAVAILABLE)
-		{
-			sendMessage(provider + " is temporarily unavailable");
-		}
+        if (status == LocationProvider.AVAILABLE)
+        {
+            sendMessage(provider + " is available");
+        }
 
-	}
+        if (status == LocationProvider.TEMPORARILY_UNAVAILABLE)
+        {
+            sendMessage(provider + " is temporarily unavailable");
+        }
+
+    }
 }

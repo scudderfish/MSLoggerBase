@@ -471,7 +471,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     /**
      * Return true if preference that external/remote GPS device instead of the inbuilt GPS is enabled, false otherwise
      */
-    public boolean useExternalGPSEnabled()
+    public boolean isExternalGPSEnabled()
     {
         return prefs.getBoolean("useexternal", false);
     }
@@ -479,7 +479,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     /**
      * Return true if preference to include device time for every log event is enabled, false otherwise
      */
-    public boolean useDeviceTimeEnabled()
+    public boolean isDeviceTimeEnabled()
     {
         return prefs.getBoolean("usedevicetime", true);
     }
