@@ -48,6 +48,7 @@ MS2Extra Serial330e.ini
 MS2Extra Serial330f.ini
 MS2Extra SerialGS26.ini
 MS2Extra SerialGS27.ini
+MS2Extra SerialGS28.ini
 
 ###################
 # Megasquirt III  #
