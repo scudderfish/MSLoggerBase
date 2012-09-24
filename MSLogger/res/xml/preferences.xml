@@ -29,20 +29,19 @@
     <PreferenceCategory android:title="@string/gps">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="userexternal"
-            android:summary="@string/userexternal_summary"
-            android:title="@string/userexternal" />
+            android:key="useexternal"
+            android:summary="@string/useexternal_summary"
+            android:title="@string/useexternal" />
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
             android:dialogTitle="Choose Bluetooth Device"
             android:key="gps_bluetooth_mac"
             android:title="Bluetooth Device" 
-            android:dependency="userexternal"/>
+            android:dependency="useexternal"/>
         <CheckBoxPreference 
             android:defaultValue="true"
-            android:key="usephonetime"
-            android:summary="@string/usephonetime_summary"
-            android:title="@string/usephonetime" 
-            android:dependency="userexternal"/>
+            android:key="usedevicetime"
+            android:summary="@string/usedevicetime_summary"
+            android:title="@string/usedevicetime"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/app_settings">

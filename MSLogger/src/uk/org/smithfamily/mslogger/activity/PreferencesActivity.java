@@ -53,9 +53,9 @@ public class PreferencesActivity extends PreferenceActivity
     {
         ecuDirty = false;
         
-        buildAlreadyDefined(R.array.egotypes);
-        buildAlreadyDefined(R.array.maptypes);
-        buildAlreadyDefined(R.array.tempvalues);
+        //buildAlreadyDefined(R.array.egotypes);
+        //buildAlreadyDefined(R.array.maptypes);
+        //buildAlreadyDefined(R.array.tempvalues);
         
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
@@ -69,7 +69,7 @@ public class PreferencesActivity extends PreferenceActivity
 
         PreferenceScreen ps = this.getPreferenceScreen();
 
-        populateProjectSettings(ps);
+        //populateProjectSettings(ps);
 
     }
 

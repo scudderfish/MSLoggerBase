@@ -122,18 +122,18 @@ public class ManageDatalogsActivity  extends ListActivity
                 List<DatalogRow> selectedRows = ((DatalogRowAdapter) datalogsList.getAdapter()).getAllSelected();
                 for (DatalogRow datalogRow : selectedRows)
                 {
-                    datalogsToDelete.add(datalogDirectory + "/" + datalogRow.getDatalogName());
+                    datalogsToDelete.add(datalogDirectory +  "/" + datalogRow.getDatalogName());
                 }
                 
-                for (String datalogFilename : datalogsToDelete)
+                for (String datalogFilepath : datalogsToDelete)
                 {                    
                     // Physically delete the file
-                    File fileToDelete = new File(datalogDirectory + "/" + datalogFilename);
+                    File fileToDelete = new File(datalogFilepath);
                     boolean deleteResult = fileToDelete.delete();
                     
                     if (!deleteResult)
                     {
-                        DebugLogManager.INSTANCE.log("Couldn't delete " + datalogDirectory + "/" + datalogFilename,Log.ERROR);
+                        DebugLogManager.INSTANCE.log("Couldn't delete " + datalogFilepath,Log.ERROR);
                     }
                 }
                                 

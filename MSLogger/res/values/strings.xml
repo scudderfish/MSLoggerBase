@@ -136,10 +136,10 @@
 	<string name="required_fuel_button">Required Fuel…</string>
 	<string name="ms">(ms)</string>
 	<string name="gps">GPS</string>
-	<string name="userexternal">Enable external GPS</string>
-	<string name="userexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
-	<string name="usephonetime">Enable hires GPS Time</string>
-	<string name="usephonetime_summary">Use the device timesource for GPS Time (better accuarcy of elapsed time)</string>	
+	<string name="useexternal">Enable external GPS</string>
+	<string name="useexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
+	<string name="usedevicetime">Add device time to log</string>
+	<string name="usedevicetime_summary">Include device time for every log event (better accuarcy than ECU)</string>	
 	
 	<!--  Edit Properties -->
 	<string name="properties">Properties</string>

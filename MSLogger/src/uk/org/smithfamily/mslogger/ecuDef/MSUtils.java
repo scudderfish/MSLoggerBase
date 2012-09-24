@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 
 /**
@@ -171,7 +172,12 @@ public enum MSUtils implements MSUtilsInterface
      */
     public String getLocationLogHeader()
     {
-        return "Latitude\tLongitude\tSpeed (m/s)\tHeading\tAccuracy\tGPSTime\tGPS_Update";
+    	String s = "Latitude\tLongitude\tSpeed (m/s)\tHeading\tAccuracy\tGPSTime\tGPS_Update";
+    	if (ApplicationSettings.INSTANCE.useDeviceTimeEnabled()) 
+    	{
+    		s +="\tDeviceTime";
+    	}
+        return s;
     }
     
     /**
@@ -179,13 +185,20 @@ public enum MSUtils implements MSUtilsInterface
      */
     public String getLocationLogRow()
     {
-        return getLatitude() + "\t" + 
-               getLongitude() + "\t" +
-               getSpeed() + "\t" +
-               getBearing() + "\t" +
-               getAccuracy() + "\t" +
-               getTime() +"\t"+
-               getGPSUpdate();
+    	String s = getLatitude() + "\t" + 
+    			   getLongitude() + "\t" +
+    			   getSpeed() + "\t" +
+    			   getBearing() + "\t" +
+    			   getAccuracy() + "\t" +
+    			   getTime() +"\t"+
+    			   getGPSUpdate();
+
+    	if (ApplicationSettings.INSTANCE.useDeviceTimeEnabled()) 
+    	{
+            long time = System.currentTimeMillis();
+    		s +="\t"+time;
+    	}
+        return s;
     }
 
     private int getGPSUpdate()
