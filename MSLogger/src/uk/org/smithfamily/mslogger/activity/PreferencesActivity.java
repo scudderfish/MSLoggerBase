@@ -12,7 +12,10 @@ import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup.SettingOption;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -24,12 +27,12 @@ import android.preference.PreferenceScreen;
  * 
  * 
  */
-public class PreferencesActivity extends PreferenceActivity
+public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-    public static final String DIRTY          = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
-    private Boolean            ecuDirty       = false;
-    private Set<String>        settingFlags   = new HashSet<String>();
-    private Set<String>        alreadyDefined = new HashSet<String>();
+    public static final String DIRTY = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
+    private Boolean ecuDirty = false;
+    private Set<String> settingFlags = new HashSet<String>();
+    private Set<String> alreadyDefined = new HashSet<String>();
 
     /**
      *
@@ -56,6 +59,11 @@ public class PreferencesActivity extends PreferenceActivity
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++)
+        {
+            initSummary(getPreferenceScreen().getPreference(i));
+        }
+
         Preference p = this.getPreferenceManager().findPreference("temptype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("maptype");
@@ -72,6 +80,54 @@ public class PreferencesActivity extends PreferenceActivity
             buildAlreadyDefined(R.array.maptypes);
             buildAlreadyDefined(R.array.tempvalues);
             populateProjectSettings(ps);
+        }
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private void initSummary(Preference p)
+    {
+        if (p instanceof PreferenceCategory)
+        {
+            PreferenceCategory pCat = (PreferenceCategory) p;
+            for (int i = 0; i < pCat.getPreferenceCount(); i++)
+            {
+                initSummary(pCat.getPreference(i));
+            }
+        }
+        else
+        {
+            updatePrefSummary(p);
+        }
+    }
+
+    private void updatePrefSummary(Preference p)
+    {
+        if (p instanceof ListPreference)
+        {
+            ListPreference listPref = (ListPreference) p;
+            p.setSummary(listPref.getEntry());
+        }
+
+        if (p instanceof EditTextPreference)
+        {
+            EditTextPreference editTextPref = (EditTextPreference) p;
+            p.setSummary(editTextPref.getText());
         }
     }
 
@@ -171,5 +227,10 @@ public class PreferencesActivity extends PreferenceActivity
     {
         ApplicationSettings.INSTANCE.refreshFlags();
         ecuDirty = true;
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        updatePrefSummary(findPreference(key));
     }
 }
