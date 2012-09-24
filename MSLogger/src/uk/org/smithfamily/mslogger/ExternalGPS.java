@@ -7,53 +7,66 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
 import android.location.Location;
+import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.TextUtils.SimpleStringSplitter;
 //import android.util.Log;
+import android.util.Log;
 
 public class ExternalGPS {
 	
-	Location fix;
-	private String mockLocationProvider = null;
-	private String fixTime = null;
-	private long fixTimestamp;
+	Location location;
+	private LocationManager locationManager;
+	private String providerName = null;
+	private int providerStatus = LocationProvider.OUT_OF_SERVICE;
+	private String lastLocationTime = null;
+	private long locationTime;
 	private float precision = 10f;
 	private boolean hasGGA = false;
 	private boolean hasRMC = false;
-	private int mockStatus = LocationProvider.OUT_OF_SERVICE;
+	private boolean mockGpsEnabled = false;
+	
+	public ExternalGPS()
+	{
+		providerName = "ExternalGPS";
+	}
 
-	private void notifyFix(Location fix) throws SecurityException {
-		fixTime = null;
-//		hasGGA = false;
-//		hasRMC=false;
-//		if (fix != null){
-//			Log.v(LOG_TAG, "New Fix: "+System.currentTimeMillis()+" "+fix);
-//			if (lm != null && mockGpsEnabled){
-//				lm.setTestProviderLocation(mockLocationProvider, fix);
-//				Log.v(LOG_TAG, "New Fix notified to Location Manager: "+mockLocationProvider);
-//			}
-//			this.fix = null;
-//		}
+	private void notifyLocationChange(Location newLoc) throws SecurityException {
+		lastLocationTime = null;
+		hasGGA = false;
+		hasRMC=false;
+		if (newLoc != null)
+		{
+	        DebugLogManager.INSTANCE.log("New Location: "+System.currentTimeMillis()+" "+newLoc, Log.INFO);
+			if (locationManager != null && mockGpsEnabled)
+			{
+				locationManager.setTestProviderLocation(providerName, newLoc);
+		        DebugLogManager.INSTANCE.log("New Location notified to Location Manager: "+providerName, Log.INFO);
+			}
+			this.location = null;
+		}
 	}
 	
 	private void notifyStatusChanged(int status, Bundle extras, long updateTime){
-		fixTime = null;
-//		hasGGA = false;
-//		hasRMC=false;
-//		if (this.mockStatus != status){
-//			Log.d(LOG_TAG, "New mockStatus: "+System.currentTimeMillis()+" "+status);
-//			if (lm != null && mockGpsEnabled){
-//				lm.setTestProviderStatus(mockLocationProvider, status, extras, updateTime);
-//				// lm.setTestProviderStatus(mockLocationProvider, status, extras, SystemClock.elapsedRealtime());
-//				// lm.setTestProviderStatus(mockLocationProvider, status, extras, 50);
-//				Log.v(LOG_TAG, "New mockStatus notified to Location Manager: " + status + " "+mockLocationProvider);
-//			}
-//			this.fix = null;
-//			this.mockStatus = status;
-//		}
+		lastLocationTime = null;
+		hasGGA = false;
+		hasRMC=false;
+		if (this.providerStatus != status)
+		{
+	        DebugLogManager.INSTANCE.log("New status: "+System.currentTimeMillis()+" "+status, Log.INFO);
+			if (locationManager != null && mockGpsEnabled)
+			{
+				locationManager.setTestProviderStatus(providerName, status, extras, updateTime);
+		        DebugLogManager.INSTANCE.log("New status notified to Location Manager: " + providerName, Log.INFO);
+			}
+			this.location = null;
+			this.providerStatus = status;
+		}
 	}
 	
 	public String parseNmeaSentence(String gpsSentence) throws SecurityException {
@@ -61,15 +74,17 @@ public class ExternalGPS {
 
 			Pattern xx = Pattern.compile("\\$([^*$]*)\\*([0-9A-F][0-9A-F])?\r\n");
 			Matcher m = xx.matcher(gpsSentence);
-			if (m.matches()){
+			if (m.matches())
+			{
 				nmeaSentence = m.group(0);
 				String sentence = m.group(1);
-//				String checkSum = m.group(2);
+				//String checkSum = m.group(2);
 
 				SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
 				splitter.setString(sentence);
 				String command = splitter.next();
-				if (command.equals("GPGGA")){
+				if (command.equals("GPGGA"))
+				{
 					/* $GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47
 						
 						Where:
@@ -127,48 +142,62 @@ public class ExternalGPS {
 					// String geoAlt = splitter.next();
 					// time in seconds since last DGPS update
 					// DGPS station ID number
-					if (quality != null && !quality.equals("") && !quality.equals("0") ){
-//						if (this.mockStatus != LocationProvider.AVAILABLE){
-//							long updateTime = parseNmeaTime(time);
-//							notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
-//						}				
-						if (! time.equals(fixTime)){
-							notifyFix(fix);
-							fix = new Location(mockLocationProvider);
-							fixTime = time;
-							fixTimestamp = parseNmeaTime(time);
-							fix.setTime(fixTimestamp);				
-//							Log.v(LOG_TAG, "Fix: "+fix);
+					if (quality != null && !quality.equals("") && !quality.equals("0") )
+					{
+						if (this.providerStatus != LocationProvider.AVAILABLE)
+						{
+							long updateTime = parseNmeaTime(time);
+							notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
+						}				
+						if (! time.equals(lastLocationTime))
+						{
+							notifyLocationChange(location);
+							location = new Location(providerName);
+							lastLocationTime = time;
+							locationTime = parseNmeaTime(time);
+							location.setTime(locationTime);				
+					        DebugLogManager.INSTANCE.log("Location: "+location, Log.INFO);
 						}
-						if (lat != null && !lat.equals("")){
-							fix.setLatitude(parseNmeaLatitude(lat,latDir));
+						if (lat != null && !lat.equals(""))
+						{
+							location.setLatitude(parseNmeaLatitude(lat,latDir));
 						}
-						if (lon != null && !lon.equals("")){
-							fix.setLongitude(parseNmeaLongitude(lon,lonDir));
+						if (lon != null && !lon.equals(""))
+						{
+							location.setLongitude(parseNmeaLongitude(lon,lonDir));
 						}
-						if (hdop != null && !hdop.equals("")){
-							fix.setAccuracy(Float.parseFloat(hdop)*precision);
+						if (hdop != null && !hdop.equals(""))
+						{
+							location.setAccuracy(Float.parseFloat(hdop)*precision);
 						}
-						if (alt != null && !alt.equals("")){
-							fix.setAltitude(Double.parseDouble(alt));
+						if (alt != null && !alt.equals(""))
+						{
+							location.setAltitude(Double.parseDouble(alt));
 						}
-						if (nbSat != null && !nbSat.equals("")){
+						if (nbSat != null && !nbSat.equals(""))
+						{
 							Bundle extras = new Bundle();
 							extras.putInt("satellites", Integer.parseInt(nbSat));
-							fix.setExtras(extras);
+							location.setExtras(extras);
 						}
-//						Log.v(LOG_TAG, "Fix: "+System.currentTimeMillis()+" "+fix);
+				        DebugLogManager.INSTANCE.log("Location: "+System.currentTimeMillis()+" "+location, Log.INFO);
 						hasGGA = true;
-						if (hasGGA && hasRMC){
-							notifyFix(fix);
+						if (hasGGA && hasRMC)
+						{
+							notifyLocationChange(location);
 						}
-					} else if(quality.equals("0")){
-						if (this.mockStatus != LocationProvider.TEMPORARILY_UNAVAILABLE){
+					} 
+					else if(quality.equals("0"))
+					{
+						if (this.providerStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+						{
 							long updateTime = parseNmeaTime(time);
 							notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
 						}				
 					}
-				} else if (command.equals("GPRMC")){
+				} 
+				else if (command.equals("GPRMC"))
+				{
 					/* $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
 		
 					   Where:
@@ -207,38 +236,49 @@ public class ExternalGPS {
 					//String magnDir = splitter.next();
 					// for NMEA 0183 version 3.00 active the Mode indicator field is added
 					// Mode indicator, (A=autonomous, D=differential, E=Estimated, N=not valid, S=Simulator )
-					if (status != null && !status.equals("") && status.equals("A") ){
-						if (this.mockStatus != LocationProvider.AVAILABLE){
+					if (status != null && !status.equals("") && status.equals("A") )
+					{
+						if (this.providerStatus != LocationProvider.AVAILABLE)
+						{
 							long updateTime = parseNmeaTime(time);
 							notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
 						}				
-						if (! time.equals(fixTime)){
-							notifyFix(fix);
-							fix = new Location(mockLocationProvider);
-							fixTime = time;
-							fixTimestamp = parseNmeaTime(time);
-							fix.setTime(fixTimestamp);					
-//							Log.v(LOG_TAG, "Fix: "+fix);
+						if (! time.equals(lastLocationTime))
+						{
+							notifyLocationChange(location);
+							location = new Location(providerName);
+							lastLocationTime = time;
+							locationTime = parseNmeaTime(time);
+							location.setTime(locationTime);					
+					        DebugLogManager.INSTANCE.log("Location: "+location, Log.INFO);
 						} 
-						if (lat != null && !lat.equals("")){
-							fix.setLatitude(parseNmeaLatitude(lat,latDir));
+						if (lat != null && !lat.equals(""))
+						{
+							location.setLatitude(parseNmeaLatitude(lat,latDir));
 						}
-						if (lon != null && !lon.equals("")){
-							fix.setLongitude(parseNmeaLongitude(lon,lonDir));
+						if (lon != null && !lon.equals(""))
+						{
+							location.setLongitude(parseNmeaLongitude(lon,lonDir));
 						}
-						if (speed != null && !speed.equals("")){
-							fix.setSpeed(parseNmeaSpeed(speed, "N"));
+						if (speed != null && !speed.equals(""))
+						{
+							location.setSpeed(parseNmeaSpeed(speed, "N"));
 						} 
-						if (bearing != null && !bearing.equals("")){
-							fix.setBearing(Float.parseFloat(bearing));
+						if (bearing != null && !bearing.equals(""))
+						{
+							location.setBearing(Float.parseFloat(bearing));
 						}
-//						Log.v(LOG_TAG, "Fix: "+System.currentTimeMillis()+" "+fix);
+				        DebugLogManager.INSTANCE.log("Location: "+System.currentTimeMillis()+" "+location, Log.INFO);
 						hasRMC = true;
-						if (hasGGA && hasRMC){
-							notifyFix(fix);
+						if (hasGGA && hasRMC)
+						{
+							notifyLocationChange(location);
 						}
-					} else if(status.equals("V")){
-						if (this.mockStatus != LocationProvider.TEMPORARILY_UNAVAILABLE){
+					} 
+					else if(status.equals("V"))
+					{
+						if (this.providerStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+						{
 							long updateTime = parseNmeaTime(time);
 							notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
 						}				
@@ -248,52 +288,70 @@ public class ExternalGPS {
 			return nmeaSentence;
 		}
 
-	public double parseNmeaLatitude(String lat,String orientation){
+	public double parseNmeaLatitude(String lat,String orientation)
+	{
 		double latitude = 0.0;
-		if (lat != null && orientation != null && !lat.equals("") && !orientation.equals("")){
+		if (lat != null && orientation != null && !lat.equals("") && !orientation.equals(""))
+		{
 			double temp1 = Double.parseDouble(lat);
 			double temp2 = Math.floor(temp1/100); 
 			double temp3 = (temp1/100 - temp2)/0.6;
-			if (orientation.equals("S")){
+			if (orientation.equals("S"))
+			{
 				latitude = -(temp2+temp3);
-			} else if (orientation.equals("N")){
+			} 
+			else if (orientation.equals("N"))
+			{
 				latitude = (temp2+temp3);
 			}
 		}
 		return latitude;
 	}
-	public double parseNmeaLongitude(String lon,String orientation){
+	public double parseNmeaLongitude(String lon,String orientation)
+	{
 		double longitude = 0.0;
-		if (lon != null && orientation != null && !lon.equals("") && !orientation.equals("")){
+		if (lon != null && orientation != null && !lon.equals("") && !orientation.equals(""))
+		{
 			double temp1 = Double.parseDouble(lon);
 			double temp2 = Math.floor(temp1/100); 
 			double temp3 = (temp1/100 - temp2)/0.6;
-			if (orientation.equals("W")){
+			if (orientation.equals("W"))
+			{
 				longitude = -(temp2+temp3);
-			} else if (orientation.equals("E")){
+			} 
+			else if (orientation.equals("E"))
+			{
 				longitude = (temp2+temp3);
 			}
 		}
 		return longitude;
 	}
-	public float parseNmeaSpeed(String speed,String metric){
+	public float parseNmeaSpeed(String speed,String metric)
+	{
 		float meterSpeed = 0.0f;
-		if (speed != null && metric != null && !speed.equals("") && !metric.equals("")){
+		if (speed != null && metric != null && !speed.equals("") && !metric.equals(""))
+		{
 			float temp1 = Float.parseFloat(speed)/3.6f;
-			if (metric.equals("K")){
+			if (metric.equals("K"))
+			{
 				meterSpeed = temp1;
-			} else if (metric.equals("N")){
+			} 
+			else if (metric.equals("N"))
+			{
 				meterSpeed = temp1*1.852f;
 			}
 		}
 		return meterSpeed;
 	}
-	public long parseNmeaTime(String time){
+	public long parseNmeaTime(String time)
+	{
 		long timestamp = 0;
 		SimpleDateFormat fmt = new SimpleDateFormat("HHmmss.SSS");
 		fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-		try {
-			if (time != null && time != null){
+		try 
+		{
+			if (time != null && time != null)
+			{
 				long now = System.currentTimeMillis();
 				long today = now - (now %86400000L);
 				long temp1;
@@ -301,16 +359,22 @@ public class ExternalGPS {
 				temp1 = fmt.parse(String.format((Locale)null,"%010.3f", Double.parseDouble(time))).getTime();
 				long temp2 = today+temp1;
 				// if we're around midnight we could have a problem...
-				if (temp2 - now > 43200000L) {
+				if (temp2 - now > 43200000L) 
+				{
 					timestamp  = temp2 - 86400000L;
-				} else if (now - temp2 > 43200000L){
+				} 
+				else if (now - temp2 > 43200000L)
+				{
 					timestamp  = temp2 + 86400000L;
-				} else {
+				} 
+				else {
 					timestamp  = temp2;
 				}
 			}
-		} catch (ParseException e) {
-//			Log.e(LOG_TAG, "Error while parsing NMEA time", e);
+		} 
+		catch (ParseException e) 
+		{
+	        DebugLogManager.INSTANCE.log("Error while parsing NMEA time: "+e, Log.ERROR);
 		}
 		return timestamp;
 	}
