@@ -15,7 +15,8 @@
             android:inputType="textEmailAddress"
             android:key="autoemail_target"
             android:summary="@string/autoemail_target_summary"
-            android:title="@string/autoemail_target" />
+            android:title="@string/autoemail_target" 
+            android:dependency="autoemail_enabled" />
     </PreferenceCategory>
 
 </PreferenceScreen>
