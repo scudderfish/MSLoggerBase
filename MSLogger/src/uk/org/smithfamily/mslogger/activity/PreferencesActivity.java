@@ -26,10 +26,10 @@ import android.preference.PreferenceScreen;
  */
 public class PreferencesActivity extends PreferenceActivity
 {
-    public static final String DIRTY        = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
-    private Boolean            ecuDirty     = false;
-    private Set<String>        settingFlags = new HashSet<String>();
-    private Set<String> alreadyDefined = new HashSet<String>();
+    public static final String DIRTY          = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
+    private Boolean            ecuDirty       = false;
+    private Set<String>        settingFlags   = new HashSet<String>();
+    private Set<String>        alreadyDefined = new HashSet<String>();
 
     /**
      *
@@ -52,11 +52,7 @@ public class PreferencesActivity extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         ecuDirty = false;
-        
-        //buildAlreadyDefined(R.array.egotypes);
-        //buildAlreadyDefined(R.array.maptypes);
-        //buildAlreadyDefined(R.array.tempvalues);
-        
+
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
@@ -67,20 +63,26 @@ public class PreferencesActivity extends PreferenceActivity
         p = this.getPreferenceManager().findPreference("egotype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
 
-        PreferenceScreen ps = this.getPreferenceScreen();
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if (ecu != null)
+        {
+            PreferenceScreen ps = this.getPreferenceScreen();
 
-        //populateProjectSettings(ps);
-
+            buildAlreadyDefined(R.array.egotypes);
+            buildAlreadyDefined(R.array.maptypes);
+            buildAlreadyDefined(R.array.tempvalues);
+            populateProjectSettings(ps);
+        }
     }
 
     private void buildAlreadyDefined(int id)
     {
         String[] values = getResources().getStringArray(id);
-        for(String value : values)
+        for (String value : values)
         {
             alreadyDefined.add(value);
         }
-        
+
     }
 
     private void populateProjectSettings(PreferenceScreen ps)
@@ -110,7 +112,7 @@ public class PreferencesActivity extends PreferenceActivity
 
         for (String flag : flags)
         {
-            if (!settingFlags.contains(flag)  && !alreadyDefined .contains(flag))
+            if (!settingFlags.contains(flag) && !alreadyDefined.contains(flag))
             {
                 ListPreference lp = new ListPreference(this);
                 lp.setTitle(flag);
