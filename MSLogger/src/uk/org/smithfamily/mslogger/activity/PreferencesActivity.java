@@ -32,7 +32,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     public static final String DIRTY        = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
     private Boolean            ecuDirty     = false;
     private Set<String>        settingFlags = new HashSet<String>();
-    private Set<String> alreadyDefined = new HashSet<String>();
+    private Set<String> 	   alreadyDefined = new HashSet<String>();
 
     /**
      *
@@ -56,15 +56,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     {
         ecuDirty = false;
         
-//        buildAlreadyDefined(R.array.egotypes);
-//        buildAlreadyDefined(R.array.maptypes);
-//        buildAlreadyDefined(R.array.tempvalues);
-        
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        for(int i=0;i<getPreferenceScreen().getPreferenceCount();i++){
-         initSummary(getPreferenceScreen().getPreference(i));
+        for(int i=0;i<getPreferenceScreen().getPreferenceCount();i++)
+        {
+        	initSummary(getPreferenceScreen().getPreference(i));
         }
         
         Preference p = this.getPreferenceManager().findPreference("temptype");
@@ -74,9 +71,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         p = this.getPreferenceManager().findPreference("egotype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
 
-        PreferenceScreen ps = this.getPreferenceScreen();
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+    	if (ecu != null)
+    	{
+    		PreferenceScreen ps = this.getPreferenceScreen();
 
-//        populateProjectSettings(ps);
+    		buildAlreadyDefined(R.array.egotypes);
+    		buildAlreadyDefined(R.array.maptypes);
+    		buildAlreadyDefined(R.array.tempvalues);
+    		populateProjectSettings(ps);
+    	}
 
     }
 
@@ -119,7 +123,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     		ListPreference listPref = (ListPreference) p; 
             p.setSummary(listPref.getEntry()); 
         }
-        if (p instanceof EditTextPreference) 
+    	
+    	if (p instanceof EditTextPreference) 
         {
             EditTextPreference editTextPref = (EditTextPreference) p; 
             p.setSummary(editTextPref.getText()); 
@@ -129,7 +134,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private void buildAlreadyDefined(int id)
     {
         String[] values = getResources().getStringArray(id);
-        for(String value : values)
+        for (String value : values)
         {
             alreadyDefined.add(value);
         }
@@ -163,7 +168,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
         for (String flag : flags)
         {
-            if (!settingFlags.contains(flag)  && !alreadyDefined .contains(flag))
+            if (!settingFlags.contains(flag) && !alreadyDefined.contains(flag))
             {
                 ListPreference lp = new ListPreference(this);
                 lp.setTitle(flag);
