@@ -50,7 +50,7 @@ public enum GPSLocationManager implements LocationListener
 
 		if(providerName != null)
 		{
-		    locationManager.requestLocationUpdates(providerName, 1000, 0, this);
+		    locationManager.requestLocationUpdates(providerName, 100, 0, this);
 		}
 		else
 		{
@@ -93,6 +93,7 @@ public enum GPSLocationManager implements LocationListener
 	@Override
 	public synchronized void onLocationChanged(Location location)
 	{
+		//TODO update lastLocation regularly (by somehow calling onLocationChanged whenever the BT GPS is updated)
 		lastLocation = location;
 		freshFlag = 1;
 	}

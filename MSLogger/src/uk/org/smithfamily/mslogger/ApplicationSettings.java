@@ -165,7 +165,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Triggered whenever the prefenrece change to reset MAC address and settings
+     * Triggered whenever the preference change to reset MAC address and settings
      * 
      * @param sharedPreferences
      * @param key
@@ -467,4 +467,21 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
         setPref("datalogfields", output);
     }
+    
+    /**
+     * Return true if preference that external/remote GPS device instead of the inbuilt GPS is enabled, false otherwise
+     */
+    public boolean useExternalGPSEnabled()
+    {
+        return prefs.getBoolean("useexternal", false);
+    }
+    
+    /**
+     * Return true if preference to include device time for every log event is enabled, false otherwise
+     */
+    public boolean useDeviceTimeEnabled()
+    {
+        return prefs.getBoolean("usedevicetime", true);
+    }
+    
 }
