@@ -83,4 +83,6 @@ public interface MSECUInterface
     
     public abstract List<SettingGroup> getSettingGroups();
     
+    public abstract List<String> getRequiresPowerCycle();
+    
 }

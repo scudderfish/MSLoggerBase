@@ -7,6 +7,7 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.dialog.DialogHelper;
 import uk.org.smithfamily.mslogger.dialog.EditCurveDialog;
 import uk.org.smithfamily.mslogger.dialog.EditDialog;
+import uk.org.smithfamily.mslogger.dialog.EditDialog.OnEditDialogResult;
 import uk.org.smithfamily.mslogger.dialog.EditTableDialog;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
@@ -17,8 +18,13 @@ import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -26,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  *
@@ -43,6 +50,11 @@ public class TuningActivity extends Activity
 
     private Dialog currentDialog;
 
+    private BroadcastReceiver updateReceiver = new Reciever();
+    private boolean registered;
+    
+    private boolean powerCycleRequired = false;
+    
     /**
      * 
      * @param savedInstanceState
@@ -61,7 +73,63 @@ public class TuningActivity extends Activity
         ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         menus = ecu.getMenusForDialog("main");
         
+        // Make the power cycle required text view persistent when activity get destroy
+        // ex: device orientation change
+        if (savedInstanceState != null && savedInstanceState.getBoolean("power_cycle_required")) 
+        {
+            powerCycleRequired = true;
+            
+            TextView requiredPowerCycle = (TextView) findViewById(R.id.requiredPowerCycle);
+            requiredPowerCycle.setVisibility(View.VISIBLE);
+        }
+        
+        registerMessages();
+        
         drawTuningButtons();
+    }
+    
+    /**
+     * Save the power cycle required flag when the device is rotated
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        
+        outState.putBoolean("power_cycle_required", powerCycleRequired);
+    }
+    
+    /**
+     * Register the receiver with the message to receive from the Megasquirt connection
+     */
+    private void registerMessages()
+    {
+        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
+        registerReceiver(updateReceiver, disconnectedFilter);
+
+        registered = true;
+    }
+    
+    /**
+     * Unregister receiver
+     */
+    private void deRegisterMessages()
+    {
+        if (registered)
+        {
+            unregisterReceiver(updateReceiver);
+        }
+    }
+    
+    /**
+     * Unregister the events
+     */
+    @Override
+    protected void onDestroy()
+    {        
+        deRegisterMessages();
+
+        super.onDestroy();
     }
     
     /**
@@ -217,6 +285,21 @@ public class TuningActivity extends Activity
                 if (dialog != null)
                 {
                     EditDialog editDialog = new EditDialog(TuningActivity.this, dialog);
+                    editDialog.setDialogResult(new OnEditDialogResult()
+                    {
+                        public void finish(boolean isPowerCycle)
+                        {
+                            
+                            // Show power cycle required if needed
+                            if (isPowerCycle)
+                            {
+                                TextView requiredPowerCycle = (TextView) findViewById(R.id.requiredPowerCycle);
+                                requiredPowerCycle.setVisibility(View.VISIBLE);
+                                
+                                powerCycleRequired = true;;
+                            }
+                        }
+                    });
                     editDialog.show();
 
                     this.currentDialog = editDialog;
@@ -257,4 +340,33 @@ public class TuningActivity extends Activity
         
         return true;
     }
+    
+    /**
+     * Receiver that get events from other activities about Megasquirt status and activities
+     */
+    private final class Reciever extends BroadcastReceiver
+    {
+        /**
+         * When an event is received
+         * 
+         * @param context
+         * @param intent
+         */
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            Log.i(ApplicationSettings.TAG, "Received :" + action);
+
+            if (action.equals(Megasquirt.DISCONNECTED))
+            {
+                powerCycleRequired = false;
+                
+                // Make sure power cycle required text view is gone when MegaSquirt get disconnected
+                TextView requiredPowerCycle = (TextView) findViewById(R.id.requiredPowerCycle);
+                requiredPowerCycle.setVisibility(View.GONE);
+            } 
+        }
+    }
+    
 }

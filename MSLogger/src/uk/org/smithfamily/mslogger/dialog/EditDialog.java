@@ -71,6 +71,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private HashMap<String, CurveHelper> curveHelpers = new HashMap<String, CurveHelper>();
     private HashMap<String, TableHelper> tableHelpers = new HashMap<String, TableHelper>();
     
+    private OnEditDialogResult mDialogResult;
+    
     /**
      * Constructor for dialog which set the current dialog and ECU object
      * 
@@ -973,6 +975,10 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      */
     private void burnToECU()
     {
+        boolean requirePowerCycle = false;
+        
+        List<String> constantsThatRequirePowerCycle = ecu.getRequiresPowerCycle();
+        
         // Burn all constant
         for (String constantName : ecu.getAllConstantsNamesForDialog(dialog))
         {
@@ -991,6 +997,12 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             {
                 constant = ecu.isConstantExists("divider") ? ecu.getConstantByName("divider") : ecu.getConstantByName("divider1");
             }
+            
+            // If constant require power cycle, set flag to true
+            if (constantsThatRequirePowerCycle.contains(constantName))
+            {
+                requirePowerCycle = true;
+            }
         }
         
         // Burn all curves
@@ -1006,6 +1018,9 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             TableHelper tableHelper = entry.getValue();
             tableHelper.getTableEditor();
         }
+        
+        mDialogResult.finish(requirePowerCycle);
+        dismiss();
     }
     
     /**
@@ -1026,5 +1041,23 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         {
             cancel();
         }
+    }
+    
+    /**
+     * Used by the parent to set a new OnEditDialogResult to the dialog
+     * 
+     * @param dialogResult
+     */
+    public void setDialogResult(OnEditDialogResult dialogResult)
+    {
+        mDialogResult = dialogResult;
+    }
+    
+    /**
+     * Interface used to send the data back to the dialog's parent
+     */
+    public interface OnEditDialogResult
+    {
+       void finish(boolean isPowerCycleRequired);
     }
 }

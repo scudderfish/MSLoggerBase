@@ -116,6 +116,7 @@
 	<!-- Tuning -->
 	<string name="tuning">Tuning</string>
 	<string name="tuning_section">Select a tuning section below:</string>
+	<string name="power_cycle_required">Power Cycle Required!</string>
 	
 	<!-- Edit Table / Edit Curve -->
 	<string name="bt_burn">Burn</string>

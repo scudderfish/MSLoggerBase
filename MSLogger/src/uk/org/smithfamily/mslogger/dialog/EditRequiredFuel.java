@@ -173,6 +173,7 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
     }
     
     /**
+     * Used by the parent to set a new OnReqFuelResult to the dialog
      * 
      * @param dialogResult
      */
@@ -182,7 +183,7 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
     }
 
     /**
-     *
+     * Interface used to send the data back to the dialog's parent
      */
     public interface OnReqFuelResult
     {
