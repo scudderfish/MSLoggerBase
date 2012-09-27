@@ -140,6 +140,7 @@
 	<string name="useexternal_summary">Use an external/remote GPS device instead of the inbuilt GPS</string>
 	<string name="usedevicetime">Add device time to log</string>
 	<string name="usedevicetime_summary">Include device time for every log event (better accuarcy than ECU)</string>	
+	<string name="externalgpsactive">Connect to GPS</string>	
 	
 	<!--  Edit Properties -->
 	<string name="properties">Properties</string>
