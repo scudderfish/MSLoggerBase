@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/megasquirt">
+    <PreferenceCategory android:title="@string/megasquirt" android:key="MSSettings">
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
             android:dialogTitle="Choose Bluetooth Device"
             android:key="bluetooth_mac"
@@ -11,12 +11,6 @@
             android:entryValues="@array/maptypes"
             android:key="maptype"
             android:title="@string/map_sensor" />
-
-        <ListPreference
-            android:entries="@array/egonames"
-            android:entryValues="@array/egotypes"
-            android:key="egotype"
-            android:title="@string/ego_sensor" />
 
         <ListPreference
             android:defaultValue="CELSIUS"
