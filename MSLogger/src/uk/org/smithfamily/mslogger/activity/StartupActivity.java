@@ -44,17 +44,20 @@ public class StartupActivity extends Activity
         public void handleMessage(Message msg)
         {
             super.handleMessage(msg);
+            StartupActivity sa = parent.get();
+            if (sa == null) return;
+            
             switch (msg.what)
             {
             case MSLoggerApplication.GOT_SIG:
-                parent.get().checkSig((String) msg.obj);
+                sa.checkSig((String) msg.obj);
                 break;
             case MSLoggerApplication.COMMS_ERROR:
-                parent.get().finishCommsError();
+                sa.finishCommsError();
                 break;
                 
             case MSLoggerApplication.MESSAGE_TOAST:
-                parent.get().showMessage(msg);
+                sa.showMessage(msg);
             }
         }
     }

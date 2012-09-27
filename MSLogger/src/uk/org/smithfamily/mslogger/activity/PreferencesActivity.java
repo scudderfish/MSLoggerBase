@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.ExternalGPSManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -231,6 +233,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        updatePrefSummary(findPreference(key));
+        if (key.equals("externalgpsactive")) 
+        {
+            CheckBoxPreference cbp = (CheckBoxPreference)findPreference(key);
+            ExternalGPSManager.INSTANCE.changeRunningState(cbp.isChecked());
+        }
+        else
+            updatePrefSummary(findPreference(key));
     }
 }
