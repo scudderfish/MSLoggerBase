@@ -37,6 +37,11 @@
             android:key="gps_bluetooth_mac"
             android:title="Bluetooth Device" 
             android:dependency="useexternal"/>
+        <CheckBoxPreference
+            android:defaultValue="off"
+            android:key="externalgpsactive"
+            android:title="@string/externalgpsactive" 
+            android:dependency="useexternal"/>
         <CheckBoxPreference 
             android:defaultValue="true"
             android:key="usedevicetime"

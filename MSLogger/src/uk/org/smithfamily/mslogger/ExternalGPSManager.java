@@ -18,12 +18,13 @@ import android.text.TextUtils.SimpleStringSplitter;
 //import android.util.Log;
 import android.util.Log;
 
-public class ExternalGPS
+public enum ExternalGPSManager
 {
+    INSTANCE;
 
     Location location;
     private LocationManager locationManager;
-    private String providerName = null;
+    private String providerName = "ExternalGPS";
     private int providerStatus = LocationProvider.OUT_OF_SERVICE;
     private String lastLocationTime = null;
     private long locationTime;
@@ -31,11 +32,6 @@ public class ExternalGPS
     private boolean hasGGA = false;
     private boolean hasRMC = false;
     private boolean mockGpsEnabled = false;
-
-    public ExternalGPS()
-    {
-        providerName = "ExternalGPS";
-    }
 
     private void notifyLocationChange(Location newLoc) throws SecurityException
     {
@@ -356,5 +352,11 @@ public class ExternalGPS
             DebugLogManager.INSTANCE.log("Error while parsing NMEA time: " + e, Log.ERROR);
         }
         return timestamp;
+    }
+
+    public void changeRunningState(boolean active)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
