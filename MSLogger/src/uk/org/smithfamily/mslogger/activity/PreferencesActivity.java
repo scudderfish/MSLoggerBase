@@ -70,8 +70,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("maptype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
-        p = this.getPreferenceManager().findPreference("egotype");
-        p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
+        
 
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         if (ecu != null)
@@ -152,10 +151,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         {
             return;
         }
-        PreferenceCategory inlinePrefCat = new PreferenceCategory(this);
-        inlinePrefCat.setTitle("Project Settings");
-        ps.addPreference(inlinePrefCat);
-
+         
+        PreferenceCategory msSettingsCat = (PreferenceCategory) ps.findPreference("MSSettings");
+        
         for (SettingGroup g : groups)
         {
             ListPreference lp = new ListPreference(this);
@@ -163,7 +161,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             lp.setKey(g.getName());
             lp.setEntries(getEntries(g));
             lp.setEntryValues(getEntryValues(g));
-            inlinePrefCat.addPreference(lp);
+            msSettingsCat.addPreference(lp);
         }
         String[] flags = ecu.getControlFlags();
         Arrays.sort(flags, String.CASE_INSENSITIVE_ORDER);
@@ -177,7 +175,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 lp.setKey(flag);
                 lp.setEntries(R.array.booleanTypes);
                 lp.setEntryValues(R.array.booleanDisplayValues);
-                inlinePrefCat.addPreference(lp);
+                msSettingsCat.addPreference(lp);
             }
         }
 
