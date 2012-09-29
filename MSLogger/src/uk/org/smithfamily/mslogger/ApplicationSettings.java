@@ -500,4 +500,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         editor.commit();
     }
     
+    /**
+     * @return The gauges orientation (Either Follow device orientation or force landscape or force portrait)
+     */
+    public String getGaugesOrientation()
+    {
+        return prefs.getString("gaugesorientation", MISSING_VALUE);
+    }
+
 }

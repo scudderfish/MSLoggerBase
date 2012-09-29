@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -85,6 +86,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onCreate(savedInstanceState);
         checkSDCard();
         
+        setGaugesOrientation();
+        
         DebugLogManager.INSTANCE.log(getPackageName(),Log.ASSERT);
         try
         {
@@ -132,6 +135,37 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         registerMessages();
         launchStartupActivity();
+    }
+    
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        setGaugesOrientation();
+    }
+    
+    /**
+     * Force a screen orientation if specified by the user, otherwise look at the sensor and rotate screen as needed
+     */
+    private void setGaugesOrientation()
+    {
+        String activityOrientation = ApplicationSettings.INSTANCE.getGaugesOrientation();
+
+        // Force landscape
+        if (activityOrientation.equals("FORCE_LANDSCAPE"))
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        // Force portrait
+        else if (activityOrientation.equals("FORCE_PORTRAIT"))
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
     }
     
     /**
