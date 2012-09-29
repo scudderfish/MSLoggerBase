@@ -94,4 +94,16 @@
 	    <item>@string/horizontal</item>
 	    <item>@string/vertical</item>
 	</string-array>
+	
+	<string-array name="gaugesorientationnames">
+		<item>Follow device orientation</item>
+		<item>Force landscape</item>
+		<item>Force portrait</item>
+	</string-array>
+	
+	<string-array name="gaugesorientationvalues">
+		<item>FOLLOW_DEVICE</item>
+		<item>FORCE_LANDSCAPE</item>
+		<item>FORCE_PORTRAIT</item>
+	</string-array>
 </resources>
