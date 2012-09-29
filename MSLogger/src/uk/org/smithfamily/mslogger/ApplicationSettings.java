@@ -46,7 +46,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private int                  hertz;
     private SharedPreferences    prefs;
     private Megasquirt           ecuDefinition;
-//    private String               bluetoothMac;  // can't see what this does and seems like redundant code ??? 
     private Boolean              autoConnectOverride = null;
 
     private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
@@ -109,8 +108,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      */
     public synchronized String getECUBluetoothMac()
     {
-//        bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
-//        return bluetoothMac;
         return prefs.getString("bluetooth_mac", MISSING_VALUE);
     }
 
@@ -141,10 +138,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
         boolean val = false;
 
-        for(SettingGroup g : ecuDefinition.getSettingGroups())
+        for (SettingGroup g : ecuDefinition.getSettingGroups())
         {
             String groupName = g.getName();
-            if(prefs.getString(groupName, MISSING_VALUE).equals(name))
+            if (prefs.getString(groupName, MISSING_VALUE).equals(name))
             {
                 val = true;
             }
@@ -157,7 +154,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
             val = true;
         }
 
-        if(prefs.getString(name, MISSING_VALUE).equalsIgnoreCase("true"))
+        if (prefs.getString(name, MISSING_VALUE).equalsIgnoreCase("true"))
         {
             val = true;
         }
@@ -174,7 +171,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     @Override
     public synchronized void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-//        bluetoothMac = null;
         settings = new HashMap<String, Boolean>();
     }
 
@@ -358,7 +354,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             return null;
         }
-        if(ecuDefinition == null)
+        if (ecuDefinition == null)
         {
             ecuDefinition = new Megasquirt(context);
         }
