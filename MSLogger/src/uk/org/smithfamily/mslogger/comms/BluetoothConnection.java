@@ -7,9 +7,8 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.bluetooth.*;
 import android.util.Log;
 
-public enum BluetoothConnection implements Connection
+public class BluetoothConnection implements Connection
 {
-    INSTANCE;
     private String btAddr;
     private BluetoothAdapter adapter;
     private BluetoothDevice remote;
@@ -25,10 +24,10 @@ public enum BluetoothConnection implements Connection
     }
 
     @Override
-    public void init()
+    public void init(String addr)
     {
         DebugLogManager.INSTANCE.log("BluetoothConnection.init()", Log.DEBUG);
-        btAddr = ApplicationSettings.INSTANCE.getBluetoothMac();
+        btAddr = addr;
     }
 
     @Override

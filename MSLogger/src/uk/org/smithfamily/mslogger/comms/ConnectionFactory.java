@@ -12,7 +12,7 @@ public enum ConnectionFactory
      */
     public Connection getConnection()
     {
-        return BluetoothConnection.INSTANCE;
+        return new BluetoothConnection();
     }
     
 }

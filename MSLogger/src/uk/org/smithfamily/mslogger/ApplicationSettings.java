@@ -46,7 +46,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private int                  hertz;
     private SharedPreferences    prefs;
     private Megasquirt           ecuDefinition;
-    private String               bluetoothMac;
+//    private String               bluetoothMac;  // can't see what this does and seems like redundant code ??? 
     private Boolean              autoConnectOverride = null;
 
     private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
@@ -105,19 +105,20 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * Get the MAC address of the Bluetooth device
+     * Get the MAC address of the ECU Bluetooth device
      */
-    public synchronized String getBluetoothMac()
+    public synchronized String getECUBluetoothMac()
     {
-        bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
-        return bluetoothMac;
+//        bluetoothMac = prefs.getString("bluetooth_mac", MISSING_VALUE);
+//        return bluetoothMac;
+        return prefs.getString("bluetooth_mac", MISSING_VALUE);
     }
 
     /**
      * @param Set
-     *            the MAC address of the current Bluetooth device
+     *            the MAC address of the current ECU Bluetooth device
      */
-    public synchronized void setBluetoothMac(String m)
+    public synchronized void setECUBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
         editor.putString("bluetooth_mac", m);
@@ -173,7 +174,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     @Override
     public synchronized void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        bluetoothMac = null;
+//        bluetoothMac = null;
         settings = new HashMap<String, Boolean>();
     }
 
@@ -182,7 +183,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      */
     public boolean btDeviceSelected()
     {
-        return !MISSING_VALUE.equals(getBluetoothMac());
+        return !MISSING_VALUE.equals(getECUBluetoothMac());
     }
 
     /**
@@ -482,6 +483,25 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public boolean isDeviceTimeEnabled()
     {
         return prefs.getBoolean("usedevicetime", true);
+    }
+
+    /**
+     * Get the MAC address of the ECU Bluetooth device
+     */
+    public synchronized String getExtGPSBluetoothMac()
+    {
+        return prefs.getString("gps_bluetooth_mac", MISSING_VALUE);
+    }
+
+    /**
+     * @param Set
+     *            the MAC address of the current ECU Bluetooth device
+     */
+    public synchronized void setExtGPSBluetoothMac(String m)
+    {
+        Editor editor = prefs.edit();
+        editor.putString("gps_bluetooth_mac", m);
+        editor.commit();
     }
     
 }

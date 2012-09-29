@@ -13,7 +13,7 @@ import java.util.Timer;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
-import uk.org.smithfamily.mslogger.comms.ConnectionManager;
+import uk.org.smithfamily.mslogger.comms.ECUConnectionManager;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
@@ -197,7 +197,7 @@ public class Megasquirt implements MSControllerInterface
             return;
         DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
 
-        ConnectionManager.INSTANCE.disconnect();
+        ECUConnectionManager.getInstance().disconnect();
         DatalogManager.INSTANCE.mark("Disconnected");
         FRDLogManager.INSTANCE.close();
         DatalogManager.INSTANCE.close();
@@ -434,7 +434,7 @@ public class Megasquirt implements MSControllerInterface
         public void initialiseConnection()
         {
             sendMessage("Launching connection");
-            ConnectionManager.INSTANCE.init(handler);
+            ECUConnectionManager.getInstance().init(handler,ApplicationSettings.INSTANCE.getECUBluetoothMac());
         }
 
         /**
@@ -461,14 +461,14 @@ public class Megasquirt implements MSControllerInterface
 
                 try
                 {
-                    ConnectionManager.INSTANCE.connect();
-                    ConnectionManager.INSTANCE.flushAll();
+                    ECUConnectionManager.getInstance().connect();
+                    ECUConnectionManager.getInstance().flushAll();
 
                     if (!verifySignature())
                     {
                         DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
 
-                        ConnectionManager.INSTANCE.disconnect();
+                        ECUConnectionManager.getInstance().disconnect();
                         return;
                     }
                     
@@ -646,7 +646,7 @@ public class Megasquirt implements MSControllerInterface
                 return buffer;
             }
             int d = ecuImplementation.getInterWriteDelay();
-            ConnectionManager.INSTANCE.writeAndRead(ecuImplementation.getOchCommand(), buffer, d, ecuImplementation.isCRC32Protocol());
+            ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, d, ecuImplementation.isCRC32Protocol());
             return buffer;
         }
 
@@ -661,17 +661,17 @@ public class Megasquirt implements MSControllerInterface
         protected void getPage(byte[] pageBuffer, byte[] pageSelectCommand, byte[] pageReadCommand) throws IOException,
                 CRC32Exception
         {
-            ConnectionManager.INSTANCE.flushAll();
+            ECUConnectionManager.getInstance().flushAll();
             int delay = ecuImplementation.getPageActivationDelay();
             if (pageSelectCommand != null)
             {
-                ConnectionManager.INSTANCE.writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
+                ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
             }
             if (pageReadCommand != null)
             {
-                ConnectionManager.INSTANCE.writeCommand(pageReadCommand, delay, ecuImplementation.isCRC32Protocol());
+                ECUConnectionManager.getInstance().writeCommand(pageReadCommand, delay, ecuImplementation.isCRC32Protocol());
             }
-            ConnectionManager.INSTANCE.readBytes(pageBuffer, ecuImplementation.isCRC32Protocol());
+            ECUConnectionManager.getInstance().readBytes(pageBuffer, ecuImplementation.isCRC32Protocol());
         }
 
         /**
@@ -685,7 +685,7 @@ public class Megasquirt implements MSControllerInterface
         {
             String signatureFromMS = "";
             int d = Math.max(ecuImplementation.getInterWriteDelay(), 300);
-            ConnectionManager.INSTANCE.flushAll();
+            ECUConnectionManager.getInstance().flushAll();
 
             DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
 
@@ -699,7 +699,7 @@ public class Megasquirt implements MSControllerInterface
                 byte[] buf;
                 try
                 {
-                    buf = ConnectionManager.INSTANCE.writeAndRead(sigCommand, d, ecuImplementation.isCRC32Protocol());
+                    buf = ECUConnectionManager.getInstance().writeAndRead(sigCommand, d, ecuImplementation.isCRC32Protocol());
 
                     try
                     {
@@ -717,13 +717,13 @@ public class Megasquirt implements MSControllerInterface
 
                 DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
 
-                ConnectionManager.INSTANCE.flushAll();
+                ECUConnectionManager.getInstance().flushAll();
             }
             // We loop until we get a valid signature
             while (signatureFromMS.equals(ECUFingerprint.UNKNOWN));
 
             // Notify the user of the signature we got
-            ConnectionManager.INSTANCE.sendStatus("Recieved '" + signatureFromMS + "'");
+            ECUConnectionManager.getInstance().sendStatus("Recieved '" + signatureFromMS + "'");
 
             return signatureFromMS;
         }
