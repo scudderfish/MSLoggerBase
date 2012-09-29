@@ -3,9 +3,9 @@
 
     <PreferenceCategory android:title="@string/megasquirt" android:key="MSSettings">
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
-            android:dialogTitle="Choose Bluetooth Device"
+            android:dialogTitle="@string/choose_bluetooth_device"
             android:key="bluetooth_mac"
-            android:title="Bluetooth Device" />
+            android:title="@string/bluetooth_device" />
         <ListPreference
             android:entries="@array/mapnames"
             android:entryValues="@array/maptypes"
@@ -29,7 +29,7 @@
         <uk.org.smithfamily.mslogger.widgets.BluetoothDevicePreference
             android:dialogTitle="Choose Bluetooth Device"
             android:key="gps_bluetooth_mac"
-            android:title="Bluetooth Device" 
+            android:title="@string/bluetooth_device" 
             android:dependency="useexternal"/>
         <CheckBoxPreference
             android:defaultValue="off"
@@ -48,7 +48,7 @@
             android:defaultValue="@string/app_name"
             android:dialogTitle="@string/data_log_directory"
             android:key="DataDir"
-            android:title="Log Directory" />
+            android:title="@string/log_directory" />
 
         <CheckBoxPreference
             android:key="autoemail_enabled"
@@ -75,6 +75,13 @@
             android:key="autolog"
             android:summary="@string/autolog_summary"
             android:title="@string/autolog" />
+        
+        <ListPreference
+            android:defaultValue="FOLLOW_DEVICE"
+            android:entries="@array/gaugesorientationnames"
+            android:entryValues="@array/gaugesorientationvalues"
+            android:key="gaugesorientation"
+            android:title="@string/gauges_orientation" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Debug">
