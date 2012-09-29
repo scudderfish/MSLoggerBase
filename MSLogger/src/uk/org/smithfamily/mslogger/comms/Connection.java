@@ -5,7 +5,7 @@ import java.io.*;
 public interface Connection
 {
 
-    void init();
+    void init(String addr);
 
     boolean isInitialised();
 

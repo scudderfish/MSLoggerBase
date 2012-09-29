@@ -24,7 +24,7 @@ public enum SocketConnection implements Connection
     private InputStream is;
 
     @Override
-    public void init()
+    public void init(String addr)
     {
         sim.init();
         try
@@ -48,7 +48,7 @@ public enum SocketConnection implements Connection
     {
         if(!sim.isRunning())
         {
-            init();
+            init("");
         }
         InetAddress serverAddr = InetAddress.getByName("127.0.0.1");
         sock = new Socket(serverAddr, MSSimulator.SERVERPORT);

@@ -208,7 +208,7 @@ public class StartupActivity extends Activity
                 // Get the device MAC address
                 String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 
-                ApplicationSettings.INSTANCE.setBluetoothMac(address);
+                ApplicationSettings.INSTANCE.setECUBluetoothMac(address);
                 initSequence();
             }
             break;

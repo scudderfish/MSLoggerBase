@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -7,15 +8,16 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.org.smithfamily.mslogger.comms.ExtGPSConnectionManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.TextUtils.SimpleStringSplitter;
-//import android.util.Log;
 import android.util.Log;
 
 public enum ExternalGPSManager
@@ -32,6 +34,11 @@ public enum ExternalGPSManager
     private boolean hasGGA = false;
     private boolean hasRMC = false;
     private boolean mockGpsEnabled = false;
+
+    private volatile ExtGPSThread extGPSThread;
+    private volatile boolean running;
+    private static volatile ExtGPSThread watch;
+    private Handler handler;
 
     private void notifyLocationChange(Location newLoc) throws SecurityException
     {
@@ -357,6 +364,126 @@ public enum ExternalGPSManager
     public void changeRunningState(boolean active)
     {
         // TODO Auto-generated method stub
-        
+
     }
+
+    public synchronized void start()
+    {
+        DebugLogManager.INSTANCE.log("ExternalGPSManager.start()", Log.INFO);
+
+        if (extGPSThread == null)
+        {
+            extGPSThread = new ExtGPSThread();
+            extGPSThread.start();
+        }
+    }
+
+    /**
+     * Shut down the ECU thread
+     */
+    public synchronized void stop()
+    {
+        if (extGPSThread != null)
+        {
+            extGPSThread.halt();
+            extGPSThread = null;
+        }
+
+        running = false;
+
+        DebugLogManager.INSTANCE.log("ExternalGPSManager.stop()", Log.INFO);
+    }
+
+    /**
+     * The thread that handles all communications with the External GPS. This must be done in it's own thread as Android gets very picky about
+     * unresponsive UI threads
+     */
+    private class ExtGPSThread extends Thread
+    {
+        /**
+         * 
+         */
+        public ExtGPSThread()
+        {
+            if (watch != null)
+            {
+                DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
+            }
+            watch = this;
+            setName("ECUThread:" + System.currentTimeMillis());
+        }
+
+        /**
+         * Kick the connection off
+         */
+        public void initialiseConnection()
+        {
+            // sendMessage("Launching connection");
+            ExtGPSConnectionManager.getInstance().init(handler, ApplicationSettings.INSTANCE.getExtGPSBluetoothMac());
+        }
+
+        /**
+         * The main loop of the connection to the ECU
+         */
+        public void run()
+        {
+            try
+            {
+                // sendMessage("");
+                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
+                initialiseConnection();
+
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e)
+                {
+                    DebugLogManager.INSTANCE.logException(e);
+                }
+
+                running = true;
+
+                try
+                {
+                    ExtGPSConnectionManager.getInstance().connect();
+                    ExtGPSConnectionManager.getInstance().flushAll();
+
+                    long lastRpsTime = System.currentTimeMillis();
+
+                    // This is the actual work. Outside influences will toggle 'running' when we want this to stop
+                    while (running)
+                    {
+
+                    }
+                }
+                catch (IOException e)
+                {
+                    DebugLogManager.INSTANCE.logException(e);
+                }
+                catch (RuntimeException t)
+                {
+                    DebugLogManager.INSTANCE.logException(t);
+                    throw (t);
+                }
+                // We're on our way out, so drop the connection
+                ExtGPSConnectionManager.getInstance().disconnect();
+                DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
+            }
+            finally
+            {
+                watch = null;
+            }
+        }
+
+        /**
+         * Called by other threads to stop the comms
+         */
+        public void halt()
+        {
+            running = false;
+        }
+
+    }
+
 }

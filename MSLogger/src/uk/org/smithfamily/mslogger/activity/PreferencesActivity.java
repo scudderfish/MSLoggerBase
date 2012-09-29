@@ -61,11 +61,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++)
-        {
-            initSummary(getPreferenceScreen().getPreference(i));
-        }
-
         Preference p = this.getPreferenceManager().findPreference("temptype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("maptype");
@@ -83,6 +78,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             populateProjectSettings(ps);
         }
 
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++)
+        {
+            initSummary(getPreferenceScreen().getPreference(i));
+        }
     }
 
     @Override
