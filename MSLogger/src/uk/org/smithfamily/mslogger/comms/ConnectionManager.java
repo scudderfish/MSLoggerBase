@@ -3,22 +3,16 @@ package uk.org.smithfamily.mslogger.comms;
 import java.io.*;
 import java.util.*;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.os.*;
 import android.util.Log;
 
 /**
- * Main connection class that wrap all the Bluetooth stuff that communicate with the Megasquirt
+ * Main connection class that wrap all the Bluetooth stuff for communications
  */
-public enum ConnectionManager
+abstract class ConnectionManager
 {
-    INSTANCE;
-
-    /**
-     * Class that is used to time out the Bluetooth communication
-     */
     static class Reaper extends TimerTask
     {
 		ConnectionManager parent;
@@ -35,11 +29,11 @@ public enum ConnectionManager
 
     }
 
-    private Connection        conn;
-    private InputStream       mmInStream;
-    private OutputStream      mmOutStream;
-    private Handler           handler;
-    private static final long IO_TIMEOUT     = 5000;
+    protected Connection        conn;
+    protected InputStream       mmInStream;
+    protected OutputStream      mmOutStream;
+    protected Handler           handler;
+    protected static final long IO_TIMEOUT     = 5000;
     volatile boolean          timerTriggered = false;
     Timer                     t              = new Timer();
 
@@ -48,8 +42,8 @@ public enum ConnectionManager
         STATE_DISCONNECTED, STATE_CONNECTING, STATE_CONNECTED
     };
 
-    private volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
-    private Thread                   ownerThread;
+    protected volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
+    protected Thread                   ownerThread;
 
     /**
      * Get the current Bluetooth connection state
@@ -89,11 +83,11 @@ public enum ConnectionManager
      * @param adapter
      * @param h
      */
-    public synchronized void init(Handler handler)
+    public synchronized void init(Handler handler,String addr)
     {
         this.handler = handler;
-        conn = ConnectionFactory.INSTANCE.getConnection();
-        conn.init();
+        if (conn == null) conn = ConnectionFactory.INSTANCE.getConnection();
+        conn.init(addr);
         if (currentState != ConnectionState.STATE_DISCONNECTED && !conn.isInitialised())
         {
             tearDown();
@@ -193,26 +187,20 @@ public enum ConnectionManager
         }
         return;
     }
+
+
     /**
-     * Check if the application should auto-connect and automatically connect if it should
+     * Check if connected and automatically connect if not
      * 
      * @throws IOException
      */
-    private synchronized void checkConnection() throws IOException
+    protected synchronized void checkConnection() throws IOException
     {
-    	DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
+        DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
         
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
-            boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
-            if (autoConnect)
-            {
-                connect();
-            }
-            else
-            {
-                throw new IOException("Autoconnection not allowed");
-            }
+            connect();
         }
         if (ownerThread != Thread.currentThread())
         {
@@ -225,7 +213,7 @@ public enum ConnectionManager
      * 
      * @param d Delay
      */
-    private void delay(int d)
+    protected void delay(int d)
     {
         DebugLogManager.INSTANCE.log("Sleeping for "+d+"ms", Log.DEBUG);
     	try
@@ -248,142 +236,38 @@ public enum ConnectionManager
     }
 
     /**
-     * Write a command to the Bluetooth stream
+     * Write data to the Bluetooth stream
      * 
-     * @param cmd       Command to be send
-     * @param d         Delay to wait after sending command
+     * @param data      Data byte[] to send
      * @throws IOException
      */
-    public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
+    public synchronized void writeData(byte[] data) throws IOException
     {
+        checkConnection();
         if (!conn.isConnected())
         {
             throw new IOException("Not connected");
         }
 
-        if (isCRC32)
-        {
-        	command = CRC32ProtocolHandler.wrap(command);
-        }
-
-        DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
+        DebugLogManager.INSTANCE.log("Writing", data, Log.DEBUG);
         
-        if(command.length == 7 && command[0]=='r')
-        {
-            //MS2 hack
-        	byte[] select = new byte[3];
-        	byte[] range = new byte[4];
-        	System.arraycopy(command, 0, select, 0 , 3);
-        	System.arraycopy(command, 3, range, 0, 4);
-        	this.mmOutStream.write(select);
-        	delay(200);
-        	this.mmOutStream.write(range);
-        }
-        else
-        {
-        	this.mmOutStream.write(command);
-        }
+        this.mmOutStream.write(data);
         
         this.mmOutStream.flush();
-        
-        delay(d);
     }
 
     /**
-     * Write a command to the Bluetooth stream and return the result
+     * Write data to the Bluetooth stream and return the result
      * 
-     * @param cmd       Command to be send
-     * @param d         Delay to wait after sending command
+     * @param data      Data byte[] to send
      * @return
      * @throws IOException
-     * @throws CRC32Exception 
      */
-    public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException, CRC32Exception
+    public byte[] writeAndRead(byte[] data) throws IOException
     {
         checkConnection();
-        writeCommand(cmd, d, isCRC32);
-
-        byte[] result = readBytes(isCRC32);
-        return result;
-    }
-
-    /**
-     * Write a command to the Bluetooth stream and read the result
-     * 
-     * @param cmd       Command to be send
-     * @param result    Result of the command sent by the Megasquirt
-     * @param d         Delay to wait after sending command
-     * @throws IOException
-     * @throws CRC32Exception 
-     */
-    public void writeAndRead(byte[] cmd, byte[] result, int d,boolean isCRC32) throws IOException, CRC32Exception
-    {
-        checkConnection();
-        writeCommand(cmd, d,isCRC32);
-
-        readBytes(result,isCRC32);
-    }
-
-    /**
-     * Read bytes available on Bluetooth stream
-     * 
-     * @param bytes
-     * @throws IOException
-     * @throws CRC32Exception 
-     */
-    public void readBytes(byte[] bytes,boolean isCRC32) throws IOException, CRC32Exception
-    {
-        TimerTask reaper = new Reaper(this);
-        t.schedule(reaper, IO_TIMEOUT);
-        
-        int target = bytes.length;
-        if (isCRC32)
-        {
-        	target += 7;
-        }
-        
-        byte[] buffer = new byte[target];
-        int read = 0;
-        try
-        {
-            synchronized(this)
-            {
-                while (read < target)
-                {
-                    int numRead = mmInStream.read(buffer, read, target - read);
-                    if (numRead == -1)
-                    {
-                        throw new IOException("end of stream attempting to read");
-                    }
-                    read += numRead;
-                    DebugLogManager.INSTANCE.log("readBytes[] : target = "+target+" read so far :" +read, Log.DEBUG);
-                }
-            }
-            reaper.cancel();
-            DebugLogManager.INSTANCE.log("readBytes[]",buffer, Log.DEBUG);
-            if (isCRC32)
-            {
-            	if (!CRC32ProtocolHandler.check(buffer))
-            	{
-            		throw new CRC32Exception("CRC32 check failed");
-            	}
-            	
-            	byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
-            	System.arraycopy(actual, 0, bytes, 0, bytes.length);
-            }
-            else
-            {
-            	System.arraycopy(buffer, 0, bytes, 0, bytes.length);
-            }
-        }
-        catch (IOException e)
-        {
-            if (timerTriggered)
-            {
-                DebugLogManager.INSTANCE.log("Time out reading from stream", Log.ERROR);
-                throw e;
-            }
-        }
+        writeData(data);
+        return readBytes();
     }
 
     /**
@@ -391,9 +275,8 @@ public enum ConnectionManager
      * 
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
-     * @throws CRC32Exception 
      */
-    public byte[] readBytes(boolean isCRC32) throws IOException, CRC32Exception
+    public byte[] readBytes() throws IOException
     {
         List<Byte> read = new ArrayList<Byte>();
 
@@ -415,20 +298,11 @@ public enum ConnectionManager
                 
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
         
-        if (isCRC32)
-        {
-        	if (!CRC32ProtocolHandler.check(result))
-        	{
-        		throw new CRC32Exception("CRC32 check failed");
-        	}
-        	result = CRC32ProtocolHandler.unwrap(result);
-        }
-        
         return result;
     }
 
     /**
-     * Flush all data on the Bluetooth stream
+     * Flush all data on the Bluetooth stream by reading until nothing is available to read
      * 
      * @throws IOException
      */
@@ -464,7 +338,7 @@ public enum ConnectionManager
     }
 
     /**
-     * Disconnect the current Bluetooth connection with the Megasquirt ECU
+     * Disconnect the current Bluetooth connection
      */
     public synchronized void disconnect()
     {
