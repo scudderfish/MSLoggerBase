@@ -13,18 +13,21 @@ import android.util.Log;
 public class ECUConnectionManager extends ConnectionManager
 {
     // Private constructor prevents instantiation from other classes
-    private ECUConnectionManager() { }
-
-    /**
-    * SingletonHolder is loaded on the first execution of Singleton.getInstance() 
-    * or the first access to SingletonHolder.INSTANCE, not before.
-    */
-    private static class SingletonHolder { 
-            public static final ECUConnectionManager INSTANCE = new ECUConnectionManager();
+    private ECUConnectionManager()
+    {
     }
 
-    public static ECUConnectionManager getInstance() {
-            return SingletonHolder.INSTANCE;
+    /**
+     * SingletonHolder is loaded on the first execution of Singleton.getInstance() or the first access to SingletonHolder.INSTANCE, not before.
+     */
+    private static class SingletonHolder
+    {
+        public static final ECUConnectionManager INSTANCE = new ECUConnectionManager();
+    }
+
+    public static ECUConnectionManager getInstance()
+    {
+        return SingletonHolder.INSTANCE;
     }
 
     /**
@@ -34,8 +37,8 @@ public class ECUConnectionManager extends ConnectionManager
      */
     protected synchronized void checkConnection() throws IOException
     {
-    	DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
-        
+        DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
+
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
             boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
@@ -57,11 +60,11 @@ public class ECUConnectionManager extends ConnectionManager
     /**
      * Write a command to the Bluetooth stream
      * 
-     * @param cmd       Command to be send
-     * @param d         Delay to wait after sending command
+     * @param cmd Command to be send
+     * @param d Delay to wait after sending command
      * @throws IOException
      */
-    public synchronized void writeCommand(byte[] command, int d,boolean isCRC32) throws IOException
+    public synchronized void writeCommand(byte[] command, int d, boolean isCRC32) throws IOException
     {
         if (!conn.isConnected())
         {
@@ -70,42 +73,42 @@ public class ECUConnectionManager extends ConnectionManager
 
         if (isCRC32)
         {
-        	command = CRC32ProtocolHandler.wrap(command);
+            command = CRC32ProtocolHandler.wrap(command);
         }
 
         DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
-        
-        if(command.length == 7 && command[0]=='r')
+
+        if (command.length == 7 && command[0] == 'r')
         {
-            //MS2 hack
-        	byte[] select = new byte[3];
-        	byte[] range = new byte[4];
-        	System.arraycopy(command, 0, select, 0 , 3);
-        	System.arraycopy(command, 3, range, 0, 4);
-        	this.mmOutStream.write(select);
-        	delay(200);
-        	this.mmOutStream.write(range);
+            // MS2 hack
+            byte[] select = new byte[3];
+            byte[] range = new byte[4];
+            System.arraycopy(command, 0, select, 0, 3);
+            System.arraycopy(command, 3, range, 0, 4);
+            this.mmOutStream.write(select);
+            delay(200);
+            this.mmOutStream.write(range);
         }
         else
         {
-        	this.mmOutStream.write(command);
+            this.mmOutStream.write(command);
         }
-        
+
         this.mmOutStream.flush();
-        
+
         delay(d);
     }
 
     /**
      * Write a command to the Bluetooth stream and return the result
      * 
-     * @param cmd       Command to be send
-     * @param d         Delay to wait after sending command
+     * @param cmd Command to be send
+     * @param d Delay to wait after sending command
      * @return
      * @throws IOException
-     * @throws CRC32Exception 
+     * @throws CRC32Exception
      */
-    public byte[] writeAndRead(byte[] cmd, int d,boolean isCRC32) throws IOException, CRC32Exception
+    public byte[] writeAndRead(byte[] cmd, int d, boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
@@ -117,18 +120,18 @@ public class ECUConnectionManager extends ConnectionManager
     /**
      * Write a command to the Bluetooth stream and read the result
      * 
-     * @param cmd       Command to be send
-     * @param result    Result of the command sent by the Megasquirt
-     * @param d         Delay to wait after sending command
+     * @param cmd Command to be send
+     * @param result Result of the command sent by the Megasquirt
+     * @param d Delay to wait after sending command
      * @throws IOException
-     * @throws CRC32Exception 
+     * @throws CRC32Exception
      */
-    public void writeAndRead(byte[] cmd, byte[] result, int d,boolean isCRC32) throws IOException, CRC32Exception
+    public void writeAndRead(byte[] cmd, byte[] result, int d, boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
-        writeCommand(cmd, d,isCRC32);
+        writeCommand(cmd, d, isCRC32);
 
-        readBytes(result,isCRC32);
+        readBytes(result, isCRC32);
     }
 
     /**
@@ -136,24 +139,24 @@ public class ECUConnectionManager extends ConnectionManager
      * 
      * @param bytes
      * @throws IOException
-     * @throws CRC32Exception 
+     * @throws CRC32Exception
      */
-    public void readBytes(byte[] bytes,boolean isCRC32) throws IOException, CRC32Exception
+    public void readBytes(byte[] bytes, boolean isCRC32) throws IOException, CRC32Exception
     {
         TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
-        
+
         int target = bytes.length;
         if (isCRC32)
         {
-        	target += 7;
+            target += 7;
         }
-        
+
         byte[] buffer = new byte[target];
         int read = 0;
         try
         {
-            synchronized(this)
+            synchronized (this)
             {
                 while (read < target)
                 {
@@ -163,24 +166,24 @@ public class ECUConnectionManager extends ConnectionManager
                         throw new IOException("end of stream attempting to read");
                     }
                     read += numRead;
-                    DebugLogManager.INSTANCE.log("readBytes[] : target = "+target+" read so far :" +read, Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.DEBUG);
                 }
             }
             reaper.cancel();
-            DebugLogManager.INSTANCE.log("readBytes[]",buffer, Log.DEBUG);
+            DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.DEBUG);
             if (isCRC32)
             {
-            	if (!CRC32ProtocolHandler.check(buffer))
-            	{
-            		throw new CRC32Exception("CRC32 check failed");
-            	}
-            	
-            	byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
-            	System.arraycopy(actual, 0, bytes, 0, bytes.length);
+                if (!CRC32ProtocolHandler.check(buffer))
+                {
+                    throw new CRC32Exception("CRC32 check failed");
+                }
+
+                byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
+                System.arraycopy(actual, 0, bytes, 0, bytes.length);
             }
             else
             {
-            	System.arraycopy(buffer, 0, bytes, 0, bytes.length);
+                System.arraycopy(buffer, 0, bytes, 0, bytes.length);
             }
         }
         catch (IOException e)
@@ -198,13 +201,13 @@ public class ECUConnectionManager extends ConnectionManager
      * 
      * @return Array of bytes read from Bluetooth stream
      * @throws IOException
-     * @throws CRC32Exception 
+     * @throws CRC32Exception
      */
     public byte[] readBytes(boolean isCRC32) throws IOException, CRC32Exception
     {
         List<Byte> read = new ArrayList<Byte>();
 
-        synchronized(this)
+        synchronized (this)
         {
             while (mmInStream.available() > 0)
             {
@@ -212,25 +215,25 @@ public class ECUConnectionManager extends ConnectionManager
                 read.add(b);
             }
         }
-        
+
         byte[] result = new byte[read.size()];
         int i = 0;
         for (Byte b : read)
         {
             result[i++] = b;
         }
-                
+
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
-        
+
         if (isCRC32)
         {
-        	if (!CRC32ProtocolHandler.check(result))
-        	{
-        		throw new CRC32Exception("CRC32 check failed");
-        	}
-        	result = CRC32ProtocolHandler.unwrap(result);
+            if (!CRC32ProtocolHandler.check(result))
+            {
+                throw new CRC32Exception("CRC32 check failed");
+            }
+            result = CRC32ProtocolHandler.unwrap(result);
         }
-        
+
         return result;
     }
 }

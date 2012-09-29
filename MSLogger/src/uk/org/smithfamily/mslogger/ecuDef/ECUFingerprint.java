@@ -45,7 +45,7 @@ public class ECUFingerprint implements Runnable
         
         while (!located  && errorCount < MAX_ERROR)
         {
-            ECUConnectionManager.getInstance().init(handler,ApplicationSettings.INSTANCE.getBluetoothMac());
+            ECUConnectionManager.getInstance().init(handler,ApplicationSettings.INSTANCE.getECUBluetoothMac());
             try
             {
                 fingerprint = getFingerprint();

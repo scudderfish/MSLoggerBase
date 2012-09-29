@@ -434,7 +434,7 @@ public class Megasquirt implements MSControllerInterface
         public void initialiseConnection()
         {
             sendMessage("Launching connection");
-            ECUConnectionManager.getInstance().init(handler,ApplicationSettings.INSTANCE.getBluetoothMac());
+            ECUConnectionManager.getInstance().init(handler,ApplicationSettings.INSTANCE.getECUBluetoothMac());
         }
 
         /**

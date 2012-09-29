@@ -15,11 +15,13 @@ abstract class ConnectionManager
 {
     static class Reaper extends TimerTask
     {
-		ConnectionManager parent;
-		Reaper(ConnectionManager p)
-		{
-			this.parent = p;
-		}
+        ConnectionManager parent;
+
+        Reaper(ConnectionManager p)
+        {
+            this.parent = p;
+        }
+
         @Override
         public void run()
         {
@@ -29,13 +31,13 @@ abstract class ConnectionManager
 
     }
 
-    protected Connection        conn;
-    protected InputStream       mmInStream;
-    protected OutputStream      mmOutStream;
-    protected Handler           handler;
-    protected static final long IO_TIMEOUT     = 5000;
-    volatile boolean          timerTriggered = false;
-    Timer                     t              = new Timer();
+    protected Connection conn;
+    protected InputStream mmInStream;
+    protected OutputStream mmOutStream;
+    protected Handler handler;
+    protected static final long IO_TIMEOUT = 5000;
+    volatile boolean timerTriggered = false;
+    Timer t = new Timer();
 
     public enum ConnectionState
     {
@@ -43,7 +45,7 @@ abstract class ConnectionManager
     };
 
     protected volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
-    protected Thread                   ownerThread;
+    protected Thread ownerThread;
 
     /**
      * Get the current Bluetooth connection state
@@ -66,7 +68,7 @@ abstract class ConnectionManager
     }
 
     /**
-     * Set the handler 
+     * Set the handler
      * 
      * @param handler
      */
@@ -77,16 +79,18 @@ abstract class ConnectionManager
 
     /**
      * Initialise the Bluetooth connection
-     * @param handler 
+     * 
+     * @param handler
      * 
      * @param btAddr
      * @param adapter
      * @param h
      */
-    public synchronized void init(Handler handler,String addr)
+    public synchronized void init(Handler handler, String addr)
     {
         this.handler = handler;
-        if (conn == null) conn = ConnectionFactory.INSTANCE.getConnection();
+        if (conn == null)
+            conn = ConnectionFactory.INSTANCE.getConnection();
         conn.init(addr);
         if (currentState != ConnectionState.STATE_DISCONNECTED && !conn.isInitialised())
         {
@@ -110,25 +114,25 @@ abstract class ConnectionManager
 
     /**
      * Connect to the Bluetooth device
-     *  
+     * 
      * 
      * @throws IOException
      */
     public synchronized void connect() throws IOException
     {
-    	DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
-        
+        DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
+
         if (currentState != ConnectionState.STATE_DISCONNECTED)
         {
             return;
         }
         setState(ConnectionState.STATE_CONNECTING);
-        DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
+        DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
 
         try
         {
-        	DebugLogManager.INSTANCE.log("connect() : Attempting connection", Log.DEBUG);
-            
+            DebugLogManager.INSTANCE.log("connect() : Attempting connection", Log.DEBUG);
+
             conn.connect();
         }
         catch (IOException e)
@@ -145,12 +149,13 @@ abstract class ConnectionManager
                 DebugLogManager.INSTANCE.logException(e1);
             }
             conn.switchSettings();
-            try {
+            try
+            {
                 conn.connect();
             }
             catch (IOException e1)
             {
-                //that didn't work, switch back and throw
+                // that didn't work, switch back and throw
                 DebugLogManager.INSTANCE.logException(e1);
                 conn.switchSettings();
                 throw e1;
@@ -176,8 +181,8 @@ abstract class ConnectionManager
         if (mmInStream != null && mmOutStream != null)
         {
             setState(ConnectionState.STATE_CONNECTED);
-            DebugLogManager.INSTANCE.log("connect() : Current state "+currentState, Log.DEBUG);
-            
+            DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
+
         }
         else
         {
@@ -188,7 +193,6 @@ abstract class ConnectionManager
         return;
     }
 
-
     /**
      * Check if connected and automatically connect if not
      * 
@@ -197,7 +201,7 @@ abstract class ConnectionManager
     protected synchronized void checkConnection() throws IOException
     {
         DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
-        
+
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
             connect();
@@ -215,18 +219,18 @@ abstract class ConnectionManager
      */
     protected void delay(int d)
     {
-        DebugLogManager.INSTANCE.log("Sleeping for "+d+"ms", Log.DEBUG);
-    	try
+        DebugLogManager.INSTANCE.log("Sleeping for " + d + "ms", Log.DEBUG);
+        try
         {
             Thread.sleep(d);
         }
         catch (InterruptedException e)
         {
-        	DebugLogManager.INSTANCE.log("sleep was interrupted", Log.DEBUG);
+            DebugLogManager.INSTANCE.log("sleep was interrupted", Log.DEBUG);
         }
     }
 
-      /**
+    /**
      * Close input and output Bluetooth streams and socket
      */
     public synchronized void tearDown()
@@ -238,7 +242,7 @@ abstract class ConnectionManager
     /**
      * Write data to the Bluetooth stream
      * 
-     * @param data      Data byte[] to send
+     * @param data Data byte[] to send
      * @throws IOException
      */
     public synchronized void writeData(byte[] data) throws IOException
@@ -250,16 +254,16 @@ abstract class ConnectionManager
         }
 
         DebugLogManager.INSTANCE.log("Writing", data, Log.DEBUG);
-        
+
         this.mmOutStream.write(data);
-        
+
         this.mmOutStream.flush();
     }
 
     /**
      * Write data to the Bluetooth stream and return the result
      * 
-     * @param data      Data byte[] to send
+     * @param data Data byte[] to send
      * @return
      * @throws IOException
      */
@@ -280,7 +284,7 @@ abstract class ConnectionManager
     {
         List<Byte> read = new ArrayList<Byte>();
 
-        synchronized(this)
+        synchronized (this)
         {
             while (mmInStream.available() > 0)
             {
@@ -288,16 +292,16 @@ abstract class ConnectionManager
                 read.add(b);
             }
         }
-        
+
         byte[] result = new byte[read.size()];
         int i = 0;
         for (Byte b : read)
         {
             result[i++] = b;
         }
-                
+
         DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
-        
+
         return result;
     }
 
@@ -308,7 +312,7 @@ abstract class ConnectionManager
      */
     public synchronized void flushAll() throws IOException
     {
-    	DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
+        DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
         checkConnection();
 
         mmOutStream.flush();
@@ -342,8 +346,8 @@ abstract class ConnectionManager
      */
     public synchronized void disconnect()
     {
-    	DebugLogManager.INSTANCE.log("disconnect()", Log.DEBUG);
-        
+        DebugLogManager.INSTANCE.log("disconnect()", Log.DEBUG);
+
         tearDown();
     }
 }
