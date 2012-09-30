@@ -491,12 +491,31 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * @param Set
-     *            the MAC address of the current ECU Bluetooth device
+     *            the MAC address of the current ExtGPS Bluetooth device
      */
     public synchronized void setExtGPSBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
         editor.putString("gps_bluetooth_mac", m);
+        editor.commit();
+    }
+
+    /**
+     * Get the ExtGPS active running state
+     */
+    public synchronized boolean isExtGPSActive()
+    {
+        return prefs.getBoolean("externalgpsactive", false);
+    }
+
+    /**
+     * @param Set
+     *            the ExtGPS active running state
+     */
+    public synchronized void setExtGPSActive(boolean b)
+    {
+        Editor editor = prefs.edit();
+        editor.putBoolean("externalgpsactive", b);
         editor.commit();
     }
     
