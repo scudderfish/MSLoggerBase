@@ -19,7 +19,7 @@ public interface MSControllerInterface
 
     int table(double x, String t);
 
-    int timeNow();
+    double timeNow();
 
     double tempCvt(double x);
 

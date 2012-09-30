@@ -12,7 +12,7 @@ public class Patterns
     static Pattern scalar              = Pattern.compile("(\\w*)\\s*=\\s*scalar\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\"(.*)\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*");
     static Pattern expr                = Pattern.compile("(\\w*)\\s*=\\s*\\{\\s*(.*)\\s*\\}.*");
     static Pattern ternary             = Pattern.compile("(.*?)\\?(.*)");
-    static Pattern log                 = Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*?)\",.*");
+    static Pattern log                 = Pattern.compile("\\s*entry\\s*=\\s*(\\w+)\\s*,\\s*\"(.*?)\",\\s*(.*?),\\s*\"(.*?)\"");
     static Pattern binary              = Pattern.compile("(.*)0b([01]{8})(.*)");
     
     /*
