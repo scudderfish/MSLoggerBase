@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.ExternalGPSManager;
+import uk.org.smithfamily.mslogger.ExtGPSManager;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
@@ -891,7 +891,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-        ExternalGPSManager.INSTANCE.stop();
+        ExtGPSManager.INSTANCE.stop();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         if (ecu != null)

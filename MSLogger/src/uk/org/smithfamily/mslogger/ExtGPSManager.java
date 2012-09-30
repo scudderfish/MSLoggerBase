@@ -22,7 +22,7 @@ import android.text.TextUtils;
 import android.text.TextUtils.SimpleStringSplitter;
 import android.util.Log;
 
-public enum ExternalGPSManager
+public enum ExtGPSManager
 {
     INSTANCE;
 
@@ -46,7 +46,7 @@ public enum ExternalGPSManager
         SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
         splitter.setString(sentence);
 
-        // DebugLogManager.INSTANCE.log(sentence, Log.VERBOSE);
+        DebugLogManager.INSTANCE.log(sentence, Log.VERBOSE);
 
         String command = splitter.next();
         if (command.equals("$GPGGA"))
@@ -122,7 +122,10 @@ public enum ExternalGPSManager
                     extras.putInt("satellites", sats);
                     location.setExtras(extras);
                     if (lastNumSatellites != sats)
-                        notifyStatusChanged(LocationProvider.AVAILABLE, extras, updateTime);
+                    {
+                        lastNumSatellites = sats;
+                        notifyStatusChanged(locStatus, extras, updateTime);
+                    }
                 }
                 hasGGA = true;
                 if (hasGGA && hasRMC)
@@ -130,7 +133,7 @@ public enum ExternalGPSManager
                     notifyLocationChanged(location);
                 }
             }
-            else if (quality.equals("0"))
+            else if (quality != null && quality.equals("0"))
             {
                 if (locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
                 {
@@ -209,7 +212,7 @@ public enum ExternalGPSManager
             }
             else if (status.equals("V"))
             {
-                if (this.locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+                if (status != null && this.locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
                 {
                     long updateTime = parseNmeaTime(time);
                     notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
@@ -351,7 +354,7 @@ public enum ExternalGPSManager
                 }
             }
             this.location = new Location(providerName);
-            // DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.DEBUG);
+            DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.VERBOSE);
         }
     }
 
@@ -402,7 +405,7 @@ public enum ExternalGPSManager
             extGPSThread = new ExtGPSThread();
             extGPSThread.setDaemon(true);
             extGPSThread.start();
-            locStatus = LocationProvider.TEMPORARILY_UNAVAILABLE;
+            locStatus = LocationProvider.OUT_OF_SERVICE;
             locationTime = null;
             hasGGA = false;
             hasRMC = false;
@@ -416,7 +419,7 @@ public enum ExternalGPSManager
                 ll.onProviderEnabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExternalGPSManager.start() " + providerName, Log.DEBUG);
+        DebugLogManager.INSTANCE.log("ExtGPSManager.start() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -438,7 +441,7 @@ public enum ExternalGPSManager
                 ll.onProviderDisabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExternalGPSManager.stop() " + providerName, Log.DEBUG);
+        DebugLogManager.INSTANCE.log("ExtGPSManager.stop() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -465,7 +468,6 @@ public enum ExternalGPSManager
          */
         public void initialiseConnection()
         {
-            // sendMessage("Launching connection");
             ExtGPSConnectionManager.getInstance().init(null, ApplicationSettings.INSTANCE.getExtGPSBluetoothMac());
         }
 
@@ -476,8 +478,6 @@ public enum ExternalGPSManager
         {
             try
             {
-                // sendMessage("");
-                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.DEBUG);
                 initialiseConnection();
 
                 try
@@ -534,7 +534,6 @@ public enum ExternalGPSManager
                 }
                 // We're on our way out, so drop the connection
                 ExtGPSConnectionManager.getInstance().disconnect();
-                DebugLogManager.INSTANCE.log("Disconnect", Log.DEBUG);
             }
             finally
             {

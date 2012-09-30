@@ -25,9 +25,7 @@ public class BTSocketFactory
 	 * @throws Exception
 	 */
 	public static BluetoothSocket getSocket(BluetoothDevice device) throws Exception
-	{
-		DebugLogManager.INSTANCE.log("getSocket()", Log.DEBUG);
-        
+	{        
 		BluetoothSocket tmp = null;
 		if (ApplicationSettings.INSTANCE.isBTWorkaround())
 		{
@@ -46,7 +44,7 @@ public class BTSocketFactory
 		{
 			try
 			{
-				DebugLogManager.INSTANCE.log("getSocket().standard", Log.DEBUG);
+				DebugLogManager.INSTANCE.log("BTSocketFactory.getSocket() createRfcommSocketToServiceRecord", Log.DEBUG);
 		        
 				tmp = device.createRfcommSocketToServiceRecord(RFCOMM_UUID);
 			}
@@ -82,7 +80,7 @@ public class BTSocketFactory
 	 */
 	private static BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
 	{
-		DebugLogManager.INSTANCE.log("createWorkaroundSocket()", Log.DEBUG);
+		DebugLogManager.INSTANCE.log("BTSocketFactory.createWorkaroundSocket()", Log.DEBUG);
         
 		Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
 		BluetoothSocket tmp = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));

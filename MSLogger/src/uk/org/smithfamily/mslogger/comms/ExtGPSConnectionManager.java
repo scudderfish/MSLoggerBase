@@ -25,6 +25,11 @@ public class ExtGPSConnectionManager extends ConnectionManager
     {
         return SingletonHolder.INSTANCE;
     }
+    
+    public String getInstanceName()
+    {
+        return "ExtGPSConnectionManager";
+    }
 
     public InputStream getInputStream()
     {

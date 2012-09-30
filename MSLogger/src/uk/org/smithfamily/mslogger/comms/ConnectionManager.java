@@ -48,6 +48,16 @@ abstract class ConnectionManager
     protected Thread ownerThread;
 
     /**
+     * Get the instance name
+     * 
+     * @return
+     */
+    public String getInstanceName()
+    {
+        return "ConnectionManager";
+    }
+
+    /**
      * Get the current Bluetooth connection state
      * 
      * @return
@@ -109,7 +119,7 @@ abstract class ConnectionManager
     private void setState(ConnectionState state)
     {
         currentState = state;
-        DebugLogManager.INSTANCE.log("Set state to " + state, Log.INFO);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".setState " + state, Log.DEBUG);
     }
 
     /**
@@ -120,18 +130,17 @@ abstract class ConnectionManager
      */
     public synchronized void connect() throws IOException
     {
-        DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
 
         if (currentState != ConnectionState.STATE_DISCONNECTED)
         {
             return;
         }
         setState(ConnectionState.STATE_CONNECTING);
-        DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
 
         try
         {
-            DebugLogManager.INSTANCE.log("connect() : Attempting connection", Log.DEBUG);
+            DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Attempting connection", Log.DEBUG);
 
             conn.connect();
         }
@@ -163,7 +172,7 @@ abstract class ConnectionManager
         }
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
-        DebugLogManager.INSTANCE.log("Establishing connection", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Establishing connection", Log.DEBUG);
 
         // Get the BluetoothSocket input and output streams
         try
@@ -181,12 +190,12 @@ abstract class ConnectionManager
         if (mmInStream != null && mmOutStream != null)
         {
             setState(ConnectionState.STATE_CONNECTED);
-            DebugLogManager.INSTANCE.log("connect() : Current state " + currentState, Log.DEBUG);
+            DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
 
         }
         else
         {
-            DebugLogManager.INSTANCE.log("Failed to complete connection", Log.ERROR);
+            DebugLogManager.INSTANCE.log(getInstanceName()+" Failed to complete connection", Log.ERROR);
             setState(ConnectionState.STATE_DISCONNECTED);
             tearDown();
         }
@@ -200,7 +209,7 @@ abstract class ConnectionManager
      */
     protected synchronized void checkConnection() throws IOException
     {
-        DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+"checkConnection()", Log.DEBUG);
 
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
@@ -219,14 +228,14 @@ abstract class ConnectionManager
      */
     protected void delay(int d)
     {
-        DebugLogManager.INSTANCE.log("Sleeping for " + d + "ms", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".delay(" + d + "ms)", Log.DEBUG);
         try
         {
             Thread.sleep(d);
         }
         catch (InterruptedException e)
         {
-            DebugLogManager.INSTANCE.log("sleep was interrupted", Log.DEBUG);
+            DebugLogManager.INSTANCE.log(getInstanceName()+" Sleep was interrupted", Log.ERROR);
         }
     }
 
@@ -253,7 +262,7 @@ abstract class ConnectionManager
             throw new IOException("Not connected");
         }
 
-        DebugLogManager.INSTANCE.log("Writing", data, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".writeData ", data, Log.DEBUG);
 
         this.mmOutStream.write(data);
 
@@ -300,7 +309,7 @@ abstract class ConnectionManager
             result[i++] = b;
         }
 
-        DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".readBytes", result, Log.DEBUG);
 
         return result;
     }
@@ -312,7 +321,7 @@ abstract class ConnectionManager
      */
     public synchronized void flushAll() throws IOException
     {
-        DebugLogManager.INSTANCE.log("flushAll()", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".flushAll()", Log.DEBUG);
         checkConnection();
 
         mmOutStream.flush();
@@ -329,7 +338,7 @@ abstract class ConnectionManager
      */
     public void sendStatus(String msgStr)
     {
-        DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".sendStatus "+msgStr, Log.INFO);
 
         if (handler != null)
         {
@@ -346,7 +355,7 @@ abstract class ConnectionManager
      */
     public synchronized void disconnect()
     {
-        DebugLogManager.INSTANCE.log("disconnect()", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".disconnect()", Log.DEBUG);
 
         tearDown();
     }
