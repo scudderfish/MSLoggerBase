@@ -27,9 +27,14 @@ public enum ExternalGPSManager
     INSTANCE;
 
     Location location;
+    private String locationTime = null;
+    private long locationTimestamp;
+    private int lastNumSatellites = 0;
     private String providerName = "ExternalGPS";
     private float precision = 10f;
     private int locStatus = LocationProvider.OUT_OF_SERVICE;
+    private boolean hasGGA = false;
+    private boolean hasRMC = false;
 
     private volatile ExtGPSThread extGPSThread;
     private volatile boolean running;
@@ -78,9 +83,21 @@ public enum ExternalGPSManager
             // String geoAlt = splitter.next();
             // time in seconds since last DGPS update
             // DGPS station ID number
-            if (quality != null && !quality.equals("") && !quality.equals("0") && location != null)
+            if (quality != null && !quality.equals("") && !quality.equals("0"))
             {
-                location.setTime(parseNmeaTime(time));
+                long updateTime = parseNmeaTime(time);
+                if (this.locStatus != LocationProvider.AVAILABLE)
+                {
+                    notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
+                }
+                if (!time.equals(locationTime))
+                {
+                    notifyLocationChanged(location);
+                    location = new Location(providerName);
+                    locationTime = time;
+                    locationTimestamp = parseNmeaTime(time);
+                    location.setTime(locationTimestamp);
+                }
                 if (lat != null && !lat.equals(""))
                 {
                     location.setLatitude(parseNmeaLatitude(lat, latDir));
@@ -100,18 +117,25 @@ public enum ExternalGPSManager
                 if (nbSat != null && !nbSat.equals(""))
                 {
                     Bundle extras = new Bundle();
-                    extras.putInt("satellites", Integer.parseInt(nbSat));
+                    int sats = Integer.parseInt(nbSat);
+                    extras.putInt("satellites", sats);
                     location.setExtras(extras);
+                    if (lastNumSatellites != sats)
+                        notifyStatusChanged(LocationProvider.AVAILABLE, extras, updateTime);
+                }
+                hasGGA = true;
+                if (hasGGA && hasRMC)
+                {
+                    notifyLocationChanged(location);
                 }
             }
             else if (quality.equals("0"))
             {
-                // we haven't got a fix so we've got no location yet!
-                Bundle extras = new Bundle();
-                if (location != null) extras = location.getExtras();
-                locStatus = LocationProvider.TEMPORARILY_UNAVAILABLE;
-                notifyStatusChanged(extras);
-                location = null;
+                if (locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+                {
+                    long updateTime = parseNmeaTime(time);
+                    notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
+                }
             }
         }
         else if (command.equals("$GPRMC"))
@@ -149,10 +173,19 @@ public enum ExternalGPSManager
             // Mode indicator, (A=autonomous, D=differential, E=Estimated, N=not valid, S=Simulator )
             if (status != null && !status.equals("") && status.equals("A"))
             {
-                if (location == null)
+                if (this.locStatus != LocationProvider.AVAILABLE)
+                {
+                    long updateTime = parseNmeaTime(time);
+                    notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
+                }
+                if (!time.equals(locationTime))
+                {
+                    notifyLocationChanged(location);
                     location = new Location(providerName);
-
-                location.setTime(parseNmeaTime(time));
+                    locationTime = time;
+                    locationTimestamp = parseNmeaTime(time);
+                    location.setTime(locationTimestamp);
+                }
                 if (lat != null && !lat.equals(""))
                 {
                     location.setLatitude(parseNmeaLatitude(lat, latDir));
@@ -169,15 +202,19 @@ public enum ExternalGPSManager
                 {
                     location.setBearing(Float.parseFloat(bearing));
                 }
+                hasRMC = true;
+                if (hasGGA && hasRMC)
+                {
+                    notifyLocationChanged(location);
+                }
             }
             else if (status.equals("V"))
             {
-                // we haven't got a fix so we've got no location yet!
-                Bundle extras = new Bundle();
-                if (location != null) extras = location.getExtras();
-                locStatus = LocationProvider.TEMPORARILY_UNAVAILABLE;
-                notifyStatusChanged(extras);
-                location = null;
+                if (this.locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+                {
+                    long updateTime = parseNmeaTime(time);
+                    notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
+                }
             }
         }
         return location;
@@ -277,29 +314,46 @@ public enum ExternalGPSManager
         }
         return timestamp;
     }
-    
-    private void notifyStatusChanged(Bundle extras)
+
+    private void notifyStatusChanged(int status, Bundle extras, long updateTime)
     {
+        locationTime = null;
+        hasGGA = false;
+        hasRMC = false;
+
         synchronized (listeners)
         {
             for (LocationListener ll : listeners)
             {
-                ll.onStatusChanged(providerName,locStatus,extras);
+                ll.onStatusChanged(providerName, status, extras);
             }
         }
-        DebugLogManager.INSTANCE.log("notifyStatusChanged() " + locStatus + " "+extras, Log.INFO);
+        DebugLogManager.INSTANCE.log("notifyStatusChanged() " + status + " " + extras, Log.DEBUG);
+
+        if (this.locStatus != status)
+        {
+            this.location = null;
+            this.locStatus = status;
+        }
     }
-    
+
     private void notifyLocationChanged(Location loc)
     {
-        synchronized (listeners)
+        locationTime = null;
+        hasGGA = false;
+        hasRMC = false;
+        if (this.location != null)
         {
-            for (LocationListener ll : listeners)
+            synchronized (listeners)
             {
-                ll.onLocationChanged(loc);
+                for (LocationListener ll : listeners)
+                {
+                    ll.onLocationChanged(loc);
+                }
             }
+            this.location = null;
+            // DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.DEBUG);
         }
-        DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.INFO);
     }
 
     /**
@@ -325,18 +379,18 @@ public enum ExternalGPSManager
     }
 
     /**
-     * Toggle the ExtGPS running state
+     * Notify all listeners of the current status
      */
-    public void changeRunningState(boolean isActive)
+    public void requestStatusUpdate()
     {
-        if (isActive)
+        Bundle extras = new Bundle();
+        long lastUpdateTime = locationTimestamp;
+        if (location != null)
         {
-            start();
+            lastUpdateTime = location.getTime();
+            extras = location.getExtras();
         }
-        else
-        {
-            stop();
-        }
+        notifyStatusChanged(locStatus, extras, lastUpdateTime);
     }
 
     /**
@@ -347,8 +401,14 @@ public enum ExternalGPSManager
         if (extGPSThread == null)
         {
             extGPSThread = new ExtGPSThread();
+            extGPSThread.setDaemon(true);
             extGPSThread.start();
             locStatus = LocationProvider.TEMPORARILY_UNAVAILABLE;
+            locationTime = null;
+            hasGGA = false;
+            hasRMC = false;
+            lastNumSatellites = 0;
+            location = null;
         }
         synchronized (listeners)
         {
@@ -357,7 +417,7 @@ public enum ExternalGPSManager
                 ll.onProviderEnabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExternalGPSManager.start() "+providerName, Log.INFO);
+        DebugLogManager.INSTANCE.log("ExternalGPSManager.start() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -379,7 +439,7 @@ public enum ExternalGPSManager
                 ll.onProviderDisabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExternalGPSManager.stop() "+providerName, Log.INFO);
+        DebugLogManager.INSTANCE.log("ExternalGPSManager.stop() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -418,7 +478,7 @@ public enum ExternalGPSManager
             try
             {
                 // sendMessage("");
-                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
+                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.DEBUG);
                 initialiseConnection();
 
                 try
@@ -446,16 +506,9 @@ public enum ExternalGPSManager
                         if (reader.ready())
                         {
                             s = reader.readLine();
-                            Location loc = parseNmeaSentence(s);
-                            if (loc != null)
+                            parseNmeaSentence(s);
+                            if (locStatus == LocationProvider.AVAILABLE)
                             {
-                                // location locked and update available
-                                if (locStatus != LocationProvider.AVAILABLE)
-                                {
-                                    locStatus = LocationProvider.AVAILABLE;
-                                    notifyStatusChanged(loc.getExtras());
-                                }
-                                notifyLocationChanged(loc);
                                 delay = 50;
                             }
                             else
@@ -482,7 +535,7 @@ public enum ExternalGPSManager
                 }
                 // We're on our way out, so drop the connection
                 ExtGPSConnectionManager.getInstance().disconnect();
-                DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
+                DebugLogManager.INSTANCE.log("Disconnect", Log.DEBUG);
             }
             finally
             {
@@ -497,6 +550,5 @@ public enum ExternalGPSManager
         {
             running = false;
         }
-
     }
 }

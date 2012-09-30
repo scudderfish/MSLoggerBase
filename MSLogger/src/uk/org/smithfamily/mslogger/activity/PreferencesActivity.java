@@ -7,14 +7,19 @@ import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ExternalGPSManager;
+import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup.SettingOption;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -24,12 +29,13 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 
 /**
  * 
  * 
  */
-public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
+public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, LocationListener
 {
     public static final String DIRTY = "uk.org.smithfamily.mslogger.activity.PreferencesActivity.DIRTY";
     private Boolean ecuDirty = false;
@@ -65,7 +71,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
         p = this.getPreferenceManager().findPreference("maptype");
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
-        
 
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         if (ecu != null)
@@ -84,20 +89,25 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
     }
 
-    @Override
     protected void onResume()
     {
         super.onResume();
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        ExternalGPSManager.INSTANCE.addListener(this);
+        ExternalGPSManager.INSTANCE.requestStatusUpdate();
+        DebugLogManager.INSTANCE.log("onResume()", Log.DEBUG);
     }
 
-    @Override
     protected void onPause()
     {
         super.onPause();
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
+        ExternalGPSManager.INSTANCE.removeListener(this);
+        DebugLogManager.INSTANCE.log("onPause()", Log.DEBUG);
     }
 
     private void initSummary(Preference p)
@@ -150,9 +160,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         {
             return;
         }
-         
+
         PreferenceCategory msSettingsCat = (PreferenceCategory) ps.findPreference("MSSettings");
-        
+
         for (SettingGroup g : groups)
         {
             ListPreference lp = new ListPreference(this);
@@ -230,12 +240,84 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        if (key.equals("externalgpsactive")) 
+        if (key.equals("externalgpsactive"))
         {
-            CheckBoxPreference cbp = (CheckBoxPreference)findPreference(key);
-            ExternalGPSManager.INSTANCE.changeRunningState(cbp.isChecked());
+            CheckBoxPreference cbp = (CheckBoxPreference) findPreference(key);
+            if (cbp.isChecked())
+            {
+                ExternalGPSManager.INSTANCE.start();    
+                ExternalGPSManager.INSTANCE.addListener(GPSLocationManager.INSTANCE);       
+            }
+            else
+            {
+                ExternalGPSManager.INSTANCE.stop();    
+                ExternalGPSManager.INSTANCE.removeListener(GPSLocationManager.INSTANCE);  
+            }
         }
         else
             updatePrefSummary(findPreference(key));
+    }
+
+    public void onLocationChanged(Location location)
+    {
+    }
+
+    public void onProviderDisabled(String provider)
+    {
+        DebugLogManager.INSTANCE.log("onProviderDisabled()", Log.DEBUG);
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
+                Preference p = getPreferenceManager().findPreference("externalgpsactive");
+                p.setSummary("GPS Disabled");
+            }
+        });
+    }
+
+    public void onProviderEnabled(String provider)
+    {
+        DebugLogManager.INSTANCE.log("onProviderEnabled()", Log.DEBUG);
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
+                Preference p = getPreferenceManager().findPreference("externalgpsactive");
+                p.setSummary("GPS Starting...");
+            }
+        });
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle extras)
+    {
+        DebugLogManager.INSTANCE.log("onStatusChanged()", Log.DEBUG);
+        String s = "";
+        switch (status)
+        {
+        case LocationProvider.AVAILABLE:
+            s = "GPS Available";
+            if (extras != null && extras.containsKey("satellites"))
+            {
+                s += " (" + extras.get("satellites") + " sats in view)";
+            }
+            break;
+
+        case LocationProvider.TEMPORARILY_UNAVAILABLE:
+            s = "GPS Looking for satellites...";
+            break;
+
+        case LocationProvider.OUT_OF_SERVICE:
+            s = "GPS Disabled";
+            break;
+        }
+        final String sum = s;
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
+                Preference p = getPreferenceManager().findPreference("externalgpsactive");
+                p.setSummary(sum);
+            }
+        });
     }
 }
