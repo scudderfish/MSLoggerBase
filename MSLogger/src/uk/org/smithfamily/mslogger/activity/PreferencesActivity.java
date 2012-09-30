@@ -184,6 +184,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 lp.setKey(flag);
                 lp.setEntries(R.array.booleanTypes);
                 lp.setEntryValues(R.array.booleanDisplayValues);
+                lp.setDefaultValue("false");
                 msSettingsCat.addPreference(lp);
             }
         }

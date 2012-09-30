@@ -573,7 +573,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         indicators[firstIndexIndicator].setId(firstIndicator.getId());
 
                         // If indicators weren't the same type, we have to change their types
-                        if (firstIndicator.getType() != lastIndicator.getType())
+                        if (!firstIndicator.getType().equals(lastIndicator.getType()))
                         {
                             applyWidgetTypeToIndicators();
                         }
