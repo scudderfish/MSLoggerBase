@@ -45,6 +45,9 @@ public enum ExternalGPSManager
     {
         SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
         splitter.setString(sentence);
+
+        // DebugLogManager.INSTANCE.log(sentence, Log.VERBOSE);
+
         String command = splitter.next();
         if (command.equals("$GPGGA"))
         {
@@ -92,8 +95,6 @@ public enum ExternalGPSManager
                 }
                 if (!time.equals(locationTime))
                 {
-                    notifyLocationChanged(location);
-                    location = new Location(providerName);
                     locationTime = time;
                     locationTimestamp = parseNmeaTime(time);
                     location.setTime(locationTimestamp);
@@ -180,8 +181,6 @@ public enum ExternalGPSManager
                 }
                 if (!time.equals(locationTime))
                 {
-                    notifyLocationChanged(location);
-                    location = new Location(providerName);
                     locationTime = time;
                     locationTimestamp = parseNmeaTime(time);
                     location.setTime(locationTimestamp);
@@ -332,7 +331,7 @@ public enum ExternalGPSManager
 
         if (this.locStatus != status)
         {
-            this.location = null;
+            this.location = new Location(providerName);
             this.locStatus = status;
         }
     }
@@ -351,7 +350,7 @@ public enum ExternalGPSManager
                     ll.onLocationChanged(loc);
                 }
             }
-            this.location = null;
+            this.location = new Location(providerName);
             // DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.DEBUG);
         }
     }

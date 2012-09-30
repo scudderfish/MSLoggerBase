@@ -45,8 +45,11 @@ public enum GPSLocationManager implements LocationListener
     {
         if (ApplicationSettings.INSTANCE.isExternalGPSEnabled())
         {
-            ExternalGPSManager.INSTANCE.start();
             ExternalGPSManager.INSTANCE.addListener(this);            
+            if (ApplicationSettings.INSTANCE.isExtGPSActive())
+            {
+                ExternalGPSManager.INSTANCE.start();
+            }
         }
         else
         {
@@ -73,6 +76,9 @@ public enum GPSLocationManager implements LocationListener
      */
     public synchronized void stop()
     {
+        ExternalGPSManager.INSTANCE.removeListener(this);  
+        ExternalGPSManager.INSTANCE.stop();
+        ApplicationSettings.INSTANCE.setExtGPSActive(false);
 
         if (locationManager != null)
         {
