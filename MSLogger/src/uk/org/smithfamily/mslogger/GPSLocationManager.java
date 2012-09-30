@@ -43,20 +43,28 @@ public enum GPSLocationManager implements LocationListener
      */
     public synchronized void start()
     {
-        locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
-        Criteria c = new Criteria();
-        c.setAccuracy(Criteria.ACCURACY_FINE);
-        String providerName = locationManager.getBestProvider(c, false);
-
-        DebugLogManager.INSTANCE.log("Using location provider " + providerName, Log.INFO);
-
-        if (providerName != null)
+        if (ApplicationSettings.INSTANCE.isExternalGPSEnabled())
         {
-            locationManager.requestLocationUpdates(providerName, 100, 0, this);
+            ExternalGPSManager.INSTANCE.start();
+            ExternalGPSManager.INSTANCE.addListener(this);            
         }
         else
         {
-            sendMessage("No location provider available");
+            locationManager = (LocationManager) ApplicationSettings.INSTANCE.getContext().getSystemService(Context.LOCATION_SERVICE);
+            Criteria c = new Criteria();
+            c.setAccuracy(Criteria.ACCURACY_FINE);
+            String providerName = locationManager.getBestProvider(c, false);
+
+            DebugLogManager.INSTANCE.log("Using location provider " + providerName, Log.INFO);
+
+            if (providerName != null)
+            {
+                locationManager.requestLocationUpdates(providerName, 100, 0, this);
+            }
+            else
+            {
+                sendMessage("No location provider available");
+            }
         }
     }
 
@@ -95,7 +103,6 @@ public enum GPSLocationManager implements LocationListener
     @Override
     public synchronized void onLocationChanged(Location location)
     {
-        // TODO update lastLocation regularly (by somehow calling onLocationChanged whenever the BT GPS is updated)
         lastLocation = location;
         freshFlag = 1;
     }

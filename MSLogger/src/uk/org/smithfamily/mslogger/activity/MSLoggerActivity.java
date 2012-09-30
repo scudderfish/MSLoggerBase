@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.ExternalGPSManager;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
@@ -58,25 +59,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Main activity class where the main window (gauges) are and where the bottom menu is handled 
+ * Main activity class where the main window (gauges) are and where the bottom menu is handled
  */
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
-    private BroadcastReceiver      updateReceiver        = new Reciever();
-    private IndicatorManager       indicatorManager;
-    private TextView               messages;
-    private TextView               rps;
-    static private Boolean         ready                 = null;
-    
-    private Indicator[]            indicators = new Indicator[5];
+    private BroadcastReceiver updateReceiver = new Reciever();
+    private IndicatorManager indicatorManager;
+    private TextView messages;
+    private TextView rps;
+    static private Boolean ready = null;
 
-    private boolean                gaugeEditEnabled;
-    boolean                        scrolling;
-    private LinearLayout           layout;
-    private static final int       SHOW_PREFS            = 124230;
+    private Indicator[] indicators = new Indicator[5];
 
-    private boolean                registered;
-	
+    private boolean gaugeEditEnabled;
+    boolean scrolling;
+    private LinearLayout layout;
+    private static final int SHOW_PREFS = 124230;
+
+    private boolean registered;
+
     /**
      * Called when the activity is first created.
      */
@@ -85,14 +86,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         super.onCreate(savedInstanceState);
         checkSDCard();
-        
+
         setGaugesOrientation();
-        
-        DebugLogManager.INSTANCE.log(getPackageName(),Log.ASSERT);
+
+        DebugLogManager.INSTANCE.log(getPackageName(), Log.ASSERT);
         try
         {
             String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
-            DebugLogManager.INSTANCE.log(app_ver,Log.ASSERT);
+            DebugLogManager.INSTANCE.log(app_ver, Log.ASSERT);
         }
         catch (NameNotFoundException e)
         {
@@ -100,22 +101,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         dumpPreferences();
         setContentView(R.layout.displaygauge);
-        
-        
+
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);
-        
-        /* 
-         * Get status message from saved instance, for example when
-         * switching from landscape to portrait mode
-        */
-        if (savedInstanceState != null) 
+
+        /*
+         * Get status message from saved instance, for example when switching from landscape to portrait mode
+         */
+        if (savedInstanceState != null)
         {
             if (!savedInstanceState.getString("status_message").equals(""))
             {
                 messages.setText(savedInstanceState.getString("status_message"));
             }
-            
+
             if (!savedInstanceState.getString("rps_message").equals(""))
             {
                 rps.setText(savedInstanceState.getString("rps_message"));
@@ -136,7 +135,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         registerMessages();
         launchStartupActivity();
     }
-    
+
     @Override
     protected void onResume()
     {
@@ -144,7 +143,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         setGaugesOrientation();
     }
-    
+
     /**
      * Force a screen orientation if specified by the user, otherwise look at the sensor and rotate screen as needed
      */
@@ -167,7 +166,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
     }
-    
+
     /**
      * Launch the startup activity which try to connect to the MegaSquirt
      */
@@ -176,7 +175,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Intent serverIntent = new Intent(this, StartupActivity.class);
         startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
     }
-    
+
     /**
      * Save the bottom text views content so they can keep their state while device is rotated
      */
@@ -184,11 +183,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        
+
         outState.putString("status_message", messages.getText().toString());
         outState.putString("rps_message", rps.getText().toString());
     }
-    
+
     /**
      * Dump the user preference into the log file for easier debugging
      */
@@ -196,7 +195,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
         Map<String, ?> prefs = prefsManager.getAll();
-        for(Entry<String, ?> entry : prefs.entrySet())
+        for (Entry<String, ?> entry : prefs.entrySet())
         {
             DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
         }
@@ -218,7 +217,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * Finilise the initialisation of the application by initialising the gauges, checking bluetooth, SD card and starting connection to the Megasquirt
+     * Finilise the initialisation of the application by initialising the gauges, checking bluetooth, SD card and starting connection to the
+     * Megasquirt
      */
     private void finaliseInit()
     {
@@ -292,7 +292,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = prefs.edit();
-            
+
             if (!indicators[0].getName().equals(Indicator.DEAD_GAUGE_NAME))
             {
                 editor.putString("gauge1", indicators[0].getName());
@@ -313,7 +313,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             {
                 editor.putString("gauge5", indicators[4].getName());
             }
-            
+
             editor.commit();
         }
     }
@@ -338,21 +338,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         String[] defaultGauges = ecu.defaultGauges();
-        
+
         indicators[0].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
         indicators[1].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
         indicators[2].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
         indicators[3].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
-        
+
         if (indicators[4] != null)
         {
             indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
         }
-        
+
         applyWidgetTypeToIndicators();
-        
+
         if (gaugeEditEnabled)
-        {            
+        {
             bindIndicatorsEditEvents();
         }
         else
@@ -360,12 +360,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             MarkListener l = new MarkListener(layout);
             setTouchListeners(l);
         }
-        
+
         for (int i = 0; i < indicators.length; i++)
         {
             if (indicators[i] != null)
             {
-                indicators[i].invalidate(); 
+                indicators[i].invalidate();
             }
         }
     }
@@ -385,7 +385,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 int id = indicators[i].getId();
 
                 GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
-                
+
                 if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof Gauge))
                 {
                     indicators[i] = new Gauge(this);
@@ -406,34 +406,34 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     indicators[i] = new Histogram(this);
                     wasWrongType = true;
                 }
-                
+
                 if (wasWrongType)
                 {
                     View indicator = findViewById(id);
-                    
+
                     // Remove indicator with wrong type
                     ViewGroup parentView = (ViewGroup) indicator.getParent();
                     int index = parentView.indexOfChild(indicator);
                     parentView.removeView(indicator);
 
                     // Add new indicator back in place
-                    parentView.addView(indicators[i], index);    
-                    
+                    parentView.addView(indicators[i], index);
+
                     indicators[i].setId(id);
                     indicators[i].initFromName(name);
-                    
+
                     LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
                     indicators[i].setLayoutParams(params);
-                    
+
                     indicators[i].setFocusable(true);
                     indicators[i].setFocusableInTouchMode(true);
-                    
+
                     bindIndicatorsEditEventsToIndex(i);
                 }
             }
         }
     }
-    
+
     /**
      * Replace the instance of an indicator, used in EditGaugeDialog, after modifying indicator details
      * 
@@ -444,20 +444,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         indicators[indicatorIndex] = indicator;
     }
-        
+
     /**
      * Bind touch listener to indicator
      * 
      * @param i Indicator index to bind edit events to
-     */    
+     */
     public void bindIndicatorsEditEventsToIndex(int i)
     {
         indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
-        
+
         OnTouchListener gestureListener = new View.OnTouchListener()
         {
             private Indicator firstIndicator;
-            
+
             /**
              * Determines if given points are inside view
              * 
@@ -472,7 +472,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 view.getLocationOnScreen(location);
                 int viewX = location[0];
                 int viewY = location[1];
-                
+
                 // Point is inside view bounds
                 if (x > viewX && x < viewX + view.getWidth() && y > viewY && y < viewY + view.getHeight())
                 {
@@ -483,7 +483,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     return false;
                 }
             }
- 
+
             /**
              * 
              * @param v
@@ -504,24 +504,24 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 {
                     Indicator lastIndicator = null;
                     int lastIndexIndicator = 0;
-                    
+
                     // Find indicator when the finger was lifted
                     for (int i = 0; lastIndicator == null && i < indicators.length && indicators[i] != null; i++)
                     {
-                        if (this.isPointInsideView(event.getRawX(),event.getRawY(),indicators[i]))
+                        if (this.isPointInsideView(event.getRawX(), event.getRawY(), indicators[i]))
                         {
                             lastIndicator = indicators[i];
                             lastIndexIndicator = i;
                         }
                     }
-                                            
+
                     if (lastIndicator != null && firstIndicator.getId() != lastIndicator.getId())
-                    {    
+                    {
                         String firstIndicatorName = firstIndicator.getName();
                         String lastIndicatorName = lastIndicator.getName();
-        
+
                         int firstIndexIndicator = 0;
-                        
+
                         // Find first touched indicator index
                         for (int i = 0; i < indicators.length; i++)
                         {
@@ -530,57 +530,57 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                                 firstIndexIndicator = i;
                             }
                         }
-                    
+
                         // Remove old last indicator
                         ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
                         int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
                         parentLastIndicatorView.removeView(lastIndicator);
-                        
+
                         // Remove old first indicator
                         ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
                         int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
                         parentFirstIndicatorView.removeView(firstIndicator);
-                        
+
                         /*
-                         * Since we are removing both view at the same time, if both were in the same parent,
-                         * we need to do some magic to keep them in the right order.
+                         * Since we are removing both view at the same time, if both were in the same parent, we need to do some magic to keep them in
+                         * the right order.
                          */
                         if (parentFirstIndicatorView == parentLastIndicatorView)
                         {
                             if (indexLast > indexFirst)
                             {
-                                indexLast -= 1; 
-                            } 
+                                indexLast -= 1;
+                            }
                             else
                             {
                                 indexFirst += 1;
-                            } 
-                        } 
+                            }
+                        }
 
                         // Add first touched indicator in place of last touched indicator
                         parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
                         parentLastIndicatorView.forceLayout();
-                        
+
                         // Add last touched indicator in place of first touched indicator
                         parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
                         parentFirstIndicatorView.forceLayout();
-                        
+
                         // Init the indicator with their new indicator details
                         indicators[lastIndexIndicator].initFromName(firstIndicatorName);
                         indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-                        
+
                         indicators[lastIndexIndicator].setId(lastIndicator.getId());
                         indicators[firstIndexIndicator].setId(firstIndicator.getId());
-                        
+
                         // If indicators weren't the same type, we have to change their types
                         if (firstIndicator.getType() != lastIndicator.getType())
                         {
                             applyWidgetTypeToIndicators();
                         }
-                        
+
                         // Re-map the right indicators with the right views
                         findGauges();
-                        
+
                         return true;
                     }
                 }
@@ -588,11 +588,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 return false;
             }
         };
-        
+
         indicators[i].setOnClickListener(MSLoggerActivity.this);
-        indicators[i].setOnTouchListener(gestureListener); 
+        indicators[i].setOnTouchListener(gestureListener);
     }
-    
+
     /**
      * 
      */
@@ -606,7 +606,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         }
     }
-    
+
     /**
      * Set all the gauges variable with their view
      */
@@ -630,7 +630,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             if (indicators[i] != null)
             {
-                indicators[i].setOnTouchListener(l);  
+                indicators[i].setOnTouchListener(l);
             }
         }
     }
@@ -642,22 +642,22 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
-        
+
         IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
         registerReceiver(updateReceiver, disconnectedFilter);
-        
+
         IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
-        
+
         IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
-        
+
         IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
         registerReceiver(updateReceiver, rpsFilter);
-        
+
         IntentFilter toastFilter = new IntentFilter(ApplicationSettings.TOAST);
         registerReceiver(updateReceiver, toastFilter);
-        
+
         registered = true;
     }
 
@@ -697,7 +697,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         }
     }
- 
+
     /**
      * 
      * @param menu
@@ -746,7 +746,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         MenuItem loggingItem = menu.findItem(R.id.forceLogging);
         loggingItem.setEnabled(ecuDefinition != null);
-                
+
         if (ecuDefinition != null && ecuDefinition.isLogging())
         {
             loggingItem.setIcon(R.drawable.ic_menu_stop_logging);
@@ -757,7 +757,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             loggingItem.setIcon(R.drawable.ic_menu_start_logging);
             loggingItem.setTitle(R.string.start_logging);
         }
-        
+
         MenuItem tuningItem = menu.findItem(R.id.tuning);
         tuningItem.setEnabled(ecuDefinition != null);
 
@@ -767,17 +767,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     /**
      * Triggered when a bottom menu item is clicked
      * 
-     * @param item  The clicked menu item
+     * @param item The clicked menu item
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         checkBTDeviceSet();
         int itemId = item.getItemId();
-        switch(itemId)
+        switch (itemId)
         {
-        
-        case  R.id.forceConnection:
+
+        case R.id.forceConnection:
             toggleConnection();
             return true;
         case R.id.gaugeEditing:
@@ -811,8 +811,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             return super.onOptionsItemSelected(item);
         }
     }
-    
-    
+
     /**
      * Start the background task to reset the gauges
      */
@@ -839,7 +838,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
             }
         }
-        
+
         gaugeEditEnabled = !gaugeEditEnabled;
         initGauges();
     }
@@ -851,7 +850,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null) {
+        if (ecu != null)
+        {
             if (ecu.isLogging())
             {
                 ecu.stopLogging();
@@ -891,6 +891,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void quit()
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
+        ExternalGPSManager.INSTANCE.stop();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         if (ecu != null)
@@ -921,7 +922,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             launchStartupActivity();
         }
-        else 
+        else
         {
             ecu.toggleConnection();
         }
@@ -942,7 +943,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
             ApplicationInfo ai = pInfo.applicationInfo;
-            
+
             final String applicationName = (ai != null) ? getPackageManager().getApplicationLabel(ai).toString() : "(unknown)";
             title = applicationName + " " + pInfo.versionName;
         }
@@ -974,9 +975,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void openManageDatalogs()
     {
         Intent lauchManageDatalogs = new Intent(this, ManageDatalogsActivity.class);
-        startActivity(lauchManageDatalogs);        
+        startActivity(lauchManageDatalogs);
     }
-    
+
     /**
      * Open the tuning activity
      */
@@ -985,7 +986,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Intent launchTuning = new Intent(this, TuningActivity.class);
         startActivity(launchTuning);
     }
-    
+
     /**
      * Open the preferences activity
      */
@@ -1050,7 +1051,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
         {
-        	ecuDefinition.refreshFlags();
+            ecuDefinition.refreshFlags();
         }
 
         // When the TEMP/MAP/EGO are changed in preferences, we refresh the ECU flags if we are online
@@ -1069,7 +1070,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
     }
 
-     /**
+    /**
      * Background task user to reset gauge to firmware default
      */
     private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
@@ -1116,7 +1117,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         protected void onPostExecute(Void unused)
         {
             dialog.dismiss();
-            
+
             Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
             if (ecuDefinition != null)
             {
@@ -1183,8 +1184,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (action.equals(Megasquirt.CONNECTED))
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-                
-                DebugLogManager.INSTANCE.log(action,Log.INFO);
+
+                DebugLogManager.INSTANCE.log(action, Log.INFO);
                 indicatorManager.setDisabled(false);
                 if (autoLoggingEnabled && ecu != null)
                 {
@@ -1193,22 +1194,22 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
             else if (action.equals(Megasquirt.DISCONNECTED))
             {
-                DebugLogManager.INSTANCE.log(action,Log.INFO);
+                DebugLogManager.INSTANCE.log(action, Log.INFO);
                 indicatorManager.setDisabled(true);
                 if (autoLoggingEnabled)
                 {
                     DatalogManager.INSTANCE.mark("Connection lost");
                 }
-                
-                messages.setText(R.string.disconnected_from_ms);    
+
+                messages.setText(R.string.disconnected_from_ms);
                 rps.setText("");
-                
+
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
                 if (ecu != null && ecu.isRunning())
                 {
                     ecu.stop();
                 }
-            } 
+            }
             else if (action.equals(Megasquirt.NEW_DATA))
             {
                 processData();
@@ -1218,18 +1219,18 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
                 messages.setText(msg);
-                DebugLogManager.INSTANCE.log("Message : " + msg,Log.INFO);
+                DebugLogManager.INSTANCE.log("Message : " + msg, Log.INFO);
             }
             else if (action.equals(ApplicationSettings.RPS_MESSAGE))
             {
                 String RPS = intent.getStringExtra(ApplicationSettings.RPS);
-                
+
                 rps.setText(RPS + " reads / second");
-            }  
+            }
             else if (action.equals(ApplicationSettings.TOAST))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.TOAST_MESSAGE);
-                
+
                 // The toast is called in a loop so it can be displayed longer (Toast.LENGTH_LONG = 3.5 seconds)
                 for (int j = 0; j < 2; j++)
                 {
@@ -1249,7 +1250,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         /**
          * Constructor
          * 
-         * @param layout    The layout that will change background then the screen is touch
+         * @param layout The layout that will change background then the screen is touch
          */
         public MarkListener(LinearLayout layout)
         {
@@ -1259,8 +1260,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         /**
          * On touch event
          * 
-         * @param v         The view that triggered the event
-         * @param event     Information about the event
+         * @param v The view that triggered the event
+         * @param event Information about the event
          */
         @Override
         public boolean onTouch(View v, MotionEvent event)
