@@ -57,6 +57,16 @@
     	<delete file="${output.file}" />
         <jar destfile="${output.file}" >
             <fileset dir="gen_bin" />
+            <fileset dir="common_bin" />
+        </jar>
+    </target>
+	
+    <target
+        name=".construct_test_firmware_jar" 
+        depends="clean,.compile_firmware" >
+    	<delete file="${output.file}" />
+        <jar destfile="${output.file}" >
+            <fileset dir="gen_bin" />
             <fileset dir="gen_src" />
             <fileset dir="common_bin" />
             <fileset dir="common_src" />
@@ -79,7 +89,7 @@
 	
     <target name="build_test_firmwares_jar" description="Build ${jar.location} containing the test set of firmwares">
     	<property name="ini_path" value="inis/test.txt"/>
-    	<antcall target=".construct_firmware_jar" />	
+    	<antcall target=".construct_test_firmware_jar" />	
     </target>
 
 
