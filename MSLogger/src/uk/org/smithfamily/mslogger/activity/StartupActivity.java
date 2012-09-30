@@ -26,6 +26,7 @@ public class StartupActivity extends Activity
     private static final int SELECT_EGO        = 1;
     private static final int SELECT_MAP        = 2;
     private static final int SELECT_EMAIL      = 3;
+    private boolean isRunning = false;
 
     /**
      *
@@ -45,7 +46,7 @@ public class StartupActivity extends Activity
         {
             super.handleMessage(msg);
             StartupActivity sa = parent.get();
-            if (sa == null) return;
+            if (sa == null || !sa.isRunning) return;
             
             switch (msg.what)
             {
@@ -99,6 +100,18 @@ public class StartupActivity extends Activity
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+    }
+
+    protected void onResume()
+    {
+        super.onResume();
+        isRunning = true;
+    }
+
+    protected void onPause()
+    {
+        super.onPause();
+        isRunning = false;
     }
 
     /**

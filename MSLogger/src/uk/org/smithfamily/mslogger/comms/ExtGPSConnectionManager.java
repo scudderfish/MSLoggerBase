@@ -1,10 +1,13 @@
 package uk.org.smithfamily.mslogger.comms;
 
+import java.io.InputStream;
+
 /**
  * Main connection class that wrap all the Bluetooth stuff that communicate with a External GPS
  */
 public class ExtGPSConnectionManager extends ConnectionManager
 {
+    
     // Private constructor prevents instantiation from other classes
     private ExtGPSConnectionManager()
     {
@@ -21,6 +24,11 @@ public class ExtGPSConnectionManager extends ConnectionManager
     public static ExtGPSConnectionManager getInstance()
     {
         return SingletonHolder.INSTANCE;
+    }
+
+    public InputStream getInputStream()
+    {
+        return mmInStream;
     }
 
 }
