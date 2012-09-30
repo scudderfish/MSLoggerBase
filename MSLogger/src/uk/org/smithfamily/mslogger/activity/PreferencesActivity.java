@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.ExternalGPSManager;
+import uk.org.smithfamily.mslogger.ExtGPSManager;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
@@ -95,9 +95,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
-        ExternalGPSManager.INSTANCE.addListener(this);
-        ExternalGPSManager.INSTANCE.requestStatusUpdate();
-        DebugLogManager.INSTANCE.log("onResume()", Log.DEBUG);
+        ExtGPSManager.INSTANCE.addListener(this);
+        ExtGPSManager.INSTANCE.requestStatusUpdate();
     }
 
     protected void onPause()
@@ -106,8 +105,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
-        ExternalGPSManager.INSTANCE.removeListener(this);
-        DebugLogManager.INSTANCE.log("onPause()", Log.DEBUG);
+        ExtGPSManager.INSTANCE.removeListener(this);
     }
 
     private void initSummary(Preference p)
@@ -246,13 +244,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             CheckBoxPreference cbp = (CheckBoxPreference) findPreference(key);
             if (cbp.isChecked())
             {
-                ExternalGPSManager.INSTANCE.start();    
-                ExternalGPSManager.INSTANCE.addListener(GPSLocationManager.INSTANCE);       
+                ExtGPSManager.INSTANCE.start();    
+                ExtGPSManager.INSTANCE.addListener(GPSLocationManager.INSTANCE);       
             }
             else
             {
-                ExternalGPSManager.INSTANCE.stop();    
-                ExternalGPSManager.INSTANCE.removeListener(GPSLocationManager.INSTANCE);  
+                ExtGPSManager.INSTANCE.stop();    
+                ExtGPSManager.INSTANCE.removeListener(GPSLocationManager.INSTANCE);  
             }
         }
         else
@@ -265,7 +263,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onProviderDisabled(String provider)
     {
-        DebugLogManager.INSTANCE.log("onProviderDisabled()", Log.DEBUG);
         runOnUiThread(new Runnable()
         {
             public void run()
@@ -278,7 +275,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onProviderEnabled(String provider)
     {
-        DebugLogManager.INSTANCE.log("onProviderEnabled()", Log.DEBUG);
         runOnUiThread(new Runnable()
         {
             public void run()
@@ -291,7 +287,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onStatusChanged(String provider, int status, Bundle extras)
     {
-        DebugLogManager.INSTANCE.log("onStatusChanged()", Log.DEBUG);
         String s = "";
         switch (status)
         {
