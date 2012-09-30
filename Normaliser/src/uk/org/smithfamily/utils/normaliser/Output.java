@@ -73,7 +73,7 @@ public class Output
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "return parent.tempCvt(x);");
         writer.println(TAB + "}");
-        writer.println(TAB +"private int timeNow()");
+        writer.println(TAB +"private double timeNow()");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "return parent.timeNow();");
         writer.println(TAB + "}");
@@ -301,6 +301,13 @@ public class Output
         for (String name : vars.keySet())
         {
             String type = getType(name, vars);
+            
+            // Force secl to be double
+            if (name.equals("secl"))
+            {
+                type = "double";
+            }
+            
             writer.println(TAB + "public " + type + " " + name + ";");
         }
         writer.println("\n//Constants");

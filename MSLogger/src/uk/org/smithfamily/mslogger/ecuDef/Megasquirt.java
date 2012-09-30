@@ -282,9 +282,11 @@ public class Megasquirt implements MSControllerInterface
      * 
      * @return
      */
-    public int timeNow()
+    public double timeNow()
     {
-        return (int) ((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0);
+        DecimalFormat decimalFormat = new DecimalFormat("#.000");
+        
+        return Double.parseDouble(decimalFormat.format(((System.currentTimeMillis() - DatalogManager.INSTANCE.getLogStart()) / 1000.0)));
     }
 
     /**
