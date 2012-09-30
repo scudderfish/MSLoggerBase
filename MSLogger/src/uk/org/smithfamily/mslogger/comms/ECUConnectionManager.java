@@ -29,6 +29,11 @@ public class ECUConnectionManager extends ConnectionManager
     {
         return SingletonHolder.INSTANCE;
     }
+    
+    public String getInstanceName()
+    {
+        return "ECUConnectionManager";
+    }
 
     /**
      * Check if the application should auto-connect and automatically connect if it should
