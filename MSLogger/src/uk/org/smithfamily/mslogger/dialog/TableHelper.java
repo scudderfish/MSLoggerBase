@@ -35,8 +35,8 @@ public class TableHelper
     private int tableNbY = 0;
     
     // An array of 5 colors:  (blue, cyan, green, yellow, red) using {R,G,B} for each
-    private final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
-    private final int NUM_COLORS = 5;
+    private static final float COLORS[][] = {{0, 0, 255}, {0, 255, 255}, {0, 255, 0}, {255, 255, 0}, {255, 0, 0}};
+    private static final int NUM_COLORS = 5;
     
     private float currentTableMin = 0;
     private float currentTableMax = 0;
@@ -129,14 +129,14 @@ public class TableHelper
      */
     private String convertToVerticalTextView(String text)
     {
-        String output = "";
+        StringBuffer output = new StringBuffer();
         
         for (int i = 0; i < text.length(); i++)
         {
-            output += text.substring(i, i + 1) + "\n";
+            output.append(text.substring(i, i + 1) + "\n");
         }
         
-        return output;
+        return output.toString();
     }
     
     /**
