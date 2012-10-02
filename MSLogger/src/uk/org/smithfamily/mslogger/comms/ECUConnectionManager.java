@@ -42,7 +42,7 @@ public class ECUConnectionManager extends ConnectionManager
      */
     protected synchronized void checkConnection() throws IOException
     {
-        DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("checkConnection()", Log.DEBUG);
 
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
@@ -81,7 +81,7 @@ public class ECUConnectionManager extends ConnectionManager
             command = CRC32ProtocolHandler.wrap(command);
         }
 
-        DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
 
         if (command.length == 7 && command[0] == 'r')
         {
@@ -171,11 +171,11 @@ public class ECUConnectionManager extends ConnectionManager
                         throw new IOException("end of stream attempting to read");
                     }
                     read += numRead;
-                    DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.DEBUG);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.DEBUG);
                 }
             }
             reaper.cancel();
-            DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.DEBUG);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.DEBUG);
             if (isCRC32)
             {
                 if (!CRC32ProtocolHandler.check(buffer))
@@ -195,7 +195,7 @@ public class ECUConnectionManager extends ConnectionManager
         {
             if (timerTriggered)
             {
-                DebugLogManager.INSTANCE.log("Time out reading from stream", Log.ERROR);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Time out reading from stream", Log.ERROR);
                 throw e;
             }
         }
@@ -228,7 +228,7 @@ public class ECUConnectionManager extends ConnectionManager
             result[i++] = b;
         }
 
-        DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("readBytes", result, Log.DEBUG);
 
         if (isCRC32)
         {

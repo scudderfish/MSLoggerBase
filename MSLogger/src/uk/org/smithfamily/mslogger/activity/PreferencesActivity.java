@@ -238,6 +238,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
+
+        if (key.equals("loglevel"))
+        {
+            ApplicationSettings.INSTANCE.getLoggingLevel();
+        }
+        
         if (key.equals("externalgpsactive"))
         {
             CheckBoxPreference cbp = (CheckBoxPreference) findPreference(key);

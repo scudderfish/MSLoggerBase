@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.comms;
 import java.io.*;
 import java.util.*;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.os.*;
@@ -119,7 +120,7 @@ abstract class ConnectionManager
     private void setState(ConnectionState state)
     {
         currentState = state;
-        DebugLogManager.INSTANCE.log(getInstanceName()+".setState " + state, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".setState " + state, Log.DEBUG);
     }
 
     /**
@@ -130,7 +131,7 @@ abstract class ConnectionManager
      */
     public synchronized void connect() throws IOException
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
 
         if (currentState != ConnectionState.STATE_DISCONNECTED)
         {
@@ -140,13 +141,13 @@ abstract class ConnectionManager
 
         try
         {
-            DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Attempting connection", Log.DEBUG);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Attempting connection", Log.DEBUG);
 
             conn.connect();
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
             delay(1000);
 
             try
@@ -155,7 +156,7 @@ abstract class ConnectionManager
             }
             catch (Exception e1)
             {
-                DebugLogManager.INSTANCE.logException(e1);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e1);
             }
             conn.switchSettings();
             try
@@ -165,14 +166,14 @@ abstract class ConnectionManager
             catch (IOException e1)
             {
                 // that didn't work, switch back and throw
-                DebugLogManager.INSTANCE.logException(e1);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e1);
                 conn.switchSettings();
                 throw e1;
             }
         }
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
-        DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Establishing connection", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Establishing connection", Log.DEBUG);
 
         // Get the BluetoothSocket input and output streams
         try
@@ -182,7 +183,7 @@ abstract class ConnectionManager
         }
         catch (IOException e)
         {
-            DebugLogManager.INSTANCE.logException(e);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
         }
 
         mmInStream = tmpIn;
@@ -190,12 +191,12 @@ abstract class ConnectionManager
         if (mmInStream != null && mmOutStream != null)
         {
             setState(ConnectionState.STATE_CONNECTED);
-            DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".connect() : Current state " + currentState, Log.DEBUG);
 
         }
         else
         {
-            DebugLogManager.INSTANCE.log(getInstanceName()+" Failed to complete connection", Log.ERROR);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+" Failed to complete connection", Log.ERROR);
             setState(ConnectionState.STATE_DISCONNECTED);
             tearDown();
         }
@@ -209,7 +210,7 @@ abstract class ConnectionManager
      */
     protected synchronized void checkConnection() throws IOException
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+"checkConnection()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+"checkConnection()", Log.DEBUG);
 
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
@@ -228,14 +229,14 @@ abstract class ConnectionManager
      */
     protected void delay(int d)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".delay(" + d + "ms)", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".delay(" + d + "ms)", Log.DEBUG);
         try
         {
             Thread.sleep(d);
         }
         catch (InterruptedException e)
         {
-            DebugLogManager.INSTANCE.log(getInstanceName()+" Sleep was interrupted", Log.ERROR);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+" Sleep was interrupted", Log.ERROR);
         }
     }
 
@@ -262,7 +263,7 @@ abstract class ConnectionManager
             throw new IOException("Not connected");
         }
 
-        DebugLogManager.INSTANCE.log(getInstanceName()+".writeData ", data, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".writeData ", data, Log.DEBUG);
 
         this.mmOutStream.write(data);
 
@@ -309,7 +310,7 @@ abstract class ConnectionManager
             result[i++] = b;
         }
 
-        DebugLogManager.INSTANCE.log(getInstanceName()+".readBytes", result, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".readBytes", result, Log.DEBUG);
 
         return result;
     }
@@ -321,7 +322,7 @@ abstract class ConnectionManager
      */
     public synchronized void flushAll() throws IOException
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".flushAll()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".flushAll()", Log.DEBUG);
         checkConnection();
 
         mmOutStream.flush();
@@ -338,7 +339,7 @@ abstract class ConnectionManager
      */
     public void sendStatus(String msgStr)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".sendStatus "+msgStr, Log.INFO);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".sendStatus "+msgStr, Log.INFO);
 
         if (handler != null)
         {
@@ -355,7 +356,7 @@ abstract class ConnectionManager
      */
     public synchronized void disconnect()
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".disconnect()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getInstanceName()+".disconnect()", Log.DEBUG);
 
         tearDown();
     }
