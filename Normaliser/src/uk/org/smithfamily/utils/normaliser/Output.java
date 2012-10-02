@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveItem;
@@ -327,8 +328,8 @@ public class Output
             writer.print(TAB + TAB + "\"" + dg + "\"");
         }
         writer.println("\n" + TAB + "};");
-        writer.println("\n@Override");
-        writer.println(TAB + "public String[] getControlFlags()\n");
+        writer.println("\n" + TAB + "@Override");
+        writer.println(TAB + "public String[] getControlFlags()");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "return flags;");
         writer.println(TAB + "}");
@@ -750,10 +751,11 @@ public class Output
     private static String generateLoadArray(ECUData ecuData, Constant c)
     {
         String loadArray = "";
-        String arraySpec = StringUtils.remove(StringUtils.remove(c.getShape(), '['), ']');
-        String[] sizes = arraySpec.split("x");
-        int width = Integer.parseInt(sizes[0].trim());
-        int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
+        
+        int[] size = MSUtilsShared.getArraySize(c.getShape());
+        int width = size[0];
+        int height = size[1];
+        
         String functionName = "parent.loadByte";
         String signed = "false";
         if (c.getType().contains("16"))
@@ -780,25 +782,41 @@ public class Output
         return loadArray;
     }
 
-    static void outputLoadPage(ECUData ecuData, int pageNo, int pageOffset, int pageSize, String activate, String read,
-            PrintWriter writer)
+    static void outputLoadPage(ECUData ecuData, int pageNo, int pageOffset, int pageSize, String activate, String read, PrintWriter writer)
     {
         if (activate != null)
         {
-
             activate = processStringToBytes(ecuData, activate, pageOffset, pageSize, pageNo);
         }
         if (read != null)
         {
             read = processStringToBytes(ecuData, read, pageOffset, pageSize, pageNo);
         }
-        writer.println(TAB + TAB
-                + String.format("pageBuffer = parent.loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
-
+        
+        writer.println(TAB + TAB + String.format("pageBuffer = parent.loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
     }
 
     static void outputOverrides(ECUData ecuData, PrintWriter writer)
-    {
+    {        
+        String pageIdentifierOutput = "";
+        for (String pageIdentifier : ecuData.getPageIdentifiers())
+        {
+            pageIdentifierOutput += TAB + TAB + "pageIdentifiers.add(\"" + pageIdentifier.replace("\\", "\\\\") + "\");\n";
+        }
+        
+        String pageValueWriteOutput = "";
+        for (String pageValueWrite : ecuData.getPageValueWrites())
+        {
+            pageValueWriteOutput += TAB + TAB + "pageValueWrites.add(" + pageValueWrite + ");\n";
+        }
+        
+        String pageChunkWriteOutput = "";
+        
+        for (String pageChunkWrite : ecuData.getPageChunkWrites())
+        {
+            pageChunkWriteOutput += TAB + TAB + "pageChunkWrites.add(" + pageChunkWrite + ");\n";
+        }
+        
         String overrides = TAB + "@Override\n" + TAB + "public String getSignature()\n" + TAB + "{\n" + TAB + TAB
                 + "return signature;\n" + "}\n" + TAB + "@Override\n" + TAB + "public byte[] getOchCommand()\n" + TAB + "{\n" + TAB
                 + TAB + "return this.ochGetCommand;\n" + TAB + "}\n" +
@@ -814,7 +832,31 @@ public class Output
 
                 TAB + "@Override\n" + TAB + "public int getPageActivationDelay()\n" + TAB + "{\n" + TAB + TAB + "return "
                 + ecuData.getPageActivationDelayVal() + ";\n" + TAB + "}\n" +
-
+                
+                TAB + "@Override\n" +
+                TAB + "public List<String> getPageValueWrites()\n" +
+                TAB + "{\n" +
+                TAB + TAB + "List<String> pageValueWrites = new ArrayList<String>();\n\n" +
+                            pageValueWriteOutput +
+                "\n" + TAB + TAB + "return pageValueWrites;\n" +
+                TAB + "}\n" +
+                
+                TAB + "@Override\n" +
+                TAB + "public List<String> getPageChunkWrites()\n" +
+                TAB + "{\n" +
+                TAB + TAB + "List<String> pageChunkWrites = new ArrayList<String>();\n\n" +
+                            pageChunkWriteOutput +
+                "\n" + TAB + TAB + "return pageChunkWrites;\n" +
+                TAB + "}\n" +
+                
+                TAB + "@Override\n" +
+                TAB + "public List<String> getPageIdentifiers()\n" +
+                TAB + "{\n" +
+                TAB + TAB + "List<String> pageIdentifiers = new ArrayList<String>();\n\n" +
+                            pageIdentifierOutput +
+                "\n" + TAB + TAB + "return pageIdentifiers;\n" +
+                TAB + "}\n" +
+                
                 TAB + "@Override\n" + TAB + "public int getInterWriteDelay()\n" + TAB + "{\n" + TAB + TAB + "return "
                 + ecuData.getInterWriteDelay() + ";\n" + TAB + "}\n" + TAB + "@Override\n" + TAB
                 + "public boolean isCRC32Protocol()\n" + TAB + "{\n" + TAB + TAB + "return " + ecuData.isCRC32Protocol() + ";\n"
@@ -842,97 +884,13 @@ public class Output
     {
         String ret = "new byte[]{";
 
-        ret += HexStringToBytes(ecuData, s, offset, count, pageNo);
+        ret += MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), s, offset, count, 0, pageNo);
 
         ret += "}";
         return ret;
     }
 
-    private static String bytes(int val)
-    {
-        int hi = val / 256;
-        int low = val % 256;
-        if (hi > 127)
-            hi -= 256;
-        if (low > 127)
-            low -= 256;
-        return "" + hi + "," + low;
-    }
-
-    static String HexStringToBytes(ECUData ecuData, String s, int offset, int count, int pageNo)
-    {
-        String ret = "";
-        boolean first = true;
-        s = s.replace("$tsCanId", "x00");
-        for (int p = 0; p < s.length(); p++)
-        {
-            if (!first)
-                ret += ",";
-
-            char c = s.charAt(p);
-            switch (c)
-            {
-            case '\\':
-                ret += HexByteToDec(s.substring(p));
-                p = p + 3;
-                ;
-                break;
-
-            case '%':
-                p++;
-                c = s.charAt(p);
-
-                assert c == '2';
-                p++;
-                c = s.charAt(p);
-                if (c == 'o')
-                {
-                    ret += bytes(offset);
-                }
-                else if (c == 'c')
-                {
-                    ret += bytes(count);
-                }
-                else if (c == 'i')
-                {
-                    String identifier = ecuData.getPageIdentifiers().get(pageNo - 1);
-
-                    ret += HexStringToBytes(ecuData, identifier, offset, count, pageNo);
-                }
-                break;
-
-            default:
-                ret += Byte.toString((byte) c);
-                break;
-            }
-            first = false;
-        }
-        return ret;
-    }
-
-    private static int HexByteToDec(String s)
-    {
-        String digits = "0123456789abcdef";
-        int i = 0;
-        char c = s.charAt(i++);
-        assert c == '\\';
-        c = s.charAt(i++);
-        assert c == 'x';
-        c = s.charAt(i++);
-        c = Character.toLowerCase(c);
-        int val = 0;
-        int digit = digits.indexOf(c);
-        val = digit * 16;
-        c = s.charAt(i++);
-        c = Character.toLowerCase(c);
-        digit = digits.indexOf(c);
-        val = val + digit;
-        return val;
-
-    }
-
-    static String getScalar(String bufferName, String javaType, String name, String dataType, String offset, String scale,
-            String numOffset)
+    static String getScalar(String bufferName, String javaType, String name, String dataType, String offset, String scale, String numOffset)
     {
         if (javaType == null)
         {
@@ -971,15 +929,15 @@ public class Output
         writer.println(TAB + TAB + "settingGroups.clear();");
         writer.println(TAB + TAB + "SettingGroup g;");
         
-        for(SettingGroup group : ecuData.getSettingGroups())
+        for (SettingGroup group : ecuData.getSettingGroups())
         {
             String desc = group.getDescription();
-            if(desc.trim().length() > 1)
+            if (desc.trim().length() > 1)
             {
                 writer.println(TAB + TAB + String.format("g = new SettingGroup(\"%s\",\"%s\");",group.getName(),group.getDescription()));
-                for(SettingGroup.SettingOption o : group.getOptions())
+                for (SettingGroup.SettingOption settingOption : group.getOptions())
                 {
-                    writer.println(TAB + TAB + String.format("g.addOption(\"%s\",\"%s\");",o.getFlag(),o.getDescription()));
+                    writer.println(TAB + TAB + String.format("g.addOption(\"%s\",\"%s\");",settingOption.getFlag(),settingOption.getDescription()));
                 }
                 writer.println(TAB + TAB + "settingGroups.add(g);");
             }
