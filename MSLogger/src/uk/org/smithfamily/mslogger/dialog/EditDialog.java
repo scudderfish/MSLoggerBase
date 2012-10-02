@@ -645,8 +645,19 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 EditText edit = (EditText) getCurrentFocus();
                 String constantName = edit.getTag().toString();
                 
+                // Constant has been modified and will need to be burn to ECU
                 Constant constant = ecu.getConstantByName(constantName);
                 constant.setModified(true);
+                
+                double value = 0;
+                try
+                {
+                    value = Double.parseDouble(edit.getText().toString());
+                }
+                catch (NumberFormatException e){}
+                
+                // Update ecu field with new value
+                ecu.setField(constantName, value);
             }
 
             @Override
@@ -986,9 +997,11 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (constant.isModified())
             {
-                System.out.println("Constant \"" + constantName + "\" was modified, need to write change to ECU");
+                DebugLogManager.INSTANCE.log("Constant \"" + constantName + "\" was modified, need to write change to ECU", Log.DEBUG);
                 
                 constant.setModified(false);
+                
+                ecu.writeConstant(constant);
             }
             
             // Special case for custom constant MSLogger_nSquirts
