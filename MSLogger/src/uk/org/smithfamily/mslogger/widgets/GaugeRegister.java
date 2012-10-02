@@ -33,7 +33,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                 boolean deleteResult = gaugeDetails.delete();
                 if (!deleteResult)
                 {
-                    DebugLogManager.INSTANCE.log("Couldn't delete " + gaugeDetails.getPath(),Log.ERROR);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Couldn't delete " + gaugeDetails.getPath(),Log.ERROR);
                 }
             }
         }
@@ -66,7 +66,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
             persistDetails(gaugeDetails);
         }
 
-        DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails,Log.INFO);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails,Log.INFO);
 
         details.put(gaugeDetails.getName(), gaugeDetails);
     }
@@ -87,7 +87,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                 boolean deleteResult = store.delete();
                 if (!deleteResult)
                 {
-                    DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
                 }
             }
             details.remove(name);
@@ -188,7 +188,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
             boolean mkDirs = dir.mkdirs();
             if (!mkDirs)
             {
-                DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
             }
         }
         
@@ -212,7 +212,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                 boolean mkDirs = dir.mkdirs();
                 if (!mkDirs)
                 {
-                    DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Unable to create directory " + GAUGE_DETAILS + " at " + ApplicationSettings.INSTANCE.getDataDir(), Log.ERROR);
                 }
             }
             

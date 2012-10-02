@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -356,7 +355,6 @@ public class TuningActivity extends Activity
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            Log.i(ApplicationSettings.TAG, "Received :" + action);
 
             if (action.equals(Megasquirt.DISCONNECTED))
             {

@@ -5,7 +5,6 @@ import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.text.format.DateFormat;
-import android.util.Log;
 
 /**
  *
@@ -110,7 +109,7 @@ public enum FRDLogManager
         }
         catch (IOException e)
         {
-            Log.e(ApplicationSettings.TAG,"FRDLogManager.close()",e);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
         }
 
         os = null;
