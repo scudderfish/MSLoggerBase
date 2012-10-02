@@ -82,7 +82,7 @@ public enum DatalogManager
             }
             catch (IOException e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
             }
         }
         

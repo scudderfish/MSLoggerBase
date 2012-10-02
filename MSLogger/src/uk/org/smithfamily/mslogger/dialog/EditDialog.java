@@ -136,7 +136,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     {
         RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL tableLayoutToAdd id (" + dialogName + ") is " + relativeLayoutToAdd.getId(), Log.DEBUG);
+        DebugLogManager.INSTANCE.log("PANEL tableLayoutToAdd id (" + dialogName + ") is " + relativeLayoutToAdd.getId(), Log.DEBUG);
         
         // This is not the first panel we add on this dialog
         if (previousPanelLayout != null)
@@ -146,20 +146,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 tlp.addRule(RelativeLayout.ABOVE, previousPanelLayout.getId());
                 relativeLayoutToAdd.setPadding(0, 0, 0, 15);
 
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " above " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " above " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else if (orientation.equals("South"))
             {
                 tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
                 relativeLayoutToAdd.setPadding(0, 15, 0, 0);
 
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else if (orientation.equals("West"))
             {
                 tlp.addRule(RelativeLayout.LEFT_OF, previousPanelLayout.getId());
                 relativeLayoutToAdd.setPadding(0, 0, 15, 0);
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at the left of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                DebugLogManager.INSTANCE.log("PANEL " + dialogName + " at the left of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
             }
             else
             {
@@ -168,14 +168,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 {
                     tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(0, 15, 0, 0);
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
                 // For xAxis orientation, add panel at the right of the last one
                 else
                 {
                     tlp.addRule(RelativeLayout.RIGHT_OF, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(15, 0, 0, 0);
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
             }
 
@@ -183,20 +183,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         }
         else
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL " + dialogName + " previousPanelLayout was null!", Log.DEBUG);
+            DebugLogManager.INSTANCE.log("PANEL " + dialogName + " previousPanelLayout was null!", Log.DEBUG);
         }
         
         // Panel to add have a parent layout, add view to it
         if (parentLayout != null)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL parentLayout is " + parentLayout.getTag(), Log.DEBUG);
+            DebugLogManager.INSTANCE.log("PANEL parentLayout is " + parentLayout.getTag(), Log.DEBUG);
             parentLayout.addView(relativeLayoutToAdd);
         }
         // No parent layout, default to main layout
         else
         {
 
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("PANEL parentLayout is null, adding to main layout", Log.DEBUG);
+            DebugLogManager.INSTANCE.log("PANEL parentLayout is null, adding to main layout", Log.DEBUG);
             content.addView(relativeLayoutToAdd);
         }
         
@@ -360,7 +360,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         }
                         else
                         {
-                            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Invalid panel name " + dp.getName(), Log.DEBUG);
+                            DebugLogManager.INSTANCE.log("Invalid panel name " + dp.getName(), Log.DEBUG);
                         }
                     }
                 }
@@ -997,7 +997,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (constant.isModified())
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Constant \"" + constantName + "\" was modified, need to write change to ECU", Log.DEBUG);
+                DebugLogManager.INSTANCE.log("Constant \"" + constantName + "\" was modified, need to write change to ECU", Log.DEBUG);
                 
                 constant.setModified(false);
                 

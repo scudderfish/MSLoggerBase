@@ -3,7 +3,6 @@ package uk.org.smithfamily.mslogger.comms;
 import java.io.*;
 import java.net.*;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecu.simulated.MS1Simulator;
 import uk.org.smithfamily.mslogger.ecu.simulated.MSSimulator;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -33,7 +32,7 @@ public enum SocketConnection implements Connection
             sim.startRunning();
         } catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
 
     }
@@ -92,7 +91,7 @@ public enum SocketConnection implements Connection
                 is.close();
             } catch (IOException e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
             }
             is = null;
         }
@@ -103,7 +102,7 @@ public enum SocketConnection implements Connection
                 os.close();
             } catch (IOException e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
             }
             os = null;
         }
@@ -114,7 +113,7 @@ public enum SocketConnection implements Connection
                 sock.close();
             } catch (IOException e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
             }
         }
         sock = null;

@@ -133,7 +133,7 @@ public class ManageDatalogsActivity  extends ListActivity
                     
                     if (!deleteResult)
                     {
-                        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Couldn't delete " + datalogFilepath,Log.ERROR);
+                        DebugLogManager.INSTANCE.log("Couldn't delete " + datalogFilepath,Log.ERROR);
                     }
                 }
                                 

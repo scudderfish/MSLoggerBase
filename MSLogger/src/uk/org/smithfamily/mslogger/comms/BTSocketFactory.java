@@ -35,7 +35,7 @@ public class BTSocketFactory
 			}
 			catch (Exception e)
 			{
-				if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+				DebugLogManager.INSTANCE.logException(e);
 				// That didn't work, lets switch it off for the next go around
 				ApplicationSettings.INSTANCE.setBTWorkaround(false);
 			}
@@ -44,14 +44,14 @@ public class BTSocketFactory
 		{
 			try
 			{
-				if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BTSocketFactory.getSocket() createRfcommSocketToServiceRecord", Log.DEBUG);
+				DebugLogManager.INSTANCE.log("BTSocketFactory.getSocket() createRfcommSocketToServiceRecord", Log.DEBUG);
 		        
 				tmp = device.createRfcommSocketToServiceRecord(RFCOMM_UUID);
 			}
 			catch (IOException e)
 			{
 				// That didn't work, let's try the work around
-				if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+				DebugLogManager.INSTANCE.logException(e);
 
 				try
 				{
@@ -62,7 +62,7 @@ public class BTSocketFactory
 				catch (Exception e1)
 				{
 					// We're boned, nothing works
-					if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+					DebugLogManager.INSTANCE.logException(e);
 					throw e1;
 				}
 			}
@@ -80,7 +80,7 @@ public class BTSocketFactory
 	 */
 	private static BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
 	{
-		if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BTSocketFactory.createWorkaroundSocket()", Log.DEBUG);
+		DebugLogManager.INSTANCE.log("BTSocketFactory.createWorkaroundSocket()", Log.DEBUG);
         
 		Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
 		BluetoothSocket tmp = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));

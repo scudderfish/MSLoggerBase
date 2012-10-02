@@ -126,7 +126,7 @@ public class Megasquirt implements MSControllerInterface
      */
     public synchronized void start()
     {
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Megasquirt.start()", Log.INFO);
+        DebugLogManager.INSTANCE.log("Megasquirt.start()", Log.INFO);
 
         if (ecuThread == null)
         {
@@ -148,7 +148,7 @@ public class Megasquirt implements MSControllerInterface
 
         running = false;
 
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
+        DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
 
         broadcast(DISCONNECTED);
     }
@@ -181,7 +181,10 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            // ErrorReporter.getInstance().handleException(e);
+            DebugLogManager.INSTANCE.logException(e);
+
+            Log.e(ApplicationSettings.TAG, "Megasquirt.logValues()", e);
         }
     }
 
@@ -192,7 +195,7 @@ public class Megasquirt implements MSControllerInterface
     {
         if (simulated)
             return;
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
+        DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
 
         ECUConnectionManager.getInstance().disconnect();
         DatalogManager.INSTANCE.mark("Disconnected");
@@ -292,7 +295,7 @@ public class Megasquirt implements MSControllerInterface
     public void startLogging()
     {
         logging = true;
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("startLogging()", Log.INFO);
+        DebugLogManager.INSTANCE.log("startLogging()", Log.INFO);
 
     }
 
@@ -301,7 +304,7 @@ public class Megasquirt implements MSControllerInterface
      */
     public void stopLogging()
     {
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("stopLogging()", Log.INFO);
+        DebugLogManager.INSTANCE.log("stopLogging()", Log.INFO);
         logging = false;
         FRDLogManager.INSTANCE.close();
         DatalogManager.INSTANCE.close();
@@ -397,7 +400,7 @@ public class Megasquirt implements MSControllerInterface
         {
             if (watch != null)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
+                DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
             watch = this;
             String sig = ecuImplementation.getSignature();
@@ -444,7 +447,7 @@ public class Megasquirt implements MSControllerInterface
             try
             {
                 sendMessage("");
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
+                DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
                 initialiseConnection();
 
                 try
@@ -453,7 +456,7 @@ public class Megasquirt implements MSControllerInterface
                 }
                 catch (InterruptedException e)
                 {
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                    DebugLogManager.INSTANCE.logException(e);
                 }
 
                 running = true;
@@ -465,7 +468,7 @@ public class Megasquirt implements MSControllerInterface
 
                     if (!verifySignature())
                     {
-                        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
+                        DebugLogManager.INSTANCE.log("!verifySignature()", Log.DEBUG);
 
                         ECUConnectionManager.getInstance().disconnect();
                         return;
@@ -484,7 +487,7 @@ public class Megasquirt implements MSControllerInterface
                     }
                     catch (CRC32Exception e)
                     {
-                        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                        DebugLogManager.INSTANCE.logException(e);
                     }
                     
                     // Make sure everyone agrees on what flags are set
@@ -513,7 +516,7 @@ public class Megasquirt implements MSControllerInterface
                         catch (CRC32Exception e)
                         {
                             DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
-                            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                            DebugLogManager.INSTANCE.logException(e);
                         }
                         readCounter++;
 
@@ -534,18 +537,18 @@ public class Megasquirt implements MSControllerInterface
                 }
                 catch (IOException e)
                 {
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                    DebugLogManager.INSTANCE.logException(e);
                 }
                 catch (ArithmeticException e)
                 {
                     // If we get a maths error, we probably have loaded duff constants and hit a divide by zero
                     // force the constants to reload in case it was just a bad data read
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                    DebugLogManager.INSTANCE.logException(e);
                     constantsLoaded = false;
                 }
                 catch (RuntimeException t)
                 {
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(t);
+                    DebugLogManager.INSTANCE.logException(t);
                     throw (t);
                 }
                 // We're on our way out, so drop the connection
@@ -610,7 +613,7 @@ public class Megasquirt implements MSControllerInterface
                             String msg = "Got unsupported signature from Megasquirt \"" + msSig + "\" but found a similar supported signature \"" + signature + "\"";
                             
                             sendToastMessage(msg);                            
-                            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(msg, Log.INFO);
+                            DebugLogManager.INSTANCE.log(msg, Log.INFO);
                             
                             break;
                         }
@@ -686,7 +689,7 @@ public class Megasquirt implements MSControllerInterface
             int d = Math.max(ecuImplementation.getInterWriteDelay(), 300);
             ECUConnectionManager.getInstance().flushAll();
 
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
+            DebugLogManager.INSTANCE.log("getSignature()", Log.DEBUG);
 
             /*
              * We need to loop around until we get a valid result. When a BT module connects, it can feed an initial 'CONNECT xyz' string into the ECU which confuses the hell out of it, and the first
@@ -711,10 +714,10 @@ public class Megasquirt implements MSControllerInterface
                 }
                 catch (CRC32Exception e1)
                 {
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e1);
+                    DebugLogManager.INSTANCE.logException(e1);
                 }
 
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
+                DebugLogManager.INSTANCE.log("Got a signature of " + signatureFromMS, Log.INFO);
 
                 ECUConnectionManager.getInstance().flushAll();
             }
@@ -771,13 +774,13 @@ public class Megasquirt implements MSControllerInterface
         catch (IOException e)
         {
             e.printStackTrace();
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
             sendMessage("Error loading constants from page " + pageNo);
         }
         catch (CRC32Exception e)
         {
             e.printStackTrace();
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
             sendMessage("Error loading constants from page " + pageNo);
         }
         return buffer;
@@ -813,7 +816,7 @@ public class Megasquirt implements MSControllerInterface
                 boolean mkDirs = dir.mkdirs();
                 if (!mkDirs)
                 {
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Unable to create directory MSLogger at " + Environment.getExternalStorageDirectory(), Log.ERROR);  
+                    DebugLogManager.INSTANCE.log("Unable to create directory MSLogger at " + Environment.getExternalStorageDirectory(), Log.ERROR);  
                 }
             }
 
@@ -824,7 +827,7 @@ public class Megasquirt implements MSControllerInterface
             {
                 boolean append = !(pageNo == 1);
                 out = new BufferedOutputStream(new FileOutputStream(outputFile, append));
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Saving page " + pageNo + " append=" + append, Log.INFO);
+                DebugLogManager.INSTANCE.log("Saving page " + pageNo + " append=" + append, Log.INFO);
                 out.write(buffer);
             }
             finally
@@ -838,7 +841,7 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
     }
     
@@ -901,7 +904,8 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (Exception e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.getVector()", e);
         }
         return value;
     }
@@ -922,7 +926,8 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (Exception e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.getField()", e);
         }
         return value;
     }
@@ -951,7 +956,8 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (Exception e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName, Log.ERROR);
+            Log.e(ApplicationSettings.TAG, "Megasquirt.setFeidl()", e);
         }
     }
 

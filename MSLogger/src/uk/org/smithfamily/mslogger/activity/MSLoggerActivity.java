@@ -85,20 +85,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        ApplicationSettings.INSTANCE.getLoggingLevel();
         checkSDCard();
 
         setGaugesOrientation();
 
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(getPackageName(), Log.ASSERT);
+        DebugLogManager.INSTANCE.log(getPackageName(), Log.ASSERT);
         try
         {
             String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(app_ver, Log.ASSERT);
+            DebugLogManager.INSTANCE.log(app_ver, Log.ASSERT);
         }
         catch (NameNotFoundException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
         dumpPreferences();
         setContentView(R.layout.displaygauge);
@@ -198,7 +197,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Map<String, ?> prefs = prefsManager.getAll();
         for (Entry<String, ?> entry : prefs.entrySet())
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
+            DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
         }
     }
 
@@ -950,7 +949,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         catch (NameNotFoundException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
         dialog.setTitle(title);
 
@@ -1179,13 +1178,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
+            Log.i(ApplicationSettings.TAG, "Received :" + action);
             boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
             if (action.equals(Megasquirt.CONNECTED))
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(action, Log.INFO);
+                DebugLogManager.INSTANCE.log(action, Log.INFO);
                 indicatorManager.setDisabled(false);
                 if (autoLoggingEnabled && ecu != null)
                 {
@@ -1194,7 +1194,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
             else if (action.equals(Megasquirt.DISCONNECTED))
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(action, Log.INFO);
+                DebugLogManager.INSTANCE.log(action, Log.INFO);
                 indicatorManager.setDisabled(true);
                 if (autoLoggingEnabled)
                 {
@@ -1219,7 +1219,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
                 messages.setText(msg);
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Message : " + msg, Log.INFO);
+                DebugLogManager.INSTANCE.log("Message : " + msg, Log.INFO);
             }
             else if (action.equals(ApplicationSettings.RPS_MESSAGE))
             {

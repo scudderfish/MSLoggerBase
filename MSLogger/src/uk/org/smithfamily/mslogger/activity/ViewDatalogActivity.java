@@ -277,7 +277,7 @@ public class ViewDatalogActivity extends Activity
                     
                     long timeEnd = System.currentTimeMillis();
                     
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
                 }
                 finally
                 {
@@ -287,11 +287,11 @@ public class ViewDatalogActivity extends Activity
         }
         catch (FileNotFoundException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         } 
         catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }                               
     }
     
@@ -400,7 +400,7 @@ public class ViewDatalogActivity extends Activity
                     
                     long timeEnd = System.currentTimeMillis();
                     
-                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+                    DebugLogManager.INSTANCE.log("Read datalog file in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
                 }
                 finally {
                     instream.close();
@@ -409,11 +409,11 @@ public class ViewDatalogActivity extends Activity
         }
         catch (FileNotFoundException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         } 
         catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }      
     }
     
@@ -486,7 +486,7 @@ public class ViewDatalogActivity extends Activity
         
         long timeEnd = System.currentTimeMillis();
         
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Prepared value and found min/max value of each columns in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
+        DebugLogManager.INSTANCE.log("Prepared value and found min/max value of each columns in " + (timeEnd - timeStart) + " milliseconds",Log.DEBUG);
         
         for (int i = 1; i < data.size(); i++)
         {

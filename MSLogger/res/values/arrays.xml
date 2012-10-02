@@ -68,7 +68,6 @@
 	</string-array>
 	
 	<string-array name="levelnames">
-	    <item>Off</item>
 	    <item>Errors Only</item>
 	    <item>Warnings</item>
 	    <item>Info</item>
@@ -77,7 +76,6 @@
 	</string-array>
 	
 	<string-array name="levelvalues">
-	    <item>8</item>
 	    <item>6</item>
 	    <item>5</item>
 	    <item>4</item>

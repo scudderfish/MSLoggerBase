@@ -138,7 +138,7 @@ public class CalibrateActivity extends Activity
 		}
 		catch (IOException e)
 		{
-			if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+			DebugLogManager.INSTANCE.logException(e);
 		}
 	}
 

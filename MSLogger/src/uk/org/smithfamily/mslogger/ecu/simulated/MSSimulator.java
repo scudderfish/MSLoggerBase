@@ -55,7 +55,7 @@ public abstract class MSSimulator implements Runnable
             } catch (IOException e)
             {
                 //Something borked.  Drop the connection and try again
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
             }
 
         }
@@ -79,7 +79,7 @@ public abstract class MSSimulator implements Runnable
             r.close();
         } catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
 
         return page;
@@ -108,7 +108,7 @@ public abstract class MSSimulator implements Runnable
             serverSocket = new ServerSocket(SERVERPORT);
         } catch (IOException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
 
     }
@@ -171,7 +171,7 @@ public abstract class MSSimulator implements Runnable
             Thread.sleep(delay);
         } catch (InterruptedException e)
         {
-            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+            DebugLogManager.INSTANCE.logException(e);
         }
         os.write(data);
     }

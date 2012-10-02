@@ -41,7 +41,7 @@ public class ECUFingerprint implements Runnable
     {
         Thread.currentThread().setName("ECUFingerprintThread:" + System.currentTimeMillis());
         String fingerprint = UNKNOWN;
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Starting fingerprint", Log.INFO);
+        DebugLogManager.INSTANCE.log("Starting fingerprint", Log.INFO);
         
         while (!located  && errorCount < MAX_ERROR)
         {
@@ -53,14 +53,14 @@ public class ECUFingerprint implements Runnable
             }
             catch (IOException e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
                 ECUConnectionManager.getInstance().tearDown();
                 delay(1000);
                 errorCount++;
             }
             catch (CRC32Exception e)
             {
-                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
+                DebugLogManager.INSTANCE.logException(e);
                 ECUConnectionManager.getInstance().tearDown();
                 delay(1000);
             }
@@ -97,7 +97,7 @@ public class ECUFingerprint implements Runnable
      */
     private void sendStatus(String msgStr)
     {
-        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
+        DebugLogManager.INSTANCE.log(msgStr, Log.INFO);
 
         if (handler != null)
         {
