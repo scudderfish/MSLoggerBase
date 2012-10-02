@@ -40,6 +40,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public static final String   RPS                 = "uk.org.smithfamily.mslogger.RPS";
     public static final String   TOAST               = "uk.org.smithfamily.mslogger.TOAST";
     public static final String   TOAST_MESSAGE       = "uk.org.smithfamily.mslogger.TOAST_MESSAGE";
+    
+    public int                   logLevel = 8;
 
     private Context              context;
     private File                 dataDir;
@@ -416,7 +418,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         Editor editor = prefs.edit();
         editor.putBoolean("workaround", state);
         editor.commit();
-        DebugLogManager.INSTANCE.log("set BTWorkaround to " + state, Log.ASSERT);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("set BTWorkaround to " + state, Log.ASSERT);
     }
 
     /**
@@ -427,7 +429,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public int getLoggingLevel()
     {
         String value = prefs.getString("loglevel", null);
-        return value == null ? 6 : Integer.valueOf(value);
+        logLevel = value == null ? 8 : Integer.valueOf(value);
+        return logLevel;
     }
 
     /**

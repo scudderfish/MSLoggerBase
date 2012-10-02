@@ -1,5 +1,6 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -242,7 +243,7 @@ public abstract class Indicator extends View
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
         if (gd == null)
         {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
             gd = getDeadGauge();
         }
         initFromGD(gd);

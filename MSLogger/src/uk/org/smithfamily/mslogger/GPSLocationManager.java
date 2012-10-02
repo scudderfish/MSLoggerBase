@@ -58,7 +58,7 @@ public enum GPSLocationManager implements LocationListener
             c.setAccuracy(Criteria.ACCURACY_FINE);
             String providerName = locationManager.getBestProvider(c, false);
 
-            DebugLogManager.INSTANCE.log("Using location provider " + providerName, Log.INFO);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Using location provider " + providerName, Log.INFO);
 
             if (providerName != null)
             {

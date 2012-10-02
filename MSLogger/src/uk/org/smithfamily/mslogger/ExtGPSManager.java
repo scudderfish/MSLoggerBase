@@ -48,7 +48,7 @@ public enum ExtGPSManager
         SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
         splitter.setString(sentence);
 
-        DebugLogManager.INSTANCE.log(sentence, Log.VERBOSE);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log(sentence, Log.VERBOSE);
 
         String command = splitter.next();
         if (command.equals("$GPGGA"))
@@ -314,7 +314,7 @@ public enum ExtGPSManager
         }
         catch (ParseException e)
         {
-            DebugLogManager.INSTANCE.log("Error while parsing NMEA time: " + e, Log.ERROR);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Error while parsing NMEA time: " + e, Log.ERROR);
         }
         return timestamp;
     }
@@ -336,7 +336,7 @@ public enum ExtGPSManager
                 ll.onStatusChanged(providerName, status, extras);
             }
         }
-        DebugLogManager.INSTANCE.log("notifyStatusChanged() " + status + " " + extras, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("notifyStatusChanged() " + status + " " + extras, Log.DEBUG);
 
         if (this.locStatus != status)
         {
@@ -360,7 +360,7 @@ public enum ExtGPSManager
                 }
             }
             this.location = new Location(providerName);
-            DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.VERBOSE);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.VERBOSE);
 
             readCounter++;
 
@@ -444,7 +444,7 @@ public enum ExtGPSManager
                 ll.onProviderEnabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExtGPSManager.start() " + providerName, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("ExtGPSManager.start() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -466,7 +466,7 @@ public enum ExtGPSManager
                 ll.onProviderDisabled(providerName);
             }
         }
-        DebugLogManager.INSTANCE.log("ExtGPSManager.stop() " + providerName, Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("ExtGPSManager.stop() " + providerName, Log.DEBUG);
     }
 
     /**
@@ -482,7 +482,7 @@ public enum ExtGPSManager
         {
             if (watch != null)
             {
-                DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
             watch = this;
             setName("ECUThread:" + System.currentTimeMillis());
@@ -511,7 +511,7 @@ public enum ExtGPSManager
                 }
                 catch (InterruptedException e)
                 {
-                    DebugLogManager.INSTANCE.logException(e);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
                 }
 
                 running = true;
@@ -550,11 +550,11 @@ public enum ExtGPSManager
                 }
                 catch (IOException e)
                 {
-                    DebugLogManager.INSTANCE.logException(e);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(e);
                 }
                 catch (RuntimeException t)
                 {
-                    DebugLogManager.INSTANCE.logException(t);
+                    if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.logException(t);
                     throw (t);
                 }
                 // We're on our way out, so drop the connection

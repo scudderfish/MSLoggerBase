@@ -19,21 +19,21 @@ public class BluetoothConnection implements Connection
 
     BluetoothConnection()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection()", Log.DEBUG);
         adapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     @Override
     public void init(String addr)
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.init()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.init()", Log.DEBUG);
         btAddr = addr;
     }
 
     @Override
     public boolean isInitialised()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.isInitialised()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.isInitialised()", Log.DEBUG);
         
         return socket != null;
     }
@@ -41,7 +41,7 @@ public class BluetoothConnection implements Connection
     @Override
     public void connect() throws IOException
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.connect()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.connect()", Log.DEBUG);
         
         try
         {
@@ -49,7 +49,7 @@ public class BluetoothConnection implements Connection
             socket = BTSocketFactory.getSocket(remote);
         } catch (Exception e)
         {
-            DebugLogManager.INSTANCE.log("Failed to get a socket!", Log.ERROR);
+            if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("Failed to get a socket!", Log.ERROR);
             throw new IOException(e.getLocalizedMessage());
         }
         adapter.cancelDiscovery();
@@ -61,7 +61,7 @@ public class BluetoothConnection implements Connection
     @Override
     public void disconnect() throws IOException
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.disconnect()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.disconnect()", Log.DEBUG);
         
         tearDown();
     }
@@ -69,7 +69,7 @@ public class BluetoothConnection implements Connection
     @Override
     public void switchSettings()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.switchSettings()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.switchSettings()", Log.DEBUG);
         
         ApplicationSettings.INSTANCE.setBTWorkaround(!ApplicationSettings.INSTANCE.isBTWorkaround());
 
@@ -78,7 +78,7 @@ public class BluetoothConnection implements Connection
     @Override
     public InputStream getInputStream() throws IOException
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.getInputStream()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.getInputStream()", Log.DEBUG);
         
         return this.mmInStream;
     }
@@ -86,7 +86,7 @@ public class BluetoothConnection implements Connection
     @Override
     public OutputStream getOutputStream() throws IOException
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.getOutputStream()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.getOutputStream()", Log.DEBUG);
         
         return this.mmOutStream;
     }
@@ -95,7 +95,7 @@ public class BluetoothConnection implements Connection
     @Override
     public void tearDown()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.tearDown()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.tearDown()", Log.DEBUG);
         if (mmInStream != null)
         {
             try
@@ -121,7 +121,7 @@ public class BluetoothConnection implements Connection
         {
             try
             {
-                DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
+                if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
 
                 socket.close();
             } catch (IOException e)
@@ -135,7 +135,7 @@ public class BluetoothConnection implements Connection
     @Override
     public boolean isConnected()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.isConnected()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.isConnected()", Log.DEBUG);
         
         return (socket != null && mmInStream != null && mmOutStream != null);
     }
@@ -143,7 +143,7 @@ public class BluetoothConnection implements Connection
     @Override
     public boolean connectionPossible()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.connectionPossible()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.connectionPossible()", Log.DEBUG);
         
         return adapter != null;
     }
@@ -151,7 +151,7 @@ public class BluetoothConnection implements Connection
     @Override
     public boolean connectionEnabled()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.connectionEnabled()", Log.DEBUG);
+        if (ApplicationSettings.INSTANCE.logLevel < 8) DebugLogManager.INSTANCE.log("BluetoothConnection.connectionEnabled()", Log.DEBUG);
         
         return adapter.isEnabled();
     }
