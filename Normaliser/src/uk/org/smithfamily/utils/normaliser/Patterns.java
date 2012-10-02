@@ -41,7 +41,9 @@ public class Patterns
     static Pattern pageIdentifier      = Pattern.compile("\\s*pageIdentifier\\s*=\\s*(.*)");
     static Pattern pageActivate        = Pattern.compile("\\s*pageActivate\\s*=\\s*(.*)");
     static Pattern pageReadCommand     = Pattern.compile("\\s*pageReadCommand\\s*=\\s*(.*)");
-
+    static Pattern pageValueWrite      = Pattern.compile("\\s*pageValueWrite\\s*=\\s*(.*)");
+    static Pattern pageChunkWrite      = Pattern.compile("\\s*pageChunkWrite\\s*=\\s*(.*)");
+    
     /*
      * Constant
      */

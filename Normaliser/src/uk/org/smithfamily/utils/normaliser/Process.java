@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
@@ -230,7 +231,7 @@ public class Process
             String och = ochGetCommandM.group(1);
             if (och.length() > 1)
             {
-                och = Output.HexStringToBytes(ecuData, och, 0, 0, 0);
+                och = MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), och, 0, 0, 0, 0);
             }
             else
             {
@@ -482,6 +483,22 @@ public class Process
             values = StringUtils.remove(values, '"');
             String[] list = values.split(",");
             ecuData.setPageReadCommands(new ArrayList<String>(Arrays.asList(list)));
+        }
+        
+        Matcher pageValueWriteM = Patterns.pageValueWrite.matcher(line);
+        if (pageValueWriteM.matches())
+        {
+            String values = StringUtils.remove(pageValueWriteM.group(1), ' ');
+            String[] list = values.replace("\\","\\\\").split(",");
+            ecuData.setPageValueWrites(new ArrayList<String>(Arrays.asList(list)));
+        }
+ 
+        Matcher pageChunkWriteM = Patterns.pageChunkWrite.matcher(line);
+        if (pageChunkWriteM.matches())
+        {
+            String values = StringUtils.remove(pageChunkWriteM.group(1), ' ');
+            String[] list = values.replace("\\","\\\\").split(",");
+            ecuData.setPageChunkWrites(new ArrayList<String>(Arrays.asList(list)));
         }
 
         Matcher interWriteDelayM = Patterns.interWriteDelay.matcher(line);

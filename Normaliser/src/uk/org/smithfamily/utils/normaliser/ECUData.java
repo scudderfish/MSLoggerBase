@@ -41,6 +41,8 @@ public class ECUData
 	private ArrayList<String> pageIdentifiers;
 	private ArrayList<String> pageActivateCommands;
 	private ArrayList<String> pageReadCommands;
+	private List<String> pageValueWrites;
+	private List<String> pageChunkWrites;
 	private String signatureDeclaration;
 	private String queryCommandStr;
 	private String ochGetCommandStr;
@@ -112,6 +114,8 @@ public class ECUData
 		gaugeDoc = new ArrayList<String>();
 		defaultGauges = new ArrayList<String>();
 		pageActivateCommands = new ArrayList<String>();
+		pageValueWrites = new ArrayList<String>();
+		pageChunkWrites = new ArrayList<String>();
 		pageIdentifiers = new ArrayList<String>();
 		tableDefs = new ArrayList<TableTracker>();
 		curveDefs = new ArrayList<CurveTracker>();
@@ -267,6 +271,26 @@ public class ECUData
 		this.pageReadCommands = pageReadCommands;
 	}
 
+    public List<String> getPageValueWrites()
+    {
+        return pageValueWrites;
+    }
+
+    public void setPageValueWrites(List<String> pageValueWrites)
+    {
+        this.pageValueWrites = pageValueWrites;
+    }
+    
+    public List<String> getPageChunkWrites()
+    {
+        return pageChunkWrites;
+    }
+
+    public void setPageChunkWrites(List<String> pageChunkWrites)
+    {
+        this.pageChunkWrites = pageChunkWrites;
+    }
+    
 	public String getSignatureDeclaration()
 	{
 		return signatureDeclaration;
