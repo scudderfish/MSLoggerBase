@@ -35,6 +35,8 @@ public enum ExtGPSManager
     private int locStatus = LocationProvider.OUT_OF_SERVICE;
     private boolean hasGGA = false;
     private boolean hasRMC = false;
+    private double readCounter = 0;
+    private long lastRpsTime = 0;
 
     private volatile ExtGPSThread extGPSThread;
     private volatile boolean running;
@@ -322,7 +324,11 @@ public enum ExtGPSManager
         locationTime = null;
         hasGGA = false;
         hasRMC = false;
+        notifyStatusChangedNoClear(status,extras,updateTime);
+    }
 
+    private void notifyStatusChangedNoClear(int status, Bundle extras, long updateTime)
+    {
         synchronized (listeners)
         {
             for (LocationListener ll : listeners)
@@ -355,6 +361,24 @@ public enum ExtGPSManager
             }
             this.location = new Location(providerName);
             DebugLogManager.INSTANCE.log("notifyLocationChanged() " + loc, Log.VERBOSE);
+
+            readCounter++;
+
+            long delay = System.currentTimeMillis() - lastRpsTime;
+            if (delay > 1000)
+            {
+                double RPS = readCounter / delay * 1000;
+                lastRpsTime = System.currentTimeMillis();
+                readCounter = 0;
+
+                if (RPS > 0)
+                {
+                    Bundle extras = new Bundle();
+                    extras.putInt("satellites", lastNumSatellites);
+                    extras.putDouble("rps", RPS);
+                    notifyStatusChangedNoClear(locStatus, extras, locationTimestamp);
+                }
+            }
         }
     }
 
@@ -392,7 +416,7 @@ public enum ExtGPSManager
             lastUpdateTime = location.getTime();
             extras = location.getExtras();
         }
-        notifyStatusChanged(locStatus, extras, lastUpdateTime);
+        notifyStatusChangedNoClear(locStatus, extras, lastUpdateTime);
     }
 
     /**
@@ -411,6 +435,7 @@ public enum ExtGPSManager
             hasRMC = false;
             lastNumSatellites = 0;
             location = null;
+            lastRpsTime = System.currentTimeMillis();
         }
         synchronized (listeners)
         {

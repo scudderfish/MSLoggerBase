@@ -12,7 +12,6 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup.SettingOption;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +28,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 
 /**
  * 
@@ -41,6 +39,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private Boolean ecuDirty = false;
     private Set<String> settingFlags = new HashSet<String>();
     private Set<String> alreadyDefined = new HashSet<String>();
+    private double extGPSFreq = 0;
 
     /**
      *
@@ -244,13 +243,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             CheckBoxPreference cbp = (CheckBoxPreference) findPreference(key);
             if (cbp.isChecked())
             {
-                ExtGPSManager.INSTANCE.start();    
-                ExtGPSManager.INSTANCE.addListener(GPSLocationManager.INSTANCE);       
+                ExtGPSManager.INSTANCE.start();
+                ExtGPSManager.INSTANCE.addListener(GPSLocationManager.INSTANCE);
             }
             else
             {
-                ExtGPSManager.INSTANCE.stop();    
-                ExtGPSManager.INSTANCE.removeListener(GPSLocationManager.INSTANCE);  
+                ExtGPSManager.INSTANCE.stop();
+                ExtGPSManager.INSTANCE.removeListener(GPSLocationManager.INSTANCE);
             }
         }
         else
@@ -292,9 +291,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         {
         case LocationProvider.AVAILABLE:
             s = "GPS Available";
+            if (extras != null && extras.containsKey("rps"))
+            {
+                extGPSFreq = extras.getDouble("rps");
+            }
             if (extras != null && extras.containsKey("satellites"))
             {
-                s += " (" + extras.get("satellites") + " sats in view)";
+                s += " (sats=" + extras.get("satellites") + " freq=" + String.format("%.2f", extGPSFreq) + "Hz)";
             }
             break;
 

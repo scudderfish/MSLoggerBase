@@ -73,6 +73,7 @@ public class StartupActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        isRunning = true;
         mHandler = new StartupHandler(this);
         setContentView(R.layout.startup);
         msgBox = (TextView) findViewById(R.id.identify_progress_msg);
