@@ -52,6 +52,12 @@ public interface MSECUInterface
     public abstract int getSigSize();
 
     public abstract int getPageActivationDelay();
+    
+    public abstract List<String> getPageIdentifiers();
+    
+    public abstract List<String> getPageValueWrites();
+    
+    public abstract List<String> getPageChunkWrites();
 
     public abstract int getInterWriteDelay();
 

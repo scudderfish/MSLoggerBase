@@ -844,7 +844,55 @@ public class Megasquirt implements MSControllerInterface
             DebugLogManager.INSTANCE.logException(e);
         }
     }
+    
+    /**
+     * Write a constant back to the ECU
+     * 
+     * @param constant The constant to write
+     */
+    public void writeConstant(Constant constant)
+    {
+        List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
+        List<String> pageValueWrites = ecuImplementation.getPageValueWrites();
+        
+        // Ex: U08, S16
+        String type = constant.getType();
+        
+        // Extract the the two last characters
+        int typeNumber = Integer.parseInt(type.substring(type.length() - 2));
 
+        // 8 bits / 8 = 1 byte, 16 bits / 8 = 2 bytes 
+        int size = typeNumber / 8;
+        
+        int pageNo = constant.getPage();
+        int offset = constant.getOffset();
+        
+        double userValue = getField(constant.getName());
+        
+        double scale = constant.getScale();
+        double translate = constant.getTranslate();
+        
+        // Constant to write is of type scalar or bits
+        if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
+        {
+            int msValue = (int) (userValue / scale - translate);
+            
+            System.out.println("Write to MS: userValue: " + userValue + " msValue: " + msValue + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo);        
+            String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, pageValueWrites.get(pageNo - 1), offset, size, msValue, pageNo);
+            System.out.println("Write to MS: " + command);
+        }
+        // Constant to write to ECU is of type array
+        else if (constant.getClassType().equals("array"))
+        {
+            //int arraySize[] = MSUtilsShared.getArraySize(constant.getShape());
+        }
+    }
+
+    /**
+     * 
+     * @param channelName
+     * @return
+     */
     public double[] getVector(String channelName)
     {
         double[] value = {0};
@@ -862,6 +910,11 @@ public class Megasquirt implements MSControllerInterface
         return value;
     }
     
+    /**
+     * 
+     * @param channelName
+     * @return
+     */
     public double getField(String channelName)
     {
         double value = 0;
@@ -879,6 +932,11 @@ public class Megasquirt implements MSControllerInterface
         return value;
     }
     
+    /**
+     * 
+     * @param channelName
+     * @param value
+     */
     public void setField(String channelName, double value)
     {
         Class<?> c = ecuImplementation.getClass();
@@ -903,6 +961,12 @@ public class Megasquirt implements MSControllerInterface
         }
     }
 
+    /**
+     * 
+     * @param number
+     * @param decimals
+     * @return
+     */
     public double roundDouble(double number, int decimals)
     {
         double p = (double) Math.pow(10,decimals);
@@ -911,6 +975,18 @@ public class Megasquirt implements MSControllerInterface
         return tmp / p;
     }
     
+    /**
+     * 
+     * @param pageBuffer
+     * @param offset
+     * @param width
+     * @param height
+     * @param scale
+     * @param translate
+     * @param digits
+     * @param signed
+     * @return
+     */
     public double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
@@ -927,6 +1003,18 @@ public class Megasquirt implements MSControllerInterface
         }
         return destination;
     }
+    
+    /**
+     * 
+     * @param pageBuffer
+     * @param offset
+     * @param width
+     * @param scale
+     * @param translate
+     * @param digits
+     * @param signed
+     * @return
+     */
     public double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
@@ -942,6 +1030,18 @@ public class Megasquirt implements MSControllerInterface
         return destination;
     }
 
+    /**
+     * 
+     * @param pageBuffer
+     * @param offset
+     * @param width
+     * @param height
+     * @param scale
+     * @param translate
+     * @param digits
+     * @param signed
+     * @return
+     */
     public double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
     {
         double[][] destination = new double[width][height];
@@ -959,6 +1059,18 @@ public class Megasquirt implements MSControllerInterface
 
         return destination;
     }
+    
+    /**
+     * 
+     * @param pageBuffer
+     * @param offset
+     * @param width
+     * @param scale
+     * @param translate
+     * @param digits
+     * @param signed
+     * @return
+     */
     public double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
     {
         double[] destination = new double[width];
@@ -975,41 +1087,81 @@ public class Megasquirt implements MSControllerInterface
 
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public boolean isConstantExists(String name)
     {
         return MSECUInterface.constants.containsKey(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public Constant getConstantByName(String name)
     {
         return MSECUInterface.constants.get(name);
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public OutputChannel getOutputChannelByName(String name)
     {
         return MSECUInterface.outputChannels.get(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public TableEditor getTableEditorByName(String name) 
     {
         return MSECUInterface.tableEditors.get(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public CurveEditor getCurveEditorByName(String name) 
     {
         return MSECUInterface.curveEditors.get(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public List<Menu> getMenusForDialog(String name)
     {
         return MSECUInterface.menus.get(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public MSDialog getDialogByName(String name)
     {
         return MSECUInterface.dialogs.get(name);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public boolean getUserDefinedVisibilityFlagsByName(String name)
     {
         if (MSECUInterface.userDefinedVisibilityFlags.containsKey(name))
@@ -1020,21 +1172,38 @@ public class Megasquirt implements MSControllerInterface
         return true;
     }
   
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public boolean getMenuVisibilityFlagsByName(String name)
     {
         return MSECUInterface.menuVisibilityFlags.get(name);
     }
     
+    /**
+     * 
+     * @param dialog
+     */
     public void addDialog(MSDialog dialog)
     {
         MSECUInterface.dialogs.put(dialog.getName(), dialog);
     }
     
+    /**
+     * 
+     * @param curve
+     */
     public void addCurve(CurveEditor curve)
     {
         MSECUInterface.curveEditors.put(curve.getName(), curve);
     }
     
+    /**
+     * 
+     * @param constant
+     */
     public void addConstant(Constant constant)
     {
         MSECUInterface.constants.put(constant.getName(), constant);
@@ -1081,57 +1250,98 @@ public class Megasquirt implements MSControllerInterface
         return constants;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String[] defaultGauges()
     {
         return ecuImplementation.defaultGauges();
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getBlockSize()
     {
         return ecuImplementation.getBlockSize();
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getCurrentTPS()
     {
         return ecuImplementation.getCurrentTPS();
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getLogHeader()
     {
         return ecuImplementation.getLogHeader();
     }
 
+    /**
+     * 
+     */
     public void initGauges()
     {
         ecuImplementation.initGauges();
     }
 
+    /**
+     * 
+     */
     public void refreshFlags()
     {
         ecuImplementation.refreshFlags();
     }
 
+    /**
+     * 
+     */
     public void setMenuVisibilityFlags()
     {
         ecuImplementation.setMenuVisibilityFlags();
     }
 
+    /**
+     * 
+     */
     public void setUserDefinedVisibilityFlags()
     {
         ecuImplementation.setUserDefinedVisibilityFlags();
         
     }
 
+    /**
+     * 
+     * @return
+     */
     public String[] getControlFlags()
     {
         return ecuImplementation.getControlFlags();
     }
     
+    /**
+     * 
+     * @return
+     */
     public List<String> getRequiresPowerCycle()
     {
         return ecuImplementation.getRequiresPowerCycle();
     }
     
+    /**
+     * 
+     * @param cls
+     * @return
+     */
     public boolean hasImplementation(Class<? extends MSECUInterface> cls)
     {
         return (ecuImplementation != null && ecuImplementation.getClass().equals(cls));
