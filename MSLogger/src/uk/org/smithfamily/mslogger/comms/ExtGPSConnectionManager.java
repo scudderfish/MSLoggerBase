@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Main connection class that wrap all the Bluetooth stuff that communicate with a External GPS
@@ -34,6 +35,11 @@ public class ExtGPSConnectionManager extends ConnectionManager
     public InputStream getInputStream()
     {
         return mmInStream;
+    }
+
+    public OutputStream getOutputStream()
+    {
+        return mmOutStream;
     }
 
 }

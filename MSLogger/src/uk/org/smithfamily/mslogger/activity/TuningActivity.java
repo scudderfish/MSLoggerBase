@@ -356,7 +356,6 @@ public class TuningActivity extends Activity
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            Log.i(ApplicationSettings.TAG, "Received :" + action);
 
             if (action.equals(Megasquirt.DISCONNECTED))
             {

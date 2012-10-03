@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.res.AssetManager;
 import android.util.Log;
 
@@ -111,7 +112,7 @@ public enum TableManager
 		}
 		catch (IOException e)
 		{
-            Log.e(ApplicationSettings.TAG,"TableManager.readTable(" + fileName + ")", e);
+            DebugLogManager.INSTANCE.logException(e);
 		}
 	}
 

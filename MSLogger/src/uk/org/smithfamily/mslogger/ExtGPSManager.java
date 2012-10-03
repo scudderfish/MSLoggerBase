@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -319,12 +320,42 @@ public enum ExtGPSManager
         return timestamp;
     }
 
+    private byte computeChecksum(String s)
+    {
+        byte checksum = 0;
+        for (char c : s.toCharArray())
+        {
+            checksum ^= (byte) c;
+        }
+        return checksum;
+    }
+
+    private void sendNmeaEnableCommand(String sentence)
+    {
+        final String command = String.format((Locale) null, "$%s*%X\r\n", sentence, computeChecksum(sentence));
+
+        Thread t = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (running && (extGPSThread != null))
+                {
+                    extGPSThread.write(command);
+                    DebugLogManager.INSTANCE.log("sendNmeaEnableCommand()", Log.DEBUG);
+                }
+            }
+        });
+        t.start();
+
+    }
+
     private void notifyStatusChanged(int status, Bundle extras, long updateTime)
     {
         locationTime = null;
         hasGGA = false;
         hasRMC = false;
-        notifyStatusChangedNoClear(status,extras,updateTime);
+        notifyStatusChangedNoClear(status, extras, updateTime);
     }
 
     private void notifyStatusChangedNoClear(int status, Bundle extras, long updateTime)
@@ -429,6 +460,8 @@ public enum ExtGPSManager
             extGPSThread = new ExtGPSThread();
             extGPSThread.setDaemon(true);
             extGPSThread.start();
+            sendNmeaEnableCommand("PSRF103,00,00,01,01");
+            sendNmeaEnableCommand("PSRF103,04,00,01,01");
             locStatus = LocationProvider.OUT_OF_SERVICE;
             locationTime = null;
             hasGGA = false;
@@ -475,6 +508,10 @@ public enum ExtGPSManager
      */
     private class ExtGPSThread extends Thread
     {
+        private InputStreamReader in;
+        private PrintStream out2;
+        private boolean canWrite;
+
         /**
          * 
          */
@@ -489,21 +526,13 @@ public enum ExtGPSManager
         }
 
         /**
-         * Kick the connection off
-         */
-        public void initialiseConnection()
-        {
-            ExtGPSConnectionManager.getInstance().init(null, ApplicationSettings.INSTANCE.getExtGPSBluetoothMac());
-        }
-
-        /**
          * The main loop of the connection to the ECU
          */
         public void run()
         {
             try
             {
-                initialiseConnection();
+                ExtGPSConnectionManager.getInstance().init(null, ApplicationSettings.INSTANCE.getExtGPSBluetoothMac());
 
                 try
                 {
@@ -514,15 +543,19 @@ public enum ExtGPSManager
                     DebugLogManager.INSTANCE.logException(e);
                 }
 
-                running = true;
-
                 try
                 {
                     ExtGPSConnectionManager.getInstance().connect();
 
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(ExtGPSConnectionManager.getInstance().getInputStream(), "US-ASCII"));
+                    in = new InputStreamReader(ExtGPSConnectionManager.getInstance().getInputStream(), "US-ASCII");
+                    out2 = new PrintStream(ExtGPSConnectionManager.getInstance().getOutputStream(), false, "US-ASCII");
+
+                    BufferedReader reader = new BufferedReader(in);
                     String s;
                     long delay = 100;
+
+                    running = true;
+                    canWrite = false;
 
                     // This is the actual work. Outside influences will toggle 'running' when we want this to stop
                     while (running)
@@ -531,6 +564,7 @@ public enum ExtGPSManager
                         {
                             s = reader.readLine();
                             parseNmeaSentence(s);
+                            canWrite = true;
                             if (locStatus == LocationProvider.AVAILABLE)
                             {
                                 delay = 50;
@@ -563,6 +597,31 @@ public enum ExtGPSManager
             finally
             {
                 watch = null;
+            }
+        }
+
+        /**
+         * Write to the connected OutStream.
+         * 
+         * @param buffer The data to write
+         */
+        public void write(String buffer)
+        {
+            try
+            {
+                do
+                {
+                    Thread.sleep(100);
+                } while ((running) && (!canWrite));
+                if ((running) && (canWrite))
+                {
+                    out2.print(buffer);
+                    out2.flush();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                DebugLogManager.INSTANCE.logException(e);
             }
         }
 

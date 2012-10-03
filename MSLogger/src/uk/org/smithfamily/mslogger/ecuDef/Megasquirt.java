@@ -181,10 +181,7 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (IOException e)
         {
-            // ErrorReporter.getInstance().handleException(e);
             DebugLogManager.INSTANCE.logException(e);
-
-            Log.e(ApplicationSettings.TAG, "Megasquirt.logValues()", e);
         }
     }
 
@@ -905,7 +902,6 @@ public class Megasquirt implements MSControllerInterface
         catch (Exception e)
         {
             DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
-            Log.e(ApplicationSettings.TAG, "Megasquirt.getVector()", e);
         }
         return value;
     }
@@ -927,7 +923,6 @@ public class Megasquirt implements MSControllerInterface
         catch (Exception e)
         {
             DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
-            Log.e(ApplicationSettings.TAG, "Megasquirt.getField()", e);
         }
         return value;
     }
@@ -957,7 +952,6 @@ public class Megasquirt implements MSControllerInterface
         catch (Exception e)
         {
             DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName, Log.ERROR);
-            Log.e(ApplicationSettings.TAG, "Megasquirt.setFeidl()", e);
         }
     }
 

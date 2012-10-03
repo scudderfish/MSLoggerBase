@@ -1178,7 +1178,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            Log.i(ApplicationSettings.TAG, "Received :" + action);
             boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
             if (action.equals(Megasquirt.CONNECTED))
