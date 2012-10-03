@@ -1,10 +1,15 @@
 package uk.org.smithfamily.mslogger.dialog;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,7 +21,8 @@ import android.widget.HorizontalScrollView;
 public class EditTableDialog extends Dialog implements android.view.View.OnClickListener
 {    
     private TableHelper tableHelper;
-    private TableEditor tableEditor;
+    
+    private Megasquirt ecu;
     
     /**
      * 
@@ -28,7 +34,8 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         super(context);
         
         this.tableHelper = new TableHelper(context, tableEditor, true);
-        this.tableEditor = tableEditor;
+        
+        this.ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
     }
     
     /**
@@ -41,7 +48,7 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
         
         setContentView(R.layout.edittable);
      
-        setTitle("Edit " + tableEditor.getLabel());
+        setTitle("Edit " + tableHelper.getTableEditor().getLabel());
         
         HorizontalScrollView ll = (HorizontalScrollView) findViewById(R.id.horizontalView);
         ll.addView(tableHelper.getLayout());
@@ -61,9 +68,19 @@ public class EditTableDialog extends Dialog implements android.view.View.OnClick
      */
     private void burnToECU()
     {
+        // Make sure table has been modified
         if (tableHelper.isModified()) 
         {
-            System.out.println("Table " + tableEditor.getName() + " was modified, need to write change to ECU");
+            TableEditor tableEditor = tableHelper.getTableEditor();
+            
+            DebugLogManager.INSTANCE.log("Table " + tableEditor.getName() + " was modified, need to write change to ECU", Log.DEBUG);
+            
+            // Get table constant
+            Constant tableConstant = ecu.getConstantByName(tableEditor.getzBins());
+            
+            ecu.writeConstant(tableConstant);
+            
+            dismiss();
         }
     }
     

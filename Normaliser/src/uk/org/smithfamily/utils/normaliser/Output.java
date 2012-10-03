@@ -884,7 +884,8 @@ public class Output
     {
         String ret = "new byte[]{";
 
-        ret += MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), s, offset, count, 0, pageNo);
+        int[] value = {0};
+        ret += MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), s, offset, count, value, pageNo);
 
         ret += "}";
         return ret;

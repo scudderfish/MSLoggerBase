@@ -22,7 +22,7 @@ public class ZBins extends TableItem
     @Override
     public String toString()
     {
-        return String.format("t.setZBins(%s);", bins);
+        return String.format("t.setZBins(\"%s\");", bins);
     }
 
 }

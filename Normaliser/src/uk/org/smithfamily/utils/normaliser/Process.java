@@ -231,7 +231,8 @@ public class Process
             String och = ochGetCommandM.group(1);
             if (och.length() > 1)
             {
-                och = MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), och, 0, 0, 0, 0);
+                int[] value = {0};
+                och = MSUtilsShared.HexStringToBytes(ecuData.getPageIdentifiers(), och, 0, 0, value, 0);
             }
             else
             {
