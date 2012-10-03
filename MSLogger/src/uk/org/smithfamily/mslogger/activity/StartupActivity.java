@@ -46,13 +46,20 @@ public class StartupActivity extends Activity
         {
             super.handleMessage(msg);
             StartupActivity sa = parent.get();
-            if (sa == null || !sa.isRunning) return;
             
             switch (msg.what)
             {
             case MSLoggerApplication.GOT_SIG:
                 sa.checkSig((String) msg.obj);
                 break;
+            default:
+                return;
+            }
+            if (sa == null || !sa.isRunning) return;            
+            
+            // messages after here are when Activity is running/active
+            switch (msg.what)
+            {
             case MSLoggerApplication.COMMS_ERROR:
                 sa.finishCommsError();
                 break;
