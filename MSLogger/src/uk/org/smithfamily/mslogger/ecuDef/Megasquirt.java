@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 
@@ -854,12 +855,13 @@ public class Megasquirt implements MSControllerInterface
         
         // Ex: U08, S16
         String type = constant.getType();
-        
-        // Extract the the two last characters
-        int typeNumber = Integer.parseInt(type.substring(type.length() - 2));
 
-        // 8 bits / 8 = 1 byte, 16 bits / 8 = 2 bytes 
-        int size = typeNumber / 8;
+        // 8 bits = 1 byte by default
+        int size = 1;
+        if (type.contains("16"))
+        {
+            size = 2; // 16 bits = 2 bytes
+        }
         
         int pageNo = constant.getPage();
         int offset = constant.getOffset();
@@ -869,23 +871,96 @@ public class Megasquirt implements MSControllerInterface
         double scale = constant.getScale();
         double translate = constant.getTranslate();
         
+        int[] msValue = null;
+        
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
-            int msValue = (int) (userValue / scale - translate);
-            
-            System.out.println("Write to MS: userValue: " + userValue + " msValue: " + msValue + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo);        
-            String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, pageValueWrites.get(pageNo - 1), offset, size, msValue, pageNo);
-            System.out.println("Write to MS: " + command);
+            msValue = new int[1];
+            msValue[0] = (int) (userValue / scale - translate);
         }
         // Constant to write to ECU is of type array
         else if (constant.getClassType().equals("array"))
         {
-            //int arraySize[] = MSUtilsShared.getArraySize(constant.getShape());
+            int shape[] = MSUtilsShared.getArraySize(constant.getShape());
+            
+            int width = shape[0];
+            int height = shape[1];
+            
+            // Vector
+            if (height == -1)
+            {
+                size *= width;
+                
+                double[] vector = getVector(constant.getName());
+                msValue = new int[vector.length];
+                
+                for (int x = 0; x < width; x++)
+                {
+                    msValue[x] = (int) (vector[x] / scale - translate);
+                }
+            }
+            // Array
+            else
+            {
+                double[][] array = getArray(constant.getName());
+                int i = 0;
+                
+                size *= width * height;
+                msValue = new int[width * height];
+                
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        msValue[i++] = (int) (array[x][y] / scale - translate);
+                    }
+                }
+
+            }
+        }
+        
+        if (msValue != null && msValue.length > 0)
+        {
+            String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, pageValueWrites.get(pageNo - 1), offset, size, msValue, pageNo);
+            int[] byteCommand = MSUtils.INSTANCE.commandStringtoIntArray(command);
+            
+            DebugLogManager.INSTANCE.log("Writing to MS: userValue: " + userValue + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo, Log.DEBUG);
+            
+            System.out.println("Write to MS: userValue: " + userValue + " msValue: " + msValue + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo);
+            System.out.println("Write to MS: " + command);
+            System.out.println("Write to MS: " + Arrays.toString(byteCommand));
+        }
+        else
+        {
+            DebugLogManager.INSTANCE.log("Couldn't find any value to write, maybe unsupported constant type " + constant.getType(), Log.DEBUG);
         }
     }
-
+    
     /**
+     * Get an array from the ECU
+     * 
+     * @param channelName
+     * @return
+     */
+    public double[][] getArray(String channelName)
+    {
+        double[][] value = {{0},{0}};
+        Class<?> c = ecuImplementation.getClass();
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            value = (double[][]) f.get(ecuImplementation);
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+        }
+        return value;
+    }
+    
+    /**
+     * Get a vector from the ECU
      * 
      * @param channelName
      * @return
@@ -985,9 +1060,9 @@ public class Megasquirt implements MSControllerInterface
     {
         double[][] destination = new double[width][height];
         int index = offset;
-        for (int y = 0 ; y < height ; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < width ; x++)
+            for (int x = 0; x < width; x++)
             {
                 double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index): MSUtils.INSTANCE.getByte(pageBuffer, index);
                 value = (value + translate) * scale;
@@ -1013,7 +1088,7 @@ public class Megasquirt implements MSControllerInterface
     {
         double[] destination = new double[width];
         int index = offset;
-        for (int x = 0; x < width ; x++)
+        for (int x = 0; x < width; x++)
         {
             double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index): MSUtils.INSTANCE.getByte(pageBuffer, index);
             value = (value + translate) * scale;
@@ -1040,9 +1115,9 @@ public class Megasquirt implements MSControllerInterface
     {
         double[][] destination = new double[width][height];
         int index = offset;
-        for (int y = 0 ; y < height ; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < width ; x++)
+            for (int x = 0; x < width; x++)
             {
                 double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index): MSUtils.INSTANCE.getWord(pageBuffer, index);
                 value = (value + translate) * scale;
@@ -1069,7 +1144,7 @@ public class Megasquirt implements MSControllerInterface
     {
         double[] destination = new double[width];
         int index = offset;
-        for (int x = 0; x < width ; x++)
+        for (int x = 0; x < width; x++)
         {
             double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index): MSUtils.INSTANCE.getWord(pageBuffer, index);
             value = (value + translate) * scale;

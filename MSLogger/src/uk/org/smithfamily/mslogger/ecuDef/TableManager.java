@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.res.AssetManager;
-import android.util.Log;
 
 /**
  * Manages the tables of constants 

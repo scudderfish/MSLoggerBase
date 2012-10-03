@@ -36,7 +36,7 @@ public class MSUtilsShared
      * @param pageNo
      * @return
      */
-    public static String HexStringToBytes(List<String> listPageCommand, String s, int offset, int count, int value, int pageNo)
+    public static String HexStringToBytes(List<String> listPageCommand, String s, int offset, int count, int[] value, int pageNo)
     {
         String ret = "";
         boolean first = true;
@@ -79,7 +79,10 @@ public class MSUtilsShared
                 }
                 else if (c == 'v')
                 {
-                    ret += bytes(value);
+                    for (int i = 0; i < value.length; i++)
+                    {
+                        ret += bytes(value[i]);
+                    }
                 }
                 
                 break;
