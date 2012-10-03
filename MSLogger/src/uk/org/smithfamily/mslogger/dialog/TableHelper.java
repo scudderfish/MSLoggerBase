@@ -144,12 +144,14 @@ public class TableHelper
      */
     private void drawTable()
     {
-        this.tableNbX = table.getzBins().length;
-        this.tableNbY = table.getzBins()[0].length;
-        
-        // X and Y axis labels
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
+        double zBins[][] = ecu.getArray(table.getzBins());
+        
+        this.tableNbX = zBins.length;
+        this.tableNbY = zBins[0].length;
+        
+        // X and Y axis labels
         OutputChannel xOutputChannel = ecu.getOutputChannelByName(table.getxOutputChannel());
         OutputChannel yOutputChannel = ecu.getOutputChannelByName(table.getyOutputChannel());
         
@@ -180,12 +182,10 @@ public class TableHelper
             tableLabel.setText(table.getLabel());
         }
         
-        TableRow tableRow;     
+        TableRow tableRow;
         
         double xBins[] = table.getxBins();
         double yBins[] = table.getyBins();
-        
-        double zBins[][] = table.getzBins();
         
         int xDigits = 0;
         if (xOutputChannel != null)
@@ -269,7 +269,7 @@ public class TableHelper
                         
             columnHeader.setLayoutParams(lp);
             
-            tableRow.addView(columnHeader);   
+            tableRow.addView(columnHeader);
         }       
         
         tableLayout.addView(tableRow,lp);

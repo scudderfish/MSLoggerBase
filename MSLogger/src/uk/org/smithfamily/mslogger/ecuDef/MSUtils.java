@@ -201,8 +201,32 @@ public enum MSUtils implements MSUtilsInterface
         return s;
     }
 
+    /**
+     * @return
+     */
     private int getGPSUpdate()
     {
         return GPSLocationManager.INSTANCE.getFreshness();
+    }
+    
+    /**
+     * Take an MS command like this one 119,0,4,0,20,0,2,0,250 (to set cranking RPM to 250rpm on MS2Extra)
+     * and convert it to integer array that can be used with Megasquirt.writeCommand()
+     * 
+     * @param command The command to convert to integer array
+     * @return A integer array with every byte of the command
+     */
+    public int[] commandStringtoIntArray(String command)
+    {
+        String[] split = command.split(",");
+        
+        int[] ints = new int[split.length];
+        
+        for (int i = 0; i < split.length; i++)
+        {
+            ints[i] = Integer.valueOf(split[i]);
+        }
+        
+        return ints;
     }
 }

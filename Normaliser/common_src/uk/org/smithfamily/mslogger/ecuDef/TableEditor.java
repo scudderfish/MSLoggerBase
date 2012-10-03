@@ -15,7 +15,7 @@ public class TableEditor
     private double[]   yBins;
     private String     yOutputChannel;
     private boolean    yReadOnly;
-    private double[][] zBins;
+    private String     zBins;
     private double     height;
     private String     upLabel;
     private String     downLabel;
@@ -65,9 +65,9 @@ public class TableEditor
         this.yReadOnly = b;
     }
 
-    public void setZBins(double[][] bins)
+    public void setZBins(String binsName)
     {
-        this.zBins = bins;
+        this.zBins = binsName;
 
     }
 
@@ -112,7 +112,7 @@ public class TableEditor
         return yReadOnly;
     }
 
-    public double[][] getzBins()
+    public String getzBins()
     {
         return zBins;
     }
@@ -158,7 +158,7 @@ public class TableEditor
     public String toString()
     {
         return "TableEditor [page=" + page + ", label=" + label + ", map3DName=" + map3DName + ", name=" + name + ", xBins=" + Arrays.toString(xBins) + ", xOutputChannel=" + xOutputChannel + ", xReadOnly=" + xReadOnly + ", yBins=" + Arrays.toString(yBins)
-                + ", yOutputChannel=" + yOutputChannel + ", yReadOnly=" + yReadOnly + ", zBins=" + Arrays.toString(zBins) + ", height=" + height + ", upLabel=" + upLabel + ", downLabel=" + downLabel + ", xOrient=" + xOrient + ", yOrient=" + yOrient + ", zOrient="
+                + ", yOutputChannel=" + yOutputChannel + ", yReadOnly=" + yReadOnly + ", zBins=" + zBins + ", height=" + height + ", upLabel=" + upLabel + ", downLabel=" + downLabel + ", xOrient=" + xOrient + ", yOrient=" + yOrient + ", zOrient="
                 + zOrient + "]";
     }
 

@@ -5,9 +5,11 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -71,16 +73,20 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         
         if (xBinsConstant.isModified())
         {
-            System.out.println("Constant \"" + xBinsConstant.getName() + "\" was modified, need to write change to ECU");
+            DebugLogManager.INSTANCE.log("Constant \"" + xBinsConstant.getName() + "\" was modified, need to write change to ECU", Log.DEBUG);
             
             xBinsConstant.setModified(false);
+            
+            ecu.writeConstant(xBinsConstant);
         }
         
         if (yBinsConstant.isModified())
         {
-            System.out.println("Constant \"" + yBinsConstant.getName() + "\" was modified, need to write change to ECU");
+            DebugLogManager.INSTANCE.log("Constant \"" + yBinsConstant.getName() + "\" was modified, need to write change to ECU", Log.DEBUG);
             
             yBinsConstant.setModified(false);
+            
+            ecu.writeConstant(yBinsConstant);
         }
     }
     
