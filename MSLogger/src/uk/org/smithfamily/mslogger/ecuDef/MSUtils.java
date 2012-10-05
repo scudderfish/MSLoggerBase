@@ -211,22 +211,22 @@ public enum MSUtils implements MSUtilsInterface
     
     /**
      * Take an MS command like this one 119,0,4,0,20,0,2,0,250 (to set cranking RPM to 250rpm on MS2Extra)
-     * and convert it to integer array that can be used with Megasquirt.writeCommand()
+     * and convert it to byte array that can be used with Megasquirt.writeCommand()
      * 
-     * @param command The command to convert to integer array
-     * @return A integer array with every byte of the command
+     * @param command The command to convert to byte array
+     * @return A byte array with every byte of the command
      */
-    public int[] commandStringtoIntArray(String command)
+    public byte[] commandStringtoByteArray(String command)
     {
         String[] split = command.split(",");
         
-        int[] ints = new int[split.length];
+        byte[] bytes = new byte[split.length];
         
         for (int i = 0; i < split.length; i++)
         {
-            ints[i] = Integer.valueOf(split[i]);
+            bytes[i] = Byte.valueOf(split[i]);
         }
         
-        return ints;
+        return bytes;
     }
 }

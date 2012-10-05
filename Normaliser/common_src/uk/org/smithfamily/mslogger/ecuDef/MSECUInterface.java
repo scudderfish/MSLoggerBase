@@ -55,6 +55,8 @@ public interface MSECUInterface
     
     public abstract List<String> getPageIdentifiers();
     
+    public abstract List<byte[]> getPageActivates();
+    
     public abstract List<String> getPageValueWrites();
     
     public abstract List<String> getPageChunkWrites();
