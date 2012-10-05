@@ -81,7 +81,7 @@ public class MSUtilsShared
                 {
                     for (int i = 0; i < value.length; i++)
                     {
-                        ret += bytes(value[i]);
+                        ret += bytes(value[i]) + ",";
                     }
                 }
                 
@@ -101,7 +101,7 @@ public class MSUtilsShared
      * @param s
      * @return
      */
-    private static int HexByteToDec(String s)
+    public static int HexByteToDec(String s)
     {
         String digits = "0123456789abcdef";
         int i = 0;
@@ -132,6 +132,9 @@ public class MSUtilsShared
         int low = val % 256;
         if (hi > 127)
             hi -= 256;
+        if (low > 127)
+            low -= 256;
+        
         return "" + hi + "," + low;
     }
 }

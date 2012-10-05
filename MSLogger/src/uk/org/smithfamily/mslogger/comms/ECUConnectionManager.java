@@ -83,7 +83,7 @@ public class ECUConnectionManager extends ConnectionManager
 
         DebugLogManager.INSTANCE.log("Writing", command, Log.DEBUG);
 
-        if (command.length == 7 && command[0] == 'r')
+        if (command.length == 7 && (command[0] == 'r' || command[0] == 'w' || command[0] == 'e'))
         {
             // MS2 hack
             byte[] select = new byte[3];
