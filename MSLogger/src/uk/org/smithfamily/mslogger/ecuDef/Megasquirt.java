@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Abstract base class for all ECU implementations
@@ -610,7 +611,7 @@ public class Megasquirt implements MSControllerInterface
                             
                             String msg = "Got unsupported signature from Megasquirt \"" + msSig + "\" but found a similar supported signature \"" + signature + "\"";
                             
-                            sendToastMessage(msg);                            
+                            sendToastMessage(msg);
                             DebugLogManager.INSTANCE.log(msg, Log.INFO);
                             
                             break;
@@ -866,8 +867,6 @@ public class Megasquirt implements MSControllerInterface
         int pageNo = constant.getPage();
         int offset = constant.getOffset();
         
-        double userValue = getField(constant.getName());
-        
         double scale = constant.getScale();
         double translate = constant.getTranslate();
         
@@ -876,6 +875,8 @@ public class Megasquirt implements MSControllerInterface
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
+            double userValue = getField(constant.getName());
+            
             msValue = new int[1];
             msValue[0] = (int) (userValue / scale - translate);
         }
@@ -897,6 +898,7 @@ public class Megasquirt implements MSControllerInterface
                 
                 for (int x = 0; x < width; x++)
                 {
+                    // Switch from user value to MS value
                     msValue[x] = (int) (vector[x] / scale - translate);
                 }
             }
@@ -913,6 +915,7 @@ public class Megasquirt implements MSControllerInterface
                 {
                     for (int x = 0; x < width; x++)
                     {
+                        // Switch from user value to MS value
                         msValue[i++] = (int) (array[x][y] / scale - translate);
                     }
                 }
@@ -920,20 +923,71 @@ public class Megasquirt implements MSControllerInterface
             }
         }
         
+        // Make sure we have something to send to the MS
         if (msValue != null && msValue.length > 0)
         {
             String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, pageValueWrites.get(pageNo - 1), offset, size, msValue, pageNo);
-            int[] byteCommand = MSUtils.INSTANCE.commandStringtoIntArray(command);
+            byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
             
-            DebugLogManager.INSTANCE.log("Writing to MS: userValue: " + userValue + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo, Log.DEBUG);
+            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo, Log.DEBUG);
             
-            System.out.println("Write to MS: userValue: " + userValue + " msValue: " + msValue + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: " + size + " pageNo: " + pageNo);
-            System.out.println("Write to MS: " + command);
-            System.out.println("Write to MS: " + Arrays.toString(byteCommand));
+            List<byte[]> pageActivates = ecuImplementation.getPageActivates();
+            
+            try
+            {
+                int delay = ecuImplementation.getPageActivationDelay();
+                
+                // MS1 use page select command
+                if (pageActivates.size() >= pageNo)
+                {
+                    byte[] pageSelectCommand = pageActivates.get(pageNo - 1);
+                    ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
+                }
+                
+                ECUConnectionManager.getInstance().writeCommand(byteCommand, delay, ecuImplementation.isCRC32Protocol());
+                
+                Toast.makeText(context, "Writing constant " + constant.getName() + " to MegaSquirt", Toast.LENGTH_SHORT).show();
+            }
+            catch (IOException e)
+            {
+                DebugLogManager.INSTANCE.logException(e);
+            }
+            
+            burnPage(pageNo);
         }
+        // Nothing to send to the MS, maybe unsupported constant type ?
         else
         {
             DebugLogManager.INSTANCE.log("Couldn't find any value to write, maybe unsupported constant type " + constant.getType(), Log.DEBUG);
+        }
+    }
+    
+    /**
+     * Burn a page from MS RAM to Flash
+     * 
+     * @param pageNo The page number to burn
+     */
+    private void burnPage(int pageNo)
+    {
+        try
+        {
+            // Convert from page to table index that the ECU understand
+            List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
+            
+            String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("$tsCanId", "");
+            
+            byte tblIdx = (byte) MSUtilsShared.HexByteToDec(pageIdentifier);
+            
+            DebugLogManager.INSTANCE.log("Burning page " + pageNo + "(table index: " + tblIdx + ")", Log.DEBUG);
+            
+            // Send "b" command for the tblIdx
+            ECUConnectionManager.getInstance().writeCommand(new byte[]{98, 0, tblIdx}, 0, ecuImplementation.isCRC32Protocol());
+            
+            Toast.makeText(context, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
+        }
+        catch (IOException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
         }
     }
     
@@ -954,7 +1008,7 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (Exception e)
         {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to get array value for " + channelName, Log.ERROR);
         }
         return value;
     }
@@ -976,7 +1030,7 @@ public class Megasquirt implements MSControllerInterface
         }
         catch (Exception e)
         {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to get vector value for " + channelName, Log.ERROR);
         }
         return value;
     }
