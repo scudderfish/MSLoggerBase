@@ -207,8 +207,6 @@ abstract class ConnectionManager
      */
     protected synchronized void checkConnection() throws IOException
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+"checkConnection()", Log.DEBUG);
-
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
             connect();
@@ -222,7 +220,7 @@ abstract class ConnectionManager
      */
     protected void delay(int d)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".delay(" + d + "ms)", Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".delay(" + d + "ms)", Log.VERBOSE);
         try
         {
             Thread.sleep(d);
@@ -260,7 +258,7 @@ abstract class ConnectionManager
             throw new IOException("Not connected");
         }
 
-        DebugLogManager.INSTANCE.log(getInstanceName()+".writeData ", data, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".writeData ", data, Log.VERBOSE);
 
         this.mmOutStream.write(data);
 
@@ -307,7 +305,7 @@ abstract class ConnectionManager
             result[i++] = b;
         }
 
-        DebugLogManager.INSTANCE.log(getInstanceName()+".readBytes", result, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".readBytes", result, Log.VERBOSE);
 
         return result;
     }
@@ -336,7 +334,7 @@ abstract class ConnectionManager
      */
     public void sendStatus(String msgStr)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName()+".sendStatus "+msgStr, Log.INFO);
+        DebugLogManager.INSTANCE.log(getInstanceName()+".sendStatus "+msgStr, Log.DEBUG);
 
         if (handler != null)
         {

@@ -802,6 +802,13 @@ public class Output
             pageIdentifierOutput += TAB + TAB + "pageIdentifiers.add(\"" + pageIdentifier.replace("\\", "\\\\") + "\");\n";
         }
         
+        String pageActivateOutput = "";
+        int[] value = {0};
+        for (String pageActivate : ecuData.getPageActivateCommands())
+        {
+            pageActivateOutput += TAB + TAB + "pageActivates.add(new byte[] {" + MSUtilsShared.HexStringToBytes(new ArrayList<String>(), pageActivate, 0, 0, value, 0) + "});\n";
+        }
+        
         String pageValueWriteOutput = "";
         for (String pageValueWrite : ecuData.getPageValueWrites())
         {
@@ -853,6 +860,14 @@ public class Output
                 TAB + TAB + "List<String> pageIdentifiers = new ArrayList<String>();\n\n" +
                             pageIdentifierOutput +
                 "\n" + TAB + TAB + "return pageIdentifiers;\n" +
+                TAB + "}\n" +
+                
+                TAB + "@Override\n" +
+                TAB + "public List<byte[]> getPageActivates()\n" +
+                TAB + "{\n" +
+                TAB + TAB + "List<byte[]> pageActivates = new ArrayList<byte[]>();\n\n" +
+                            pageActivateOutput +
+                "\n" + TAB + TAB + "return pageActivates;\n" +
                 TAB + "}\n" +
                 
                 TAB + "@Override\n" + TAB + "public int getInterWriteDelay()\n" + TAB + "{\n" + TAB + TAB + "return "

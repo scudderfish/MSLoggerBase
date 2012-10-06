@@ -135,8 +135,6 @@ public class BluetoothConnection implements Connection
     @Override
     public boolean isConnected()
     {
-        DebugLogManager.INSTANCE.log("BluetoothConnection.isConnected()", Log.DEBUG);
-        
         return (socket != null && mmInStream != null && mmOutStream != null);
     }
 
