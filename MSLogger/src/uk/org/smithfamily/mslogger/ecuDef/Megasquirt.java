@@ -76,7 +76,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Log.i("Megasquirt", "Received start id " + startId + ": " + intent);
+        DebugLogManager.INSTANCE.log("Megasquirt Received start id " + startId + ": " + intent,Log.VERBOSE);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
@@ -106,6 +106,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             @Override
             public void onReceive(Context context, Intent intent)
             {
+                DebugLogManager.INSTANCE.log("BT_CHANGED received", Log.VERBOSE);
                 stop();
                 start();
             }
@@ -200,11 +201,13 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
         else
         {
-            if (ecuThread == null)
+            if(ecuThread != null)
             {
-                ecuThread = new ECUThread();
-                ecuThread.start();
+                ecuThread.halt();
             }
+            ecuThread = new ECUThread();
+                
+            ecuThread.start();
         }
     }
 
@@ -213,6 +216,8 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     public synchronized void stop()
     {
+        DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
+
         if (ecuThread != null)
         {
             ecuThread.halt();
@@ -221,8 +226,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         running = false;
 
-        DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
-
+        
         broadcast(DISCONNECTED);
     }
 
@@ -327,6 +331,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     private void broadcast(String action, String data)
     {
+        DebugLogManager.INSTANCE.log("Megasquirt.broadcast("+action+","+data+")",Log.VERBOSE);
         Intent broadcast = new Intent();
         broadcast.setAction(action);
         broadcast.putExtra(ApplicationSettings.MESSAGE, data);
@@ -403,6 +408,40 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private class ECUThread extends Thread
     {
+        private class CalculationThread extends Thread
+        {
+            private volatile boolean running = true;
+            public void halt()
+            {
+                DebugLogManager.INSTANCE.log("CalculationThread.halt()", Log.INFO);
+
+                running = false;
+            }
+            
+            public void run()
+            {
+                this.setName("CalculationThread");
+                try
+                {
+                    while (running)
+                    {
+                        byte[] buffer = handshake.get();
+                        if (ecuImplementation != null)
+                        {
+                            ecuImplementation.calculate(buffer);
+                            logValues(buffer);
+                            broadcast();
+                        }
+                    }
+                }
+                catch (InterruptedException e)
+                {
+                    // Swallow, we're on our way out.
+                }
+            }
+            
+        }
+        
         class Handshake
         {
             private byte[] buffer;
@@ -427,7 +466,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
 
         Handshake handshake = new Handshake();
-        Thread calculationThread = new CalculationThread();
+        CalculationThread calculationThread = new CalculationThread();
 
         /**
          * 
@@ -439,35 +478,14 @@ public class Megasquirt extends Service implements MSControllerInterface
                 DebugLogManager.INSTANCE.log("Attempting to create second connection!", Log.ASSERT);
             }
             watch = this;
-            // String sig = ecuImplementation.getSignature();
-            // setName("ECUThread:" + sig + ":" + System.currentTimeMillis());
+            String name = "ECUThread:" + System.currentTimeMillis();
+            setName(name);
+            DebugLogManager.INSTANCE.log("Creating ECUThread named "+name, Log.VERBOSE);
             calculationThread.start();
+        
         }
 
-        private class CalculationThread extends Thread
-        {
-            public void run()
-            {
-                this.setName("CalculationThread");
-                try
-                {
-                    while (true)
-                    {
-                        byte[] buffer = handshake.get();
-                        if (ecuImplementation != null)
-                        {
-                            ecuImplementation.calculate(buffer);
-                            logValues(buffer);
-                            broadcast();
-                        }
-                    }
-                }
-                catch (InterruptedException e)
-                {
-                    // Swallow, we're on our way out.
-                }
-            }
-        }
+        
 
         /**
          * Kick the connection off
@@ -476,7 +494,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             // sendMessage("Launching connection");
 
-            Connection conn = ConnectionFactory.INSTANCE.getConnection();
+            //Connection conn = ConnectionFactory.INSTANCE.getConnection();
             String btAddress = ApplicationSettings.INSTANCE.getECUBluetoothMac();
             ECUConnectionManager.getInstance().init(null, btAddress);
         }
@@ -488,7 +506,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             try
             {
-                sendMessage("");
+                sendMessage("Starting connection");
                 DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
                 initialiseConnection();
 
@@ -525,15 +543,16 @@ public class Megasquirt extends Service implements MSControllerInterface
                     // Make sure everyone agrees on what flags are set
                     ApplicationSettings.INSTANCE.refreshFlags();
                     ecuImplementation.refreshFlags();
+              
                     if (!constantsLoaded)
                     {
                         // Only do this once so reconnects are quicker
                         ecuImplementation.loadConstants(simulated);
                         constantsLoaded = true;
 
-                        sendMessage("Connected to " + getTrueSignature());
+                        
                     }
-
+                    sendMessage("Connected to " + getTrueSignature());
                     long lastRpsTime = System.currentTimeMillis();
                     double readCounter = 0;
 
@@ -592,6 +611,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             }
             finally
             {
+                calculationThread.halt();
                 calculationThread.interrupt();
                 watch = null;
             }
@@ -599,6 +619,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         private void initialiseImplementation() throws IOException, CRC32Exception
         {
+            sendMessage("Checking your ECU");
             String signature = getSignature();
 
             Class<? extends MSECUInterface> ecuClass = ECURegistry.INSTANCE.findEcu(signature);
@@ -614,7 +635,8 @@ public class Megasquirt extends Service implements MSControllerInterface
                 constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class, GaugeRegisterInterface.class);
 
                 ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE, GaugeRegister.INSTANCE);
-                ecuThread.setName(signature);
+                
+                sendMessage("Found "+signature);
 
             }
             catch (Exception e)
@@ -738,6 +760,8 @@ public class Megasquirt extends Service implements MSControllerInterface
          */
         public void halt()
         {
+            DebugLogManager.INSTANCE.log("ECUThread.halt()", Log.INFO);
+
             running = false;
         }
 

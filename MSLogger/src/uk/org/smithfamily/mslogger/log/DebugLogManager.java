@@ -16,6 +16,7 @@ public enum DebugLogManager
 {
     INSTANCE;
 
+    private boolean     ALWAYS_LOG_TO_FILE = true;
     private File       logFile;
     private FileWriter os;
     private String     absolutePath;
@@ -75,7 +76,7 @@ public enum DebugLogManager
             return;
         }
         Log.println(logLevel, "MSLogger", s);
-        if (logLevel <= Log.DEBUG)
+        if (ALWAYS_LOG_TO_FILE || logLevel <= Log.DEBUG)
         {
             try
             {
@@ -105,7 +106,7 @@ public enum DebugLogManager
      */
     private boolean checkLogLevel(int logLevel)
     {
-        return (ApplicationSettings.INSTANCE.getLoggingLevel() <= logLevel);
+        return (ALWAYS_LOG_TO_FILE || ApplicationSettings.INSTANCE.getLoggingLevel() <= logLevel);
     }
 
     /**

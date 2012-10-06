@@ -121,7 +121,7 @@ public class BluetoothConnection implements Connection
         {
             try
             {
-                DebugLogManager.INSTANCE.log("ECUFingerprint teardown socket close()", Log.DEBUG);
+                DebugLogManager.INSTANCE.log("BluetoothConnection teardown socket close()", Log.DEBUG);
 
                 socket.close();
             } catch (IOException e)
