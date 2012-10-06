@@ -636,8 +636,17 @@ public class Megasquirt extends Service implements MSControllerInterface
                 constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class, GaugeRegisterInterface.class);
 
                 ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE, GaugeRegister.INSTANCE);
-                
-                sendMessage("Found "+signature);
+ 
+                if(!signature.equals(ecuImplementation.getSignature()))
+                {
+                    trueSignature = ecuImplementation.getSignature();
+                    
+                    String msg = "Got unsupported signature from Megasquirt \"" + trueSignature + "\" but found a similar supported signature \"" + signature + "\"";
+                    
+                    sendToastMessage(msg);
+                    DebugLogManager.INSTANCE.log(msg, Log.INFO);
+                }
+                sendMessage("Found "+trueSignature);
 
             }
             catch (Exception e)
@@ -666,15 +675,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                         String sig = processResponse(response);
                         if (lastSig.equals(sig))
                         {
-                            verified = true;
-                            trueSignature = msSig;
-                            
-                            String msg = "Got unsupported signature from Megasquirt \"" + msSig + "\" but found a similar supported signature \"" + signature + "\"";
-                            
-                            sendToastMessage(msg);
-                            DebugLogManager.INSTANCE.log(msg, Log.INFO);
-                            
-                            break;
+                            return sig;
                         }
                     }
                     catch (BootException e)
@@ -963,7 +964,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
-            double userValue = getField(constant.getName());
+            userValue = getField(constant.getName());
             
             msValue = new int[1];
             msValue[0] = (int) (userValue / scale - translate);
@@ -1034,7 +1035,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                 
                 ECUConnectionManager.getInstance().writeCommand(byteCommand, delay, ecuImplementation.isCRC32Protocol());
                 
-                Toast.makeText(context, "Writing constant " + constant.getName() + " to MegaSquirt", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Writing constant " + constant.getName() + " to MegaSquirt", Toast.LENGTH_SHORT).show();
             }
             catch (IOException e)
             {
@@ -1071,7 +1072,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             // Send "b" command for the tblIdx
             ECUConnectionManager.getInstance().writeCommand(new byte[]{98, 0, tblIdx}, 0, ecuImplementation.isCRC32Protocol());
             
-            Toast.makeText(context, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e)
         {
