@@ -69,12 +69,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private IndicatorManager indicatorManager;
     private TextView messages;
     private TextView rps;
-    static private Boolean ready = null;
+    private static Boolean ready = null;
 
     private Indicator[] indicators = new Indicator[5];
 
     private boolean gaugeEditEnabled;
-    boolean scrolling;
     private LinearLayout layout;
     private static final int SHOW_PREFS = 124230;
 
@@ -120,6 +119,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (!savedInstanceState.getString("rps_message").equals(""))
             {
                 rps.setText(savedInstanceState.getString("rps_message"));
+            }
+
+            if (savedInstanceState.getBoolean("gauge_edit"))
+            {
+                gaugeEditEnabled = true;
             }
         }
 
@@ -188,6 +192,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         outState.putString("status_message", messages.getText().toString());
         outState.putString("rps_message", rps.getText().toString());
+        outState.putBoolean("gauge_edit", gaugeEditEnabled);
     }
 
     /**
