@@ -19,10 +19,12 @@ import uk.org.smithfamily.mslogger.widgets.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.Gauge;
 import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.widgets.GroupIndicator;
 import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
+import uk.org.smithfamily.mslogger.widgets.TableIndicator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -406,6 +408,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     indicators[i] = new Histogram(this);
                     wasWrongType = true;
                 }
+                else if (gd.getType().equals(getString(R.string.table_indicator)) && !(indicators[i] instanceof TableIndicator))
+                {
+                    indicators[i] = new TableIndicator(this);
+                    wasWrongType = true;
+                }
 
                 if (wasWrongType)
                 {
@@ -684,15 +691,35 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             indicatorManager.setDisabled(false);
             for (Indicator i : indicators)
             {
-                String channelName = i.getChannel();
-                if (channelName != null)
+                if (i instanceof GroupIndicator)
                 {
-                    double value = ecu.getField(channelName);
-                    i.setValue(value);
+                    GroupIndicator gi = (GroupIndicator) i;
+                    for (String gaugeName : gi.getGaugeNames())
+                    {
+                        if (gaugeName != null)
+                        {
+                            GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
+                            double value = ecu.getField(gd.getChannel());
+                            gi.setValue(value, gaugeName);
+                        }
+                        else
+                        {
+                            gi.setValue(0, gaugeName);
+                        }
+                    }
                 }
                 else
                 {
-                    i.setValue(0);
+                    String channelName = i.getChannel();
+                    if (channelName != null)
+                    {
+                        double value = ecu.getField(channelName);
+                        i.setValue(value);
+                    }
+                    else
+                    {
+                        i.setValue(0);
+                    }
                 }
             }
         }
