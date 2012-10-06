@@ -1,20 +1,12 @@
 package uk.org.smithfamily.mslogger;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.org.smithfamily.mslogger.ecuDef.MSControllerInterface;
-import uk.org.smithfamily.mslogger.ecuDef.MSECUInterface;
-import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
-import uk.org.smithfamily.mslogger.ecuDef.MSUtilsInterface;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
-import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegisterInterface;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +27,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     public static final String   GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
     public static final String   MESSAGE             = "uk.org.smithfamily.mslogger.MESSAGE";
     public static final String   ECU_CHANGED         = "uk.org.smithfamily.mslogger.ECU_CHANGED";
+    public static final String   BT_CHANGED          = "uk.org.smithfamily.mslogger.BT_CHANGED";
     public static final String   TAG                 = "uk.org.smithfamily.mslogger";
     public static final String   RPS_MESSAGE         = "uk.org.smithfamily.mslogger.RPS_MESSAGE";
     public static final String   RPS                 = "uk.org.smithfamily.mslogger.RPS";
@@ -120,6 +113,9 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         Editor editor = prefs.edit();
         editor.putString("bluetooth_mac", m);
         editor.commit();
+        Intent broadcast = new Intent();
+        broadcast.setAction(BT_CHANGED);
+        context.sendBroadcast(broadcast);
     }
 
     /**
@@ -338,7 +334,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      * 
      * @param sig
      * @return
-     */
+    
     public synchronized Megasquirt getEcuForSig(String sig)
     {
         Class<? extends MSECUInterface> c = ECURegistry.INSTANCE.findEcu(sig);
@@ -374,7 +370,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         
         return ecuDefinition;
     }
-
+ */
     /**
      * 
      * @param ecu

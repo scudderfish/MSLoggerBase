@@ -46,19 +46,7 @@ public class ECUConnectionManager extends ConnectionManager
 
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
-            boolean autoConnect = ApplicationSettings.INSTANCE.autoConnectable();
-            if (autoConnect)
-            {
                 connect();
-            }
-            else
-            {
-                throw new IOException("Autoconnection not allowed");
-            }
-        }
-        if (ownerThread != Thread.currentThread())
-        {
-            throw new IOException("Attempt to use from thread '" + Thread.currentThread().getName() + "' when owned by thread '" + ownerThread.getName());
         }
     }
 

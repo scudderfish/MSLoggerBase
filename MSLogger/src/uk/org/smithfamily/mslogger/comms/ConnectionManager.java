@@ -45,8 +45,7 @@ abstract class ConnectionManager
     };
 
     protected volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
-    protected Thread ownerThread;
-
+    
     /**
      * Get the instance name
      * 
@@ -107,7 +106,6 @@ abstract class ConnectionManager
             tearDown();
             setState(ConnectionState.STATE_DISCONNECTED);
         }
-        this.ownerThread = Thread.currentThread();
         timerTriggered = false;
     }
 
@@ -215,10 +213,6 @@ abstract class ConnectionManager
         {
             connect();
         }
-        if (ownerThread != Thread.currentThread())
-        {
-            throw new IOException("Attempt to use from thread '" + Thread.currentThread().getName() + "' when owned by thread '" + ownerThread.getName());
-        }
     }
 
     /**
@@ -244,7 +238,11 @@ abstract class ConnectionManager
      */
     public synchronized void tearDown()
     {
-        conn.tearDown();
+        if(conn != null)
+        {
+            conn.tearDown();
+            conn = null;
+        }
         setState(ConnectionState.STATE_DISCONNECTED);
     }
 
