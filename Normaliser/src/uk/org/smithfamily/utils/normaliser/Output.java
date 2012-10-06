@@ -59,8 +59,6 @@ public class Output
         writer.println(TAB + TAB + "this.parent = parent;");
         writer.println(TAB + TAB + "this.utils  = utils;");
         writer.println(TAB + TAB + "this.gauges = gauges;");
-        writer.println(TAB + TAB + "this.parent.setImplementation(this);");
-        writer.println(TAB + TAB + "setFlags();");
         writer.println(TAB + "}");
         writer.println(TAB +"private double table(double x,String t)");
         writer.println(TAB + "{");

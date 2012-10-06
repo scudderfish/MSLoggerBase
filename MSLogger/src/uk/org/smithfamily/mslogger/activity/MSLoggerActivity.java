@@ -10,6 +10,8 @@ import uk.org.smithfamily.mslogger.ExtGPSManager;
 import uk.org.smithfamily.mslogger.GPSLocationManager;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.comms.Connection;
+import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -26,11 +28,13 @@ import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
 import uk.org.smithfamily.mslogger.widgets.TableIndicator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -86,6 +90,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        
+        Connection conn = ConnectionFactory.INSTANCE.getConnection();
+
+        // Bluetooth is not supported on this Android device
+        if (!conn.connectionPossible())
+        {
+            finishDialogNoBluetooth();
+            return;
+        }
         checkSDCard();
 
         setGaugesOrientation();
@@ -139,7 +152,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
-        launchStartupActivity();
     }
 
     @Override
@@ -173,15 +185,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    /**
-     * Launch the startup activity which try to connect to the MegaSquirt
-     */
-    private void launchStartupActivity()
-    {
-        Intent serverIntent = new Intent(this, StartupActivity.class);
-        startActivityForResult(serverIntent, MSLoggerApplication.PROBE_ECU);
-    }
-
+    
     /**
      * Save the bottom text views content so they can keep their state while device is rotated
      */
@@ -233,12 +237,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         checkBTDeviceSet();
         checkSDCard();
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecu != null)
-        {
-            ecu.start();
-        }
-
     }
 
     /**
@@ -330,9 +328,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void loadGauges()
     {
+        long start = System.currentTimeMillis();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         GaugeRegister.INSTANCE.flush();
         ecu.initGauges();
+        DebugLogManager.INSTANCE.log("loadGauges() took "+(System.currentTimeMillis()-start)+"ms",Log.DEBUG);
     }
 
     /**
@@ -670,6 +670,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         IntentFilter toastFilter = new IntentFilter(ApplicationSettings.TOAST);
         registerReceiver(updateReceiver, toastFilter);
 
+        IntentFilter unknownEcuFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU);
+        registerReceiver(updateReceiver, unknownEcuFilter);
+
+        IntentFilter unknownEcuBTFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU_BT);
+        registerReceiver(updateReceiver, unknownEcuBTFilter);
+
+        IntentFilter probeEcuFilter = new IntentFilter(Megasquirt.PROBE_ECU);
+        registerReceiver(updateReceiver, probeEcuFilter);
+
+        
         registered = true;
     }
 
@@ -952,7 +962,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         // opening it back up to try to connect
         if (ecu == null)
         {
-            launchStartupActivity();
+   //         launchStartupActivity();
         }
         else
         {
@@ -1040,12 +1050,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK)
         {
-            if (requestCode == MSLoggerApplication.PROBE_ECU)
+            switch(requestCode)
             {
-                completeCreate();
-            }
-            if (requestCode == SHOW_PREFS)
-            {
+            case SHOW_PREFS:
                 Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
                 if (dirty)
                 {
@@ -1058,6 +1065,18 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         initGauges();
                     }
                 }
+                break;
+            
+            case MSLoggerApplication.REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK)
+                {
+                    // Get the device MAC address
+                    String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+    
+                    ApplicationSettings.INSTANCE.setECUBluetoothMac(address);
+                }
+                break;
             }
         }
     }
@@ -1212,7 +1231,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             String action = intent.getAction();
             boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
-            if (action.equals(Megasquirt.CONNECTED))
+            if(action.equals(Megasquirt.PROBE_ECU))
+            {
+                completeCreate();
+            }
+            else if (action.equals(Megasquirt.CONNECTED))
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
@@ -1268,6 +1291,45 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                 }
             }
+            else if (action.equals(Megasquirt.UNKNOWN_ECU))
+            {
+                if (isFinishing())
+                {
+                    return;
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MSLoggerActivity.this);
+                builder.setMessage(R.string.unrecognised_ecu).setTitle(R.string.app_name).setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        constructEmail(ApplicationSettings.INSTANCE.getEcuDefinition().getTrueSignature());
+                    }
+
+                    private void constructEmail(String trueSignature)
+                    {
+                        EmailManager.email(MSLoggerActivity.this, "mslogger.android@gmail.com", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + trueSignature + "'.\n\nPlease consider this for the next release.", null);
+                    }
+
+                }).setNegativeButton(R.string.bt_cancel, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                if (!isFinishing())
+                {
+                    alert.show();
+                }
+
+            }
+            else if (action.equals(Megasquirt.UNKNOWN_ECU_BT))
+            {
+                Intent serverIntent = new Intent(MSLoggerActivity.this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, MSLoggerApplication.REQUEST_CONNECT_DEVICE);
+            } 
         }
     }
 
@@ -1315,6 +1377,23 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             return false;
         }
 
+    }
+
+    /**
+     * It was determinated that the android device don't support Bluetooth, so we tell the user
+     */
+    public void finishDialogNoBluetooth()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_bt).setIcon(android.R.drawable.ic_dialog_info).setTitle(R.string.app_name).setCancelable(false).setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                finish();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }

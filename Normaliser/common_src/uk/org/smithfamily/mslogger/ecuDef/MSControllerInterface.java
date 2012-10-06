@@ -22,7 +22,4 @@ public interface MSControllerInterface
     double timeNow();
 
     double tempCvt(double x);
-
-    void setImplementation(MSECUInterface i);
-
 }

@@ -19,7 +19,12 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:name=".MSLoggerApplication" >
-       
+
+        <service android:name="uk.org.smithfamily.mslogger.ecuDef.Megasquirt" android:exported="false">
+            <intent-filter >
+                <action android:name="uk.org.smithfamily.mslogger.ecuDef.Megasquirt" />
+            </intent-filter>
+        </service>
 
         <activity
             android:label="@string/app_name"
@@ -28,15 +33,10 @@
             <!-- android:theme="@android:style/Theme.NoTitleBar.Fullscreen" > -->
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:label="@string/app_name"
-            android:name="uk.org.smithfamily.mslogger.activity.StartupActivity"
-            android:theme="@android:style/Theme.Dialog" >
-        </activity>
+       
         <activity
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
@@ -44,14 +44,6 @@
             android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity android:name="uk.org.smithfamily.mslogger.activity.PreferencesActivity" >
-        </activity>
-        <activity
-            android:name="uk.org.smithfamily.mslogger.activity.EGOSelectActivity"
-            android:theme="@android:style/Theme.Dialog" >
-        </activity>
-        <activity
-            android:name="uk.org.smithfamily.mslogger.activity.MAPSelectActivity"
-            android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
             android:name="uk.org.smithfamily.mslogger.activity.EmailSelectActivity"

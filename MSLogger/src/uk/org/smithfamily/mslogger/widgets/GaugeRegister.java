@@ -14,8 +14,11 @@ import android.util.Log;
 public enum GaugeRegister implements GaugeRegisterInterface
 {
     INSTANCE;
+    //Map of guages as defined by the ECU
     private Map<String, GaugeDetails> details       = new HashMap<String, GaugeDetails>();
-    private static final String       GAUGE_DETAILS = "gaugedetails";
+    //Map of gauges actually used.  Prefer defn from disk to ECU
+    private Map<String, GaugeDetails> instantiated  = new HashMap<String, GaugeDetails>();
+    private static final String       GAUGE_DETAILS = "PersistedGauges";
 
     /**
      * Reset all gauges to their default state contained in the firmware INI file specifications
@@ -37,7 +40,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                 }
             }
         }
-        
+        instantiated.clear();
         details.clear();
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
         if (ecuDefinition != null)
@@ -55,17 +58,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
     {
         if (details.containsKey(gaugeDetails.getName()))
             return;
-
-        GaugeDetails tmp = loadDetails(gaugeDetails);
-        if (tmp != null)
-        {
-            gaugeDetails = tmp;
-        }
-        else
-        {
-            persistDetails(gaugeDetails);
-        }
-
+     
         DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails,Log.INFO);
 
         details.put(gaugeDetails.getName(), gaugeDetails);
@@ -81,7 +74,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
         GaugeDetails gd = details.get(name);
         if (gd != null)
         {
-            File store = getFileStore(gd);
+            File store = getFileStore(name);
             if (store != null)
             {
                 boolean deleteResult = store.delete();
@@ -90,6 +83,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                     DebugLogManager.INSTANCE.log("Couldn't delete " + store.getPath(),Log.ERROR);
                 }
             }
+            instantiated.remove(name);
             details.remove(name);
 
             Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
@@ -101,14 +95,36 @@ public enum GaugeRegister implements GaugeRegisterInterface
     }
 
     /**
-     * Get details for a specific indicator
+     * Get details for a specific indicator.  
+     * If it is a gauge we have already instantiated, return that.
+     * If the gauge exists on disk, return that
+     * Else return the gauge as defined by the ECU
      * 
      * @param name Name of the indicator to get details for
      * @return An instance of GaugeDetails
      */
     public GaugeDetails getGaugeDetails(String name)
     {
-        return details.get(name);
+        GaugeDetails result = instantiated.get(name);
+        if(result != null)
+        {
+            return result;
+        }
+        
+        GaugeDetails tmp = loadDetails(name);
+        if (tmp != null)
+        {
+            result = tmp;
+            
+        }
+        else
+        {
+            result = details.get(name);
+            
+        }
+        instantiated.put(name, result);
+        
+        return result;
     }
 
     /**
@@ -133,11 +149,11 @@ public enum GaugeRegister implements GaugeRegisterInterface
      * @param gd The GaugeDetails to get details from
      * @return An instance of GaugeDetails
      */
-    private GaugeDetails loadDetails(GaugeDetails gd)
+    private GaugeDetails loadDetails(String name)
     {
         try
         {
-            File input = getFileStore(gd);
+            File input = getFileStore(name);
 
             // Make sure file exists before trying to read it
             if (input.isFile()) {
@@ -178,9 +194,9 @@ public enum GaugeRegister implements GaugeRegisterInterface
      * @param gd GaugeDetails to get file store for
      * @return An handle on the file store
      */
-    private File getFileStore(GaugeDetails gd)
+    private File getFileStore(String gaugeName)
     {
-        String name = getStoreName(gd);
+        String name = getStoreName(gaugeName);
         File dir = new File(ApplicationSettings.INSTANCE.getDataDir(), GAUGE_DETAILS);
         
         if (!dir.exists()) 
@@ -216,7 +232,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
                 }
             }
             
-            File output = new File(dir, getStoreName(gd));
+            File output = new File(dir, getStoreName(gd.getName()));
             FileOutputStream fOut = new FileOutputStream(output);
             ObjectOutputStream objOut = new ObjectOutputStream(fOut);
 
@@ -237,8 +253,8 @@ public enum GaugeRegister implements GaugeRegisterInterface
      * @param gd GaugeDetails to get the file name of
      * @return The file name for the specified indicator details
      */
-    private String getStoreName(GaugeDetails gd)
+    private String getStoreName(String gaugeName)
     {
-        return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName() + "." + gd.getName();
+        return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName() + "." + gaugeName;
     }
 }
