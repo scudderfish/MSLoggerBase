@@ -16,7 +16,7 @@ public enum DebugLogManager
 {
     INSTANCE;
 
-    private boolean     ALWAYS_LOG_TO_FILE = true;
+    private boolean     ALWAYS_LOG_TO_FILE = false;
     private File       logFile;
     private FileWriter os;
     private String     absolutePath;
