@@ -671,6 +671,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         IntentFilter unknownEcuBTFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU_BT);
         registerReceiver(updateReceiver, unknownEcuBTFilter);
 
+        IntentFilter probeEcuFilter = new IntentFilter(Megasquirt.PROBE_ECU);
+        registerReceiver(updateReceiver, probeEcuFilter);
+
         
         registered = true;
     }
