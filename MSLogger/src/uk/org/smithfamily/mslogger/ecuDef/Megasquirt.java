@@ -954,8 +954,6 @@ public class Megasquirt extends Service implements MSControllerInterface
         int pageNo = constant.getPage();
         int offset = constant.getOffset();
 
-        double userValue = getField(constant.getName());
-
         double scale = constant.getScale();
         double translate = constant.getTranslate();
 
@@ -964,7 +962,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
-            userValue = getField(constant.getName());
+            double userValue = getField(constant.getName());
             
             msValue = new int[1];
             msValue[0] = (int) (userValue / scale - translate);
