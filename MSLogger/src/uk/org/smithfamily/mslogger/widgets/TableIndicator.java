@@ -153,7 +153,10 @@ public class TableIndicator extends GroupIndicator
         }
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
 
-        canvas.drawText(gd.getTitle() + "(" + gd.getUnits() + ")", 0.02f, y, titlePaint);
+        if(gd != null)
+        {
+            canvas.drawText(gd.getTitle() + "(" + gd.getUnits() + ")", 0.02f, y, titlePaint);
+        }
     }
 
     /**
@@ -174,18 +177,20 @@ public class TableIndicator extends GroupIndicator
         }
 
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
+        
+        String text="unkown";
 
-        String text;
-
-        if (gd.getVd() <= 0)
+        if(gd != null)
         {
-            text = Integer.toString((int) getValue(gaugeName));
-        }
-        else
-        {
-            text = Double.toString(Math.floor(getValue(gaugeName) / Math.pow(10, -gd.getVd()) + 0.5) * Math.pow(10, -gd.getVd()));
-        }
-        canvas.drawText(text, 1f, y, valuePaint);
+            if (gd.getVd() <= 0)
+            {
+                text = Integer.toString((int) getValue(gaugeName));
+            }
+            else
+            {
+                text = Double.toString(Math.floor(getValue(gaugeName) / Math.pow(10, -gd.getVd()) + 0.5) * Math.pow(10, -gd.getVd()));
+            }
+        }canvas.drawText(text, 1f, y, valuePaint);
     }
 
     /**
