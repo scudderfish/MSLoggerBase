@@ -6,6 +6,7 @@ import java.util.List;
  */
 public class MSUtilsShared
 {
+    static String digits = "0123456789abcdef";
     
     /**
      * Method that return the width and height of an array from it's shape (from the INI)
@@ -50,8 +51,17 @@ public class MSUtilsShared
             switch (c)
             {
             case '\\':
-                ret += HexByteToDec(s.substring(p));
-                p = p + 3;
+                p++;
+                c = s.charAt(p);
+                if(c=='0')
+                {
+                    ret += OctalByteToDec(s.substring(p));
+                }
+                else
+                {
+                    ret += HexByteToDec(s.substring(p));
+                }
+                p = p + 2;
                 break;
 
             case '%':
@@ -103,11 +113,8 @@ public class MSUtilsShared
      */
     public static int HexByteToDec(String s)
     {
-        String digits = "0123456789abcdef";
         int i = 0;
         char c = s.charAt(i++);
-        assert c == '\\';
-        c = s.charAt(i++);
         assert c == 'x';
         c = s.charAt(i++);
         c = Character.toLowerCase(c);
@@ -121,6 +128,23 @@ public class MSUtilsShared
         return val;
     }
     
+    public static int OctalByteToDec(String s)
+    {
+        
+        int i = 0;
+        char c = s.charAt(i++);
+        assert c == '0';
+        c = s.charAt(i++);
+        c = Character.toLowerCase(c);
+        int val = 0;
+        int digit = digits.indexOf(c);
+        val = digit * 8;
+        c = s.charAt(i++);
+        c = Character.toLowerCase(c);
+        digit = digits.indexOf(c);
+        val = val + digit;
+        return val;
+    }
     /**
      * 
      * @param val
