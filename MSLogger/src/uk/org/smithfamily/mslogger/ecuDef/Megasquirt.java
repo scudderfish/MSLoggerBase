@@ -1060,10 +1060,11 @@ public class Megasquirt extends Service implements MSControllerInterface
         // Make sure we have something to send to the MS
         if (msValue != null && msValue.length > 0)
         {
-            String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, pageValueWrites.get(pageNo - 1), offset, size, msValue, pageNo);
+            String writeCommand = pageValueWrites.get(pageNo - 1);
+            String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, writeCommand, offset, size, msValue, pageNo);
             byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
 
-            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + pageValueWrites.get(pageNo - 1) + " offset: " + offset + " count: "
+            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + writeCommand + " offset: " + offset + " count: "
                     + size + " pageNo: " + pageNo, Log.DEBUG);
 
             List<byte[]> pageActivates = ecuImplementation.getPageActivates();
