@@ -627,6 +627,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
             if (ecuImplementation != null && ecuImplementation.getClass().equals(ecuClass))
             {
+                broadcast(PROBE_ECU);
                 return;
             }
 
