@@ -1,9 +1,10 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimerTask;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
 
@@ -44,7 +45,7 @@ public class ECUConnectionManager extends ConnectionManager
     {
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
-                connect();
+            connect();
         }
     }
 

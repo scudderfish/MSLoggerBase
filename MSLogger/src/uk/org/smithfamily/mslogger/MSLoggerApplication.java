@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.widget.Toast;
 
 /**
  * Hook class to allow initialisation actions. Originally used to initialise ACRA and Bugsense
