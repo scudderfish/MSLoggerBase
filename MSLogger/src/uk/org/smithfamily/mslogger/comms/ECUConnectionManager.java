@@ -1,9 +1,10 @@
 package uk.org.smithfamily.mslogger.comms;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimerTask;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
 
@@ -44,7 +45,7 @@ public class ECUConnectionManager extends ConnectionManager
     {
         if (currentState == ConnectionState.STATE_DISCONNECTED)
         {
-                connect();
+            connect();
         }
     }
 
@@ -140,7 +141,7 @@ public class ECUConnectionManager extends ConnectionManager
         int target = bytes.length;
         if (isCRC32)
         {
-            target += 7;
+            target += CRC32ProtocolHandler.getValidationLength();
         }
 
         byte[] buffer = new byte[target];
@@ -154,7 +155,7 @@ public class ECUConnectionManager extends ConnectionManager
                     int numRead = mmInStream.read(buffer, read, target - read);
                     if (numRead == -1)
                     {
-                        throw new IOException("end of stream attempting to read");
+                        throw new IOException("End of stream attempting to read");
                     }
                     read += numRead;
                     DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);

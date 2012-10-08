@@ -6,6 +6,7 @@ import java.util.List;
  */
 public class MSUtilsShared
 {
+    static String digits = "0123456789abcdef";
     
     /**
      * Method that return the width and height of an array from it's shape (from the INI)
@@ -26,59 +27,72 @@ public class MSUtilsShared
     }
     
     /**
-     * Used with pageReadCommand, pageValueWrite and pageChunkWrite
+     * Used with pageReadCommand, pageValueWrite and pageChunkWrite to translate the ini command to a command the MegaSquirt ECU will understand
      * 
-     * @param listPageCommand
-     * @param s
-     * @param offset
-     * @param count
-     * @param value
-     * @param pageNo
-     * @return
+     * @param listPageCommand The list of page command
+     * @param stringToConvert The page command to translate
+     * @param offset The offset (often represented by "%o" in the page command)
+     * @param count The count (often represented by "%c" in the page command)
+     * @param value The value(s) (often represented by "%v" in the page command)
+     * @param pageNo The page number
+     * 
+     * @return The command to send to the MegaSquirt with the place holder replaced
      */
-    public static String HexStringToBytes(List<String> listPageCommand, String s, int offset, int count, int[] value, int pageNo)
+    public static String HexStringToBytes(List<String> listPageCommand, String stringToConvert, int offset, int count, int[] value, int pageNo)
     {
         String ret = "";
         boolean first = true;
-        s = s.replace("$tsCanId", "x00");
-        for (int p = 0; p < s.length(); p++)
+        stringToConvert = stringToConvert.replace("$tsCanId", "x00");
+        for (int positionInString = 0; positionInString < stringToConvert.length(); positionInString++)
         {
             if (!first)
+            {
                 ret += ",";
-
-            char c = s.charAt(p);
-            switch (c)
+            }
+            
+            char currentCharacter = stringToConvert.charAt(positionInString);
+            switch (currentCharacter)
             {
             case '\\':
-                ret += HexByteToDec(s.substring(p));
-                p = p + 3;
+                positionInString++;
+                currentCharacter = stringToConvert.charAt(positionInString);
+                if (currentCharacter == '0')
+                {
+                    ret += OctalByteToDec(stringToConvert.substring(positionInString));
+                }
+                else
+                {
+                    ret += HexByteToDec(stringToConvert.substring(positionInString));
+                }
+                positionInString = positionInString + 2;
                 break;
 
             case '%':
-                p++;
-                c = s.charAt(p);
+                positionInString++;
+                currentCharacter = stringToConvert.charAt(positionInString);
 
-                if (c == '2')
+                if (currentCharacter == '2')
                 {
-                    p++;
-                    c = s.charAt(p);
-                    if (c == 'o')
+                    positionInString++;
+                    currentCharacter = stringToConvert.charAt(positionInString);
+                    if (currentCharacter == 'o')
                     {
                         ret += bytes(offset);
                     }
-                    else if (c == 'c')
+                    else if (currentCharacter == 'c')
                     {
                         ret += bytes(count);
                     }
-                    else if (c == 'i')
+                    else if (currentCharacter == 'i')
                     {
                         String identifier = listPageCommand.get(pageNo - 1);
     
                         ret += HexStringToBytes(listPageCommand, identifier, offset, count, value, pageNo);
                     }
                 }
-                else if (c == 'v')
+                else if (currentCharacter == 'v')
                 {
+                    // Loop over all the values we received
                     for (int i = 0; i < value.length; i++)
                     {
                         ret += bytes(value[i]) + ",";
@@ -88,7 +102,7 @@ public class MSUtilsShared
                 break;
 
             default:
-                ret += Byte.toString((byte) c);
+                ret += Byte.toString((byte) currentCharacter);
                 break;
             }
             first = false;
@@ -97,17 +111,15 @@ public class MSUtilsShared
     }
     
     /**
+     * Convert a string from hexadecimal to decimal
      * 
-     * @param s
-     * @return
+     * @param s String containing hexadecimal
+     * @return The decimal in integer type
      */
     public static int HexByteToDec(String s)
     {
-        String digits = "0123456789abcdef";
         int i = 0;
         char c = s.charAt(i++);
-        assert c == '\\';
-        c = s.charAt(i++);
         assert c == 'x';
         c = s.charAt(i++);
         c = Character.toLowerCase(c);
@@ -122,9 +134,33 @@ public class MSUtilsShared
     }
     
     /**
+     * Convert a string from octal to decimal
      * 
-     * @param val
-     * @return
+     * @param s String containing octal
+     * @return The decimal in integer type
+     */
+    public static int OctalByteToDec(String s)
+    {
+        int i = 0;
+        char c = s.charAt(i++);
+        assert c == '0';
+        c = s.charAt(i++);
+        c = Character.toLowerCase(c);
+        int val = 0;
+        int digit = digits.indexOf(c);
+        val = digit * 8;
+        c = s.charAt(i++);
+        c = Character.toLowerCase(c);
+        digit = digits.indexOf(c);
+        val = val + digit;
+        return val;
+    }
+    
+    /**
+     * Take a value and return its hi, low representation
+     * 
+     * @param val Value to convert
+     * @return hi, low representation
      */
     private static String bytes(int val)
     {

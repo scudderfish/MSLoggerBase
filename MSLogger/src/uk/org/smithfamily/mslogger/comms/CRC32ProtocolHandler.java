@@ -1,6 +1,10 @@
 package uk.org.smithfamily.mslogger.comms;
 
+import java.util.Arrays;
 import java.util.zip.CRC32;
+
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import android.util.Log;
 
 /**
  * Helper class used for communication with MS3 ECU that support CRC32 validated protocol.
@@ -83,6 +87,12 @@ public class CRC32ProtocolHandler
             return true;
         }
 
+        DebugLogManager.INSTANCE.log("CRC32 mismatch from MS3!: " + Arrays.toString(wrapped), Log.DEBUG);
+        DebugLogManager.INSTANCE.log("CRC32 mismatch crc32: " + crc32[0] + " ==? " + crcBytes[0], Log.DEBUG);
+        DebugLogManager.INSTANCE.log("CRC32 mismatch crc32: " + crc32[1] + " ==? " + crcBytes[1], Log.DEBUG);
+        DebugLogManager.INSTANCE.log("CRC32 mismatch crc32: " + crc32[2] + " ==? " + crcBytes[2], Log.DEBUG);
+        DebugLogManager.INSTANCE.log("CRC32 mismatch crc32: " + crc32[3] + " ==? " + crcBytes[3], Log.DEBUG);
+        
         return false;
     }
 
@@ -94,7 +104,7 @@ public class CRC32ProtocolHandler
      */
     public static byte[] unwrap(byte[] wrapped)
     {
-        int notDataLength = PAYLOAD_LENGTH + TYPE_LENGTH + CRC32_LENGTH;
+        int notDataLength = getValidationLength();
 
         if (wrapped.length < notDataLength)// Bail out
         {
@@ -104,5 +114,13 @@ public class CRC32ProtocolHandler
         byte[] naked = new byte[wrapped.length - notDataLength];
         System.arraycopy(wrapped, 3, naked, 0, wrapped.length - notDataLength);
         return naked;
+    }
+    
+    /**
+     * @return The total length of the payload, type and CRC32
+     */
+    public static int getValidationLength()
+    {
+        return PAYLOAD_LENGTH + TYPE_LENGTH + CRC32_LENGTH;
     }
 }

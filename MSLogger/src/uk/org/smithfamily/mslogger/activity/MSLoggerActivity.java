@@ -714,7 +714,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         if (gaugeName != null)
                         {
                             GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
-                            if(gd != null)
+                            if (gd != null)
                             {
                                 double value = ecu.getField(gd.getChannel());
                                 gi.setValue(value, gaugeName);
