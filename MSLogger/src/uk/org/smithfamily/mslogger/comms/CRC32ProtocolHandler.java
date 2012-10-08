@@ -104,7 +104,7 @@ public class CRC32ProtocolHandler
      */
     public static byte[] unwrap(byte[] wrapped)
     {
-        int notDataLength = PAYLOAD_LENGTH + TYPE_LENGTH + CRC32_LENGTH;
+        int notDataLength = getValidationLength();
 
         if (wrapped.length < notDataLength)// Bail out
         {
@@ -114,5 +114,13 @@ public class CRC32ProtocolHandler
         byte[] naked = new byte[wrapped.length - notDataLength];
         System.arraycopy(wrapped, 3, naked, 0, wrapped.length - notDataLength);
         return naked;
+    }
+    
+    /**
+     * @return The total length of the payload, type and CRC32
+     */
+    public static int getValidationLength()
+    {
+        return PAYLOAD_LENGTH + TYPE_LENGTH + CRC32_LENGTH;
     }
 }
