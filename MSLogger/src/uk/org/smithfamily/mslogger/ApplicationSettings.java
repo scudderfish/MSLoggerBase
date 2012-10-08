@@ -58,9 +58,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
-        dataDir = new File(Environment.getExternalStorageDirectory(), prefs.getString("DataDir",
-                context.getString(R.string.app_name)));
-        dataDir.mkdirs();
+        String directoryName = prefs.getString("DataDir", context.getString(R.string.app_name));
+        dataDir = new File(Environment.getExternalStorageDirectory(), directoryName);
+        boolean mkDirs = dataDir.mkdirs();
+        if (!mkDirs)
+        {
+            DebugLogManager.INSTANCE.log("Unable to create directory " + directoryName + " at " + Environment.getExternalStorageDirectory(), Log.ERROR);
+        }
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
     }
 
@@ -134,12 +138,15 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
         boolean val = false;
 
-        for (SettingGroup g : ecuDefinition.getSettingGroups())
+        synchronized(this)
         {
-            String groupName = g.getName();
-            if (prefs.getString(groupName, MISSING_VALUE).equals(name))
+            for (SettingGroup g : ecuDefinition.getSettingGroups())
             {
-                val = true;
+                String groupName = g.getName();
+                if (prefs.getString(groupName, MISSING_VALUE).equals(name))
+                {
+                    val = true;
+                }
             }
         }
         
@@ -329,48 +336,6 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return this.writable;
     }
 
-    /**
-     * Return the ECU file for the specified Megasquirt signature
-     * 
-     * @param sig
-     * @return
-    
-    public synchronized Megasquirt getEcuForSig(String sig)
-    {
-        Class<? extends MSECUInterface> c = ECURegistry.INSTANCE.findEcu(sig);
-
-        if (c != null)
-        {
-            if (ecuDefinition != null && ecuDefinition.hasImplementation(c))
-            {
-                return ecuDefinition;
-            }
-        }
-        else
-        {
-            return null;
-        }
-        if (ecuDefinition == null)
-        {
-            ecuDefinition = new Megasquirt(context);
-        }
-        
-        Constructor<? extends MSECUInterface> constructor;
-        try
-        {
-            constructor = c.getConstructor(MSControllerInterface.class,MSUtilsInterface.class,GaugeRegisterInterface.class);
-            @SuppressWarnings("unused")
-            MSECUInterface ecuImplementation = constructor.newInstance(ecuDefinition,MSUtils.INSTANCE,GaugeRegister.INSTANCE);
-        }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        return ecuDefinition;
-    }
- */
     /**
      * 
      * @param ecu

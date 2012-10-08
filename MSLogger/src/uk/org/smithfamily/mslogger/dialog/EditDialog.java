@@ -1022,14 +1022,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         for (Entry<String, CurveHelper> entry : curveHelpers.entrySet())
         {
             CurveHelper curveHelper = entry.getValue();
-            curveHelper.getCurveEditor();
+            curveHelper.writeChangesToEcu();
         }
 
         // Burn all tables
         for (Entry<String, TableHelper> entry : tableHelpers.entrySet())
         {
             TableHelper tableHelper = entry.getValue();
-            tableHelper.getTableEditor();
+            tableHelper.writeChangesToEcu();
         }
         
         mDialogResult.finish(requirePowerCycle);

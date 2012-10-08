@@ -15,6 +15,7 @@ import uk.org.smithfamily.mslogger.chart.renderer.XYSeriesRenderer;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -523,5 +525,34 @@ public class CurveHelper
     private int getCellsCount()
     {
         return tableNbX * tableNbY;
+    }
+    
+    /**
+     * Write the constants of the curve to the ECU
+     */
+    public void writeChangesToEcu()
+    {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
+        Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
+        
+        if (xBinsConstant.isModified())
+        {
+            DebugLogManager.INSTANCE.log("Constant \"" + xBinsConstant.getName() + "\" was modified, need to write change to ECU", Log.DEBUG);
+            
+            xBinsConstant.setModified(false);
+            
+            ecu.writeConstant(xBinsConstant);
+        }
+        
+        if (yBinsConstant.isModified())
+        {
+            DebugLogManager.INSTANCE.log("Constant \"" + yBinsConstant.getName() + "\" was modified, need to write change to ECU", Log.DEBUG);
+            
+            yBinsConstant.setModified(false);
+            
+            ecu.writeConstant(yBinsConstant);
+        }
     }
 }
