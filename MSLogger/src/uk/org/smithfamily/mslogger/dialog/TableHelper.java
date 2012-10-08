@@ -2,9 +2,11 @@ package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
@@ -12,6 +14,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.FloatMath;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -488,5 +491,26 @@ public class TableHelper
     private int getCellsCount()
     {
         return tableNbX * tableNbY;
+    }
+    
+    /**
+     * Write the constant of the table to the ECU
+     */
+    public void writeChangesToEcu()
+    {
+        // Make sure table has been modified
+        if (isModified()) 
+        {
+            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+            
+            TableEditor tableEditor = getTableEditor();
+            
+            DebugLogManager.INSTANCE.log("Table " + tableEditor.getName() + " was modified, need to write change to ECU", Log.DEBUG);
+            
+            // Get table constant
+            Constant tableConstant = ecu.getConstantByName(tableEditor.getzBins());
+            
+            ecu.writeConstant(tableConstant);
+        }
     }
 }
