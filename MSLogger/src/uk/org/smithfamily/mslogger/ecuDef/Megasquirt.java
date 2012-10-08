@@ -10,6 +10,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
@@ -44,6 +46,9 @@ import android.widget.Toast;
  */
 public class Megasquirt extends Service implements MSControllerInterface
 {
+    private static final int MAX_QUEUE_SIZE = 2;
+    BlockingQueue<InjectedCommand> injectionQueue = new ArrayBlockingQueue<InjectedCommand>(MAX_QUEUE_SIZE);
+    
     private enum State
     {
         DISCONNECTED, CONNECTING, CONNECTED, LOGGING
@@ -59,6 +64,10 @@ public class Megasquirt extends Service implements MSControllerInterface
     public static final String UNKNOWN_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU";
     public static final String UNKNOWN_ECU_BT = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU_BT";
     public static final String PROBE_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ECU_PROBED";
+    public static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
+    public static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
+    public static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
+    
 
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LAST_SIG = "LAST_SIG";
@@ -134,7 +143,6 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     private void setState(State s)
     {
-        
         int msgId;
 
         switch (s)
@@ -189,7 +197,15 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     /**
-     * 
+     * Add a command for the ECUThread to process when it can
+     * @param command
+     */
+    public void injectCommand(InjectedCommand command)
+    {
+        injectionQueue.add(command);
+    }
+    /**
+     * If we're not running, start things up, if we are already running, shut things down
      */
     public synchronized void toggleConnection()
     {
@@ -511,6 +527,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             }
         }
 
+
         Handshake handshake = new Handshake();
         CalculationThread calculationThread = new CalculationThread();
 
@@ -606,6 +623,13 @@ public class Megasquirt extends Service implements MSControllerInterface
                     {
                         try
                         {
+                            if(injectionQueue.peek() != null)
+                            {
+                                for(InjectedCommand i : injectionQueue)
+                                {
+                                    processCommand(i);
+                                }
+                            }
                             final byte[] buffer = getRuntimeVars();
                             handshake.put(buffer);
                         }
@@ -660,6 +684,22 @@ public class Megasquirt extends Service implements MSControllerInterface
                 calculationThread.interrupt();
                 watch = null;
             }
+        }
+
+        private void processCommand(InjectedCommand i) throws IOException
+        {
+            Intent broadcast = new Intent();
+            broadcast.setAction(INJECTED_COMMAND_RESULTS);
+
+            ECUConnectionManager.getInstance().writeCommand(i.getCommand(),i.getDelay(),ecuImplementation.isCRC32Protocol());
+            if(i.isReturnResult())
+            {
+                byte[] result = ECUConnectionManager.getInstance().readBytes();
+                
+                broadcast.putExtra(INJECTED_COMMAND_RESULT_ID,i.getResultId());
+                broadcast.putExtra(INJECTED_COMMAND_RESULT_DATA,result);
+            }
+            sendBroadcast(broadcast);
         }
 
         private void initialiseImplementation() throws IOException, CRC32Exception
