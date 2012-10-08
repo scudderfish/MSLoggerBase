@@ -330,7 +330,7 @@ public enum ExtGPSManager
         return checksum;
     }
 
-    private void sendNmeaEnableCommand(String sentence)
+    private void sendNmeaCmd(String sentence)
     {
         final String command = String.format((Locale) null, "$%s*%X\r\n", sentence, computeChecksum(sentence));
 
@@ -459,9 +459,14 @@ public enum ExtGPSManager
         {
             extGPSThread = new ExtGPSThread();
             extGPSThread.setDaemon(true);
-            extGPSThread.start();
-            sendNmeaEnableCommand("PSRF103,00,00,01,01");
-            sendNmeaEnableCommand("PSRF103,04,00,01,01");
+            extGPSThread.start();            
+            sendNmeaCmd("PSRF100,1,38400,8,1,0"); // NMEA only on
+            sendNmeaCmd("PSRF103,00,00,01,01"); // GGA on
+            sendNmeaCmd("PSRF103,01,00,00,01"); // GLL off
+            sendNmeaCmd("PSRF103,02,00,00,01"); // GSA off
+            sendNmeaCmd("PSRF103,03,00,00,01"); // GSV off
+            sendNmeaCmd("PSRF103,04,00,01,01"); // RMC on
+            sendNmeaCmd("PSRF103,05,00,00,01"); // VTG off
             locStatus = LocationProvider.OUT_OF_SERVICE;
             locationTime = null;
             hasGGA = false;

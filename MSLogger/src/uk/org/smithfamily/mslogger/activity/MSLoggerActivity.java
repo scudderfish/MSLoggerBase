@@ -103,7 +103,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         setGaugesOrientation();
 
-        DebugLogManager.INSTANCE.log(getPackageName(), Log.ASSERT);
+        DebugLogManager.INSTANCE.log(getPackageName(), Log.DEBUG);
         try
         {
             String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
