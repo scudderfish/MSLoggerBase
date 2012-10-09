@@ -44,8 +44,6 @@ public class TableHelper
     private float currentTableMin = 0;
     private float currentTableMax = 0;
     
-    private boolean isModified = false;
-    
     private LinearLayout containerLayout;
     private TextView xBinsLabel;
     private TextView yBinsLabel;
@@ -117,14 +115,6 @@ public class TableHelper
     }
     
     /**
-     * @return true if the table has been modified, false otherwise
-     */
-    public boolean isModified()
-    {
-        return isModified;
-    }
-    
-    /**
      * Helper function that take a string as input and add a \n after each letter to use in text view so the text is vertical
      * 
      * @param text String to convert
@@ -149,7 +139,7 @@ public class TableHelper
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
-        double zBins[][] = ecu.getArray(table.getzBins());
+        double[][] zBins = ecu.getArray(table.getzBins());
         
         this.tableNbX = zBins.length;
         this.tableNbY = zBins[0].length;
@@ -234,6 +224,7 @@ public class TableHelper
                 cell.setSingleLine(true);
                 cell.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
                 cell.setPadding(7, 4, 7, 4);
+                cell.setTag(new int[] {x - 1, tableNbY - y});
                 cell.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
                 
                 // Refresh background color when one edit text lost focus
@@ -323,7 +314,29 @@ public class TableHelper
         
         public void afterTextChanged(Editable s)
         {
-            isModified = true;
+            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+            
+            // Get table constant
+            Constant tableConstant = ecu.getConstantByName(table.getzBins());
+            tableConstant.setModified(true);
+            
+            // Get the x, y coordinates for that cell
+            int[] xy = (int[]) mEditText.getTag();
+
+            DebugLogManager.INSTANCE.log("Modyfiying table " + table.getzBins() + " at " + xy[0] + "," + xy[1] + " with " + mEditText.getText().toString(), Log.DEBUG);
+                
+            double[][] zBins = ecu.getArray(table.getzBins());
+            
+            try 
+            {
+                // Modify local array
+                zBins[xy[0]][xy[1]] = ecu.roundDouble(Float.parseFloat(mEditText.getText().toString()), tableConstant.getDigits());
+                
+                // Apply array to ECU class
+                ecu.setArray(table.getzBins(), zBins);
+            }
+            catch (NumberFormatException e) {}
+            
             refreshCellsBackgroundColor(mEditText);
         }
         
@@ -498,17 +511,17 @@ public class TableHelper
      */
     public void writeChangesToEcu()
     {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        TableEditor tableEditor = getTableEditor();
+        
+        // Get table constant
+        Constant tableConstant = ecu.getConstantByName(tableEditor.getzBins());
+        
         // Make sure table has been modified
-        if (isModified()) 
+        if (tableConstant.isModified()) 
         {
-            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-            
-            TableEditor tableEditor = getTableEditor();
-            
             DebugLogManager.INSTANCE.log("Table " + tableEditor.getName() + " was modified, need to write change to ECU", Log.DEBUG);
-            
-            // Get table constant
-            Constant tableConstant = ecu.getConstantByName(tableEditor.getzBins());
             
             ecu.writeConstant(tableConstant);
         }
