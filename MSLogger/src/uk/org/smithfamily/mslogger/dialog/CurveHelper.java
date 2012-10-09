@@ -91,7 +91,7 @@ public class CurveHelper
      */
     private void buildLayout()
     {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout containerLayout = (LinearLayout) inflater.inflate(R.layout.curve, null);
         
         this.containerLayout = containerLayout;
@@ -101,15 +101,15 @@ public class CurveHelper
         LinearLayout.LayoutParams lpCurve;
         if (isCurveDialog)
         {
-            lpCurve = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, 0, 0.92f);
+            lpCurve = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         }
         else
         {
             Resources r = context.getResources();
-            int pxCurve = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());            
+            int pxCurve = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
             lpCurve = new LinearLayout.LayoutParams(pxCurve, pxCurve);
            
-            int pxTableAndGauge = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());            
+            int pxTableAndGauge = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
             LinearLayout.LayoutParams lpTableAndGauge = new LinearLayout.LayoutParams(pxTableAndGauge, LayoutParams.WRAP_CONTENT);
             
             LinearLayout tableAndGauge = (LinearLayout) containerLayout.findViewById(R.id.tableAndGauge);
@@ -215,7 +215,7 @@ public class CurveHelper
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 cell.setSingleLine(true);
                 cell.setPadding(10, 10, 10, 10);
-                cell.setTag(x);
+                cell.setTag(new int[] {x - 1, y - 1});
                 
                 
                 // X is not really a constant, used for MS1 for Warmup Wizard, see DialogHelper.getStdDialog
@@ -233,11 +233,11 @@ public class CurveHelper
                         {
                             if (!hasFocus)
                             {
-                                int column = Integer.parseInt(((EditText) v).getTag().toString());
+                                int[] xy = (int[]) ((EditText) v).getTag();
                                 
                                 Constant constant;
                                 
-                                if (column == 1)
+                                if (xy[0] == 0)
                                 {
                                     constant = xBinsConstant;
                                 }
@@ -280,15 +280,37 @@ public class CurveHelper
             final Constant xBinsConstant = ecu.getConstantByName(curve.getxBinsName());
             final Constant yBinsConstant = ecu.getConstantByName(curve.getyBinsName());
             
-            int column = Integer.parseInt(mEditText.getTag().toString());
+            int[] xy = (int[]) mEditText.getTag();
             
-            if (column == 1)
+            // X-bins
+            if (xy[0] == 0)
             {
                 xBinsConstant.setModified(true);
+                
+                double[] xBins = curve.getxBins();
+                
+                try
+                {
+                    xBins[xy[1]] = Double.parseDouble(mEditText.getText().toString());
+                    
+                    ecu.setVector(xBinsConstant.getName(), xBins);
+                }
+                catch (NumberFormatException e) {}
             }
+            // Y-bins
             else
             {
                 yBinsConstant.setModified(true);
+                
+                double[] yBins = curve.getyBins();
+                
+                try
+                {
+                    yBins[xy[1]] = Double.parseDouble(mEditText.getText().toString());
+                    
+                    ecu.setVector(yBinsConstant.getName(), yBins);
+                }
+                catch (NumberFormatException e) {}
             }
         }
         

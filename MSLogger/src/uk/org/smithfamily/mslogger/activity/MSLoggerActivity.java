@@ -1235,7 +1235,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             String action = intent.getAction();
             boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
-            if(action.equals(Megasquirt.PROBE_ECU))
+            if (action.equals(Megasquirt.PROBE_ECU))
             {
                 completeCreate();
             }
