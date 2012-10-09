@@ -46,7 +46,7 @@ import android.widget.Toast;
  */
 public class Megasquirt extends Service implements MSControllerInterface
 {
-    private static final int MAX_QUEUE_SIZE = 2;
+    private static final int MAX_QUEUE_SIZE = 10;
     BlockingQueue<InjectedCommand> injectionQueue = new ArrayBlockingQueue<InjectedCommand>(MAX_QUEUE_SIZE);
     
     private enum State
@@ -64,15 +64,15 @@ public class Megasquirt extends Service implements MSControllerInterface
     public static final String UNKNOWN_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU";
     public static final String UNKNOWN_ECU_BT = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU_BT";
     public static final String PROBE_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ECU_PROBED";
-    public static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
-    public static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
-    public static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
+    private static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
+    private static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
+    private static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
     
-
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LAST_SIG = "LAST_SIG";
     private static final String LAST_PROBE = "LAST_PROBE";
     private static final int NOTIFICATION_ID = 0;
+    private static final int BURN_DATA = 10;
 
     private BroadcastReceiver yourReceiver;
 
@@ -116,24 +116,52 @@ public class Megasquirt extends Service implements MSControllerInterface
         super.onCreate();
         notifications = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        final IntentFilter theFilter = new IntentFilter();
-        theFilter.addAction(ApplicationSettings.BT_CHANGED);
+        final IntentFilter btChangedFilter = new IntentFilter();
+        btChangedFilter.addAction(ApplicationSettings.BT_CHANGED);
 
+        final IntentFilter injectCommandResultsFilter = new IntentFilter();
+        injectCommandResultsFilter.addAction(Megasquirt.INJECTED_COMMAND_RESULTS);
+        
         this.yourReceiver = new BroadcastReceiver()
         {
-
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                DebugLogManager.INSTANCE.log("BT_CHANGED received", Log.VERBOSE);
-                stop();
-                start();
+                String action = intent.getAction();
+                
+                if (action.equals(ApplicationSettings.BT_CHANGED))
+                {
+                    DebugLogManager.INSTANCE.log("BT_CHANGED received", Log.VERBOSE);
+                    stop();
+                    start();
+                }
+                else if (action.equals(Megasquirt.INJECTED_COMMAND_RESULTS))
+                {
+                    int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
+                    
+                    if (resultId == Megasquirt.BURN_DATA)
+                    {
+                        // Wait til we get some data and flush it
+                        try
+                        {
+                            Thread.sleep(200);
+                        }
+                        catch (InterruptedException e) {}
+                        
+                        try 
+                        {
+                            ECUConnectionManager.getInstance().flushAll();
+                        }
+                        catch (IOException e) {}
+                    }
+                }
             }
         };
 
         // Registers the receiver so that your service will listen for broadcasts
-        this.registerReceiver(this.yourReceiver, theFilter);
-
+        this.registerReceiver(this.yourReceiver, btChangedFilter);
+        this.registerReceiver(this.yourReceiver, injectCommandResultsFilter);
+        
         ApplicationSettings.INSTANCE.setEcu(this);
         // setState(State.DISCONNECTED);
         start();
@@ -306,7 +334,6 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private void logValues(byte[] buffer)
     {
-
         if (!isLogging())
         {
             return;
@@ -329,7 +356,10 @@ public class Megasquirt extends Service implements MSControllerInterface
     private void disconnect()
     {
         if (simulated)
+        {
             return;
+        }
+        
         DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
 
         ECUConnectionManager.getInstance().disconnect();
@@ -347,7 +377,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     protected void sendMessage(String msg)
     {
         broadcast(ApplicationSettings.GENERAL_MESSAGE, msg);
-
     }
 
     /**
@@ -623,12 +652,14 @@ public class Megasquirt extends Service implements MSControllerInterface
                     {
                         try
                         {
-                            if(injectionQueue.peek() != null)
+                            if (injectionQueue.peek() != null)
                             {
-                                for(InjectedCommand i : injectionQueue)
+                                for (InjectedCommand i : injectionQueue)
                                 {
                                     processCommand(i);
                                 }
+                                
+                                injectionQueue.clear();
                             }
                             final byte[] buffer = getRuntimeVars();
                             handshake.put(buffer);
@@ -688,18 +719,21 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         private void processCommand(InjectedCommand i) throws IOException
         {
-            Intent broadcast = new Intent();
-            broadcast.setAction(INJECTED_COMMAND_RESULTS);
-
-            ECUConnectionManager.getInstance().writeCommand(i.getCommand(),i.getDelay(),ecuImplementation.isCRC32Protocol());
-            if(i.isReturnResult())
+            ECUConnectionManager.getInstance().writeCommand(i.getCommand(), i.getDelay(), ecuImplementation.isCRC32Protocol());
+            
+            // If we want to get the result back
+            if (i.isReturnResult())
             {
-                byte[] result = ECUConnectionManager.getInstance().readBytes();
+                Intent broadcast = new Intent();
+                broadcast.setAction(INJECTED_COMMAND_RESULTS);
                 
-                broadcast.putExtra(INJECTED_COMMAND_RESULT_ID,i.getResultId());
-                broadcast.putExtra(INJECTED_COMMAND_RESULT_DATA,result);
+                byte[] result = ECUConnectionManager.getInstance().readBytes();
+
+                broadcast.putExtra(INJECTED_COMMAND_RESULT_ID, i.getResultId());
+                broadcast.putExtra(INJECTED_COMMAND_RESULT_DATA, result);
+                
+                sendBroadcast(broadcast);
             }
-            sendBroadcast(broadcast);
         }
 
         private void initialiseImplementation() throws IOException, CRC32Exception
@@ -874,6 +908,10 @@ public class Megasquirt extends Service implements MSControllerInterface
                 MSSimulator.INSTANCE.getNextRTV(buffer);
                 return buffer;
             }
+            
+            // Make sure there is nothing in the buffer
+            ECUConnectionManager.getInstance().flushAll();
+            
             int d = ecuImplementation.getInterWriteDelay();
             ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, d, ecuImplementation.isCRC32Protocol());
             return buffer;
@@ -1102,7 +1140,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, writeCommand, offset, size, msValue, pageNo);
             byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
 
-            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + writeCommand + " offset: " + offset + " count: "
+            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant: " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + writeCommand + " offset: " + offset + " count: "
                     + size + " pageNo: " + pageNo, Log.DEBUG);
 
             List<byte[]> pageActivates = ecuImplementation.getPageActivates();
@@ -1117,8 +1155,9 @@ public class Megasquirt extends Service implements MSControllerInterface
                     byte[] pageSelectCommand = pageActivates.get(pageNo - 1);
                     ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
                 }
-
-                ECUConnectionManager.getInstance().writeCommand(byteCommand, delay, ecuImplementation.isCRC32Protocol());
+                
+                InjectedCommand writeToRAM = new InjectedCommand(byteCommand, 300, false, 0);
+                injectCommand(writeToRAM);
 
                 Toast.makeText(this, "Writing constant " + constant.getName() + " to MegaSquirt", Toast.LENGTH_SHORT).show();
             }
@@ -1143,41 +1182,26 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private void burnPage(int pageNo)
     {
-        try
-        {
-            // Convert from page to table index that the ECU understand
-            List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
+        // Convert from page to table index that the ECU understand
+        List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
 
-            String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("$tsCanId\\", "");
+        String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("$tsCanId\\", "");
 
-            byte tblIdx = (byte) MSUtilsShared.HexByteToDec(pageIdentifier);
+        byte tblIdx = (byte) MSUtilsShared.HexByteToDec(pageIdentifier);
 
-            DebugLogManager.INSTANCE.log("Burning page " + pageNo + " (Page identifier: " + pageIdentifier + " - Table index: " + tblIdx + ")", Log.DEBUG);
+        DebugLogManager.INSTANCE.log("Burning page " + pageNo + " (Page identifier: " + pageIdentifier + " - Table index: " + tblIdx + ")", Log.DEBUG);
 
-            // Send "b" command for the tblIdx
-            ECUConnectionManager.getInstance().writeCommand(new byte[] { 98, 0, tblIdx }, 0, ecuImplementation.isCRC32Protocol());
-
-            // Wait til we get some data and flush it
-            try
-            {
-                Thread.sleep(200);
-            }
-            catch (InterruptedException e) {}
-            
-            ECUConnectionManager.getInstance().flushAll();
-            
-            Toast.makeText(this, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e)
-        {
-            DebugLogManager.INSTANCE.logException(e);
-        }
+        // Send "b" command for the tblIdx
+        InjectedCommand burnToFlash = new InjectedCommand(new byte[] { 98, 0, tblIdx }, 300, true, Megasquirt.BURN_DATA);
+        injectCommand(burnToFlash);
+        
+        Toast.makeText(this, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
     }
-
+    
     /**
      * Get an array from the ECU
      * 
-     * @param channelName
+     * @param channelName The variable name to modify
      * @return
      */
     public double[][] getArray(String channelName)
@@ -1199,7 +1223,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     /**
      * Get a vector from the ECU
      * 
-     * @param channelName
+     * @param channelName The variable name to modify
      * @return
      */
     public double[] getVector(String channelName)
@@ -1219,8 +1243,9 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     /**
+     * Set a field in the ECU class
      * 
-     * @param channelName
+     * @param channelName The variable name to modify
      * @return
      */
     public double getField(String channelName)
@@ -1275,6 +1300,67 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
     }
 
+    /**
+     * Set a vector in the ECU class
+     * 
+     * @param channelName The variable name to modify
+     * @param double[]
+     * @return
+     */
+    public void setVector(String channelName, double[] value)
+    {
+        Class<?> c = ecuImplementation.getClass();
+
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            f.set(ecuImplementation, value);
+        }
+        catch (NoSuchFieldException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", no such field", Log.ERROR);
+        }
+        catch (IllegalArgumentException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal argument", Log.ERROR);
+        }
+        catch (IllegalAccessException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal access", Log.ERROR);
+        }
+    }
+    
+    /**
+     * Set an array in the ECU class
+     * 
+     * @param channelName The variable name to modify
+     * @param double[][]
+     * @return
+     * 
+     */
+    public void setArray(String channelName, double[][] value)
+    {
+        Class<?> c = ecuImplementation.getClass();
+
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            f.set(ecuImplementation, value);
+        }
+        catch (NoSuchFieldException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", no such field", Log.ERROR);
+        }
+        catch (IllegalArgumentException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal argument", Log.ERROR);
+        }
+        catch (IllegalAccessException e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal access", Log.ERROR);
+        }
+    }
+    
     /**
      * Round a double number to a specific number of decimals
      * 
