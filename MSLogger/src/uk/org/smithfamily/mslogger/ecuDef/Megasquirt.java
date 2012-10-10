@@ -54,7 +54,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         DISCONNECTED, CONNECTING, CONNECTED, LOGGING
     };
     
-    private State currentState = State.DISCONNECTED;
+    private volatile State currentState = State.DISCONNECTED;
 
     private NotificationManager notifications;
     private MSECUInterface ecuImplementation;
