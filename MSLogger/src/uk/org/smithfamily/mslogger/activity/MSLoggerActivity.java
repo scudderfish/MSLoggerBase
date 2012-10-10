@@ -152,6 +152,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
+        if(ApplicationSettings.INSTANCE.getEcuDefinition() != null)
+        {
+            initGauges();
+        }
     }
 
     @Override
@@ -345,7 +349,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         String[] defaultGauges = ecu.defaultGauges();
-
+        
         indicators[0].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
         indicators[1].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
         indicators[2].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
