@@ -779,7 +779,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setTitle(R.string.enable_gauge_edit);
         }
         MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        if (ecuDefinition != null && ecuDefinition.isRunning())
+        if (ecuDefinition != null && ecuDefinition.isConnected())
         {
             connectionItem.setIcon(R.drawable.ic_menu_disconnect);
             connectionItem.setTitle(R.string.disconnect);
@@ -896,7 +896,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null)
+        if (ecu != null && ecu.isConnected())
         {
             if (ecu.isLogging())
             {
@@ -961,16 +961,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private void toggleConnection()
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-        // We never connected to an ECU before (probably StartupActivity was closed),
-        // opening it back up to try to connect
-        if (ecu == null)
+        if (ecu != null && ecu.isConnected())
         {
-   //         launchStartupActivity();
+            ecu.stop();
         }
         else
         {
-            ecu.toggleConnection();
+            ecu.start();
         }
     }
 
@@ -1263,7 +1260,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 rps.setText("");
 
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-                if (ecu != null && ecu.isRunning())
+                if (ecu != null)
                 {
                     ecu.stop();
                 }
