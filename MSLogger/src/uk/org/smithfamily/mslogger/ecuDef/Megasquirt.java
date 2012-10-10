@@ -162,6 +162,13 @@ public class Megasquirt extends Service implements MSControllerInterface
         this.registerReceiver(this.yourReceiver, btChangedFilter);
         this.registerReceiver(this.yourReceiver, injectCommandResultsFilter);
         
+        String lastSig = ApplicationSettings.INSTANCE.getPref(LAST_SIG);
+        if(lastSig != null)
+        {
+            setImplementation(lastSig);
+        }
+        
+        
         ApplicationSettings.INSTANCE.setEcu(this);
         // setState(State.DISCONNECTED);
         start();
@@ -723,39 +730,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             sendMessage("Checking your ECU");
             String signature = getSignature();
 
-            Class<? extends MSECUInterface> ecuClass = ECURegistry.INSTANCE.findEcu(signature);
-
-            if (ecuImplementation != null && ecuImplementation.getClass().equals(ecuClass))
-            {
-                broadcast(PROBE_ECU);
-                return;
-            }
-
-            Constructor<? extends MSECUInterface> constructor;
-            try
-            {
-                constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class, GaugeRegisterInterface.class);
-
-                ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE, GaugeRegister.INSTANCE);
-
-                if (!signature.equals(ecuImplementation.getSignature()))
-                {
-                    trueSignature = ecuImplementation.getSignature();
-
-                    String msg = "Got unsupported signature from Megasquirt \"" + trueSignature + "\" but found a similar supported signature \"" + signature + "\"";
-
-                    sendToastMessage(msg);
-                    DebugLogManager.INSTANCE.log(msg, Log.INFO);
-                }
-                sendMessage("Found " + trueSignature);
-
-            }
-            catch (Exception e)
-            {
-                DebugLogManager.INSTANCE.logException(e);
-                broadcast(UNKNOWN_ECU);
-            }
-            broadcast(PROBE_ECU);
+            setImplementation(signature);
         }
 
         private String getSignature() throws IOException, CRC32Exception
@@ -1766,6 +1741,43 @@ public class Megasquirt extends Service implements MSControllerInterface
     public int getInjectorStating()
     {
         return (int) (isConstantExists("alternate") ? getField("alternate") : getField("alternate1"));
+    }
+
+    private void setImplementation(String signature)
+    {
+        Class<? extends MSECUInterface> ecuClass = ECURegistry.INSTANCE.findEcu(signature);
+
+        if (ecuImplementation != null && ecuImplementation.getClass().equals(ecuClass))
+        {
+            broadcast(PROBE_ECU);
+            return;
+        }
+
+        Constructor<? extends MSECUInterface> constructor;
+        try
+        {
+            constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class, GaugeRegisterInterface.class);
+
+            ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE, GaugeRegister.INSTANCE);
+
+            if (!signature.equals(ecuImplementation.getSignature()))
+            {
+                trueSignature = ecuImplementation.getSignature();
+
+                String msg = "Got unsupported signature from Megasquirt \"" + trueSignature + "\" but found a similar supported signature \"" + signature + "\"";
+
+                sendToastMessage(msg);
+                DebugLogManager.INSTANCE.log(msg, Log.INFO);
+            }
+            sendMessage("Found " + trueSignature);
+
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+            broadcast(UNKNOWN_ECU);
+        }
+        broadcast(PROBE_ECU);
     }
 
 }

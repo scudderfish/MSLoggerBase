@@ -1235,6 +1235,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (action.equals(Megasquirt.PROBE_ECU))
             {
                 completeCreate();
+                indicatorManager.setDisabled(false);
             }
             else if (action.equals(Megasquirt.CONNECTED))
             {
