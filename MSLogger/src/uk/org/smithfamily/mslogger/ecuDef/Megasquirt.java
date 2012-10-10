@@ -1185,7 +1185,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         // Convert from page to table index that the ECU understand
         List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
 
-        String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("$tsCanId\\", "");
+        String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("\\$tsCanId\\", "");
 
         byte tblIdx = (byte) MSUtilsShared.HexByteToDec(pageIdentifier);
 
