@@ -188,7 +188,7 @@ public class TableIndicator extends GroupIndicator
             }
             else
             {
-                text = Double.toString(Math.floor(getValue(gaugeName) / Math.pow(10, -gd.getVd()) + 0.5) * Math.pow(10, -gd.getVd()));
+                text = Float.toString((float)(Math.floor(getValue(gaugeName) / Math.pow(10, -gd.getVd()) + 0.5) * Math.pow(10, -gd.getVd())));
             }
         }canvas.drawText(text, 1f, y, valuePaint);
     }
