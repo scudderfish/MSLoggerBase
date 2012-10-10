@@ -8,10 +8,9 @@
 	
     <LinearLayout
 	    android:orientation="horizontal"
-		android:layout_height="0dp"
+		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:paddingTop="5dp"
-		android:layout_weight="0.08">
+		android:paddingTop="5dp">
 		
 		<Button
 			android:text="@string/bt_burn"
