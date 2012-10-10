@@ -56,11 +56,10 @@ public enum GaugeRegister implements GaugeRegisterInterface
      */
     public void addGauge(GaugeDetails gaugeDetails)
     {
-        if (details.containsKey(gaugeDetails.getName()))
+        if (details.containsKey(gaugeDetails.getName())) 
+        {
             return;
-     
-        DebugLogManager.INSTANCE.log("Adding gauge : " + gaugeDetails,Log.INFO);
-
+        }
         details.put(gaugeDetails.getName(), gaugeDetails);
     }
 

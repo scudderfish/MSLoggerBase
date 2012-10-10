@@ -53,6 +53,8 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         DISCONNECTED, CONNECTING, CONNECTED, LOGGING
     };
+    
+    private State currentState = State.DISCONNECTED;
 
     private NotificationManager notifications;
     private MSECUInterface ecuImplementation;
@@ -76,11 +78,9 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     private BroadcastReceiver yourReceiver;
 
-    private boolean logging;
     private boolean constantsLoaded;
     private String trueSignature = "Unknown";
     private volatile ECUThread ecuThread;
-    private volatile boolean running;
     private static volatile ECUThread watch;
 
     public class LocalBinder extends Binder
@@ -171,9 +171,10 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     private void setState(State s)
     {
+        currentState = s;
         int msgId;
 
-        switch (s)
+        switch (currentState)
         {
         case DISCONNECTED:
             msgId = R.string.disconnected_from_ms;
@@ -232,21 +233,10 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         injectionQueue.add(command);
     }
-    /**
-     * If we're not running, start things up, if we are already running, shut things down
-     */
-    public synchronized void toggleConnection()
+    
+    public boolean isConnected()
     {
-        if (!running)
-        {
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(true);
-            start();
-        }
-        else
-        {
-            ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
-            stop();
-        }
+        return currentState == State.CONNECTED || currentState == State.LOGGING;
     }
 
     /**
@@ -255,7 +245,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     public boolean isLogging()
     {
-        return logging;
+        return currentState == State.LOGGING;
     }
 
     /**
@@ -289,12 +279,8 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
         else
         {
-            if (ecuThread != null)
-            {
-                ecuThread.halt();
-            }
+            setState(State.DISCONNECTED);
             ecuThread = new ECUThread();
-
             ecuThread.start();
         }
     }
@@ -306,13 +292,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         DebugLogManager.INSTANCE.log("Megasquirt.stop()", Log.INFO);
 
-        if (ecuThread != null)
-        {
-            ecuThread.halt();
-            ecuThread = null;
-        }
-
-        running = false;
+        ecuThread = null;
 
         setState(State.DISCONNECTED);
         broadcast(DISCONNECTED);
@@ -325,7 +305,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         ecuImplementation.refreshFlags();
         constantsLoaded = false;
-        running = false;
         notifications.cancelAll();
     }
 
@@ -454,9 +433,11 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     public void startLogging()
     {
-        logging = true;
-        DebugLogManager.INSTANCE.log("startLogging()", Log.INFO);
-
+        if (currentState == State.CONNECTED)
+        {
+            currentState = State.LOGGING;
+            DebugLogManager.INSTANCE.log("startLogging()", Log.INFO);
+        }
     }
 
     /**
@@ -464,10 +445,13 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     public void stopLogging()
     {
-        DebugLogManager.INSTANCE.log("stopLogging()", Log.INFO);
-        logging = false;
-        FRDLogManager.INSTANCE.close();
-        DatalogManager.INSTANCE.close();
+        if (currentState == State.LOGGING)
+        {
+            DebugLogManager.INSTANCE.log("stopLogging()", Log.INFO);
+            currentState = State.CONNECTED;
+            FRDLogManager.INSTANCE.close();
+            DatalogManager.INSTANCE.close();
+        }
     }
 
     /**
@@ -610,8 +594,6 @@ public class Megasquirt extends Service implements MSControllerInterface
                     DebugLogManager.INSTANCE.logException(e);
                 }
 
-                running = true;
-
                 try
                 {
                     ECUConnectionManager.getInstance().flushAll();
@@ -648,7 +630,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                     double readCounter = 0;
 
                     // This is the actual work. Outside influences will toggle 'running' when we want this to stop
-                    while (running)
+                    while (currentState == Megasquirt.State.CONNECTED || currentState == Megasquirt.State.LOGGING)
                     {
                         try
                         {
@@ -885,16 +867,6 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
 
         /**
-         * Called by other threads to stop the comms
-         */
-        public void halt()
-        {
-            DebugLogManager.INSTANCE.log("ECUThread.halt()", Log.INFO);
-
-            running = false;
-        }
-
-        /**
          * Get the current variables from the ECU
          * 
          * @throws IOException
@@ -948,15 +920,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     public String getTrueSignature()
     {
         return trueSignature;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public boolean isRunning()
-    {
-        return running;
     }
 
     /**
