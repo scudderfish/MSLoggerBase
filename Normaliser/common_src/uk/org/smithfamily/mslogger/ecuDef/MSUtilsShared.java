@@ -21,7 +21,7 @@ public class MSUtilsShared
         int width = Integer.parseInt(sizes[0].trim());
         int height = sizes.length == 2 ? Integer.parseInt(sizes[1].trim()) : -1;
         
-        int[] size = {width, height};
+        int[] size = { width, height };
         
         return size;
     }
@@ -89,6 +89,14 @@ public class MSUtilsShared
     
                         ret += HexStringToBytes(listPageCommand, identifier, offset, count, value, pageNo);
                     }
+                }
+                else if (currentCharacter == 'o')
+                {
+                    ret += bytes(offset);
+                }
+                else if (currentCharacter == 'c')
+                {
+                    ret += bytes(count);
                 }
                 else if (currentCharacter == 'v')
                 {
