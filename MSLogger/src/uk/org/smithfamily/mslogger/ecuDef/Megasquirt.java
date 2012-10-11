@@ -163,14 +163,13 @@ public class Megasquirt extends Service implements MSControllerInterface
         this.registerReceiver(this.yourReceiver, injectCommandResultsFilter);
         
         String lastSig = ApplicationSettings.INSTANCE.getPref(LAST_SIG);
-        if(lastSig != null)
+        if (lastSig != null)
         {
             setImplementation(lastSig);
         }
         
         
         ApplicationSettings.INSTANCE.setEcu(this);
-        // setState(State.DISCONNECTED);
         start();
 
         startForeground(NOTIFICATION_ID, null);
@@ -241,14 +240,16 @@ public class Megasquirt extends Service implements MSControllerInterface
         injectionQueue.add(command);
     }
     
+    /**
+     * @return true if we're connected to an ECU, false otherwise
+     */
     public boolean isConnected()
     {
         return currentState == State.CONNECTED || currentState == State.LOGGING;
     }
 
     /**
-     * 
-     * @return
+     * @return true if we're data logging the ECU realtime stream, false otherwise
      */
     public boolean isLogging()
     {
