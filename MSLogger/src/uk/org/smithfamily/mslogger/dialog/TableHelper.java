@@ -141,6 +141,9 @@ public class TableHelper
         
         double[][] zBins = ecu.getArray(table.getzBins());
         
+        // Get table constant
+        Constant tableConstant = ecu.getConstantByName(table.getzBins());
+        
         this.tableNbX = zBins.length;
         this.tableNbY = zBins[0].length;
         
@@ -217,7 +220,7 @@ public class TableHelper
             for (int x = 1; x <= tableNbX; x++)
             {
                 EditText cell = new EditText(context);
-                cell.setText(Double.toString(zBins[x - 1][tableNbY - y]));
+                cell.setText(Double.toString(ecu.roundDouble(zBins[x - 1][tableNbY - y], tableConstant.getDigits())));
                 cell.setId(getCellId(x,y));
                 cell.setLayoutParams(lp);
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);

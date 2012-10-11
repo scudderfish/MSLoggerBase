@@ -1325,12 +1325,11 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param height The height of the byte array
      * @param scale The scale of the data
      * @param translate The translate of the data
-     * @param digits Number of digits of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
+    public double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         double[][] destination = new double[width][height];
         int index = offset;
@@ -1340,7 +1339,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             {
                 double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
                 value = (value + translate) * scale;
-                destination[x][y] = this.roundDouble(value, digits);
+                destination[x][y] = value;
                 index = index + 1;
             }
         }
@@ -1355,12 +1354,11 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param width The width of the byte vector
      * @param scale The scale of the data
      * @param translate The translate of the data
-     * @param digits Number of digits of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
+    public double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         double[] destination = new double[width];
         int index = offset;
@@ -1368,7 +1366,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
             value = (value + translate) * scale;
-            destination[x] = this.roundDouble(value, digits);
+            destination[x] = value;
             index = index + 1;
         }
 
@@ -1384,12 +1382,11 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param height The height of the word array
      * @param scale The scale of the data
      * @param translate The translate of the data
-     * @param digits Number of digits of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, int digits, boolean signed)
+    public double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
     {
         double[][] destination = new double[width][height];
         int index = offset;
@@ -1399,7 +1396,7 @@ public class Megasquirt extends Service implements MSControllerInterface
             {
                 double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
                 value = (value + translate) * scale;
-                destination[x][y] = this.roundDouble(value, digits);
+                destination[x][y] = value;
                 index = index + 2;
             }
         }
@@ -1415,12 +1412,11 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param width The width of the word vector
      * @param scale The scale of the data
      * @param translate The translate of the data
-     * @param digits Number of digits of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, int digits, boolean signed)
+    public double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
     {
         double[] destination = new double[width];
         int index = offset;
@@ -1428,7 +1424,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
             value = (value + translate) * scale;
-            destination[x] = this.roundDouble(value, digits);
+            destination[x] = value;
             index = index + 2;
         }
 
