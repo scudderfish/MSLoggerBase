@@ -202,11 +202,11 @@ public class CurveHelper
                 // x = 2 is the Y column
                 if (x == 1)
                 {
-                    value = curve.getxBins()[y - 1];
+                    value = ecu.roundDouble(curve.getxBins()[y - 1], xBinsConstant.getDigits());
                 }
                 else
                 {
-                    value = curve.getyBins()[y - 1];
+                    value = ecu.roundDouble(curve.getyBins()[y - 1], yBinsConstant.getDigits());
                 }
                 
                 cell.setText(String.valueOf(value));

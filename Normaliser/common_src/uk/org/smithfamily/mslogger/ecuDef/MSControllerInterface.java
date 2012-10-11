@@ -7,13 +7,13 @@ public interface MSControllerInterface
 
     byte[] loadPage(int i, int j, int k, byte[] bs, byte[] bs2);
 
-    double[] loadByteVector(byte[] pageBuffer, int i, int j, double d, double e, int k, boolean b);
+    double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed);
 
-    double[][] loadByteArray(byte[] pageBuffer, int i, int j, int k, double d, double e, int l, boolean b);
+    double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed);
 
-    double[] loadWordVector(byte[] pageBuffer, int i, int j, double d, double e, int k, boolean b);
+    double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed);
 
-    double[][] loadWordArray(byte[] pageBuffer, int i, int j, int k, double d, double e, int l, boolean b);
+    double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed);
 
     double round(double x);
 
