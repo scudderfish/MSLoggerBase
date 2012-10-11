@@ -178,12 +178,12 @@ public class Megasquirt extends Service implements MSControllerInterface
     private void setState(State s)
     {
         currentState = s;
-        int msgId;
-
+        int msgId=R.string.disconnected_from_ms;
+        boolean removeNotification = false;
         switch (currentState)
         {
         case DISCONNECTED:
-            msgId = R.string.disconnected_from_ms;
+            removeNotification = true;
             break;
         case CONNECTING:
             msgId = R.string.connecting_to_ms;
@@ -198,11 +198,19 @@ public class Megasquirt extends Service implements MSControllerInterface
             msgId = R.string.unknown;
             break;
         }
-        CharSequence text = getText(R.string.app_name);
-        Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), 0);
-        notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
-        notifications.notify(NOTIFICATION_ID, notification);
+        
+        if (removeNotification)
+        {
+            notifications.cancelAll();
+        }
+        else
+        {
+            CharSequence text = getText(R.string.app_name);
+            Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), 0);
+            notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
+            notifications.notify(NOTIFICATION_ID, notification);
+        }
     }
 
     @Override
