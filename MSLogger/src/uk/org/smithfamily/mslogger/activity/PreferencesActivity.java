@@ -72,7 +72,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         p.setOnPreferenceChangeListener(new ECUPreferenceChangeListener());
 
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecu != null)
+        if (ecu != null && ecu.isConnected())
         {
             PreferenceScreen ps = this.getPreferenceScreen();
 

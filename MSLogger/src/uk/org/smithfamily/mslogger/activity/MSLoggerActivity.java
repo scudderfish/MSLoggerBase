@@ -795,7 +795,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         MenuItem loggingItem = menu.findItem(R.id.forceLogging);
-        loggingItem.setEnabled(ecuDefinition != null);
+        loggingItem.setEnabled(ecuDefinition != null && ecuDefinition.isConnected());
 
         if (ecuDefinition != null && ecuDefinition.isLogging())
         {
@@ -809,7 +809,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         MenuItem tuningItem = menu.findItem(R.id.tuning);
-        tuningItem.setEnabled(ecuDefinition != null);
+        tuningItem.setEnabled(ecuDefinition != null && ecuDefinition.isConnected());
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -944,14 +944,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ExtGPSManager.INSTANCE.stop();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null)
+        if (ecu != null && ecu.isConnected())
         {
             ecu.stop();
         }
 
         sendLogs();
 
-        if (ecu != null)
+        if (ecu != null && ecu.isConnected())
         {
             ecu.reset();
         }
@@ -1247,7 +1247,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                 DebugLogManager.INSTANCE.log(action, Log.INFO);
                 indicatorManager.setDisabled(false);
-                if (autoLoggingEnabled && ecu != null)
+                if (autoLoggingEnabled && ecu != null && ecu.isConnected())
                 {
                     ecu.startLogging();
                 }
@@ -1265,7 +1265,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 rps.setText("");
 
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-                if (ecu != null)
+                if (ecu != null && ecu.isConnected())
                 {
                     ecu.stop();
                 }
