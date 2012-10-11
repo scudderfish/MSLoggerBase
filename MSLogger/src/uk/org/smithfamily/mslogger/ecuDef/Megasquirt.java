@@ -1016,18 +1016,13 @@ public class Megasquirt extends Service implements MSControllerInterface
         int pageNo = constant.getPage();
         int offset = constant.getOffset();
 
-        double scale = constant.getScale();
-        double translate = constant.getTranslate();
-
         int[] msValue = null;
 
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
-            double userValue = getField(constant.getName());
-
             msValue = new int[1];
-            msValue[0] = (int) (userValue / scale - translate);
+            msValue[0] = (int) getField(constant.getName());
         }
         // Constant to write to ECU is of type array
         else if (constant.getClassType().equals("array"))
@@ -1200,22 +1195,14 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param channelName
      * @param value
      */
-    public void setField(String channelName, double value)
+    public void setField(String channelName, int value)
     {
         Class<?> c = ecuImplementation.getClass();
 
         try
         {
             Field f = c.getDeclaredField(channelName);
-
-            if (f.getType().toString().equals("int"))
-            {
-                f.setInt(ecuImplementation, (int) value);
-            }
-            else
-            {
-                f.setDouble(ecuImplementation, value);
-            }
+            f.setInt(ecuImplementation, value);
         }
         catch (NoSuchFieldException e)
         {

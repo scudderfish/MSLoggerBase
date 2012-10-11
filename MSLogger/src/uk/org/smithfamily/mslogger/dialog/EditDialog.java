@@ -602,7 +602,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      */
     private EditText buildSingleValueConstantField(String dialogName, DialogField df, Constant constant)
     {
-        double constantValue = MSUtils.INSTANCE.roundDouble(ecu.getField(df.getName()), constant.getDigits());
+        double constantValue = MSUtils.INSTANCE.roundDouble((ecu.getField(df.getName()) + constant.getTranslate()) * constant.getScale(), constant.getDigits());
         String displayedValue = "";
         
         if (constant.getDigits() == 0)
@@ -650,10 +650,10 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 Constant constant = ecu.getConstantByName(constantName);
                 constant.setModified(true);
                 
-                double value = 0;
+                int value = 0;
                 try
                 {
-                    value = Double.parseDouble(edit.getText().toString());
+                    value = (int) (Integer.parseInt(edit.getText().toString()) / constant.getScale() - constant.getTranslate());
                 }
                 catch (NumberFormatException e){}
                 

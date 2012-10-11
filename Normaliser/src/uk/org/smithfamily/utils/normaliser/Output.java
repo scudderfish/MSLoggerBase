@@ -720,8 +720,7 @@ public class Output
                 }
                 else
                 {
-                    def = getScalar("pageBuffer", ecuData.getConstantVars().get(name), name, c.getType(), "" + c.getOffset(), ""
-                            + c.getScale(), "" + c.getTranslate());
+                    def = getScalar("pageBuffer", ecuData.getConstantVars().get(name), name, c.getType(), "" + c.getOffset(), "1", "0"); // scale of 1 and translate of 0
                 }
                 writer.println(TAB + TAB + def);
             }

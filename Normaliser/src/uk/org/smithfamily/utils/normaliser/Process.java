@@ -542,14 +542,7 @@ public class Process
                 Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate,
                         lowText, highText, digits);
 
-                if (scale == 1.0)
-                {
-                    ecuData.getConstantVars().put(name, "int");
-                }
-                else
-                {
-                    ecuData.getConstantVars().put(name, "double");
-                }
+                ecuData.getConstantVars().put(name, "int");
                 ecuData.getConstants().add(c);
             }
         }
@@ -601,14 +594,7 @@ public class Process
             Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0",
                     "0", 0);
 
-            if (scale == 1.0)
-            {
-                ecuData.getConstantVars().put(name, "int");
-            }
-            else
-            {
-                ecuData.getConstantVars().put(name, "double");
-            }
+            ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
         }
         else if (bitsM.matches())
