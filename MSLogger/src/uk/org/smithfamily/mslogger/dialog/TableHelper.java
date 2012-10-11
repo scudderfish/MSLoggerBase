@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.dialog;
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
@@ -139,7 +140,7 @@ public class TableHelper
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
-        double[][] zBins = ecu.getArray(table.getzBins());
+        int[][] zBins = ecu.getArray(table.getzBins());
         
         // Get table constant
         Constant tableConstant = ecu.getConstantByName(table.getzBins());
@@ -180,8 +181,8 @@ public class TableHelper
         
         TableRow tableRow;
         
-        double xBins[] = table.getxBins();
-        double yBins[] = table.getyBins();
+        int xBins[] = table.getxBins();
+        int yBins[] = table.getyBins();
         
         int xDigits = 0;
         if (xOutputChannel != null)
@@ -210,7 +211,7 @@ public class TableHelper
             }
             else
             {
-                headerLabel = String.valueOf(ecu.roundDouble(yBins[tableNbY - y], yDigits));
+                headerLabel = String.valueOf(MSUtils.INSTANCE.roundDouble(yBins[tableNbY - y], yDigits));
             }
             
             rowHeader.setText(headerLabel);
@@ -220,7 +221,7 @@ public class TableHelper
             for (int x = 1; x <= tableNbX; x++)
             {
                 EditText cell = new EditText(context);
-                cell.setText(Double.toString(ecu.roundDouble(zBins[x - 1][tableNbY - y], tableConstant.getDigits())));
+                cell.setText(Double.toString(MSUtils.INSTANCE.roundDouble((zBins[x - 1][tableNbY - y] + tableConstant.getTranslate()) * tableConstant.getScale(), tableConstant.getDigits())));
                 cell.setId(getCellId(x,y));
                 cell.setLayoutParams(lp);
                 cell.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -257,7 +258,7 @@ public class TableHelper
                 }
                 else
                 {
-                    headerLabel = String.valueOf(ecu.roundDouble(xBins[x - 2], xDigits));
+                    headerLabel = String.valueOf(MSUtils.INSTANCE.roundDouble(xBins[x - 2], xDigits));
                 }
                 
                 columnHeader.setText(headerLabel);
@@ -328,12 +329,12 @@ public class TableHelper
 
             DebugLogManager.INSTANCE.log("Modyfiying table " + table.getzBins() + " at " + xy[0] + "," + xy[1] + " with " + mEditText.getText().toString(), Log.DEBUG);
                 
-            double[][] zBins = ecu.getArray(table.getzBins());
+            int[][] zBins = ecu.getArray(table.getzBins());
             
             try 
             {
                 // Modify local array
-                zBins[xy[0]][xy[1]] = ecu.roundDouble(Float.parseFloat(mEditText.getText().toString()), tableConstant.getDigits());
+                zBins[xy[0]][xy[1]] = (int) (Integer.parseInt(mEditText.getText().toString()) / tableConstant.getScale() - tableConstant.getTranslate());
                 
                 // Apply array to ECU class
                 ecu.setArray(table.getzBins(), zBins);

@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -162,7 +163,7 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
                 dReqFuel = reqFuel * (injectorStaging * divider) / nInjectors;
                 
                 // Populate this so the parent dialog can get that info
-                mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
+                mDialogResult.finish(MSUtils.INSTANCE.roundDouble(reqFuel, 1), MSUtils.INSTANCE.roundDouble(dReqFuel, 1));
                 dismiss();
             }
         }

@@ -579,11 +579,11 @@ public class Process
                         lowText, highText, digits);
                 if (shape.contains("x"))
                 {
-                    ecuData.getConstantVars().put(name, "double[][]");
+                    ecuData.getConstantVars().put(name, "int[][]");
                 }
                 else
                 {
-                    ecuData.getConstantVars().put(name, "double[]");
+                    ecuData.getConstantVars().put(name, "int[]");
                 }
                 ecuData.getConstants().add(c);
             }

@@ -13,6 +13,7 @@ import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
 import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -601,7 +602,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      */
     private EditText buildSingleValueConstantField(String dialogName, DialogField df, Constant constant)
     {
-        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
+        double constantValue = MSUtils.INSTANCE.roundDouble(ecu.getField(df.getName()), constant.getDigits());
         String displayedValue = "";
         
         if (constant.getDigits() == 0)

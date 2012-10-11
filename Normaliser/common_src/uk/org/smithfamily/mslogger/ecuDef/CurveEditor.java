@@ -10,12 +10,12 @@ public class CurveEditor
     private String          label;
     private double[]        xAxis;
     private double[]        yAxis;
-    private double[]        xBins;
+    private int[]        xBins;
     private String          xBinsName;
     private double          xBins2;
     private String          xLabel;
     private boolean         xReadOnly;
-    private double[]        yBins;
+    private int[]        yBins;
     private String          yBinsName;
     private String          yLabel;
     private String          gauge;
@@ -68,7 +68,7 @@ public class CurveEditor
         this.yAxis = yAxis;
     }
     
-    public void setXBins(double[] bins, String binsName, double bins2, boolean b)
+    public void setXBins(int[] bins, String binsName, double bins2, boolean b)
     {
         this.xBins = bins;
         this.xBinsName = binsName;
@@ -76,13 +76,13 @@ public class CurveEditor
         this.xReadOnly = b;
     }
 
-    public void setYBins(double[] bins, String binsName)
+    public void setYBins(int[] bins, String binsName)
     {
         this.yBins = bins;
         this.yBinsName = binsName;
     }
     
-    public double[] getxBins()
+    public int[] getxBins()
     {
         return xBins;
     }
@@ -117,7 +117,7 @@ public class CurveEditor
         return xReadOnly;
     }
 
-    public double[] getyBins()
+    public int[] getyBins()
     {
         return yBins;
     }
