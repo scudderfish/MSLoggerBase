@@ -46,6 +46,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     private Map<String, String[]> channels = new HashMap<String, String[]>();
 
     private Spinner channelSpinner;
+    private Spinner indicatorPositionSpinner;
 
     private Spinner typeSpinner;
     private Spinner orientationSpinner;
@@ -86,7 +87,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         prepareChannelSpinner();
         prepareOrientationSpinner();
         prepareTypeSpinner();
-
+        prepareIndicatorPositionSpinner();
+        
         Button buttonOK = (Button) findViewById(R.id.editOK);
         Button buttonReset = (Button) findViewById(R.id.editReset);
         Button buttonCancel = (Button) findViewById(R.id.editCancel);
@@ -150,12 +152,14 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
         int channelPosition = channelArrayAdapter.getPosition(gd.getTitle());
         if (channelPosition == -1)
+        {
             channelPosition = 0;
+        }
+        
         channelSpinner.setSelection(channelPosition);
 
         channelSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
         {
-
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
             {
@@ -192,14 +196,17 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         // Select currently selected orientation
         int orientationPosition = orientationAdapter.getPosition(gd.getOrientation().toLowerCase());
         if (orientationPosition == -1)
+        {
             orientationPosition = 0;
+        }
+        
         orientationSpinner.setSelection(orientationPosition);
     }
 
     /**
-     * Prepare the type spinner
+     * Prepare the indicator type spinner
      */
-    public void prepareTypeSpinner()
+    private void prepareTypeSpinner()
     {
         typeSpinner = (Spinner) findViewById(R.id.indicatorType);
 
@@ -220,7 +227,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                displayOrientationSpinnerIfNeeded();
+                adjustFieldsForIndicatorType();
             }
 
             @Override
@@ -229,22 +236,53 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             }
         });
     }
+    
+    /**
+     * Prepare the indicator position spinner
+     */
+    private void prepareIndicatorPositionSpinner()
+    {
+        indicatorPositionSpinner = (Spinner) findViewById(R.id.spinnerIndicatorPosition);
+        
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> positionAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatorpositions, android.R.layout.simple_spinner_item);
+    
+        // Specify the layout to use when the list of choices appears
+        positionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        // Apply the adapter to the spinner
+        indicatorPositionSpinner.setAdapter(positionAdapter);
+    }    
 
     /**
-     *
+     * Depending on the indicator type, decide if specific fields should be displayed or not
      */
-    private void displayOrientationSpinnerIfNeeded()
+    private void adjustFieldsForIndicatorType()
     {
         TableRow orientationRow = (TableRow) findViewById(R.id.indicatorOrientationRow);
 
+        String selectedType = typeSpinner.getSelectedItem().toString();
+        
         // Display orientation spinner for bar graph
-        if (typeSpinner.getSelectedItem().toString().equals(getContext().getString(R.string.bargraph)))
+        if (selectedType.equals(getContext().getString(R.string.bargraph)))
         {
             orientationRow.setVisibility(View.VISIBLE);
         }
         else
         {
             orientationRow.setVisibility(View.GONE);
+        }
+        
+        TableRow indicatorDetailsNumber = (TableRow) findViewById(R.id.indicatorDetailsNumber);
+        
+        // Display multiple indicators choses for table indicator
+        if (selectedType.equals(getContext().getString(R.string.table_indicator)))
+        {
+            indicatorDetailsNumber.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            indicatorDetailsNumber.setVisibility(View.GONE);
         }
     }
 

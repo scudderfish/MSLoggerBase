@@ -720,8 +720,7 @@ public class Output
                 }
                 else
                 {
-                    def = getScalar("pageBuffer", ecuData.getConstantVars().get(name), name, c.getType(), "" + c.getOffset(), ""
-                            + c.getScale(), "" + c.getTranslate());
+                    def = getScalar("pageBuffer", ecuData.getConstantVars().get(name), name, c.getType(), "" + c.getOffset(), "1", "0"); // scale of 1 and translate of 0
                 }
                 writer.println(TAB + TAB + def);
             }
@@ -767,15 +766,15 @@ public class Output
         if (height == -1)
         {
             functionName += "Vector";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(),
-                    width, c.getScale(), c.getTranslate(), signed);
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %s);", c.getName(), functionName, c.getOffset(),
+                    width, signed);
 
         }
         else
         {
             functionName += "Array";
-            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s, %s, %s);", c.getName(), functionName, c.getOffset(),
-                    width, height, c.getScale(), c.getTranslate(), signed);
+            loadArray = String.format("%s = %s(pageBuffer, %d, %d, %d, %s);", c.getName(), functionName, c.getOffset(),
+                    width, height, signed);
         }
         return loadArray;
     }

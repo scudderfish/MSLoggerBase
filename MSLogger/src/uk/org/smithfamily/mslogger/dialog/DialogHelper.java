@@ -281,6 +281,8 @@ public class DialogHelper
         curve.setxAxis(new double[] {-60, 200, 20});
         curve.setyAxis(new double[] {0, 240, 20});
         
+        /*
+         * TODO FIX THIS
         if (ecu.isSet("CELCIUS"))
         {
             double[] temp = {-40.0, -20.0, 0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 130.0, 160.0};
@@ -292,6 +294,7 @@ public class DialogHelper
             curve.setXBins(temp, "Coolant (°F)", 0, false);
         }
         curve.setYBins(ecu.getVector("wueBins9"), "wueBins9");
+        */
         
         dialog.addPanel(new DialogPanel("std_warmup_curve", ""));
         

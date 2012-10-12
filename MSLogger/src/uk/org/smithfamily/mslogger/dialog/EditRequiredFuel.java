@@ -2,6 +2,8 @@ package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -142,7 +144,7 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
             }
             catch (NumberFormatException e){}
             
-            error = showRequiredFuelOutOfBounds(injectorFlowValue, 0, 25, "Air/Fuel Ratio");
+            error = showRequiredFuelOutOfBounds(afr, 0, 25, "Air/Fuel Ratio");
             if (error)
             {
                 errorsCount++;
@@ -161,8 +163,20 @@ public class EditRequiredFuel extends Dialog implements android.view.View.OnClic
                 reqFuel = (36.0E6 * cid * 4.27793e-05) / (nCylinders * afr * injectorFlowValue) / 10.0;
                 dReqFuel = reqFuel * (injectorStaging * divider) / nInjectors;
                 
+                String reqFuelConstantName = "reqFuel";
+                
+                // MS1
+                if (ecu.isConstantExists("reqFuel1"))
+                {
+                    reqFuelConstantName = "reqFuel1";
+                }
+                
+                // Set constant to modified
+                Constant reqFuelConstant = ecu.getConstantByName(reqFuelConstantName);
+                reqFuelConstant.setModified(true);
+                
                 // Populate this so the parent dialog can get that info
-                mDialogResult.finish(ecu.roundDouble(reqFuel, 1), ecu.roundDouble(dReqFuel, 1));
+                mDialogResult.finish(MSUtils.INSTANCE.roundDouble(reqFuel, 1), MSUtils.INSTANCE.roundDouble(dReqFuel, 1));
                 dismiss();
             }
         }

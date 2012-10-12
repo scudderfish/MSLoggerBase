@@ -13,6 +13,7 @@ import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
 import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -384,15 +385,16 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         double reqFuel = 0;
         
+        String reqFuelConstantName = "reqFuel";
+        
         // MS1
         if (ecu.isConstantExists("reqFuel1"))
         {
-            reqFuel = ecu.getField("reqFuel1");
+            reqFuelConstantName = "reqFuel1";
         }
-        else 
-        {
-            reqFuel = ecu.getField("reqFuel");
-        }
+            
+        Constant reqFuelConstant = ecu.getConstantByName(reqFuelConstantName);
+        reqFuel = (ecu.getField(reqFuelConstantName) + reqFuelConstant.getTranslate()) * reqFuelConstant.getScale();      
         
         final EditText reqFuelEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel);
         reqFuelEdit.setText(String.valueOf(reqFuel));
@@ -601,7 +603,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      */
     private EditText buildSingleValueConstantField(String dialogName, DialogField df, Constant constant)
     {
-        double constantValue = ecu.roundDouble(ecu.getField(df.getName()),constant.getDigits());
+        double constantValue = MSUtils.INSTANCE.roundDouble((ecu.getField(df.getName()) + constant.getTranslate()) * constant.getScale(), constant.getDigits());
         String displayedValue = "";
         
         if (constant.getDigits() == 0)
@@ -649,10 +651,10 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 Constant constant = ecu.getConstantByName(constantName);
                 constant.setModified(true);
                 
-                double value = 0;
+                int value = 0;
                 try
                 {
-                    value = Double.parseDouble(edit.getText().toString());
+                    value = (int) Math.round(Double.parseDouble(edit.getText().toString()) / constant.getScale() - constant.getTranslate());
                 }
                 catch (NumberFormatException e){}
                 

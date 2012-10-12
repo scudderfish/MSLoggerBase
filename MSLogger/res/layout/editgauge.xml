@@ -1,124 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_gravity="center"
-	android:layout_margin="8dp" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:weightSum="100"
-	android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+    android:orientation="vertical" android:layout_gravity="center"
+    android:layout_margin="8dp" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:weightSum="100"
+    android:keepScreenOn="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
-	<TableLayout android:layout_height="wrap_content"
-		android:layout_width="fill_parent">
-		<TableRow>
-			<TextView android:text="@string/name" style="@style/gaugeLabel" />
-			<TextView android:id="@+id/editName" android:text="@string/name"
-				style="@style/gaugeLabel" />
-		</TableRow>
-		<TableRow>
-			<TextView android:text="@string/channel" style="@style/gaugeLabel" />
-			<Spinner android:id="@+id/spinnerChannel" style="@style/gaugeLabel" android:prompt="@string/choose_indicator_channel" />
-		</TableRow>
-	</TableLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <TableRow>
+            <TextView android:text="@string/name" style="@style/gaugeLabel" />
+            <TextView android:id="@+id/editName" android:text="@string/name" />
+        </TableRow>
+        
+        <TableRow android:id="@+id/indicatorDetailsNumber" android:visibility="gone">
+            <TextView android:text="@string/indicatorDetailsEdit" style="@style/gaugeLabel" />
+            <Spinner android:id="@+id/spinnerIndicatorPosition" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_position" />
+        </TableRow>
+        
+        <TableRow>
+            <TextView android:text="@string/indicator_type" style="@style/gaugeLabel" />
+            <Spinner android:id="@+id/indicatorType" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_type" />
+        </TableRow>
+    </TableLayout>
 
-	<View android:layout_height="2dip" android:layout_width="fill_parent"
-		android:background="#FF909090" android:layout_marginTop="5dp" android:layout_marginBottom="5dp" />
+    <View
+        android:layout_height="2dip"
+        android:layout_width="fill_parent"
+        android:background="#FF909090"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
 
-	<ScrollView android:id="@+id/scrollView1"
-		android:layout_weight="100" android:layout_width="match_parent"
-		android:layout_height="0px">
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_weight="100"
+        android:layout_width="match_parent"
+        android:layout_height="0px">
+        
+        <TableLayout
+            android:id="@+id/gaugeDetails"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+            
+ 			<TableRow android:id="@+id/spinnerRow">
+	            <TextView android:text="@string/channel" style="@style/gaugeLabel" />
+	            <Spinner android:id="@+id/spinnerChannel" style="@style/gaugeLabel" android:prompt="@string/choose_indicator_channel" />
+        	</TableRow>
+              
+            <TableRow android:id="@+id/indicatorOrientationRow" android:visibility="gone">
+                <TextView android:text="@string/indicator_orientation" style="@style/gaugeLabel" />
+                <Spinner android:id="@+id/indicatorOrientation" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_orientation" />
+            </TableRow>
+            
+            <TableRow>
+                <TextView android:text="@string/title" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editTitle" style="@style/gaugeEdit" android:inputType="text" />
+            </TableRow>
 
-		<TableLayout android:layout_height="wrap_content"
-			android:layout_width="fill_parent">
+            <TableRow>
+                <TextView android:text="@string/units" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editUnits" style="@style/gaugeEdit" android:inputType="text" />
+            </TableRow>
 
-		    <TableRow>
-		        <TextView android:text="@string/indicator_type" style="@style/gaugeLabel" />
-				<Spinner android:id="@+id/indicatorType" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_type" />
-		    </TableRow>
-		  	
-		  	<TableRow android:id="@+id/indicatorOrientationRow" android:visibility="gone">
-		        <TextView android:text="@string/indicator_orientation" style="@style/gaugeLabel" />
-				<Spinner android:id="@+id/indicatorOrientation" android:layout_width="wrap_content" android:prompt="@string/choose_indicator_orientation" />
-		    </TableRow>
-		    
-			<TableRow>
-				<TextView android:text="@string/title" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editTitle" style="@style/gaugeEdit" android:inputType="text" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/min_value" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editLo" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/units" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editUnits" style="@style/gaugeEdit" android:inputType="text" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/max_value" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editHi" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/min_value" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editLo" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/low_danger" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editLoD" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/max_value" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editHi" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/low_warning" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editLoW" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/low_danger" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editLoD" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/high_danger" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editHiD" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/low_warning" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editLoW" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/high_warning" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editHiW" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/high_danger" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editHiD" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/value_decimal_places" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editVD" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/high_warning" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editHiW" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned|numberDecimal" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/label_decimal_places" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editLD" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/value_decimal_places" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editVD" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned" />
-			</TableRow>
+            <TableRow>
+                <TextView android:text="@string/offset_angle" style="@style/gaugeLabel" />
+                <EditText android:id="@+id/editoffsetAngle" style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </TableRow>
 
-			<TableRow>
-				<TextView android:text="@string/label_decimal_places" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editLD" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned" />
-			</TableRow>
+        </TableLayout>
+    </ScrollView>
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp">
+        
+        <Button
+            android:text="@string/bt_ok"
+            android:id="@+id/editOK"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+        <Button
+            android:text="@string/bt_reset"
+            android:id="@+id/editReset"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+        <Button
+            android:text="@string/bt_cancel"
+            android:id="@+id/editCancel"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
 
-			<TableRow>
-				<TextView android:text="@string/offset_angle" style="@style/gaugeLabel" />
-				<EditText android:id="@+id/editoffsetAngle" style="@style/gaugeEdit"
-					android:inputType="number|numberSigned" />
-			</TableRow>
-
-		</TableLayout>
-	</ScrollView>
-	
-	<LinearLayout android:orientation="horizontal"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="5dp">
-		
-		<Button android:text="@string/bt_ok" android:id="@+id/editOK"
-			android:layout_weight="1" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" />
-		<Button android:text="@string/bt_reset" android:id="@+id/editReset"
-			android:layout_weight="1" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" />
-		<Button android:text="@string/bt_cancel" android:id="@+id/editCancel"
-			android:layout_weight="1" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" />
-
-
-	</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
