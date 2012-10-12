@@ -178,7 +178,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     private void setState(State s)
     {
         currentState = s;
-        int msgId=R.string.disconnected_from_ms;
+        int msgId = R.string.disconnected_from_ms;
         boolean removeNotification = false;
         switch (currentState)
         {
@@ -1024,18 +1024,13 @@ public class Megasquirt extends Service implements MSControllerInterface
         int pageNo = constant.getPage();
         int offset = constant.getOffset();
 
-        double scale = constant.getScale();
-        double translate = constant.getTranslate();
-
         int[] msValue = null;
 
         // Constant to write is of type scalar or bits
         if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
         {
-            double userValue = getField(constant.getName());
-
             msValue = new int[1];
-            msValue[0] = (int) (userValue / scale - translate);
+            msValue[0] = (int) getField(constant.getName());
         }
         // Constant to write to ECU is of type array
         else if (constant.getClassType().equals("array"))
@@ -1049,20 +1044,13 @@ public class Megasquirt extends Service implements MSControllerInterface
             if (height == -1)
             {
                 size *= width;
-
-                double[] vector = getVector(constant.getName());
-                msValue = new int[vector.length];
-
-                for (int x = 0; x < width; x++)
-                {
-                    // Switch from user value to MS value
-                    msValue[x] = (int) (vector[x] / scale - translate);
-                }
+                msValue = getVector(constant.getName());
             }
             // Array
             else
             {
-                double[][] array = getArray(constant.getName());
+                // Flatten array into msValue
+                int[][] array = getArray(constant.getName());
                 int i = 0;
 
                 size *= width * height;
@@ -1072,8 +1060,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        // Switch from user value to MS value
-                        msValue[i++] = (int) (array[x][y] / scale - translate);
+                        msValue[i++] = array[x][y];
                     }
                 }
 
@@ -1151,14 +1138,14 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param channelName The variable name to modify
      * @return
      */
-    public double[][] getArray(String channelName)
+    public int[][] getArray(String channelName)
     {
-        double[][] value = { { 0 }, { 0 } };
+        int[][] value = { { 0 }, { 0 } };
         Class<?> c = ecuImplementation.getClass();
         try
         {
             Field f = c.getDeclaredField(channelName);
-            value = (double[][]) f.get(ecuImplementation);
+            value = (int[][]) f.get(ecuImplementation);
         }
         catch (Exception e)
         {
@@ -1173,14 +1160,14 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param channelName The variable name to modify
      * @return
      */
-    public double[] getVector(String channelName)
+    public int[] getVector(String channelName)
     {
-        double[] value = { 0 };
+        int[] value = { 0 };
         Class<?> c = ecuImplementation.getClass();
         try
         {
             Field f = c.getDeclaredField(channelName);
-            value = (double[]) f.get(ecuImplementation);
+            value = (int[]) f.get(ecuImplementation);
         }
         catch (Exception e)
         {
@@ -1216,22 +1203,14 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param channelName
      * @param value
      */
-    public void setField(String channelName, double value)
+    public void setField(String channelName, int value)
     {
         Class<?> c = ecuImplementation.getClass();
 
         try
         {
             Field f = c.getDeclaredField(channelName);
-
-            if (f.getType().toString().equals("int"))
-            {
-                f.setInt(ecuImplementation, (int) value);
-            }
-            else
-            {
-                f.setDouble(ecuImplementation, value);
-            }
+            f.setInt(ecuImplementation, value);
         }
         catch (NoSuchFieldException e)
         {
@@ -1254,26 +1233,26 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param double[]
      * @return
      */
-    public void setVector(String channelName, double[] value)
+    public void setVector(String channelName, int[] xBins)
     {
         Class<?> c = ecuImplementation.getClass();
 
         try
         {
             Field f = c.getDeclaredField(channelName);
-            f.set(ecuImplementation, value);
+            f.set(ecuImplementation, xBins);
         }
         catch (NoSuchFieldException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", no such field", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName  + ", no such field", Log.ERROR);
         }
         catch (IllegalArgumentException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal argument", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName  + ", illegal argument", Log.ERROR);
         }
         catch (IllegalAccessException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal access", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName  + ", illegal access", Log.ERROR);
         }
     }
     
@@ -1285,43 +1264,27 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @return
      * 
      */
-    public void setArray(String channelName, double[][] value)
+    public void setArray(String channelName, int[][] zBins)
     {
         Class<?> c = ecuImplementation.getClass();
 
         try
         {
             Field f = c.getDeclaredField(channelName);
-            f.set(ecuImplementation, value);
+            f.set(ecuImplementation, zBins);
         }
         catch (NoSuchFieldException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", no such field", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName  + ", no such field", Log.ERROR);
         }
         catch (IllegalArgumentException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal argument", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName  + ", illegal argument", Log.ERROR);
         }
         catch (IllegalAccessException e)
         {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + value + " for " + channelName  + ", illegal access", Log.ERROR);
+            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName  + ", illegal access", Log.ERROR);
         }
-    }
-    
-    /**
-     * Round a double number to a specific number of decimals
-     * 
-     * @param number The number to round
-     * @param decimals The number of decimals to keep
-     * 
-     * @return The rounded number
-     */
-    public double roundDouble(double number, int decimals)
-    {
-        double p = (double) Math.pow(10, decimals);
-        number = number * p;
-        double tmp = Math.round(number);
-        return tmp / p;
     }
 
     /**
@@ -1331,22 +1294,19 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param offset The offset where the byte array is located
      * @param width The width of the byte array
      * @param height The height of the byte array
-     * @param scale The scale of the data
-     * @param translate The translate of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
+    public int[][] loadByteArray(byte[] pageBuffer, int offset, int width, int height, boolean signed)
     {
-        double[][] destination = new double[width][height];
+        int[][] destination = new int[width][height];
         int index = offset;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
-                value = (value + translate) * scale;
+                int value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
                 destination[x][y] = value;
                 index = index + 1;
             }
@@ -1360,20 +1320,17 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param pageBuffer The buffer where the byte vector is located
      * @param offset The offset where the byte vector is located
      * @param width The width of the byte vector
-     * @param scale The scale of the data
-     * @param translate The translate of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[] loadByteVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
+    public int[] loadByteVector(byte[] pageBuffer, int offset, int width, boolean signed)
     {
-        double[] destination = new double[width];
+        int[] destination = new int[width];
         int index = offset;
         for (int x = 0; x < width; x++)
         {
-            double value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
-            value = (value + translate) * scale;
+            int value = signed ? MSUtils.INSTANCE.getSignedByte(pageBuffer, index) : MSUtils.INSTANCE.getByte(pageBuffer, index);
             destination[x] = value;
             index = index + 1;
         }
@@ -1388,22 +1345,19 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param offset The offset where the word array is located
      * @param width The width of the word array
      * @param height The height of the word array
-     * @param scale The scale of the data
-     * @param translate The translate of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, double scale, double translate, boolean signed)
+    public int[][] loadWordArray(byte[] pageBuffer, int offset, int width, int height, boolean signed)
     {
-        double[][] destination = new double[width][height];
+        int[][] destination = new int[width][height];
         int index = offset;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
-                value = (value + translate) * scale;
+                int value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
                 destination[x][y] = value;
                 index = index + 2;
             }
@@ -1418,20 +1372,17 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param pageBuffer The buffer where the word vector is located
      * @param offset The offset where the word vector is located
      * @param width The width of the word vector
-     * @param scale The scale of the data
-     * @param translate The translate of the data
      * @param signed Is the data signed ?
      * 
      * @return
      */
-    public double[] loadWordVector(byte[] pageBuffer, int offset, int width, double scale, double translate, boolean signed)
+    public int[] loadWordVector(byte[] pageBuffer, int offset, int width, boolean signed)
     {
-        double[] destination = new double[width];
+        int[] destination = new int[width];
         int index = offset;
         for (int x = 0; x < width; x++)
         {
-            double value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
-            value = (value + translate) * scale;
+            int value = signed ? MSUtils.INSTANCE.getSignedWord(pageBuffer, index) : MSUtils.INSTANCE.getWord(pageBuffer, index);
             destination[x] = value;
             index = index + 2;
         }

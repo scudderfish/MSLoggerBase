@@ -14,6 +14,7 @@ import uk.org.smithfamily.mslogger.chart.renderer.XYMultipleSeriesRenderer;
 import uk.org.smithfamily.mslogger.chart.renderer.XYSeriesRenderer;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.Context;
@@ -202,11 +203,11 @@ public class CurveHelper
                 // x = 2 is the Y column
                 if (x == 1)
                 {
-                    value = ecu.roundDouble(curve.getxBins()[y - 1], xBinsConstant.getDigits());
+                    value = MSUtils.INSTANCE.roundDouble((curve.getxBins()[y - 1] + xBinsConstant.getTranslate()) * xBinsConstant.getScale(), xBinsConstant.getDigits());
                 }
                 else
                 {
-                    value = ecu.roundDouble(curve.getyBins()[y - 1], yBinsConstant.getDigits());
+                    value = MSUtils.INSTANCE.roundDouble((curve.getyBins()[y - 1] + yBinsConstant.getTranslate()) * yBinsConstant.getScale(), yBinsConstant.getDigits());
                 }
                 
                 cell.setText(String.valueOf(value));
@@ -287,11 +288,11 @@ public class CurveHelper
             {
                 xBinsConstant.setModified(true);
                 
-                double[] xBins = curve.getxBins();
+                int[] xBins = curve.getxBins();
                 
                 try
                 {
-                    xBins[xy[1]] = Double.parseDouble(mEditText.getText().toString());
+                    xBins[xy[1]] = (int) Math.round(Double.parseDouble(mEditText.getText().toString()) / xBinsConstant.getScale() - xBinsConstant.getTranslate());
                     
                     ecu.setVector(xBinsConstant.getName(), xBins);
                 }
@@ -302,11 +303,11 @@ public class CurveHelper
             {
                 yBinsConstant.setModified(true);
                 
-                double[] yBins = curve.getyBins();
+                int[] yBins = curve.getyBins();
                 
                 try
                 {
-                    yBins[xy[1]] = Double.parseDouble(mEditText.getText().toString());
+                    yBins[xy[1]] = (int) Math.round(Double.parseDouble(mEditText.getText().toString()) / yBinsConstant.getScale() - yBinsConstant.getTranslate());
                     
                     ecu.setVector(yBinsConstant.getName(), yBins);
                 }

@@ -78,6 +78,8 @@
 	<!-- Edit gauge -->
 	<string name="edit_gauge_title">Edit Gauge Properties</string>
 	<string name="channel">Channel</string>
+	<string name="indicatorDetailsEdit">Indicator Position</string>
+	<string name="choose_indicator_position">Choose which Indicator Position to Edit</string>
 	<string name="choose_indicator_channel">Choose the Indicator Channel</string>
 	<string name="indicator_orientation">Orientation</string>
 	<string name="choose_indicator_orientation">Choose the Indicator Orientation</string>
@@ -97,6 +99,17 @@
 	<string name="units">Units</string>
 	<string name="horizontal">Horizontal</string>
 	<string name="vertical">Vertical</string>
+	
+	<string name="indicatorFirst">First</string>
+	<string name="indicatorSecond">Second</string>
+	<string name="indicatorThird">Third</string>
+	<string name="indicatorFourth">Fourth</string>
+	<string name="indicatorFifth">Fifth</string>
+	<string name="indicatorSixth">Sixth</string>
+	<string name="indicatorSeventh">Seventh</string>
+	<string name="indicatorEighth">Eighth</string>
+	<string name="indicatorNinth">Ninth</string>
+	<string name="indicatorTenth">Tenth</string>
 	
 	<!-- View Datalog -->
 	<string name="datalog_viewer_title">Datalog Viewer</string>

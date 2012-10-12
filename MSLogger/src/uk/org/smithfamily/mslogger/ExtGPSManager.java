@@ -178,53 +178,62 @@ public enum ExtGPSManager
             // String magnDir = splitter.next();
             // for NMEA 0183 version 3.00 active the Mode indicator field is added
             // Mode indicator, (A=autonomous, D=differential, E=Estimated, N=not valid, S=Simulator )
-            if (status != null && !status.equals("") && status.equals("A"))
+            if (status != null)
             {
-                if (this.locStatus != LocationProvider.AVAILABLE)
+                if (!status.equals("") && status.equals("A"))
                 {
-                    long updateTime = parseNmeaTime(time);
-                    notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
+                    if (this.locStatus != LocationProvider.AVAILABLE)
+                    {
+                        long updateTime = parseNmeaTime(time);
+                        notifyStatusChanged(LocationProvider.AVAILABLE, null, updateTime);
+                    }
+                    if (!time.equals(locationTime))
+                    {
+                        locationTime = time;
+                        locationTimestamp = parseNmeaTime(time);
+                        location.setTime(locationTimestamp);
+                    }
+                    if (lat != null && !lat.equals(""))
+                    {
+                        location.setLatitude(parseNmeaLatitude(lat, latDir));
+                    }
+                    if (lon != null && !lon.equals(""))
+                    {
+                        location.setLongitude(parseNmeaLongitude(lon, lonDir));
+                    }
+                    if (speed != null && !speed.equals(""))
+                    {
+                        location.setSpeed(parseNmeaSpeed(speed, "N"));
+                    }
+                    if (bearing != null && !bearing.equals(""))
+                    {
+                        location.setBearing(Float.parseFloat(bearing));
+                    }
+                    hasRMC = true;
+                    if (hasGGA && hasRMC)
+                    {
+                        notifyLocationChanged(location);
+                    }
                 }
-                if (!time.equals(locationTime))
+                else if (status.equals("V"))
                 {
-                    locationTime = time;
-                    locationTimestamp = parseNmeaTime(time);
-                    location.setTime(locationTimestamp);
-                }
-                if (lat != null && !lat.equals(""))
-                {
-                    location.setLatitude(parseNmeaLatitude(lat, latDir));
-                }
-                if (lon != null && !lon.equals(""))
-                {
-                    location.setLongitude(parseNmeaLongitude(lon, lonDir));
-                }
-                if (speed != null && !speed.equals(""))
-                {
-                    location.setSpeed(parseNmeaSpeed(speed, "N"));
-                }
-                if (bearing != null && !bearing.equals(""))
-                {
-                    location.setBearing(Float.parseFloat(bearing));
-                }
-                hasRMC = true;
-                if (hasGGA && hasRMC)
-                {
-                    notifyLocationChanged(location);
-                }
-            }
-            else if (status.equals("V"))
-            {
-                if (status != null && this.locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
-                {
-                    long updateTime = parseNmeaTime(time);
-                    notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
+                    if (this.locStatus != LocationProvider.TEMPORARILY_UNAVAILABLE)
+                    {
+                        long updateTime = parseNmeaTime(time);
+                        notifyStatusChanged(LocationProvider.TEMPORARILY_UNAVAILABLE, null, updateTime);
+                    }
                 }
             }
         }
         return location;
     }
 
+    /**
+     * 
+     * @param lat
+     * @param orientation
+     * @return
+     */
     private double parseNmeaLatitude(String lat, String orientation)
     {
         double latitude = 0.0;
@@ -245,6 +254,12 @@ public enum ExtGPSManager
         return latitude;
     }
 
+    /**
+     * 
+     * @param lon
+     * @param orientation
+     * @return
+     */
     private double parseNmeaLongitude(String lon, String orientation)
     {
         double longitude = 0.0;
@@ -265,6 +280,12 @@ public enum ExtGPSManager
         return longitude;
     }
 
+    /**
+     * 
+     * @param speed
+     * @param metric
+     * @return
+     */
     private float parseNmeaSpeed(String speed, String metric)
     {
         float meterSpeed = 0.0f;
@@ -283,6 +304,11 @@ public enum ExtGPSManager
         return meterSpeed;
     }
 
+    /**
+     * 
+     * @param time
+     * @return
+     */
     private long parseNmeaTime(String time)
     {
         long timestamp = 0;
@@ -320,6 +346,11 @@ public enum ExtGPSManager
         return timestamp;
     }
 
+    /**
+     * 
+     * @param s
+     * @return
+     */
     private byte computeChecksum(String s)
     {
         byte checksum = 0;
@@ -330,6 +361,10 @@ public enum ExtGPSManager
         return checksum;
     }
 
+    /**
+     * 
+     * @param sentence
+     */
     private void sendNmeaCmd(String sentence)
     {
         final String command = String.format((Locale) null, "$%s*%X\r\n", sentence, computeChecksum(sentence));
@@ -350,6 +385,12 @@ public enum ExtGPSManager
 
     }
 
+    /**
+     * 
+     * @param status
+     * @param extras
+     * @param updateTime
+     */
     private void notifyStatusChanged(int status, Bundle extras, long updateTime)
     {
         locationTime = null;
@@ -358,6 +399,12 @@ public enum ExtGPSManager
         notifyStatusChangedNoClear(status, extras, updateTime);
     }
 
+    /**
+     * 
+     * @param status
+     * @param extras
+     * @param updateTime
+     */
     private void notifyStatusChangedNoClear(int status, Bundle extras, long updateTime)
     {
         synchronized (listeners)
@@ -376,6 +423,10 @@ public enum ExtGPSManager
         }
     }
 
+    /**
+     * 
+     * @param loc
+     */
     private void notifyLocationChanged(Location loc)
     {
         locationTime = null;

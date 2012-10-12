@@ -9,10 +9,10 @@ public class TableEditor
     private String     label;
     private String     map3DName;
     private String     name;
-    private double[]   xBins;
+    private int[]   xBins;
     private String     xOutputChannel;
     private boolean    xReadOnly;
-    private double[]   yBins;
+    private int[]   yBins;
     private String     yOutputChannel;
     private boolean    yReadOnly;
     private String     zBins;
@@ -51,14 +51,14 @@ public class TableEditor
         return name;
     }
 
-    public void setXBins(double[] bins, String outputChannel, boolean b)
+    public void setXBins(int[] bins, String outputChannel, boolean b)
     {
         this.xBins = bins;
         this.xOutputChannel = outputChannel;
         this.xReadOnly = b;
     }
 
-    public void setYBins(double[] bins, String outputChannel, boolean b)
+    public void setYBins(int[] bins, String outputChannel, boolean b)
     {
         this.yBins = bins;
         this.yOutputChannel = outputChannel;
@@ -82,7 +82,7 @@ public class TableEditor
         this.downLabel = down;
     }
 
-    public double[] getxBins()
+    public int[] getxBins()
     {
         return xBins;
     }
@@ -97,7 +97,7 @@ public class TableEditor
         return xReadOnly;
     }
 
-    public double[] getyBins()
+    public int[] getyBins()
     {
         return yBins;
     }
