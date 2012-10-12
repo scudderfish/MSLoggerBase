@@ -178,7 +178,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     private void setState(State s)
     {
         currentState = s;
-        int msgId=R.string.disconnected_from_ms;
+        int msgId = R.string.disconnected_from_ms;
         boolean removeNotification = false;
         switch (currentState)
         {

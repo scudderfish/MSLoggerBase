@@ -98,7 +98,6 @@ public class TableIndicator extends GroupIndicator
     @Override
     protected void onMeasure(int widthSpec, int heightSpec)
     {
-
         int measuredWidth = MeasureSpec.getSize(widthSpec);
 
         int measuredHeight = MeasureSpec.getSize(heightSpec);
@@ -136,8 +135,6 @@ public class TableIndicator extends GroupIndicator
      */
     private void drawBackground(Canvas canvas)
     {
-        // backgroundPaint.setColor(getBgColour());
-
         canvas.drawRect(0.05f, 0.30f, 0.9f, 0.72f, backgroundPaint);
     }
 
@@ -153,9 +150,15 @@ public class TableIndicator extends GroupIndicator
         }
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
 
-        if(gd != null)
+        if (gd != null)
         {
-            canvas.drawText(gd.getTitle() + "(" + gd.getUnits() + ")", 0.02f, y, titlePaint);
+            String text = gd.getTitle();
+            if (!gd.getUnits().equals(""))
+            {
+                text += " (" + gd.getUnits() + ")";
+            }
+            
+            canvas.drawText(text, 0.02f, y, titlePaint);
         }
     }
 
@@ -178,9 +181,9 @@ public class TableIndicator extends GroupIndicator
 
         GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
         
-        String text="unkown";
+        String text = "unkown";
 
-        if(gd != null)
+        if (gd != null)
         {
             if (gd.getVd() <= 0)
             {
@@ -190,7 +193,9 @@ public class TableIndicator extends GroupIndicator
             {
                 text = Float.toString((float)(Math.floor(getValue(gaugeName) / Math.pow(10, -gd.getVd()) + 0.5) * Math.pow(10, -gd.getVd())));
             }
-        }canvas.drawText(text, 1f, y, valuePaint);
+        }
+        
+        canvas.drawText(text, 1f, y, valuePaint);
     }
 
     /**

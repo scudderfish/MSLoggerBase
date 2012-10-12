@@ -385,15 +385,16 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         double reqFuel = 0;
         
+        String reqFuelConstantName = "reqFuel";
+        
         // MS1
         if (ecu.isConstantExists("reqFuel1"))
         {
-            reqFuel = ecu.getField("reqFuel1");
+            reqFuelConstantName = "reqFuel1";
         }
-        else 
-        {
-            reqFuel = ecu.getField("reqFuel");
-        }
+            
+        Constant reqFuelConstant = ecu.getConstantByName(reqFuelConstantName);
+        reqFuel = (ecu.getField(reqFuelConstantName) + reqFuelConstant.getTranslate()) * reqFuelConstant.getScale();      
         
         final EditText reqFuelEdit = (EditText) requiredFuelLayout.findViewById(R.id.req_fuel);
         reqFuelEdit.setText(String.valueOf(reqFuel));
@@ -653,7 +654,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 int value = 0;
                 try
                 {
-                    value = (int) (Integer.parseInt(edit.getText().toString()) / constant.getScale() - constant.getTranslate());
+                    value = (int) Math.round(Double.parseDouble(edit.getText().toString()) / constant.getScale() - constant.getTranslate());
                 }
                 catch (NumberFormatException e){}
                 

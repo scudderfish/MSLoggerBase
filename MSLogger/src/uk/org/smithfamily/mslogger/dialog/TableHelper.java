@@ -334,7 +334,7 @@ public class TableHelper
             try 
             {
                 // Modify local array
-                zBins[xy[0]][xy[1]] = (int) (Integer.parseInt(mEditText.getText().toString()) / tableConstant.getScale() - tableConstant.getTranslate());
+                zBins[xy[0]][xy[1]] = (int) Math.round(Double.parseDouble(mEditText.getText().toString()) / tableConstant.getScale() - tableConstant.getTranslate());
                 
                 // Apply array to ECU class
                 ecu.setArray(table.getzBins(), zBins);

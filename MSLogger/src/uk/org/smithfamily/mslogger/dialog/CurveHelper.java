@@ -292,7 +292,7 @@ public class CurveHelper
                 
                 try
                 {
-                    xBins[xy[1]] = (int) (Integer.parseInt(mEditText.getText().toString()) / xBinsConstant.getScale() - xBinsConstant.getTranslate());
+                    xBins[xy[1]] = (int) Math.round(Double.parseDouble(mEditText.getText().toString()) / xBinsConstant.getScale() - xBinsConstant.getTranslate());
                     
                     ecu.setVector(xBinsConstant.getName(), xBins);
                 }
@@ -307,7 +307,7 @@ public class CurveHelper
                 
                 try
                 {
-                    yBins[xy[1]] = (int) (Integer.parseInt(mEditText.getText().toString()) / yBinsConstant.getScale() - yBinsConstant.getTranslate());
+                    yBins[xy[1]] = (int) Math.round(Double.parseDouble(mEditText.getText().toString()) / yBinsConstant.getScale() - yBinsConstant.getTranslate());
                     
                     ecu.setVector(yBinsConstant.getName(), yBins);
                 }
