@@ -56,7 +56,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private MSDialog dialog;
     private RelativeLayout content;
     private Megasquirt ecu;
-    private int nbPanels = 0;
+    private int nbPanels = 1;
     
     // Used on label in table row with no field beside
     // Those are usually used as separator so add top and bottom margins
