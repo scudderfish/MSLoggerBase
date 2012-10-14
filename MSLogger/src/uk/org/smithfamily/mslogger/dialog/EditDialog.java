@@ -321,13 +321,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         // Wrap panel layout into a relative layout so it can be used as parent
         RelativeLayout containerPanelLayout = wrapTableLayoutIntoRelativeLayout(panelLayout, dialog.getName());        
         addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), parentDialog.getAxis(), previousDialogPanelLayout); 
+      
+        RelativeLayout sameDialogPreviousLayoutPanel = null;
         
-        RelativeLayout sameDialogPreviousLayoutPanel = containerPanelLayout;
-        
-        // When we are in a panel, the parent layout is not the R.id.content layout but the parent panel layout itself
+        // When we are in a panel, the parent layout is not the R.id.content layout but the parent panel layout
         if (isPanel)
         {
             parentLayout = containerPanelLayout;
+        }
+        
+        // If we are in the main dialog and adding a panel after the fields,
+        // we set the previous layout panel to that fields panel
+        if (parentLayout == null && sameDialogPreviousLayoutPanel == null && dialog.getFieldsList().size() > 0)
+        {
+            sameDialogPreviousLayoutPanel = containerPanelLayout;
         }
         
         // For each dialog panel, add a layout to the dialog
