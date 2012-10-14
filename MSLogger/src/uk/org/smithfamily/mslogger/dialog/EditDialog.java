@@ -42,6 +42,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -482,7 +484,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private RelativeLayout getAccelSeekBar()
     {
         RelativeLayout seekBarLayout = new RelativeLayout(getContext());
-        /*
+
         SeekBar sb = new SeekBar(getContext());
         sb.setMax(100);
         sb.setProgress(50);
@@ -505,12 +507,6 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         });       
         
         seekBarLayout.addView(sb);
-        */
-        
-        TextView blah = new TextView(getContext());
-        blah.setText("fdafadsfj fjdaskl fjklsajflksda jfdsa");
-        
-        seekBarLayout.addView(blah);
         
         return seekBarLayout;
     }
@@ -535,7 +531,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         // Convert to density independent pixels so it hopefully looks the same on every screen size
         Resources r = getContext().getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 800, r.getDisplayMetrics());
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 700, r.getDisplayMetrics());
         RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(px, px);
         containerPanelLayout.setLayoutParams(tlp);
         containerPanelLayout.setId(nbPanels);
