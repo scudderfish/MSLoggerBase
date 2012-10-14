@@ -322,7 +322,13 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         RelativeLayout containerPanelLayout = wrapTableLayoutIntoRelativeLayout(panelLayout, dialog.getName());        
         addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), parentDialog.getAxis(), previousDialogPanelLayout); 
         
-        RelativeLayout sameDialogPreviousLayoutPanel = null;
+        RelativeLayout sameDialogPreviousLayoutPanel = containerPanelLayout;
+        
+        // When we are in a panel, the parent layout is not the R.id.content layout but the parent panel layout itself
+        if (isPanel)
+        {
+            parentLayout = containerPanelLayout;
+        }
         
         // For each dialog panel, add a layout to the dialog
         for (DialogPanel dp : dialog.getPanelsList())
@@ -331,7 +337,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-                sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                sameDialogPreviousLayoutPanel = drawDialogFields(parentLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
             }
             else
             {
@@ -340,7 +346,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 
                 if (dialogPanel != null)
                 {
-                    sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                    sameDialogPreviousLayoutPanel = drawDialogFields(parentLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
                 }
                 else
                 {
@@ -348,7 +354,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                     if (curvePanel != null)
                     {
-                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
+                        sameDialogPreviousLayoutPanel = createCurvePanel(parentLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                     }
                     else
                     {
@@ -357,7 +363,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         
                         if (tablePanel != null)
                         {
-                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
+                            sameDialogPreviousLayoutPanel = createTablePanel(parentLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                         }
                         else
                         {
