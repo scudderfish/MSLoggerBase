@@ -48,9 +48,11 @@
 	        
     <string name="about_text">An application to log information from Megasquirt ECUs.\n\nWritten By:\nDave Smith &lt;dave.g.smith@gmail.com&gt;\nSébastien Giroux</string>
 	        
+    <!-- Buttons -->
     <string name="bt_ok">OK</string>
     <string name="bt_cancel">Cancel</string>
     <string name="bt_reset">Reset</string>
+    <string name="bt_close">Close</string>
     
     <string name="no_bt">Bluetooth is not available on your Android device.  You won\'t be able to connect to a Megasquirt ECU.</string>
 	<string name="no_comms">Cannot connect to your ECU.  Check that it is powered up and the Bluetooth adapter is working</string>
