@@ -219,9 +219,9 @@ public class CurveHelper
                 cell.setTag(new int[] {x - 1, y - 1});
                 
                 
-                // X is not really a constant, used for MS1 for Warmup Wizard, see DialogHelper.getStdDialog
+                // X is a constant we build in MSLogger, used for MS1 for Warmup Wizard, see DialogHelper.getStdDialog
                 // Make the cell read only
-                if (x == 1 && xBinsConstant == null)
+                if (x == 1 && curve.getxBinsName().equals("MSLogger_temp"))
                 {
                     cell.setEnabled(false);
                 }

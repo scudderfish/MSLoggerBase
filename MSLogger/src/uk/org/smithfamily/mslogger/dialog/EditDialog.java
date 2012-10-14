@@ -115,8 +115,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);
         
-        Button buttonCancel = (Button) findViewById(R.id.cancel);
-        buttonCancel.setOnClickListener(this);
+        Button buttonClose = (Button) findViewById(R.id.close);
+        buttonClose.setOnClickListener(this);
         
         drawDialogFields(null, dialog, dialog, false, "", null);
         
@@ -1052,7 +1052,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         {
             burnToECU();
         }
-        else if (which == R.id.cancel)
+        else if (which == R.id.close)
         {
             cancel();
         }
