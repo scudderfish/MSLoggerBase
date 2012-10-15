@@ -147,12 +147,6 @@ public class Megasquirt extends Service implements MSControllerInterface
                             Thread.sleep(200);
                         }
                         catch (InterruptedException e) {}
-                        
-                        try 
-                        {
-                            ECUConnectionManager.getInstance().flushAll();
-                        }
-                        catch (IOException e) {}
                     }
                 }
             }
@@ -865,11 +859,8 @@ public class Megasquirt extends Service implements MSControllerInterface
                 return buffer;
             }
             
-            // Make sure there is nothing in the buffer
-            ECUConnectionManager.getInstance().flushAll();
-            
-            int d = ecuImplementation.getInterWriteDelay();
-            ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, d, ecuImplementation.isCRC32Protocol());
+            int delay = ecuImplementation.getInterWriteDelay();
+            ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, delay, ecuImplementation.isCRC32Protocol());
             return buffer;
         }
 
