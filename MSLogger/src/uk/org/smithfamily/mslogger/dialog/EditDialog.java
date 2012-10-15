@@ -42,6 +42,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -56,11 +58,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private MSDialog dialog;
     private RelativeLayout content;
     private Megasquirt ecu;
-    private int nbPanels = 0;
+    private int nbPanels = 1;
     
     // Used on label in table row with no field beside
     // Those are usually used as separator so add top and bottom margins
     private LayoutParams lpSpanWithMargins;
+    
+    // Same as lpSpanWithMargins but without the span
+    private LayoutParams lpWithTopBottomMargins;
     
     // Used on label in table row with field beside label, add a margin right
     // so the label and field are separated
@@ -88,14 +93,17 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         this.dialog = dialog;
         
         // Initialise some layout params
-        lpSpanWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpSpanWithMargins = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         lpSpanWithMargins.setMargins(0, 10, 0, 15);
         lpSpanWithMargins.span = 2;
         
-        lpWithMargins = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpWithMargins = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         lpWithMargins.setMargins(0, 0, 8, 0);
         
-        lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        lpWithTopBottomMargins = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        lpWithTopBottomMargins.setMargins(0, 10, 8, 15);
+        
+        lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
     
     /**
@@ -168,13 +176,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 if (dialogAxis.equals("yAxis"))
                 {
                     tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
-                    relativeLayoutToAdd.setPadding(0, 15, 0, 0);
+                    tlp.addRule(RelativeLayout.ALIGN_LEFT, previousPanelLayout.getId());
+                    relativeLayoutToAdd.setPadding(15, 15, 0, 0);
                     DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
                 // For xAxis orientation, add panel at the right of the last one
                 else
                 {
                     tlp.addRule(RelativeLayout.RIGHT_OF, previousPanelLayout.getId());
+                    tlp.addRule(RelativeLayout.ALIGN_TOP, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(15, 0, 0, 0);
                     DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
@@ -184,7 +194,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         }
         else
         {
-            DebugLogManager.INSTANCE.log("PANEL " + dialogName + " previousPanelLayout was null!", Log.DEBUG);
+            DebugLogManager.INSTANCE.log("PANEL " + dialogName + " previousPanelLayout is null!", Log.DEBUG);
         }
         
         // Panel to add have a parent layout, add view to it
@@ -220,6 +230,31 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         containerPanelLayout.addView(tl);
         
         return containerPanelLayout;
+    }
+    
+    /**
+     * Used to figure out if there is at least one complete row in a dialog/panel.
+     * This is useful because we use span=2 for row with just a label and if all
+     * rows of the dialog end up being span=2, TableLayout doesn't like it and the
+     * whole layout dissapear.
+     * 
+     * @param dialogFields The fields of the dialog
+     * 
+     * @return true is there is at least one complete row in the dialog, false otherwise
+     */
+    private boolean atLeastOneCompleteRow(List<DialogField> dialogFields)
+    {
+        boolean atLeastOne = false;
+        for (DialogField df : dialogFields)
+        {
+            if (!((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null")))
+            {
+                atLeastOne = true;
+                break;
+            }
+        }
+        
+        return atLeastOne;
     }
     
     /**
@@ -265,14 +300,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     if (df.getLabel().equals("std_required_fuel"))
                     {
                        RelativeLayout requiredFuel = getRequiredFuelPanel();
-                       requiredFuel.setLayoutParams(lpSpanWithMargins);
+                       requiredFuel.setLayoutParams(lpWithTopBottomMargins);
                        tableRow.addView(requiredFuel);
                     }
                     // Special label used to identify hard coded seek bar in std_accel dialog
                     else if (df.getLabel().equals("std_accel_seek_bar"))
                     {
                         RelativeLayout accelSeekBar = getAccelSeekBar();
-                        accelSeekBar.setLayoutParams(lpSpanWithMargins);
+                        accelSeekBar.setLayoutParams(lpWithTopBottomMargins);
                         tableRow.addView(accelSeekBar);
                     }
                     else
@@ -286,7 +321,14 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         // If it's not an empty label and not , add some top and bottom margins
                         if (!df.getLabel().equals(""))
                         {
-                            label.setLayoutParams(lpSpanWithMargins);
+                            if (atLeastOneCompleteRow(dialog.getFieldsList()))
+                            {
+                                label.setLayoutParams(lpSpanWithMargins); 
+                            }
+                            else
+                            {
+                                label.setLayoutParams(lpWithTopBottomMargins); 
+                            }
                         }
                     }
                 }
@@ -294,9 +336,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 else 
                 {
                     TextView label = getLabel(df, constant);
-                    tableRow.addView(label);
-                    
-                    tableRow.setLayoutParams(lp);
+                    tableRow.addView(label, lp);
                     
                     // Multi-choice constant
                     if (constant.getClassType().equals("bits"))
@@ -321,8 +361,19 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         // Wrap panel layout into a relative layout so it can be used as parent
         RelativeLayout containerPanelLayout = wrapTableLayoutIntoRelativeLayout(panelLayout, dialog.getName());        
         addPanel(parentLayout, containerPanelLayout, orientation, dialog.getName(), parentDialog.getAxis(), previousDialogPanelLayout); 
-        
+      
         RelativeLayout sameDialogPreviousLayoutPanel = null;
+        
+        // If we are adding a panel after fields, we set the previous layout panel to that fields panel
+        if (dialog.getFieldsList().size() > 0)
+        {
+            sameDialogPreviousLayoutPanel = containerPanelLayout;
+        }        
+        // When we are in a panel, the parent layout is not the R.id.content layout but the parent panel layout
+        else if (isPanel)
+        {
+            parentLayout = containerPanelLayout;
+        }
         
         // For each dialog panel, add a layout to the dialog
         for (DialogPanel dp : dialog.getPanelsList())
@@ -331,7 +382,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             
             if (dialogPanel != null)
             {
-                sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                sameDialogPreviousLayoutPanel = drawDialogFields(parentLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
             }
             else
             {
@@ -340,7 +391,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 
                 if (dialogPanel != null)
                 {
-                    sameDialogPreviousLayoutPanel = drawDialogFields(containerPanelLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
+                    sameDialogPreviousLayoutPanel = drawDialogFields(parentLayout, dialogPanel, dialog, true, dp.getOrientation(), sameDialogPreviousLayoutPanel);
                 }
                 else
                 {
@@ -348,7 +399,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                     CurveEditor curvePanel = ecu.getCurveEditorByName(dp.getName());
                     if (curvePanel != null)
                     {
-                        sameDialogPreviousLayoutPanel = createCurvePanel(containerPanelLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
+                        sameDialogPreviousLayoutPanel = createCurvePanel(parentLayout, curvePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                     }
                     else
                     {
@@ -357,7 +408,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         
                         if (tablePanel != null)
                         {
-                            sameDialogPreviousLayoutPanel = createTablePanel(containerPanelLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
+                            sameDialogPreviousLayoutPanel = createTablePanel(parentLayout, tablePanel, dp.getOrientation(), dialog.getName(), sameDialogPreviousLayoutPanel);
                         }
                         else
                         {
@@ -435,7 +486,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private RelativeLayout getAccelSeekBar()
     {
         RelativeLayout seekBarLayout = new RelativeLayout(getContext());
-        /*
+
         SeekBar sb = new SeekBar(getContext());
         sb.setMax(100);
         sb.setProgress(50);
@@ -458,12 +509,6 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         });       
         
         seekBarLayout.addView(sb);
-        */
-        
-        TextView blah = new TextView(getContext());
-        blah.setText("fdafadsfj fjdaskl fjklsajflksda jfdsa");
-        
-        seekBarLayout.addView(blah);
         
         return seekBarLayout;
     }
@@ -488,7 +533,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         // Convert to density independent pixels so it hopefully looks the same on every screen size
         Resources r = getContext().getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 800, r.getDisplayMetrics());
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 700, r.getDisplayMetrics());
         RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(px, px);
         containerPanelLayout.setLayoutParams(tlp);
         containerPanelLayout.setId(nbPanels);

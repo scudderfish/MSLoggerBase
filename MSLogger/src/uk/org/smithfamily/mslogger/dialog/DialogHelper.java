@@ -173,7 +173,7 @@ public class DialogHelper
         curve.setYBins(ecu.getVector(yConstant), yConstant);
         
         // std_accel dialog
-        MSDialog dialogAccel = new MSDialog("std_accel","Accel Enrichment Wizard","yAxis");
+        MSDialog dialogAccel = new MSDialog("std_accel", "Accel Enrichment Wizard", "yAxis");
         ecu.addDialog(dialogAccel);
         
         dialogAccel.addPanel(new DialogPanel("std_accel_north", ""));
@@ -188,7 +188,7 @@ public class DialogHelper
         dialogNorth.addPanel(new DialogPanel("std_accel_tae_curve", "East"));
         
         // South panel with the two columns with all the constants for TPS and MAP
-        MSDialog dialogSouth = new MSDialog("std_accel_south","","");
+        MSDialog dialogSouth = new MSDialog("std_accel_south", "", "");
         ecu.addDialog(dialogSouth);
         
         dialogSouth.addPanel(new DialogPanel("std_accel_map", "West"));
