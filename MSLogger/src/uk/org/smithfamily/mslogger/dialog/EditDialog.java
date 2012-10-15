@@ -176,13 +176,15 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 if (dialogAxis.equals("yAxis"))
                 {
                     tlp.addRule(RelativeLayout.BELOW, previousPanelLayout.getId());
-                    relativeLayoutToAdd.setPadding(0, 15, 0, 0);
+                    tlp.addRule(RelativeLayout.ALIGN_LEFT, previousPanelLayout.getId());
+                    relativeLayoutToAdd.setPadding(15, 15, 0, 0);
                     DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") below " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
                 // For xAxis orientation, add panel at the right of the last one
                 else
                 {
                     tlp.addRule(RelativeLayout.RIGHT_OF, previousPanelLayout.getId());
+                    tlp.addRule(RelativeLayout.ALIGN_TOP, previousPanelLayout.getId());
                     relativeLayoutToAdd.setPadding(15, 0, 0, 0);
                     DebugLogManager.INSTANCE.log("PANEL " + dialogName + " (Dialog axis: " + dialogAxis + ") at the right of " + previousPanelLayout.getTag() + " (" + previousPanelLayout.getId() + ")", Log.DEBUG);
                 }
