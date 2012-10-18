@@ -105,7 +105,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
     public GaugeDetails getGaugeDetails(String name)
     {
         GaugeDetails result = instantiated.get(name);
-        if(result != null)
+        if (result != null)
         {
             return result;
         }
@@ -114,12 +114,10 @@ public enum GaugeRegister implements GaugeRegisterInterface
         if (tmp != null)
         {
             result = tmp;
-            
         }
         else
         {
             result = details.get(name);
-            
         }
         instantiated.put(name, result);
         
@@ -139,7 +137,7 @@ public enum GaugeRegister implements GaugeRegisterInterface
      */
     public void flush()
     {
-        details = new HashMap<String, GaugeDetails>();
+        details.clear();
     }
 
     /**
