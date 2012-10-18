@@ -73,6 +73,7 @@ MS3 Format 0238.000.ini
 MS3 Format 0238.001.ini
 MS3 Format 0238.002.ini
 MS3 Format 0238.003.ini
+MS3 Format 0255.004.ini
 
 ###################
 # MegaShift       #

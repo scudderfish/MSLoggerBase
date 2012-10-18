@@ -1650,6 +1650,12 @@ public class Megasquirt extends Service implements MSControllerInterface
         ecuImplementation.createSettingGroups();
         return ecuImplementation.getSettingGroups();
     }
+    
+    public List<ControllerCommand> getControllerCommands()
+    {
+        ecuImplementation.createControllerCommands();
+        return ecuImplementation.getControllerCommands();
+    }
 
     /**
      * Helper functions to get specific value out of ECU Different MS version have different name for the same thing so get the right one depending on

@@ -47,7 +47,7 @@ public class Patterns
     /*
      * Constant
      */
-    static Pattern constantScalar      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
+    static Pattern constantScalar      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*(.*?)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
     static Pattern constantSimple      = Pattern.compile("\\s*(\\w*)\\s*=\\s*(scalar)\\s*,\\s*(.*?)\\s*,\\s*(\\d*)\\s*,\\s*\\\"(.*)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*).*");
     static Pattern constantArray       = Pattern.compile("\\s*(\\w*)\\s*=\\s*(array)\\s*,\\s*(.*?)\\s*,\\s*(\\d*),\\s*(\\[.*?\\])\\s*,\\s*\\\"(.*?)\\\"\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*([-+]?\\d*\\.?\\d*)\\s*,\\s*(.*?)\\s*,\\s*(.*?)\\s*,\\s*([-+]?\\d*\\.?\\d*)");
     static Pattern booleanConvert      = Pattern.compile("(.*?==\\s*\\d+)\\s*(\\).*?)");
@@ -61,9 +61,15 @@ public class Patterns
     static Pattern subMenu             = Pattern.compile("\\s*subMenu\\s*=\\s*(.*?)\\s*(,\\s*\"(.*?)\"\\s*)?(,\\s*(\\d*)\\s*)?(,\\s*(\\{.*\\})\\s*)?");
 
     /*
+     * Controller Commands
+     */
+    
+    static Pattern controllerCommands       = Pattern.compile("\\s*(.*?)\\s*=\\s*\"(.*)\"");
+    
+    /*
      * User Defined
      */    
-    static Pattern dialog                   = Pattern.compile("\\s*dialog\\s*=\\s*(.*)\\s*,\\s*\"(.*)\"(,\\s*(.*?)\\s*)?");
+    static Pattern dialog                   = Pattern.compile("\\s*dialog\\s*=\\s*(.*?)\\s*(,\\s*\"(.*?)\")?(,\\s*(.*?)\\s*)?");
     static Pattern dialogField              = Pattern.compile("\\s*field\\s*=\\s*\"(.*)\"(,\\s*(.*?))?(,\\s*(\\{.*\\})\\s*)?");
     static Pattern dialogDisplayOnlyField   = Pattern.compile("\\s*displayOnlyField\\s*=\\s*\"(.*)\"(,\\s*(.*?))?(,\\s*(\\{.*\\})\\s*)?");
     static Pattern dialogPanel              = Pattern.compile("\\s*panel\\s*=\\s*(.*?)\\s*(,\\s*(.*?)\\s*)?(,\\s*(.*?)\\s*)?");
