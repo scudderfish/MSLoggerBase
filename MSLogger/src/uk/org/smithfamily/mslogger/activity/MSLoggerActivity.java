@@ -17,20 +17,11 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.widgets.BarGraph;
-import uk.org.smithfamily.mslogger.widgets.Gauge;
-import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
+import uk.org.smithfamily.mslogger.views.DashboardViewGroup;
 import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.GroupIndicator;
-import uk.org.smithfamily.mslogger.widgets.Histogram;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
-import uk.org.smithfamily.mslogger.widgets.TableIndicator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,29 +29,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,15 +53,12 @@ import android.widget.Toast;
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
     private BroadcastReceiver updateReceiver = new Reciever();
-    private IndicatorManager indicatorManager;
-    private TextView messages;
-    private TextView rps;
+//    private IndicatorManager indicatorManager;
     private static Boolean ready = null;
 
-    private Indicator[] indicators = new Indicator[5];
 
     private boolean gaugeEditEnabled;
-    private LinearLayout layout;
+   
     private static final int SHOW_PREFS = 124230;
 
     private boolean registered;
@@ -114,25 +94,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             DebugLogManager.INSTANCE.logException(e);
         }
         dumpPreferences();
-        setContentView(R.layout.displaygauge);
+        
+        DashboardViewGroup dash = new DashboardViewGroup(this);
+        
+        setContentView(dash);
 
-        messages = (TextView) findViewById(R.id.messages);
-        rps = (TextView) findViewById(R.id.RPS);
-
+        
         /*
          * Get status message from saved instance, for example when switching from landscape to portrait mode
          */
         if (savedInstanceState != null)
         {
-            if (!savedInstanceState.getString("status_message").equals(""))
-            {
-                messages.setText(savedInstanceState.getString("status_message"));
-            }
-
-            if (!savedInstanceState.getString("rps_message").equals(""))
-            {
-                rps.setText(savedInstanceState.getString("rps_message"));
-            }
 
             if (savedInstanceState.getBoolean("gauge_edit"))
             {
@@ -140,22 +112,15 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         }
 
-        findGauges();
         SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
         prefsManager.registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
 
-        indicatorManager = IndicatorManager.INSTANCE;
-        indicatorManager.setDisabled(true);
-
+  
         ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
         GPSLocationManager.INSTANCE.start();
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
-        if(ApplicationSettings.INSTANCE.getEcuDefinition() != null)
-        {
-            initGauges();
-        }
     }
 
     @Override
@@ -198,8 +163,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         super.onSaveInstanceState(outState);
 
-        outState.putString("status_message", messages.getText().toString());
-        outState.putString("rps_message", rps.getText().toString());
+//        outState.putString("status_message", messages.getText().toString());
+//        outState.putString("rps_message", rps.getText().toString());
         outState.putBoolean("gauge_edit", gaugeEditEnabled);
     }
 
@@ -237,8 +202,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void finaliseInit()
     {
-        initGauges();
-
         checkBTDeviceSet();
         checkSDCard();
     }
@@ -274,7 +237,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     public void onStop()
     {
         super.onStop();
-        saveGauges();
     }
 
     /**
@@ -284,48 +246,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         if (!ApplicationSettings.INSTANCE.btDeviceSelected())
         {
-            messages.setText(R.string.please_select);
+//            messages.setText(R.string.please_select);
         }
     }
 
-    /**
-     * Save current selected indicators in preferences
-     */
-    private void saveGauges()
-    {
-        if (!(indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null))
-        {
-            findGauges();
-        }
-        if (indicators[0] != null && indicators[1] != null && indicators[2] != null && indicators[3] != null)
-        {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            Editor editor = prefs.edit();
-
-            if (!indicators[0].getName().equals(Indicator.DEAD_GAUGE_NAME))
-            {
-                editor.putString("gauge1", indicators[0].getName());
-            }
-            if (!indicators[1].getName().equals(Indicator.DEAD_GAUGE_NAME))
-            {
-                editor.putString("gauge2", indicators[1].getName());
-            }
-            if (!indicators[2].getName().equals(Indicator.DEAD_GAUGE_NAME))
-            {
-                editor.putString("gauge3", indicators[2].getName());
-            }
-            if (!indicators[3].getName().equals(Indicator.DEAD_GAUGE_NAME))
-            {
-                editor.putString("gauge4", indicators[3].getName());
-            }
-            if (indicators[4] != null && !indicators[4].getName().equals(Indicator.DEAD_GAUGE_NAME))
-            {
-                editor.putString("gauge5", indicators[4].getName());
-            }
-
-            editor.commit();
-        }
-    }
 
     /**
      * Load the gauges
@@ -337,318 +261,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         GaugeRegister.INSTANCE.flush();
         ecu.initGauges();
         DebugLogManager.INSTANCE.log("loadGauges() took "+(System.currentTimeMillis()-start)+"ms",Log.DEBUG);
-    }
-
-    /**
-     * Init the indicators with the proper one saved in preferences, default to firmware defined indicators if preferences are empty
-     */
-    private void initGauges()
-    {
-        layout = (LinearLayout) (findViewById(R.id.layout));
-        findGauges();
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-        String[] defaultGauges = ecu.defaultGauges();
-        
-        indicators[0].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge1", defaultGauges[0]));
-        indicators[1].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge2", defaultGauges[1]));
-        indicators[2].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge3", defaultGauges[2]));
-        indicators[3].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge4", defaultGauges[3]));
-
-        if (indicators[4] != null)
-        {
-            indicators[4].initFromName(ApplicationSettings.INSTANCE.getOrSetPref("gauge5", defaultGauges[4]));
-        }
-
-        applyWidgetTypeToIndicators();
-
-        if (gaugeEditEnabled)
-        {
-            bindIndicatorsEditEvents();
-        }
-        else
-        {
-            MarkListener l = new MarkListener(layout);
-            setTouchListeners(l);
-        }
-
-        for (int i = 0; i < indicators.length; i++)
-        {
-            if (indicators[i] != null)
-            {
-                indicators[i].invalidate();
-            }
-        }
-    }
-
-    /**
-     * Scan all indicators and make sure they are the type they should be
-     */
-    public void applyWidgetTypeToIndicators()
-    {
-        // Look at all indicators and make sure they are the right type
-        for (int i = 0; i < indicators.length; i++)
-        {
-            if (indicators[i] != null)
-            {
-                boolean wasWrongType = false;
-                String name = indicators[i].getName();
-                int id = indicators[i].getId();
-
-                GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
-
-                if (gd.getType().equals(getString(R.string.gauge)) && !(indicators[i] instanceof Gauge))
-                {
-                    indicators[i] = new Gauge(this);
-                    wasWrongType = true;
-                }
-                else if (gd.getType().equals(getString(R.string.bargraph)) && !(indicators[i] instanceof BarGraph))
-                {
-                    indicators[i] = new BarGraph(this);
-                    wasWrongType = true;
-                }
-                else if (gd.getType().equals(getString(R.string.numeric_indicator)) && !(indicators[i] instanceof NumericIndicator))
-                {
-                    indicators[i] = new NumericIndicator(this);
-                    wasWrongType = true;
-                }
-                else if (gd.getType().equals(getString(R.string.histogram)) && !(indicators[i] instanceof Histogram))
-                {
-                    indicators[i] = new Histogram(this);
-                    wasWrongType = true;
-                }
-                else if (gd.getType().equals(getString(R.string.table_indicator)) && !(indicators[i] instanceof TableIndicator))
-                {
-                    indicators[i] = new TableIndicator(this);
-                    wasWrongType = true;
-                }
-
-                if (wasWrongType)
-                {
-                    View indicator = findViewById(id);
-
-                    // Remove indicator with wrong type
-                    ViewGroup parentView = (ViewGroup) indicator.getParent();
-                    int index = parentView.indexOfChild(indicator);
-                    parentView.removeView(indicator);
-
-                    // Add new indicator back in place
-                    parentView.addView(indicators[i], index);
-
-                    indicators[i].setId(id);
-                    indicators[i].initFromName(name);
-
-                    LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
-                    indicators[i].setLayoutParams(params);
-
-                    indicators[i].setFocusable(true);
-                    indicators[i].setFocusableInTouchMode(true);
-
-                    bindIndicatorsEditEventsToIndex(i);
-                }
-            }
-        }
-    }
-
-    /**
-     * Replace the instance of an indicator, used in EditGaugeDialog, after modifying indicator details
-     * 
-     * @param indicator
-     * @param indicatorIndex
-     */
-    public void replaceIndicator(Indicator indicator, int indicatorIndex)
-    {
-        indicators[indicatorIndex] = indicator;
-    }
-
-    /**
-     * Bind touch listener to indicator
-     * 
-     * @param i Indicator index to bind edit events to
-     */
-    public void bindIndicatorsEditEventsToIndex(int i)
-    {
-        indicators[i].setGestureDetector(new GestureDetector(new IndicatorGestureListener(MSLoggerActivity.this, indicators[i], i)));
-
-        OnTouchListener gestureListener = new View.OnTouchListener()
-        {
-            private Indicator firstIndicator;
-
-            /**
-             * Determines if given points are inside view
-             * 
-             * @param x X coordinate of point
-             * @param y Y coordinate of point
-             * @param view View object to compare
-             * @return true If the points are within view bounds, false otherwise
-             */
-            private boolean isPointInsideView(float x, float y, View view)
-            {
-                int location[] = new int[2];
-                view.getLocationOnScreen(location);
-                int viewX = location[0];
-                int viewY = location[1];
-
-                // Point is inside view bounds
-                if (x > viewX && x < viewX + view.getWidth() && y > viewY && y < viewY + view.getHeight())
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            /**
-             * 
-             * @param v
-             * @param event
-             */
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                if (firstIndicator != null && firstIndicator.getGestureDetector().onTouchEvent(event))
-                {
-                    return true;
-                }
-                else if (event.getAction() == MotionEvent.ACTION_DOWN)
-                {
-                    this.firstIndicator = ((Indicator) v);
-                    return true;
-                }
-                else if (event.getAction() == MotionEvent.ACTION_UP)
-                {
-                    Indicator lastIndicator = null;
-                    int lastIndexIndicator = 0;
-
-                    // Find indicator when the finger was lifted
-                    for (int i = 0; lastIndicator == null && i < indicators.length && indicators[i] != null; i++)
-                    {
-                        if (this.isPointInsideView(event.getRawX(), event.getRawY(), indicators[i]))
-                        {
-                            lastIndicator = indicators[i];
-                            lastIndexIndicator = i;
-                        }
-                    }
-
-                    if (lastIndicator != null && firstIndicator.getId() != lastIndicator.getId())
-                    {
-                        String firstIndicatorName = firstIndicator.getName();
-                        String lastIndicatorName = lastIndicator.getName();
-
-                        int firstIndexIndicator = 0;
-
-                        // Find first touched indicator index
-                        for (int i = 0; i < indicators.length; i++)
-                        {
-                            if (indicators[i] != null && firstIndicator.getId() == indicators[i].getId())
-                            {
-                                firstIndexIndicator = i;
-                            }
-                        }
-
-                        // Remove old last indicator
-                        ViewGroup parentLastIndicatorView = (ViewGroup) lastIndicator.getParent();
-                        int indexLast = parentLastIndicatorView.indexOfChild(lastIndicator);
-                        parentLastIndicatorView.removeView(lastIndicator);
-
-                        // Remove old first indicator
-                        ViewGroup parentFirstIndicatorView = (ViewGroup) firstIndicator.getParent();
-                        int indexFirst = parentFirstIndicatorView.indexOfChild(firstIndicator);
-                        parentFirstIndicatorView.removeView(firstIndicator);
-
-                        /*
-                         * Since we are removing both view at the same time, if both were in the same parent, we need to do some magic to keep them in
-                         * the right order.
-                         */
-                        if (parentFirstIndicatorView == parentLastIndicatorView)
-                        {
-                            if (indexLast > indexFirst)
-                            {
-                                indexLast -= 1;
-                            }
-                            else
-                            {
-                                indexFirst += 1;
-                            }
-                        }
-
-                        // Add first touched indicator in place of last touched indicator
-                        parentLastIndicatorView.addView(indicators[lastIndexIndicator], indexLast);
-                        parentLastIndicatorView.forceLayout();
-
-                        // Add last touched indicator in place of first touched indicator
-                        parentFirstIndicatorView.addView(indicators[firstIndexIndicator], indexFirst);
-                        parentFirstIndicatorView.forceLayout();
-
-                        // Init the indicator with their new indicator details
-                        indicators[lastIndexIndicator].initFromName(firstIndicatorName);
-                        indicators[firstIndexIndicator].initFromName(lastIndicatorName);
-
-                        indicators[lastIndexIndicator].setId(lastIndicator.getId());
-                        indicators[firstIndexIndicator].setId(firstIndicator.getId());
-
-                        // If indicators weren't the same type, we have to change their types
-                        if (!firstIndicator.getType().equals(lastIndicator.getType()))
-                        {
-                            applyWidgetTypeToIndicators();
-                        }
-
-                        // Re-map the right indicators with the right views
-                        findGauges();
-
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        };
-
-        indicators[i].setOnClickListener(MSLoggerActivity.this);
-        indicators[i].setOnTouchListener(gestureListener);
-    }
-
-    /**
-     * 
-     */
-    public void bindIndicatorsEditEvents()
-    {
-        for (int i = 0; i < indicators.length; i++)
-        {
-            if (indicators[i] != null)
-            {
-                bindIndicatorsEditEventsToIndex(i);
-            }
-        }
-    }
-
-    /**
-     * Set all the gauges variable with their view
-     */
-    private void findGauges()
-    {
-        indicators[0] = (Indicator) findViewById(R.id.g1);
-        indicators[1] = (Indicator) findViewById(R.id.g2);
-        indicators[2] = (Indicator) findViewById(R.id.g3);
-        indicators[3] = (Indicator) findViewById(R.id.g4);
-        indicators[4] = (Indicator) findViewById(R.id.g5);
-    }
-
-    /**
-     * Set the touch listener on the gauge
-     * 
-     * @param l
-     */
-    private void setTouchListeners(MarkListener l)
-    {
-        for (int i = 0; i < indicators.length; i++)
-        {
-            if (indicators[i] != null)
-            {
-                indicators[i].setOnTouchListener(l);
-            }
-        }
     }
 
     /**
@@ -698,56 +310,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
     }
 
-    /**
-     * Process data got from Megasquirt and update the gauges with it
-     */
-    protected void processData()
-    {
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        List<Indicator> indicators;
-        if ((indicators = indicatorManager.getIndicators()) != null)
-        {
-            indicatorManager.setDisabled(false);
-            for (Indicator i : indicators)
-            {
-                if (i instanceof GroupIndicator)
-                {
-                    GroupIndicator gi = (GroupIndicator) i;
-                    for (String gaugeName : gi.getGaugeNames())
-                    {
-                        if (gaugeName != null)
-                        {
-                            GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
-                            if (gd != null)
-                            {
-                                double value = ecu.getField(gd.getChannel());
-                                gi.setValue(value, gaugeName);
-                            }
-                            
-                        }
-                        else
-                        {
-                            gi.setValue(0, gaugeName);
-                        }
-                    }
-                }
-                else
-                {
-                    String channelName = i.getChannel();
-                    if (channelName != null)
-                    {
-                        double value = ecu.getField(channelName);
-                        i.setValue(value);
-                    }
-                    else
-                    {
-                        i.setValue(0);
-                    }
-                }
-            }
-        }
-    }
-
+  
     /**
      * 
      * @param menu
@@ -867,7 +430,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void resetGuages()
     {
-        new ResetGaugesTask().execute((Void) null);
     }
 
     /**
@@ -878,7 +440,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         // Gauge editing is enabled
         if (gaugeEditEnabled)
         {
-            saveGauges();
+//            saveGauges();
         }
         // Gauge editing is not enabled
         else
@@ -890,7 +452,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         gaugeEditEnabled = !gaugeEditEnabled;
-        initGauges();
+//        initGauges();
     }
 
     /**
@@ -1067,7 +629,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                         ecuDefinition.refreshFlags();
                         GaugeRegister.INSTANCE.flush();
                         ecuDefinition.initGauges();
-                        initGauges();
+ //                       initGauges();
                     }
                 }
                 break;
@@ -1099,10 +661,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             return;
         }
-        if (key.startsWith("gauge"))
-        {
-            initGauges();
-        }
         Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
@@ -1126,61 +684,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
     }
 
-    /**
-     * Background task user to reset gauge to firmware default
-     */
-    private class ResetGaugesTask extends AsyncTask<Void, Void, Void>
-    {
-        private ProgressDialog dialog;
-
-        /**
-         * 
-         */
-        @Override
-        protected void onPreExecute()
-        {
-            dialog = new ProgressDialog(MSLoggerActivity.this);
-            dialog.setMessage(getString(R.string.reset_gauges));
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(false);
-            dialog.show();
-        }
-
-        /**
-         * 
-         * @param arg0
-         */
-        @Override
-        protected Void doInBackground(Void... arg0)
-        {
-            GaugeRegister.INSTANCE.resetAll();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
-            Editor editor = prefs.edit();
-            editor.remove("gauge1");
-            editor.remove("gauge2");
-            editor.remove("gauge3");
-            editor.remove("gauge4");
-            editor.remove("gauge5");
-            editor.commit();
-            return null;
-        }
-
-        /**
-         * 
-         * @param unused
-         */
-        @Override
-        protected void onPostExecute(Void unused)
-        {
-            dialog.dismiss();
-
-            Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
-            if (ecuDefinition != null)
-            {
-                initGauges();
-            }
-        }
-    }
 
     /**
      * Background task that load the pages
@@ -1239,14 +742,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             if (action.equals(Megasquirt.PROBE_ECU))
             {
                 completeCreate();
-                indicatorManager.setDisabled(false);
             }
             else if (action.equals(Megasquirt.CONNECTED))
             {
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
                 DebugLogManager.INSTANCE.log(action, Log.INFO);
-                indicatorManager.setDisabled(false);
                 if (autoLoggingEnabled && ecu != null && ecu.isConnected())
                 {
                     ecu.startLogging();
@@ -1255,14 +756,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             else if (action.equals(Megasquirt.DISCONNECTED))
             {
                 DebugLogManager.INSTANCE.log(action, Log.INFO);
-                indicatorManager.setDisabled(true);
                 if (autoLoggingEnabled)
                 {
                     DatalogManager.INSTANCE.mark("Connection lost");
                 }
 
-                messages.setText(R.string.disconnected_from_ms);
-                rps.setText("");
+//                messages.setText(R.string.disconnected_from_ms);
+//                rps.setText("");
 
                 Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
                 if (ecu != null && ecu.isConnected())
@@ -1272,20 +772,20 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
             else if (action.equals(Megasquirt.NEW_DATA))
             {
-                processData();
+//                processData();
             }
             else if (action.equals(ApplicationSettings.GENERAL_MESSAGE))
             {
                 String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
-                messages.setText(msg);
+//                messages.setText(msg);
                 DebugLogManager.INSTANCE.log("Message : " + msg, Log.INFO);
             }
             else if (action.equals(ApplicationSettings.RPS_MESSAGE))
             {
-                String RPS = intent.getStringExtra(ApplicationSettings.RPS);
+//                String RPS = intent.getStringExtra(ApplicationSettings.RPS);
 
-                rps.setText(RPS + " reads / second");
+ //               rps.setText(RPS + " reads / second");
             }
             else if (action.equals(ApplicationSettings.TOAST))
             {
@@ -1338,53 +838,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             } 
         }
     }
-
-    /**
-     * Listener used when the user touch the screen to mark the datalog
-     */
-    private static class MarkListener implements OnTouchListener
-    {
-        private LinearLayout layout;
-
-        /**
-         * Constructor
-         * 
-         * @param layout The layout that will change background then the screen is touch
-         */
-        public MarkListener(LinearLayout layout)
-        {
-            this.layout = layout;
-        }
-
-        /**
-         * On touch event
-         * 
-         * @param v The view that triggered the event
-         * @param event Information about the event
-         */
-        @Override
-        public boolean onTouch(View v, MotionEvent event)
-        {
-            Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-
-            if (ecu != null && ecu.isLogging() && event.getAction() == MotionEvent.ACTION_DOWN)
-            {
-                layout.setBackgroundColor(Color.BLUE);
-                layout.invalidate();
-                return true;
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP)
-            {
-                layout.setBackgroundColor(Color.BLACK);
-                layout.invalidate();
-                DatalogManager.INSTANCE.mark("Manual");
-                return true;
-            }
-            return false;
-        }
-
-    }
-
     /**
      * It was determinated that the android device don't support Bluetooth, so we tell the user
      */
@@ -1400,6 +853,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void initGauges()
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -1,55 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_gravity="center"
-	android:layout_margin="1dp" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:weightSum="100"
-	android:keepScreenOn="true"
-	android:id="@+id/layout"
-	>
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:layout_margin="1dp"
+    android:keepScreenOn="true"
+    android:orientation="vertical"
+    android:weightSum="100" >
 
-	<LinearLayout android:orientation="vertical" android:layout_weight="80" android:layout_height="0px" android:layout_width="fill_parent" >
-	   <LinearLayout 
-			android:layout_height="0px" android:layout_width="fill_parent"
-			android:layout_weight="75" android:id="@+id/mainLinearLayout">
+    <uk.org.smithfamily.mslogger.views.DashboardViewGroup
+        android:id="@+id/dashboard"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="20" />
 
-			<uk.org.smithfamily.mslogger.widgets.Gauge
-				android:id="@+id/g3" android:layout_width="0dip"
-				android:layout_height="fill_parent" android:focusable="true"
-				android:focusableInTouchMode="true" android:layout_weight="1" />
-		</LinearLayout>
-	    
-	    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="25">
-	        <uk.org.smithfamily.mslogger.widgets.Gauge
-				android:id="@+id/g1" android:layout_width="fill_parent"
-				android:layout_height="fill_parent" android:focusable="true"
-				android:focusableInTouchMode="true" android:layout_weight="1" />
-
-			<uk.org.smithfamily.mslogger.widgets.Gauge
-				android:id="@+id/g2" android:layout_width="fill_parent"
-				android:layout_height="fill_parent" android:focusable="true"
-				android:focusableInTouchMode="true" android:layout_weight="1" />
-			 <uk.org.smithfamily.mslogger.widgets.Gauge
-				android:id="@+id/g4" android:layout_width="fill_parent"
-				android:layout_height="fill_parent" android:focusable="true"
-				android:focusableInTouchMode="true" android:layout_weight="1" />
-			
-	    </LinearLayout>
-	</LinearLayout>
-	
-	<View android:layout_height="2dip" android:layout_width="fill_parent" android:background="#FF909090" />
-	<LinearLayout android:orientation="horizontal" android:layout_weight="20" android:layout_height="0px"  android:layout_width="fill_parent">
-		<TextView android:layout_weight="1" 
-			android:layout_width="0dip"
-			android:layout_height="wrap_content" 
-			android:text="" 
-			android:id="@+id/messages"
-			android:layout_margin="4dip" />
-		<TextView android:layout_weight="1" 
-			android:layout_width="0dip" 
-			android:text="" 
-			android:layout_height="wrap_content" 
-			android:id="@+id/RPS" 
-			android:layout_margin="4dip"
-			android:gravity="right" />
-	</LinearLayout>
 </LinearLayout>

@@ -320,8 +320,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
                 newIndicator.setId(indicator.getId());
                 newIndicator.initFromName(gd.getName());
 
-                mainActivity.replaceIndicator(newIndicator, indicatorIndex);
-                mainActivity.bindIndicatorsEditEventsToIndex(indicatorIndex);
+//                mainActivity.replaceIndicator(newIndicator, indicatorIndex);
+//                mainActivity.bindIndicatorsEditEventsToIndex(indicatorIndex);
 
                 indicator = newIndicator;
             }

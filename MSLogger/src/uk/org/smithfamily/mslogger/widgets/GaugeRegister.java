@@ -254,6 +254,9 @@ public enum GaugeRegister implements GaugeRegisterInterface
      */
     private String getStoreName(String gaugeName)
     {
-        return ApplicationSettings.INSTANCE.getEcuDefinition().getClass().getName() + "." + gaugeName;
+        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        Class<? extends Megasquirt> class1 = ecuDefinition.getClass();
+        String name = class1.getName();
+        return name + "." + gaugeName;
     }
 }
