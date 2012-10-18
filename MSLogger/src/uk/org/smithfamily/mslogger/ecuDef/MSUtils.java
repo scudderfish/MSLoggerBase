@@ -229,4 +229,20 @@ public enum MSUtils implements MSUtilsInterface
         
         return bytes;
     }
+    
+    /**
+     * Round a double number to a specific number of decimals
+     * 
+     * @param number The number to round
+     * @param decimals The number of decimals to keep
+     * 
+     * @return The rounded number
+     */
+    public double roundDouble(double number, int decimals)
+    {
+        double p = (double) Math.pow(10, decimals);
+        number = number * p;
+        double tmp = Math.round(number);
+        return tmp / p;
+    }
 }

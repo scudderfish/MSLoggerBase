@@ -87,8 +87,8 @@ public class MSLoggerApplication extends Application
     @Override
     public void onTerminate()
     {
-       
         super.onTerminate();
+        
         doUnbindService();
     }
 }

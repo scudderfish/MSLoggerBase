@@ -49,8 +49,8 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         Button buttonBurn = (Button) findViewById(R.id.burn);
         buttonBurn.setOnClickListener(this);
         
-        Button buttonCancel = (Button) findViewById(R.id.cancel);
-        buttonCancel.setOnClickListener(this);
+        Button buttonClose = (Button) findViewById(R.id.close);
+        buttonClose.setOnClickListener(this);
         
         // Hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -80,7 +80,7 @@ public class EditCurveDialog extends Dialog implements android.view.View.OnClick
         {
             burnToECU();
         }
-        else if (which == R.id.cancel)
+        else if (which == R.id.close)
         {
             cancel();
         }

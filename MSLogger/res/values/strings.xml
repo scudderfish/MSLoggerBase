@@ -48,9 +48,11 @@
 	        
     <string name="about_text">An application to log information from Megasquirt ECUs.\n\nWritten By:\nDave Smith &lt;dave.g.smith@gmail.com&gt;\nSébastien Giroux</string>
 	        
+    <!-- Buttons -->
     <string name="bt_ok">OK</string>
     <string name="bt_cancel">Cancel</string>
     <string name="bt_reset">Reset</string>
+    <string name="bt_close">Close</string>
     
     <string name="no_bt">Bluetooth is not available on your Android device.  You won\'t be able to connect to a Megasquirt ECU.</string>
 	<string name="no_comms">Cannot connect to your ECU.  Check that it is powered up and the Bluetooth adapter is working</string>
@@ -78,6 +80,8 @@
 	<!-- Edit gauge -->
 	<string name="edit_gauge_title">Edit Gauge Properties</string>
 	<string name="channel">Channel</string>
+	<string name="indicatorDetailsEdit">Indicator Position</string>
+	<string name="choose_indicator_position">Choose which Indicator Position to Edit</string>
 	<string name="choose_indicator_channel">Choose the Indicator Channel</string>
 	<string name="indicator_orientation">Orientation</string>
 	<string name="choose_indicator_orientation">Choose the Indicator Orientation</string>
@@ -97,6 +101,17 @@
 	<string name="units">Units</string>
 	<string name="horizontal">Horizontal</string>
 	<string name="vertical">Vertical</string>
+	
+	<string name="indicatorFirst">First</string>
+	<string name="indicatorSecond">Second</string>
+	<string name="indicatorThird">Third</string>
+	<string name="indicatorFourth">Fourth</string>
+	<string name="indicatorFifth">Fifth</string>
+	<string name="indicatorSixth">Sixth</string>
+	<string name="indicatorSeventh">Seventh</string>
+	<string name="indicatorEighth">Eighth</string>
+	<string name="indicatorNinth">Ninth</string>
+	<string name="indicatorTenth">Tenth</string>
 	
 	<!-- View Datalog -->
 	<string name="datalog_viewer_title">Datalog Viewer</string>

@@ -173,7 +173,7 @@ public class DialogHelper
         curve.setYBins(ecu.getVector(yConstant), yConstant);
         
         // std_accel dialog
-        MSDialog dialogAccel = new MSDialog("std_accel","Accel Enrichment Wizard","yAxis");
+        MSDialog dialogAccel = new MSDialog("std_accel", "Accel Enrichment Wizard", "yAxis");
         ecu.addDialog(dialogAccel);
         
         dialogAccel.addPanel(new DialogPanel("std_accel_north", ""));
@@ -188,7 +188,7 @@ public class DialogHelper
         dialogNorth.addPanel(new DialogPanel("std_accel_tae_curve", "East"));
         
         // South panel with the two columns with all the constants for TPS and MAP
-        MSDialog dialogSouth = new MSDialog("std_accel_south","","");
+        MSDialog dialogSouth = new MSDialog("std_accel_south", "", "");
         ecu.addDialog(dialogSouth);
         
         dialogSouth.addPanel(new DialogPanel("std_accel_map", "West"));
@@ -281,16 +281,23 @@ public class DialogHelper
         curve.setxAxis(new double[] {-60, 200, 20});
         curve.setyAxis(new double[] {0, 240, 20});
         
+        String units = "°F";
+        int[] temp = { 103, 301, 500, 698, 896, 1094, 1292, 1508, 1706, 1797 };
+        double scale = 0.1;
+        double translate = 0;
+        
         if (ecu.isSet("CELCIUS"))
         {
-            double[] temp = {-40.0, -20.0, 0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 130.0, 160.0};
-            curve.setXBins(temp, "Coolant (°C)", 0, false);
+            units = "°C";
+            scale = 0.05555;
+            translate = -320;
         }
-        else
-        {
-            double[] temp = {-40.0, -28.8, -17.7, -6.6, 4.4, 15.5, 26.6, 37.7, 54.4, 71.1};
-            curve.setXBins(temp, "Coolant (°F)", 0, false);
-        }
+        
+        Constant xConstant = new Constant(1, "MSLogger_temp", "array", "", 0, "[   10]", units, scale, translate, 0, 0, 0);
+        ecu.addConstant(xConstant);
+        
+        curve.setXBins(temp, "MSLogger_temp", 0, false);
+        
         curve.setYBins(ecu.getVector("wueBins9"), "wueBins9");
         
         dialog.addPanel(new DialogPanel("std_warmup_curve", ""));

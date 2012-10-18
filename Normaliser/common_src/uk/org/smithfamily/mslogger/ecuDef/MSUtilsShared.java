@@ -90,10 +90,12 @@ public class MSUtilsShared
                         ret += HexStringToBytes(listPageCommand, identifier, offset, count, value, pageNo);
                     }
                 }
+                // MS1
                 else if (currentCharacter == 'o')
                 {
                     ret += bytes(offset);
                 }
+                // MS1
                 else if (currentCharacter == 'c')
                 {
                     ret += bytes(count);
