@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.ControllerCommand;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
@@ -533,8 +534,18 @@ public class Process
             String highText = constantM.group(9);
             String digitsText = constantM.group(10);
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            double translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
-
+            double translate = 0;
+            
+            try
+            {
+                translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
+            }
+            catch (NumberFormatException e)
+            {
+                // TODO its probably an expression, support that
+                System.out.println("TODO WE NEED TO SUPPORT THIS (expression in translate?!) " + line);
+            }
+            
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
             if (!ecuData.getConstants().contains(name))
@@ -894,7 +905,31 @@ public class Process
             }
         }
     }
-
+    
+    /**
+     * Process the [ControllerCommands] section of the ini file
+     * 
+     * @param line
+     */
+    static void processControllerCommands(ECUData ecuData, String line)
+    {
+        line = removeComments(line);
+        if (StringUtils.isEmpty(line))
+        {
+            return;
+        }
+        
+        Matcher controllerCommands = Patterns.controllerCommands.matcher(line);
+        if (controllerCommands.matches())
+        {
+            String name = controllerCommands.group(1);
+            String command = controllerCommands.group(2).replace("\\", "\\\\");
+            
+            ControllerCommand controllerCommand = new ControllerCommand(name, command);
+            ecuData.getControllerCommands().add(controllerCommand);
+        }
+    }
+    
     /**
      * Process the [UserDefined] section of the ini file
      * 
@@ -923,8 +958,9 @@ public class Process
         if (dialog.matches())
         {
             String name = dialog.group(1);
-            String label = dialog.group(2);
-            String axis = dialog.group(4);
+            String label = dialog.group(3);
+            String axis = dialog.group(5);
+            
             d = new UserDefinedTracker();
             dialogDefs.add(d);
             UserDefinedDefinition x = new UserDefinedDefinition(d, name, label, axis);

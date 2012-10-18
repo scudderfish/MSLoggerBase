@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
+import uk.org.smithfamily.mslogger.ecuDef.ControllerCommand;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
@@ -961,6 +962,32 @@ public class Output
         writer.println(TAB + "public List<SettingGroup> getSettingGroups()");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "return settingGroups;");
+        writer.println(TAB + "}");
+
+    }
+    
+    public static void outputControllerCommands(ECUData ecuData, PrintWriter writer)
+    {
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public void createControllerCommands()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "controllerCommands.clear();");
+        writer.println(TAB + TAB + "ControllerCommand controllerCommand;");
+        
+        for (ControllerCommand command : ecuData.getControllerCommands())
+        {
+            String name = command.getName();
+            String controllerCommand = command.getCommand();
+
+            writer.println(TAB + TAB + String.format("controllerCommands.add(new ControllerCommand(\"%s\",\"%s\"));", name, controllerCommand));            
+        }
+        
+        writer.println(TAB + "}");
+        
+        writer.println(TAB + "@Override");
+        writer.println(TAB + "public List<ControllerCommand> getControllerCommands()");
+        writer.println(TAB + "{");
+        writer.println(TAB + TAB + "return controllerCommands;");
         writer.println(TAB + "}");
 
     }

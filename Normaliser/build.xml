@@ -12,6 +12,8 @@
 	<target name="compile_normaliser" depends=".compile_support" >
 		<mkdir dir="bin" />
         <javac
+            debug="on"
+        	debuglevel="lines,vars,source"
             classpath="lib/commons-lang3-3.0.1.jar:common_bin"
             destdir="bin"
             includeantruntime="false"
@@ -43,6 +45,7 @@
         <javac
             classpath="common_bin"
             debug="on"
+        	debuglevel="lines,vars,source"
             destdir="gen_bin"
             fork="true"
             includeantruntime="false"

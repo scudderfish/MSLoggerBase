@@ -13,7 +13,7 @@ public class Normaliser
 {
     enum Section
     {
-        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, UserDefined, SettingGroups
+        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, ControllerCommands, UserDefined, SettingGroups
     }
 
     private static final String        TAB          = "    ";
@@ -182,6 +182,10 @@ public class Normaliser
             {
                 currentSection = Section.SettingGroups;
             }
+            else if (line.trim().equals("[ControllerCommands]"))
+            {
+                currentSection = Section.ControllerCommands;
+            }
             else if (line.trim().startsWith("["))
             {
                 currentSection = Section.None;
@@ -222,6 +226,9 @@ public class Normaliser
                 break;
             case CurveEditor:
                 Process.processCurveEditor(ecuData,line);
+                break;
+            case ControllerCommands:
+                Process.processControllerCommands(ecuData,line);
                 break;
             case UserDefined:
                 Process.processUserDefined(ecuData,line);
@@ -308,6 +315,7 @@ public class Normaliser
         Output.outputUserDefinedVisibilityFlags(ecuData, writer);
         Output.outputMenuVisibilityFlags(ecuData, writer);
         Output.outputSettingGroups(ecuData,writer);
+        Output.outputControllerCommands(ecuData,writer);
         // outputGaugeDoc(writer);
 
         Output.outputOverrides(ecuData,writer);

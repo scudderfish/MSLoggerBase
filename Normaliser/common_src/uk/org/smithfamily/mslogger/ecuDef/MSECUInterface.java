@@ -6,12 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
-import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
-import uk.org.smithfamily.mslogger.ecuDef.Menu;
-import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
-
 public interface MSECUInterface
 {
     Map<String,Constant> constants = new HashMap<String,Constant>();
@@ -31,6 +25,8 @@ public interface MSECUInterface
     Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
     
     List<SettingGroup> settingGroups = new ArrayList<SettingGroup>();
+    
+    List<ControllerCommand> controllerCommands = new ArrayList<ControllerCommand>();
 
     void setFlags();
     public abstract String getSignature();
@@ -92,5 +88,9 @@ public interface MSECUInterface
     public abstract List<SettingGroup> getSettingGroups();
     
     public abstract List<String> getRequiresPowerCycle();
+    
+    public abstract void createControllerCommands();
+    
+    public abstract List<ControllerCommand> getControllerCommands();
     
 }
