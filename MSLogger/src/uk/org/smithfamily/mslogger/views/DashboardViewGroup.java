@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import uk.org.smithfamily.mslogger.dashboards.Dashboard;
-import uk.org.smithfamily.mslogger.dashboards.DashboardParser;
+import uk.org.smithfamily.mslogger.dashboards.DashboardIO;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.Context;
@@ -44,7 +44,7 @@ public class DashboardViewGroup extends ViewGroup
         backgroundPaint.setStyle(Paint.Style.FILL);
         backgroundPaint.setColor(Color.CYAN);
 
-        DashboardParser p = new DashboardParser();
+        DashboardIO p = new DashboardIO();
         try
         {
             List<Dashboard> d = p.parse();
@@ -107,11 +107,11 @@ public class DashboardViewGroup extends ViewGroup
 
             Location loc = child.getLocation();
 
-            int top = resolve(loc.getTop(), t, height, width);
-            int left = resolve(loc.getLeft(), l, height, width);
-            int right = resolve(loc.getWidth(), r, height, width);
-            int bottom = resolve(loc.getHeight(), b, height, width);
-            child.layout(left, top, right, bottom);
+            int ctop = resolve(loc.getTop(), t, height, width);
+            int cleft = resolve(loc.getLeft(), l, height, width);
+            int cwidth = resolve(loc.getWidth(), r, height, width);
+            int cheight = resolve(loc.getHeight(), b, height, width);
+            child.layout(cleft, ctop, cleft+cwidth, ctop+cheight);
 
         }
     }

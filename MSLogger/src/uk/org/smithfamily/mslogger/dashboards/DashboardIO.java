@@ -1,10 +1,6 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,39 +15,42 @@ import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.res.AssetManager;
 
-public class DashboardParser
+public class DashboardIO
 {
+    private static final String DASHBOARDS = "dashboards";
+    private static final String INDICATORS = "indicators";
+    private static final String LOCATION = "location";
+    private static final String TYPE = "type";
+    private static final String CHANNEL = "channel";
+
     public List<Dashboard> parse() throws IOException
     {
         List<Dashboard> results = new ArrayList<Dashboard>();
         try
         {
-            String dashDefinition = readDefinition();
+            String dashDefinition = readDefinition("default.json");
 
             JSONObject jsonObject = new JSONObject(dashDefinition);
 
-            JSONArray dashes = jsonObject.getJSONArray("dashboards");
+            JSONArray dashes = jsonObject.getJSONArray(DASHBOARDS);
 
             for (int dashIndex = 0; dashIndex < dashes.length(); dashIndex++)
             {
                 JSONObject jDash = dashes.getJSONObject(dashIndex);
                 results.add(createDash(jDash));
-
             }
-
         }
         catch (JSONException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
         return results;
-
     }
 
     private Dashboard createDash(JSONObject jDash) throws JSONException
     {
         Dashboard d = new Dashboard();
-        JSONArray indicators = jDash.getJSONArray("indicators");
+        JSONArray indicators = jDash.getJSONArray(INDICATORS);
         for (int indIndex = 0; indIndex < indicators.length(); indIndex++)
         {
             JSONObject jIndicator = indicators.getJSONObject(indIndex);
@@ -66,9 +65,9 @@ public class DashboardParser
     private Indicator createIndicator(JSONObject jIndicator) throws JSONException
     {
         Indicator i = new Indicator(ApplicationSettings.INSTANCE.getContext());
-        String channel = jIndicator.getString("channel");
-        String type = jIndicator.getString("type").toUpperCase();
-        JSONArray jLocation = jIndicator.getJSONArray("location");
+        String channel = jIndicator.getString(CHANNEL);
+        String type = jIndicator.getString(TYPE).toUpperCase();
+        JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
         Location loc = createLocation(jLocation);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
@@ -79,13 +78,15 @@ public class DashboardParser
 
     private Location createLocation(JSONArray jLocation) throws JSONException
     {
-        return new Location(jLocation.getDouble(0),jLocation.getDouble(1),jLocation.getDouble(2),jLocation.getDouble(3));
+        return new Location(jLocation.getDouble(0), jLocation.getDouble(1), jLocation.getDouble(2), jLocation.getDouble(3));
     }
 
-    private String readDefinition()
+    private String readDefinition(String fileName)
     {
         StringBuilder sb = new StringBuilder();
-        String assetFileName = "dashboards" + File.separator + "default.json";
+        String assetFileName = DASHBOARDS + File.separator + fileName;
+        File override = new File(ApplicationSettings.INSTANCE.getDataDir(), fileName);
+
         AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
 
         BufferedReader input = null;
@@ -94,7 +95,14 @@ public class DashboardParser
             try
             {
                 InputStream data = null;
-                data = assetManager.open(assetFileName);
+                if (override.canRead())
+                {
+                    data = new FileInputStream(override);
+                }
+                else
+                {
+                    data = assetManager.open(assetFileName);
+                }
 
                 input = new BufferedReader(new InputStreamReader(data));
                 String line;
@@ -103,6 +111,7 @@ public class DashboardParser
                 {
                     sb.append(line);
                 }
+                data.close();
             }
             finally
             {

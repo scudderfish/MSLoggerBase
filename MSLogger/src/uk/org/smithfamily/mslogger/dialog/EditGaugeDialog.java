@@ -10,13 +10,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 /**
  * Dialog to change various gauge settings
@@ -89,7 +84,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      */
     private void populateFields()
     {
-        setValue(R.id.editName, indicator.getName());
         setValue(R.id.editTitle, indicator.getTitle());
         setValue(R.id.editUnits, indicator.getUnits());
         setValue(R.id.editHi, Double.toString(indicator.getMax()));
@@ -381,7 +375,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param value
      * @return
      */
-    private String findChannelForTitle(String indicatorTitle)
+/*    private String findChannelForTitle(String indicatorTitle)
     {
         for (Map.Entry<String, String[]> entry : channels.entrySet())
         {
@@ -409,7 +403,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
         return "";
     }
-
+*/
     /**
      * Reset gauge details to the firmware default
      */
@@ -428,7 +422,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param id The ID of the view to get the value
      * @return Integer of the value
      */
-    private int getValueI(int id)
+ /*   private int getValueI(int id)
     {
         int val = 0;
         View v = findViewById(id);
@@ -439,13 +433,14 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         }
         return val;
     }
-
+*/
     /**
      * Get the value of a specific view as an double
      * 
      * @param id The ID of the view to get the value
      * @return Double of the value
      */
+/*
     private double getValueD(int id)
     {
         double val = 0;
@@ -457,13 +452,14 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         }
         return val;
     }
-
+*/
     /**
      * Get the value of a specific view as a string
      * 
      * @param id The ID of the view to get the value
      * @return Double of the value
      */
+/*
     private String getValue(int id)
     {
         String val = "";
@@ -475,7 +471,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         }
         return val;
     }
-
+*/
     /**
      * Triggered when the bottom buttons of the dialog are clicked
      * 

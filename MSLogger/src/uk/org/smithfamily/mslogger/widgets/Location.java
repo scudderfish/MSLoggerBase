@@ -1,16 +1,27 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+/**
+ * Represents a display independentish location for an Indicator. 
+ * 
+ * Specified as double values for left,top, width, height as expressed as ratios.
+ * 
+ * For positive values they are relative to the shortest side of the display
+ * 
+ * For negative values they are relative to the longest side of the display
+ * 
+ * @author dgs
+ * 
+ */
 public class Location
 {
     private double left, top, width, height;
 
-    public Location(double d, double e, double f, double g)
+    public Location(double left, double top, double width, double height)
     {
-        super();
-        this.left = d;
-        this.top = e;
-        this.width = f;
-        this.height = g;
+        this.left = left;
+        this.top = top;
+        this.width = width;
+        this.height = height;
     }
 
     public double getLeft()
@@ -31,5 +42,11 @@ public class Location
     public double getHeight()
     {
         return height;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Location [left=%s, top=%s, width=%s, height=%s]", left, top, width, height);
     }
 }

@@ -28,8 +28,6 @@ public class Indicator extends View implements Observer
         NUMERIC, BAR, GAUGE
     }
 
-    public static final String DEAD_GAUGE_NAME = "deadGauge";
-    private String name = DEAD_GAUGE_NAME;
     private String title = "RPM";
     private String channel = "rpm";
     private String units = "";
@@ -44,11 +42,158 @@ public class Indicator extends View implements Observer
     private double value = 2500;
     private boolean disabled = false;
     private double offsetAngle = 45;
-    
+
     private Location location;
     private DisplayType type;
     private Renderer renderer;
-    private GaugeDetails deadGauge = new GaugeDetails("Gauge", "", DEAD_GAUGE_NAME, "deadValue", getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+
+    public Indicator(Context c)
+    {
+        this(c, null);
+    }
+
+    public Indicator(Context c, AttributeSet s)
+    {
+        this(c, s, 0);
+    }
+
+    public Indicator(Context context, AttributeSet attr, int defaultStyles)
+    {
+        super(context, attr, defaultStyles);
+        setDisplayType(DisplayType.GAUGE);
+        DataManager.getInstance().addObserver(this);
+    }
+
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        IndicatorManager.INSTANCE.registerIndicator(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+
+        IndicatorManager.INSTANCE.deregisterIndicator(this);
+    }
+
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec)
+    {
+
+        // Default to creating a square area
+        int measuredWidth = MeasureSpec.getSize(widthSpec);
+
+        int measuredHeight = MeasureSpec.getSize(heightSpec);
+
+        int diameter = Math.min(measuredHeight, measuredWidth);
+        setMeasuredDimension(diameter, diameter);
+    }
+
+    @Override
+    public void draw(Canvas canvas)
+    {
+        renderer.paint(canvas);
+    }
+
+    @Override
+    public void update(Observable observable, Object data)
+    {
+        double newValue = DataManager.getInstance().getField(channel);
+        this.setValue(newValue);
+        invalidate();
+    }
+
+    public String getChannel()
+    {
+        return channel;
+    }
+
+    public void setChannel(String channel)
+    {
+        this.channel = channel;
+    }
+
+    public boolean isDisabled()
+    {
+        return this.disabled;
+    }
+
+    public void setDisabled(boolean disabled)
+    {
+        this.disabled = disabled;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public void setUnits(String units)
+    {
+        this.units = units;
+    }
+
+    public void setOrientation(Orientation orientation)
+    {
+    }
+
+    public Orientation getOrientation()
+    {
+        return Orientation.VERTICAL;
+    }
+
+    public double getOffsetAngle()
+    {
+        return offsetAngle;
+    }
+
+    public void setOffsetAngle(double offsetAngle)
+    {
+        this.offsetAngle = offsetAngle;
+    }
+
+    public String getType()
+    {
+        return "Indicator";
+    }
+
+    public Location getLocation()
+    {
+        return location;
+    }
+
+    public void setLocation(Location location)
+    {
+        this.location = location;
+    }
+
+    public void setDisplayType(DisplayType type)
+    {
+        this.type = type;
+        switch (type)
+        {
+        case BAR:
+            renderer = new BarGraph(this, getContext());
+            break;
+
+        case GAUGE:
+            renderer = new Gauge(this, getContext());
+            break;
+
+        case NUMERIC:
+            renderer = new NumericIndicator(this, getContext());
+            break;
+
+        }
+    }
+
+    public DisplayType getDisplayType()
+    {
+        return type;
+    }
 
     public double getMin()
     {
@@ -141,11 +286,6 @@ public class Indicator extends View implements Observer
         invalidate();
     }
 
-    public static String getDeadGaugeName()
-    {
-        return DEAD_GAUGE_NAME;
-    }
-
     public String getTitle()
     {
         return title;
@@ -156,181 +296,4 @@ public class Indicator extends View implements Observer
         return units;
     }
 
-  
-    public Indicator(Context c)
-    {
-        this(c,null);
-    }
-    public Indicator(Context c, AttributeSet s)
-    {
-        this(c, s,0);
-    }
-
-    public Indicator(Context context, AttributeSet attr, int defaultStyles)
-    {
-        super(context, attr, defaultStyles);
-        setDisplayType(DisplayType.GAUGE);
-        DataManager.getInstance().addObserver(this);
-    }
-
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getChannel()
-    {
-        return channel;
-    }
-
-    public void setChannel(String channel)
-    {
-        this.channel = channel;
-    }
-
-    public boolean isDisabled()
-    {
-        return this.disabled;
-    }
-
-    public void setDisabled(boolean disabled)
-    {
-        this.disabled = disabled;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    public void setUnits(String units)
-    {
-        this.units = units;
-    }
-
-    public void setOrientation(Orientation orientation)
-    {
-    }
-
-    public Orientation getOrientation()
-    {
-        return Orientation.VERTICAL;
-    }
-
-    public double getOffsetAngle()
-    {
-        return offsetAngle;
-    }
-
-    public void setOffsetAngle(double offsetAngle)
-    {
-        this.offsetAngle = offsetAngle;
-    }
-
-    public GaugeDetails getDeadGauge()
-    {
-        return deadGauge;
-    }
-
-    public void setDeadGauge(GaugeDetails deadGauge)
-    {
-        this.deadGauge = deadGauge;
-    }
-
-   
-    public String getType()
-    {
-        return "Indicator";
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Indicator [name=" + name + ", title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
-                + ", value=" + value + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + "]";
-    }
-
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-        IndicatorManager.INSTANCE.registerIndicator(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        super.onDetachedFromWindow();
-
-        IndicatorManager.INSTANCE.deregisterIndicator(this);
-    }
-
-    @Override
-    protected void onMeasure(int widthSpec, int heightSpec)
-    {
-
-        //Default to creating a square area
-        int measuredWidth = MeasureSpec.getSize(widthSpec);
-
-        int measuredHeight = MeasureSpec.getSize(heightSpec);
-
-   
-        int diameter = Math.min(measuredHeight, measuredWidth);
-        setMeasuredDimension(diameter, diameter);
-    }
-
-    public Location getLocation()
-    {
-        return location;
-    }
-
-    public void setLocation(Location location)
-    {
-        this.location = location;
-    }
-
-    public void setDisplayType(DisplayType type)
-    {
-        this.type = type;
-        switch (type)
-        {
-        case BAR:
-            renderer = new BarGraph(this, getContext());
-            break;
-
-        case GAUGE:
-            renderer = new Gauge(this, getContext());
-            break;
-
-        case NUMERIC:
-            renderer = new NumericIndicator(this, getContext());
-            break;
-
-        }
-    }
-
-    public DisplayType getDisplayType()
-    {
-        return type;
-    }
-
-    @Override
-    public void draw(Canvas canvas)
-    {
-        renderer.paint(canvas);
-    }
-
-    @Override
-    public void update(Observable observable, Object data)
-    {
-        double newValue = DataManager.getInstance().getField(channel);
-        this.setValue(newValue);
-        invalidate();
-    }
 }

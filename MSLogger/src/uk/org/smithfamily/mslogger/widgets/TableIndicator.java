@@ -148,7 +148,7 @@ public class TableIndicator extends GroupIndicator
         {
             titlePaint.setColor(Color.LTGRAY);
         }
-        GaugeDetails gd = null;//GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
+/*        GaugeDetails gd = null;//GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
 
         if (gd != null)
         {
@@ -160,7 +160,8 @@ public class TableIndicator extends GroupIndicator
             
             canvas.drawText(text, 0.02f, y, titlePaint);
         }
-    }
+*/
+        }
 
     /**
      * 
@@ -178,7 +179,7 @@ public class TableIndicator extends GroupIndicator
             valuePaint.setColor(Color.LTGRAY);
             flipColor = true;
         }
-
+/*
         GaugeDetails gd = null;//GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
         
         String text = "unkown";
@@ -196,6 +197,7 @@ public class TableIndicator extends GroupIndicator
         }
         
         canvas.drawText(text, 1f, y, valuePaint);
+        */
     }
 
     /**
