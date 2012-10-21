@@ -14,6 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.comms.CRC32Exception;
@@ -22,8 +23,6 @@ import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegisterInterface;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -1167,27 +1166,6 @@ public class Megasquirt extends Service implements MSControllerInterface
         return value;
     }
 
-    /**
-     * Set a field in the ECU class
-     * 
-     * @param channelName The variable name to modify
-     * @return
-     */
-    public double getField(String channelName)
-    {
-        double value = 0;
-        Class<?> c = ecuImplementation.getClass();
-        try
-        {
-            Field f = c.getDeclaredField(channelName);
-            value = f.getDouble(ecuImplementation);
-        }
-        catch (Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
-        }
-        return value;
-    }
 
     /**
      * 
@@ -1558,15 +1536,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         return constants;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public String[] defaultGauges()
-    {
-        return ecuImplementation.defaultGauges();
-    }
-
+   
     /**
      * 
      * @return
@@ -1592,14 +1562,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     public String getLogHeader()
     {
         return ecuImplementation.getLogHeader();
-    }
-
-    /**
-     * 
-     */
-    public void initGauges()
-    {
-        ecuImplementation.initGauges();
     }
 
     /**
@@ -1696,6 +1658,11 @@ public class Megasquirt extends Service implements MSControllerInterface
         return (int) (isConstantExists("alternate") ? getField("alternate") : getField("alternate1"));
     }
 
+    public double getField(String channelName)
+    {
+        return DataManager.getInstance().getField(channelName);
+    }
+
     private void setImplementation(String signature)
     {
         Class<? extends MSECUInterface> ecuClass = ECURegistry.INSTANCE.findEcu(signature);
@@ -1709,9 +1676,9 @@ public class Megasquirt extends Service implements MSControllerInterface
         Constructor<? extends MSECUInterface> constructor;
         try
         {
-            constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class, GaugeRegisterInterface.class);
+            constructor = ecuClass.getConstructor(MSControllerInterface.class, MSUtilsInterface.class);
 
-            ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE, GaugeRegister.INSTANCE);
+            ecuImplementation = constructor.newInstance(Megasquirt.this, MSUtils.INSTANCE);
 
             if (!signature.equals(ecuImplementation.getSignature()))
             {
@@ -1731,6 +1698,13 @@ public class Megasquirt extends Service implements MSControllerInterface
             broadcast(UNKNOWN_ECU);
         }
         broadcast(PROBE_ECU);
+    }
+
+    @Override
+    public void registerOutputChannel(OutputChannel o)
+    {
+        DataManager.getInstance().addOutputChannel(o);
+        
     }
 
 }

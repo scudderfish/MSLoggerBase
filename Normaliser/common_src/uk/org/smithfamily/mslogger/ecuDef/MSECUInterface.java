@@ -61,10 +61,6 @@ public interface MSECUInterface
 
     public abstract int getCurrentTPS();
 
-    public abstract void initGauges();
-
-    public abstract String[] defaultGauges();
-    
     public abstract void refreshFlags();
 
     public abstract boolean isCRC32Protocol();

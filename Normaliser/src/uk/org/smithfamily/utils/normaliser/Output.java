@@ -54,12 +54,11 @@ public class Output
     {
         writer.println(TAB+"private MSControllerInterface parent;");
         writer.println(TAB+"private MSUtilsInterface utils;");
-        writer.println(TAB+"private GaugeRegisterInterface gauges;");
-        writer.println(TAB + "public " + className + "(MSControllerInterface parent,MSUtilsInterface utils,GaugeRegisterInterface gauges)");
+        writer.println(TAB + "public " + className + "(MSControllerInterface parent,MSUtilsInterface utils)");
         writer.println(TAB + "{");
         writer.println(TAB + TAB + "this.parent = parent;");
         writer.println(TAB + TAB + "this.utils  = utils;");
-        writer.println(TAB + TAB + "this.gauges = gauges;");
+        writer.println(TAB + TAB + "initOutputChannels();");
         writer.println(TAB + "}");
         writer.println(TAB +"private double table(double x,String t)");
         writer.println(TAB + "{");
@@ -230,7 +229,7 @@ public class Output
             }
             else
             {
-                writer.println(TAB + TAB + "outputChannels.put(\"" + op.getName() + "\", new " + op.toString() + ");");
+                writer.println(TAB + TAB + "parent.registerOutputChannel( new " + op.toString() + ");");
             }
         }
         
@@ -246,9 +245,7 @@ public class Output
         writer.println("");
         writer.println("");
         writer.println("import uk.org.smithfamily.mslogger.ecuDef.*;");
-        writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeDetails;");
-        writer.println("import uk.org.smithfamily.mslogger.widgets.GaugeRegisterInterface;");
-
+       
     }
 
     private static String getType(String name, Map<String, String> vars)
@@ -317,16 +314,7 @@ public class Output
             writer.println(TAB + "public " + type + " " + name + ";");
         }
         writer.println("\n");
-        writer.println(TAB + "private String[] defaultGauges = {");
-        boolean first = true;
-        for (String dg : ecuData.getDefaultGauges())
-        {
-            if (!first)
-                writer.println(",");
-            first = false;
-            writer.print(TAB + TAB + "\"" + dg + "\"");
-        }
-        writer.println("\n" + TAB + "};");
+        
         writer.println("\n" + TAB + "@Override");
         writer.println(TAB + "public String[] getControlFlags()");
         writer.println(TAB + "{");
@@ -389,28 +377,6 @@ public class Output
         }
         writer.println(TAB + TAB + "b.append(utils.getLocationLogRow());");
         writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
-    }
-
-    static void outputGauges(ECUData ecuData, PrintWriter writer)
-    {
-        writer.println(TAB + "@Override");
-        writer.println(TAB + "public void initGauges()");
-        writer.println(TAB + "{");
-        for (String gauge : ecuData.getGaugeDef())
-        {
-            boolean okToWrite = true;
-            if (gauge.contains("gauges."))
-            {
-                String[] parts = gauge.split(",");
-                String channel = parts[4];
-                okToWrite = ecuData.getRuntimeVars().containsKey(channel) || ecuData.getEvalVars().containsKey(channel);
-            }
-            if (okToWrite)
-            {
-                writer.println(TAB + TAB + gauge);
-            }
-        }
-        writer.println(TAB + "}\n");
     }
 
     static void outputMenus(ECUData ecuData, PrintWriter writer)
@@ -885,10 +851,7 @@ public class Output
             overrides += TAB + TAB + "return 0;\n";
         }
 
-        overrides += TAB + "}\n" +
-
-        TAB + "@Override\n" + TAB + "public String[] defaultGauges()\n" + TAB + "{\n" + TAB + TAB + "return defaultGauges;\n" + TAB
-                + "}\n";
+        overrides += TAB + "}\n";
 
         writer.println(overrides);
     }

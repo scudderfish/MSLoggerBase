@@ -1,15 +1,13 @@
 package uk.org.smithfamily.mslogger.views;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.widgets.Gauge;
-import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
+import uk.org.smithfamily.mslogger.dashboards.Dashboard;
+import uk.org.smithfamily.mslogger.dashboards.DashboardParser;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-
+import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -18,7 +16,6 @@ import android.view.ViewGroup;
 
 public class DashboardViewGroup extends ViewGroup
 {
-    List<Indicator> indicators = new ArrayList<Indicator>();
     private Paint backgroundPaint;
 
     public DashboardViewGroup(Context context, AttributeSet attrs)
@@ -42,30 +39,37 @@ public class DashboardViewGroup extends ViewGroup
 
     private void init(Context context)
     {
+        setWillNotDraw(false);
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setStyle(Paint.Style.FILL);
         backgroundPaint.setColor(Color.CYAN);
 
-        Gauge g = new Gauge(context);
-        //g.initFromName("rpm");
-        this.addView(g);
+        DashboardParser p = new DashboardParser();
+        try
+        {
+            List<Dashboard> d = p.parse();
+            List<Indicator> indicators = d.get(0);
+            for (Indicator i : indicators)
+            {
+                this.addView(i);
+            }
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-
         int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         setMeasuredDimension(measuredWidth, measuredHeight);
-    }
-
-    @Override
-    public void draw(Canvas canvas)
-    {
-        super.draw(canvas);
-        canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
     }
 
     @Override
@@ -73,12 +77,57 @@ public class DashboardViewGroup extends ViewGroup
     {
         int width = r - l;
         int height = b - t;
-        int numChildren = getChildCount();
 
-        for(int i = 0; i < numChildren; i++)
+        final int count = getChildCount();
+
+        // Calculate the number of visible children.
+        int visibleCount = 0;
+        for (int i = 0; i < count; i++)
         {
-            View v = getChildAt(i);
-            v.layout(l, t, r, b);
+            final View child = getChildAt(i);
+            if (child.getVisibility() == GONE)
+            {
+                continue;
+            }
+            ++visibleCount;
+        }
+
+        if (visibleCount == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            final Indicator child = (Indicator) getChildAt(i);
+            if (child.getVisibility() == GONE)
+            {
+                continue;
+            }
+
+            Location loc = child.getLocation();
+
+            int top = resolve(loc.getTop(), t, height, width);
+            int left = resolve(loc.getLeft(), l, height, width);
+            int right = resolve(loc.getWidth(), r, height, width);
+            int bottom = resolve(loc.getHeight(), b, height, width);
+            child.layout(left, top, right, bottom);
+
+        }
+    }
+
+    private int resolve(double ratio, int l, int height, int width)
+    {
+        int max = Math.max(height, width);
+        int min = Math.min(height, width);
+
+        if (ratio < 0)
+        {
+            return (int) (-ratio * max);
+        }
+        else
+        {
+            return (int) (ratio * min);
         }
     }
 }

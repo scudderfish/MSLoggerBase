@@ -1,16 +1,20 @@
-package uk.org.smithfamily.mslogger.widgets;
+package uk.org.smithfamily.mslogger.widgets.Renderers;
 
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.AttributeSet;
 
-public class Histogram extends Indicator
+public class Histogram extends Renderer
 {    
-    private int             diameter;
-    
+      
+    public Histogram(Indicator parent, Context c)
+    {
+        super(parent, c);
+    }
+
     private Paint           backgroundPaint;
     private Paint           linePaint;
     private Paint           valuePaint;
@@ -19,44 +23,8 @@ public class Histogram extends Indicator
     private double[]        values      = new double[NB_VALUES];
     private int             indexValue  = 0;
     
-    /**
-     * 
-     * @param context
-     */
-    public Histogram(Context context)
-    {
-        super(context);
-        init(context);
-    }
-
-    /**
-     * 
-     * @param c
-     * @param s
-     */
-    public Histogram(Context c, AttributeSet s)
-    {
-        super(c, s);
-        init(c);
-    }
-
-    /**
-     * 
-     * @param context
-     * @param attr
-     * @param defaultStyles
-     */
-    public Histogram(Context context, AttributeSet attr, int defaultStyles)
-    {
-        super(context, attr, defaultStyles);
-        init(context);
-    }
-    
-    /**
-     * 
-     * @param c
-     */
-    private void init(Context c)
+    @Override
+    protected void init(Context c)
     {
         initDrawingTools(c);
     }
@@ -68,7 +36,7 @@ public class Histogram extends Indicator
     private void initDrawingTools(Context context)
     {        
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
-        if (this.isInEditMode())
+        if (parent.isInEditMode())
         {
             anti_alias_flag = 0;
         }
@@ -95,46 +63,8 @@ public class Histogram extends Indicator
     }
     
     /**
-     * @param widthSpec
-     * @param heightSpec
-     */
-    @Override
-    protected void onMeasure(int widthSpec, int heightSpec)
-    {
-
-        int measuredWidth = MeasureSpec.getSize(widthSpec);
-
-        int measuredHeight = MeasureSpec.getSize(heightSpec);
-
-        /*
-         * measuredWidth and measured height are your view boundaries. You need to change these values based on your requirement E.g.
-         * 
-         * if you want to draw a circle which fills the entire view, you need to select the Min(measuredWidth,measureHeight) as the radius.
-         * 
-         * Now the boundary of your view is the radius itself i.e. height = width = radius.
-         */
-
-        /*
-         * After obtaining the height, width of your view and performing some changes you need to set the processed value as your view dimension by using the method setMeasuredDimension
-         */
-
-        diameter = Math.min(measuredHeight, measuredWidth);
-        setMeasuredDimension(diameter, diameter);
-
-        /*
-         * If you consider drawing circle as an example, you need to select the minimum of height and width and set that value as your screen dimensions
-         * 
-         * int d=Math.min(measuredWidth, measuredHeight);
-         * 
-         * setMeasuredDimension(d,d);
-         */
-
-    }
-
-    /**
      * @param value
      */
-    @Override
     public void setValue(double value)
     {
         // We haven't reach the limit of the array yet
@@ -154,7 +84,7 @@ public class Histogram extends Indicator
             values[i] = value;
         }
         
-        super.setValue((float) value);
+        parent.setValue((float) value);
     }
     
     
@@ -162,13 +92,13 @@ public class Histogram extends Indicator
      * @param canvas
      */
     @Override
-    protected void onDraw(Canvas canvas)
+    public void paint(Canvas canvas)
     {
-        int height = getMeasuredHeight();
+        int height = parent.getMeasuredHeight();
 
-        int width = getMeasuredWidth();
+        int width = parent.getMeasuredWidth();
 
-        float scale = (float) getWidth();
+        float scale = (float)parent.getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
         float dx = 0.0f;
@@ -185,7 +115,7 @@ public class Histogram extends Indicator
         
         drawBackground(canvas);
         
-        if (!isDisabled())
+        if (!parent.isDisabled())
         {
             drawValue(canvas);
         }
@@ -204,11 +134,11 @@ public class Histogram extends Indicator
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(getValue() / Math.pow(10, -getVd()) + 0.5) * Math.pow(10, -getVd()));
+        float displayValue = (float) (Math.floor(parent.getValue() / Math.pow(10, -parent.getVd()) + 0.5) * Math.pow(10, -parent.getVd()));
 
         String text;
 
-        if (getVd() <= 0)
+        if (parent.getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -232,13 +162,13 @@ public class Histogram extends Indicator
                 double oldValue = values[i - 1];
                 double currentValue = values[i];
               
-                double currentPercent = (1 - (currentValue - getMin()) / (getMax() - getMin()));
+                double currentPercent = (1 - (currentValue - parent.getMin()) / (parent.getMax() - parent.getMin()));
                 if (currentPercent < 0) currentPercent = 0;
                 if (currentPercent > 100) currentPercent = 100;
                 
                 double currentY = y + height * currentPercent;              
               
-                double oldPercent = (1 - (oldValue - getMin()) / (getMax() - getMin()));
+                double oldPercent = (1 - (oldValue - parent.getMin()) / (parent.getMax() - parent.getMin()));
                 if (oldPercent < 0) oldPercent = 0;
                 if (oldPercent > 100) oldPercent = 100;
                 
@@ -255,69 +185,18 @@ public class Histogram extends Indicator
     {
         backgroundPaint.setColor(getFgColour());
         
-        String text = getTitle();
-        if (!getUnits().equals(""))
+        String text = parent.getTitle();
+        if (!parent.getUnits().equals(""))
         {
-            text += " (" + getUnits() + ")";
+            text += " (" + parent.getUnits() + ")";
         }
         
         canvas.drawText(text, 0.05f, 0.90f, backgroundPaint);
     }
     
-    /**
-     * 
-     * @return
-     */
-    private int getFgColour()
-    {
-        int c = Color.WHITE;
-        
-        if (isDisabled())
-        {
-            return Color.DKGRAY;
-        }
-        
-        if (getValue() > getLowW() && getValue() < getHiW())
-        {
-            return Color.WHITE;
-        }
-        else if (getValue() <= getLowW() || getValue() >= getHiW())
-        {
-            c = Color.YELLOW;
-        }
-        if (getValue() <= getLowD() || getValue() >= getHiD())
-        {
-            c = Color.RED;
-        }
-        
-        return c;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-
-        IndicatorManager.INSTANCE.registerIndicator(this);
-    }
-
-    /**
-     * 
-     */
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        super.onDetachedFromWindow();
-
-        IndicatorManager.INSTANCE.deregisterIndicator(this);
-    }
-
     @Override
     public String getType()
     {
-        return getContext().getString(R.string.histogram);
+        return parent.getContext().getString(R.string.histogram);
     }   
 }

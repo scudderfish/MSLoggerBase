@@ -168,7 +168,7 @@ public class Process
             double scaleOC = !StringUtils.isEmpty(scale) ? Double.parseDouble(scale) : 0;
             double translateOC = !StringUtils.isEmpty(numOffset) ? Double.parseDouble(numOffset) : 0;
             
-            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC,null);
             ecuData.getOutputChannels().add(outputChannel);
         }
         else if (exprM.matches())
@@ -223,7 +223,7 @@ public class Process
                 dataType = "int";
             }
             ecuData.getEvalVars().put(name, dataType);
-            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", 1, 0);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", 1, 0,null);
             ecuData.getOutputChannels().add(outputChannel);
             
         }
@@ -250,7 +250,7 @@ public class Process
             String preproc = processPreprocessor(ecuData, line);
             ecuData.getRuntime().add(preproc);
             
-            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", 0, 0);
+            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", 0, 0,null);
             ecuData.getOutputChannels().add(oc);
         }
         else if (!StringUtils.isEmpty(line))
@@ -381,45 +381,6 @@ public class Process
             String b = sigByteM.group(1).trim();
             ecuData.setClassSignature("new String(new byte[]{" + b + "})");
             ecuData.setSignatureDeclaration("String signature = \"\"+(byte)" + b + ";");
-        }
-
-    }
-
-    static void processGaugeEntry(ECUData ecuData, String line)
-    {
-        line = removeComments(line);
-
-        Matcher m = Patterns.gauge.matcher(line);
-        if (m.matches())
-        {
-            String name = m.group(1);
-            String channel = m.group(2);
-            String title = m.group(3);
-            String units = m.group(4);
-            String lo = m.group(5);
-            String hi = m.group(6);
-            String loD = m.group(7);
-            String loW = m.group(8);
-            String hiW = m.group(9);
-            String hiD = m.group(10);
-            String vd = m.group(11);
-            String ld = m.group(12);
-
-            String g = String
-                    .format("gauges.addGauge(new GaugeDetails(\"Gauge\",\"\",\"%s\",\"%s\",%s,\"%s\",\"%s\",%s,%s,%s,%s,%s,%s,%s,%s,45));",
-                            name, channel, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
-
-            g = g.replace("{", "").replace("}", "");
-            String gd = String
-                    .format("<tr><td>Gauge</td><td></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
-                            name, channel, title, units, lo, hi, loD, loW, hiW, hiD, vd, ld);
-            ecuData.getGaugeDoc().add(gd);
-            ecuData.getGaugeDef().add(g);
-        }
-        else if (line.startsWith("#"))
-        {
-            ecuData.getGaugeDef().add(processPreprocessor(ecuData, line));
-            ecuData.getGaugeDoc().add(String.format("<tr><td colspan=\"12\" id=\"preprocessor\">%s</td></tr>", line));
         }
 
     }

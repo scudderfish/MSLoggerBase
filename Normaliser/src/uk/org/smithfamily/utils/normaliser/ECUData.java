@@ -21,7 +21,6 @@ public class ECUData
     private List<String> runtime = new ArrayList<String>();
     private List<String> logHeader = new ArrayList<String>();
     private List<String> logRecord = new ArrayList<String>();
-    private List<String> gaugeDef = new ArrayList<String>();
     private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
     private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
     private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
@@ -87,16 +86,6 @@ public class ECUData
         this.logRecord = logRecord;
     }
 
-    public List<String> getGaugeDef()
-    {
-        return gaugeDef;
-    }
-
-    public void setGaugeDef(List<String> gaugeDef)
-    {
-        this.gaugeDef = gaugeDef;
-    }
-
     public void reset()
     {
         runtime = new ArrayList<String>();
@@ -113,7 +102,6 @@ public class ECUData
         outputChannels = new ArrayList<OutputChannel>();
         controllerCommands = new ArrayList<ControllerCommand>();
         flags = new HashSet<String>();
-        gaugeDef = new ArrayList<String>();
         gaugeDoc = new ArrayList<String>();
         defaultGauges = new ArrayList<String>();
         pageActivateCommands = new ArrayList<String>();

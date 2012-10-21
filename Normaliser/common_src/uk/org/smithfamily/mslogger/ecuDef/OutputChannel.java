@@ -8,8 +8,9 @@ public class OutputChannel
     private String units;
     private double scale;
     private double translate;
+    private DataSource source;
     
-    public OutputChannel(String name, String type, int offset, String units, double scale, double translate)
+    public OutputChannel(String name, String type, int offset, String units, double scale, double translate,DataSource source)
     {
         this.name = name;
         this.type = type;
@@ -17,6 +18,7 @@ public class OutputChannel
         this.units = units;
         this.scale = scale;
         this.translate = translate;
+        this.source = source;
     }
     
     public String getName()
@@ -49,9 +51,13 @@ public class OutputChannel
         return translate;
     }
     
+    public DataSource getSource()
+    {
+        return source;
+    }
     public String toString()
     {
-        return String.format("OutputChannel(\"%s\",\"%s\",%d,\"%s\",%f,%f)",
+        return String.format("OutputChannel(\"%s\",\"%s\",%d,\"%s\",%f,%f,this)",
                 name,
                 type,
                 offset,

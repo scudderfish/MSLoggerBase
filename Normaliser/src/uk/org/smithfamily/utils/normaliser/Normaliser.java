@@ -13,7 +13,7 @@ public class Normaliser
 {
     enum Section
     {
-        None, Header, Expressions, Gauges, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, ControllerCommands, UserDefined, SettingGroups
+        None, Header, Expressions, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, ControllerCommands, UserDefined, SettingGroups
     }
 
     private static final String        TAB          = "    ";
@@ -137,11 +137,6 @@ public class Normaliser
                 continue;
 
             }
-            else if (line.trim().equals("[GaugeConfigurations]"))
-            {
-                currentSection = Section.Gauges;
-                continue;
-            }
             else if (line.trim().equals("[Menu]"))
             {
                 currentSection = Section.Menu;
@@ -199,9 +194,6 @@ public class Normaliser
                 break;
             case Logs:
                 Process.processLogEntry(ecuData,line);
-                break;
-            case Gauges:
-                Process.processGaugeEntry(ecuData,line);
                 break;
             case Header:
                 Process.processHeader(ecuData,line);
@@ -296,7 +288,7 @@ public class Normaliser
         writer.println("*/");
 
         writer.println("@SuppressWarnings(\"unused\")");
-        writer.println("public class " + className + " implements MSECUInterface\n{");
+        writer.println("public class " + className + " implements MSECUInterface, DataSource\n{");
         Output.outputConstructor(ecuData,writer, className);
         Output.outputOutputChannels(ecuData, writer);
         writer.println(TAB + "private Map<String,Double> fields = new HashMap<String,Double>();");
@@ -307,7 +299,6 @@ public class Normaliser
         Output.outputRequiresPowerCycle(ecuData,writer);
         Output.outputRTCalcs(ecuData, writer);
         Output.outputLogInfo(ecuData, writer);
-        Output.outputGauges(ecuData, writer);
         Output.outputMenus(ecuData, writer);
         Output.outputUserDefined(ecuData, writer);
         Output.outputTableEditors(ecuData, writer);

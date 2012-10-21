@@ -148,7 +148,7 @@ public class TableIndicator extends GroupIndicator
         {
             titlePaint.setColor(Color.LTGRAY);
         }
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
+        GaugeDetails gd = null;//GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
 
         if (gd != null)
         {
@@ -179,7 +179,7 @@ public class TableIndicator extends GroupIndicator
             flipColor = true;
         }
 
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
+        GaugeDetails gd = null;//GaugeRegister.INSTANCE.getGaugeDetails(gaugeName);
         
         String text = "unkown";
 

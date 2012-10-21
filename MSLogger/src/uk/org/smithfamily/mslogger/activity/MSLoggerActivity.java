@@ -18,7 +18,6 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
 import uk.org.smithfamily.mslogger.views.DashboardViewGroup;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -258,8 +257,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         long start = System.currentTimeMillis();
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        GaugeRegister.INSTANCE.flush();
-        ecu.initGauges();
         DebugLogManager.INSTANCE.log("loadGauges() took "+(System.currentTimeMillis()-start)+"ms",Log.DEBUG);
     }
 
@@ -627,8 +624,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     if (ecuDefinition != null)
                     {
                         ecuDefinition.refreshFlags();
-                        GaugeRegister.INSTANCE.flush();
-                        ecuDefinition.initGauges();
+//                        ecuDefinition.initGauges();
  //                       initGauges();
                     }
                 }

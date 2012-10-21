@@ -1,6 +1,7 @@
-package uk.org.smithfamily.mslogger.widgets;
+package uk.org.smithfamily.mslogger.widgets.Renderers;
 
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,14 +12,17 @@ import android.graphics.Path;
 import android.graphics.Path.FillType;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.util.AttributeSet;
 
 /**
  *
  */
-public class Gauge extends Indicator
+public class Gauge extends Renderer
 {
-    private int                diameter;
+    public Gauge(Indicator parent,Context c)
+    {
+        super(parent,c);
+    }
+
     private double             pi          = Math.PI;
     
     private Paint              titlePaint;
@@ -34,84 +38,10 @@ public class Gauge extends Indicator
     private static final float rimSize     = 0.02f;
 
     
-    
-    /**
-     * 
-     * @param context
-     */
-    public Gauge(Context context)
-    {
-        super(context);
-        init(context);
-    }
-
-    /**
-     * 
-     * @param c
-     * @param s
-     */
-    public Gauge(Context c, AttributeSet s)
-    {
-        super(c, s);
-        init(c);
-    }
-
-    /**
-     * 
-     * @param context
-     * @param attr
-     * @param defaultStyles
-     */
-    public Gauge(Context context, AttributeSet attr, int defaultStyles)
-    {
-        super(context, attr, defaultStyles);
-        init(context);
-    }
-
-    /**
-     * 
-     * @param c
-     */
-    private void init(Context c)
+    @Override
+    protected void init(Context c)
     {
         initDrawingTools(c);
-    }
-
-    /**
-     * @param widthSpec
-     * @param heightSpec
-     */
-    @Override
-    protected void onMeasure(int widthSpec, int heightSpec)
-    {
-
-        int measuredWidth = MeasureSpec.getSize(widthSpec);
-
-        int measuredHeight = MeasureSpec.getSize(heightSpec);
-
-        /*
-         * measuredWidth and measured height are your view boundaries. You need to change these values based on your requirement E.g.
-         * 
-         * if you want to draw a circle which fills the entire view, you need to select the Min(measuredWidth,measureHeight) as the radius.
-         * 
-         * Now the boundary of your view is the radius itself i.e. height = width = radius.
-         */
-
-        /*
-         * After obtaining the height, width of your view and performing some changes you need to set the processed value as your view dimension by using the method setMeasuredDimension
-         */
-
-        diameter = Math.min(measuredHeight, measuredWidth);
-        setMeasuredDimension(diameter, diameter);
-
-        /*
-         * If you consider drawing circle as an example, you need to select the minimum of height and width and set that value as your screen dimensions
-         * 
-         * int d=Math.min(measuredWidth, measuredHeight);
-         * 
-         * setMeasuredDimension(d,d);
-         */
-
     }
 
     /**
@@ -119,13 +49,13 @@ public class Gauge extends Indicator
      * @param canvas
      */
     @Override
-    protected void onDraw(Canvas canvas)
+    public void paint(Canvas canvas)
     {
-        int height = getMeasuredHeight();
+        int height = parent.getMeasuredHeight();
 
-        int width = getMeasuredWidth();
+        int width = parent.getMeasuredWidth();
 
-        float scale = (float) getWidth();
+        float scale = (float) parent.getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
         float dx = 0.0f;
@@ -145,13 +75,13 @@ public class Gauge extends Indicator
         drawScale(canvas);
         drawPointer(canvas);
         
-        if (!isDisabled())
+        if (!parent.isDisabled())
         {
             drawValue(canvas);
         }
         else
         {
-            setValue(getMin());
+            parent.setValue(parent.getMin());
         }
 
         drawTitle(canvas);
@@ -165,14 +95,14 @@ public class Gauge extends Indicator
     private void initDrawingTools(Context context)
     {
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
-        if (this.isInEditMode())
+        if (parent.isInEditMode())
         {
             anti_alias_flag = 0;
         }
         rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
 
         faceRect = new RectF();
-        if (!isInEditMode())
+        if (!parent.isInEditMode())
         {
             faceRect.set(rimRect.left + rimSize, rimRect.top + rimSize, rimRect.right - rimSize, rimRect.bottom - rimSize);
         }
@@ -181,14 +111,14 @@ public class Gauge extends Indicator
 
         // the linear gradient is a bit skewed for realism
         rimPaint = new Paint();
-        if (!this.isInEditMode())
+        if (!parent.isInEditMode())
         {
             rimPaint.setFlags(anti_alias_flag);
             rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color
                     .rgb(0x30, 0x31, 0x30), Shader.TileMode.CLAMP));
         }
         rimCirclePaint = new Paint();
-        if (!this.isInEditMode())
+        if (!parent.isInEditMode())
         {
             rimCirclePaint.setAntiAlias(true);
             rimCirclePaint.setStyle(Paint.Style.STROKE);
@@ -239,10 +169,10 @@ public class Gauge extends Indicator
     {
         titlePaint.setTextSize(0.07f);
         titlePaint.setColor(getFgColour());
-        canvas.drawText(getTitle(), 0.5f, 0.25f, titlePaint);
+        canvas.drawText(parent.getTitle(), 0.5f, 0.25f, titlePaint);
         
         titlePaint.setTextSize(0.05f);
-        canvas.drawText(getUnits(), 0.5f, 0.32f, titlePaint);
+        canvas.drawText(parent.getUnits(), 0.5f, 0.32f, titlePaint);
     }
 
     /**
@@ -253,11 +183,11 @@ public class Gauge extends Indicator
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(getValue() / Math.pow(10, -getVd()) + 0.5) * Math.pow(10, -getVd()));
+        float displayValue = (float) (Math.floor(parent.getValue() / Math.pow(10, -parent.getVd()) + 0.5) * Math.pow(10, -parent.getVd()));
 
         String text;
 
-        if (getVd() <= 0)
+        if (parent.getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -277,15 +207,15 @@ public class Gauge extends Indicator
     {
         float back_radius = 0.042f;
                 
-        double range = 270.0 / (getMax() - getMin());
-        double pointerValue = getValue();
-        if (pointerValue < getMin())
+        double range = 270.0 / (parent.getMax() - parent.getMin());
+        double pointerValue = parent.getValue();
+        if (pointerValue < parent.getMin())
         {
-            pointerValue = getMin();
+            pointerValue = parent.getMin();
         }
-        if (pointerValue > getMax())
+        if (pointerValue > parent.getMax())
         {
-            pointerValue = getMax();
+            pointerValue = parent.getMax();
         }
         
         pointerPaint.setColor(getFgColour());
@@ -301,7 +231,7 @@ public class Gauge extends Indicator
         pointerPath.lineTo(0.5f, 0.1f);                     // 0.500, 0.100
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         
-        double angle = ((pointerValue - getMin()) * range + getOffsetAngle()) - 180;
+        double angle = ((pointerValue - parent.getMin()) * range + parent.getOffsetAngle()) - 180;
         canvas.rotate((float) angle, 0.5f, 0.5f);
         canvas.drawPath(pointerPath, pointerPaint);
         canvas.restore();
@@ -315,12 +245,12 @@ public class Gauge extends Indicator
     {
         float radius = 0.42f;
         scalePaint.setColor(getFgColour());
-        double range = (getMax() - getMin());
+        double range = (parent.getMax() - parent.getMin());
         double tenpower = Math.floor(Math.log10(range));
         double scalefactor = Math.pow(10, tenpower);
 
-        double gaugeMax = getMax();
-        double gaugeMin = getMin();
+        double gaugeMax = parent.getMax();
+        double gaugeMin = parent.getMin();
 
         double gaugeRange = gaugeMax - gaugeMin;
 
@@ -333,11 +263,11 @@ public class Gauge extends Indicator
         
         for (double val = gaugeMin; val <= gaugeMax; val += step)
         {
-            float displayValue = (float) (Math.floor(val / Math.pow(10, -getLd()) + 0.5) * Math.pow(10, -getLd()));
+            float displayValue = (float) (Math.floor(val / Math.pow(10, -parent.getLd()) + 0.5) * Math.pow(10, -parent.getLd()));
 
             String text;
 
-            if (getLd() <= 0)
+            if (parent.getLd() <= 0)
             {
                 text = Integer.toString((int) displayValue);
             }
@@ -347,7 +277,7 @@ public class Gauge extends Indicator
             }
 
             double anglerange = 270.0 / gaugeRange;
-            double angle = (val - gaugeMin) * anglerange + getOffsetAngle();
+            double angle = (val - gaugeMin) * anglerange + parent.getOffsetAngle();
             double rads = angle * pi / 180.0;
             float x = (float) (0.5f - radius * Math.cos(rads - pi / 2.0));
             float y = (float) (0.5f - radius * Math.sin(rads - pi / 2.0));
@@ -355,17 +285,14 @@ public class Gauge extends Indicator
         }
     }
 
-    /**
-     * 
-     * @return
-     */
-    private int getFgColour()
+    @Override
+    protected int getFgColour()
     {
-        if (isDisabled())
+        if (parent.isDisabled())
         {
             return Color.DKGRAY;
         }
-        if (getValue() > getLowW() && getValue() < getHiW())
+        if (parent.getValue() > parent.getLowW() && parent.getValue() < parent.getHiW())
         {
             return Color.WHITE;
         }
@@ -382,20 +309,20 @@ public class Gauge extends Indicator
     private int getBgColour()
     {
         int c = Color.GRAY;
-        if (isDisabled())
+        if (parent.isDisabled())
         {
             return c;
         }
-        double value = getValue();
-        if (value > getLowW() && value < getHiW())
+        double value = parent.getValue();
+        if (value > parent.getLowW() && value < parent.getHiW())
         {
             return Color.BLACK;
         }
-        else if (value <= getLowW() || value >= getHiW())
+        else if (value <= parent.getLowW() || value >= parent.getHiW())
         {
             c = Color.YELLOW;
         }
-        if (value <= getLowD() || value >= getHiD())
+        if (value <= parent.getLowD() || value >= parent.getHiD())
         {
             c = Color.RED;
         }
@@ -409,7 +336,7 @@ public class Gauge extends Indicator
      */
     private void drawFace(Canvas canvas)
     {
-        if (isInEditMode())
+        if (parent.isInEditMode())
         {
             facePaint.setColor(Color.RED);
             
@@ -428,27 +355,12 @@ public class Gauge extends Indicator
     /**
      * 
      */
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-        IndicatorManager.INSTANCE.registerIndicator(this);
-    }
-
-    /**
-     * 
-     */
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        super.onDetachedFromWindow();
-
-        IndicatorManager.INSTANCE.deregisterIndicator(this);
-    }
     
     @Override
     public String getType()
     {
-        return getContext().getString(R.string.gauge);
-    }       
+        return parent.getContext().getString(R.string.gauge);
+    }
+
+          
 }

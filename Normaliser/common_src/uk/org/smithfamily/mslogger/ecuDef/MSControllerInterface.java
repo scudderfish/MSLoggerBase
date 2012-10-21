@@ -3,6 +3,8 @@ package uk.org.smithfamily.mslogger.ecuDef;
 public interface MSControllerInterface
 {
 
+    void registerOutputChannel(OutputChannel o);
+    
     boolean isSet(String string);
 
     byte[] loadPage(int i, int j, int k, byte[] bs, byte[] bs2);

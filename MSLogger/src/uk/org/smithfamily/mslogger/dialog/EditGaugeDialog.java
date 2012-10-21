@@ -1,33 +1,19 @@
 package uk.org.smithfamily.mslogger.dialog;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
-import uk.org.smithfamily.mslogger.widgets.BarGraph;
-import uk.org.smithfamily.mslogger.widgets.Gauge;
-import uk.org.smithfamily.mslogger.widgets.GaugeDetails;
-import uk.org.smithfamily.mslogger.widgets.GaugeRegister;
-import uk.org.smithfamily.mslogger.widgets.Histogram;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.NumericIndicator;
-import uk.org.smithfamily.mslogger.widgets.TableIndicator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,7 +24,6 @@ import android.widget.TextView;
 public class EditGaugeDialog extends Dialog implements android.view.View.OnClickListener
 {
     private MSLoggerActivity mainActivity;
-    private GaugeDetails gd;
     private Indicator indicator;
     private int indicatorIndex;
     private String indicatorType;
@@ -61,7 +46,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         super(context);
 
         this.indicator = indicator;
-        this.gd = indicator.getDetails();
 
         this.indicatorType = indicator.getType();
         this.indicatorIndex = indicatorIndex;
@@ -82,7 +66,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
         setTitle(R.string.edit_gauge_title);
 
-        populateFieldsForGaugeDetails(gd);
+        populateFields();
 
         prepareChannelSpinner();
         prepareOrientationSpinner();
@@ -103,20 +87,20 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * 
      * @param gd GaugeDetails to populate the fields with
      */
-    private void populateFieldsForGaugeDetails(GaugeDetails gd)
+    private void populateFields()
     {
-        setValue(R.id.editName, gd.getName());
-        setValue(R.id.editTitle, gd.getTitle());
-        setValue(R.id.editUnits, gd.getUnits());
-        setValue(R.id.editHi, Double.toString(gd.getMax()));
-        setValue(R.id.editLo, Double.toString(gd.getMin()));
-        setValue(R.id.editHiD, Double.toString(gd.getHiD()));
-        setValue(R.id.editHiW, Double.toString(gd.getHiW()));
-        setValue(R.id.editLoD, Double.toString(gd.getLoD()));
-        setValue(R.id.editLoW, Double.toString(gd.getLoW()));
-        setValue(R.id.editVD, Integer.toString(gd.getVd()));
-        setValue(R.id.editLD, Integer.toString(gd.getLd()));
-        setValue(R.id.editoffsetAngle, Double.toString(gd.getOffsetAngle()));
+        setValue(R.id.editName, indicator.getName());
+        setValue(R.id.editTitle, indicator.getTitle());
+        setValue(R.id.editUnits, indicator.getUnits());
+        setValue(R.id.editHi, Double.toString(indicator.getMax()));
+        setValue(R.id.editLo, Double.toString(indicator.getMin()));
+        setValue(R.id.editHiD, Double.toString(indicator.getHiD()));
+        setValue(R.id.editHiW, Double.toString(indicator.getHiW()));
+        setValue(R.id.editLoD, Double.toString(indicator.getLowD()));
+        setValue(R.id.editLoW, Double.toString(indicator.getLowW()));
+        setValue(R.id.editVD, Integer.toString(indicator.getVd()));
+        setValue(R.id.editLD, Integer.toString(indicator.getLd()));
+        setValue(R.id.editoffsetAngle, Double.toString(indicator.getOffsetAngle()));
     }
 
     /**
@@ -125,7 +109,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     private void prepareChannelSpinner()
     {
         channelSpinner = (Spinner) findViewById(R.id.spinnerChannel);
-
+/*
         Set<String> names = GaugeRegister.INSTANCE.getGaugeNames();
         List<String> titles = new ArrayList<String>();
 
@@ -175,6 +159,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
             {
             }
         });
+*/
     }
 
     /**
@@ -194,7 +179,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         orientationSpinner.setAdapter(orientationAdapter);
 
         // Select currently selected orientation
-        int orientationPosition = orientationAdapter.getPosition(gd.getOrientation().toLowerCase());
+        int orientationPosition = orientationAdapter.getPosition(indicator.getOrientation().name().toLowerCase());
         if (orientationPosition == -1)
         {
             orientationPosition = 0;
@@ -306,6 +291,8 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      */
     public void saveDetails()
     {
+/*
+        
         Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType);
 
         String selectedIndicatorType = gaugeType.getSelectedItem().toString();
@@ -381,11 +368,11 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         gd.setLd(getValueI(R.id.editLD));
         gd.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 
-        GaugeRegister.INSTANCE.persistDetails(gd);
+//        GaugeRegister.INSTANCE.persistDetails(gd);
 
         indicator.initFromGD(gd);
         indicator.invalidate();
-
+*/
         dismiss();
     }
 
@@ -428,9 +415,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      */
     public void resetDetails()
     {
-        GaugeRegister.INSTANCE.reset(gd.getName());
-        gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
-        indicator.initFromGD(gd);
+//        GaugeRegister.INSTANCE.reset(gd.getName());
+//        gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
+//        indicator.initFromGD(gd);
         indicator.invalidate();
         dismiss();
     }

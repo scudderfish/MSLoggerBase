@@ -1,437 +1,336 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import java.util.Observable;
+import java.util.Observer;
+
+import uk.org.smithfamily.mslogger.DataManager;
+import uk.org.smithfamily.mslogger.widgets.Renderers.BarGraph;
+import uk.org.smithfamily.mslogger.widgets.Renderers.Gauge;
+import uk.org.smithfamily.mslogger.widgets.Renderers.NumericIndicator;
+import uk.org.smithfamily.mslogger.widgets.Renderers.Renderer;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.View;
 
 /**
  *
  */
-public abstract class Indicator extends View
+public class Indicator extends View implements Observer
 {
     public enum Orientation
     {
         HORIZONTAL, VERTICAL
-    }    
-    
-    public static final String DEAD_GAUGE_NAME = "deadGauge";
-    private String             name            = DEAD_GAUGE_NAME;
-    private String             title           = "RPM";
-    private String             channel         = "rpm";
-    private String             units           = "";
-    private double             min             = 0;
-    private double             max             = 7000;
-    private double             lowD            = 0;
-    private double             lowW            = 0;
-    private double             hiW             = 5000;
-    private double             hiD             = 7000;
-    private int                vd              = 0;
-    private int                ld              = 0;
-    private double             value           = 2500;
-    private boolean            disabled        = false;
-    private double             offsetAngle     = 45;
-    private GestureDetector    gestureDetector;
+    }
 
-    private GaugeDetails deadGauge = new GaugeDetails("Gauge","",DEAD_GAUGE_NAME, "deadValue",getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+    public enum DisplayType
+    {
+        NUMERIC, BAR, GAUGE
+    }
+
+    public static final String DEAD_GAUGE_NAME = "deadGauge";
+    private String name = DEAD_GAUGE_NAME;
+    private String title = "RPM";
+    private String channel = "rpm";
+    private String units = "";
+    private double min = 0;
+    private double max = 7000;
+    private double lowD = 0;
+    private double lowW = 0;
+    private double hiW = 5000;
+    private double hiD = 7000;
+    private int vd = 0;
+    private int ld = 0;
+    private double value = 2500;
+    private boolean disabled = false;
+    private double offsetAngle = 45;
     
-    /**
-     * @return
-     */
+    private Location location;
+    private DisplayType type;
+    private Renderer renderer;
+    private GaugeDetails deadGauge = new GaugeDetails("Gauge", "", DEAD_GAUGE_NAME, "deadValue", getValue(), "---", "", 0, 1, -1, -1, 2, 2, 0, 0, offsetAngle);
+
     public double getMin()
     {
         return min;
     }
 
-    /**
-     * @param min
-     */
     public void setMin(double min)
     {
         this.min = min;
     }
 
-    /**
-     * @return
-     */
     public double getMax()
     {
         return max;
     }
 
-    /**
-     * @param max
-     */
     public void setMax(double max)
     {
         this.max = max;
     }
 
-    /**
-     * @return
-     */
     public double getLowD()
     {
         return lowD;
     }
-    
-    /**
-     * @param lowD
-     */
+
     public void setLowD(double lowD)
     {
         this.lowD = lowD;
     }
 
-    /**
-     * @return
-     */
     public double getLowW()
     {
         return lowW;
     }
 
-    /**
-     * @param lowW
-     */
     public void setLowW(double lowW)
     {
         this.lowW = lowW;
     }
 
-    /**
-     * @return
-     */
     public double getHiW()
     {
         return hiW;
     }
 
-    /**
-     * @param hiW
-     */
     public void setHiW(double hiW)
     {
         this.hiW = hiW;
     }
 
-    /**
-     * @return
-     */
     public double getHiD()
     {
         return hiD;
     }
 
-    /**
-     * @param hiD
-     */
     public void setHiD(double hiD)
     {
         this.hiD = hiD;
     }
 
-    /**
-     * @return
-     */
     public int getVd()
     {
         return vd;
     }
 
-    /**
-     * @param vd
-     */
     public void setVd(int vd)
     {
         this.vd = vd;
     }
 
-    /**
-     * @return
-     */
     public int getLd()
     {
         return ld;
     }
 
-    /**
-     * @param ld
-     */
     public void setLd(int ld)
     {
         this.ld = ld;
     }
 
-    /**
-     * @return
-     */
     public double getValue()
     {
         return value;
     }
 
-    /**
-     * @param value
-     */
     public void setValue(double value)
     {
         this.value = value;
         invalidate();
     }
 
-    /**
-     * @return
-     */
     public static String getDeadGaugeName()
     {
         return DEAD_GAUGE_NAME;
     }
 
-    /**
-     * @return
-     */
     public String getTitle()
     {
         return title;
     }
 
-    /**
-     * @return
-     */
     public String getUnits()
     {
         return units;
     }
 
-    /**
-     * @param context
-     */
-    public Indicator(Context context)
+  
+    public Indicator(Context c)
     {
-        super(context);
+        this(c,null);
     }
-
-    /**
-     * @param c
-     * @param s
-     */
     public Indicator(Context c, AttributeSet s)
     {
-        super(c, s);
+        this(c, s,0);
     }
 
-    /**
-     * @param context
-     * @param attr
-     * @param defaultStyles
-     */
     public Indicator(Context context, AttributeSet attr, int defaultStyles)
     {
         super(context, attr, defaultStyles);
+        setDisplayType(DisplayType.GAUGE);
+        DataManager.getInstance().addObserver(this);
     }
 
-    /**
-     * 
-     * @param nme
-     */
-    public void initFromName(String nme)
-    {
-        GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(nme);
-        if (gd == null)
-        {   
-            DebugLogManager.INSTANCE.log("Can't find gauge : " + nme,Log.ERROR);
-            gd = getDeadGauge();
-        }
-        initFromGD(gd);
-    }    
 
-    /**
-     * @return
-     */
     public String getName()
     {
         return name;
     }
 
-    /**
-     * @param name
-     */
     public void setName(String name)
     {
         this.name = name;
     }
 
-    /**
-     * @return
-     */
     public String getChannel()
     {
         return channel;
     }
 
-    /**
-     * @param channel
-     */
     public void setChannel(String channel)
     {
         this.channel = channel;
     }
 
-    /**
-     * @return
-     */
     public boolean isDisabled()
     {
         return this.disabled;
     }
 
-    /**
-     * @param disabled
-     */
     public void setDisabled(boolean disabled)
     {
         this.disabled = disabled;
     }
 
-    /**
-     * @param title
-     */
     public void setTitle(String title)
     {
         this.title = title;
     }
 
-    /**
-     * @param units
-     */
     public void setUnits(String units)
     {
         this.units = units;
     }
 
-    /**
-     * @return
-     */
-    public GaugeDetails getDetails()
+    public void setOrientation(Orientation orientation)
     {
-        String orientation = "";
-        if (getOrientation() == Orientation.HORIZONTAL)
-        {
-            orientation = "horizontal";
-        }
-        else 
-        {
-            orientation = "vertical";
-        }
-        
-        GaugeDetails gd = new GaugeDetails(getType(),orientation,name, channel, value, title, units, min, max, lowD, lowW, hiW, hiD, vd, ld, offsetAngle);
-
-        return gd;
     }
 
-    /**
-     * @param gd
-     */
-    public void initFromGD(GaugeDetails gd)
-    {
-        name = gd.getName();
-        title = gd.getTitle();
-        channel = gd.getChannel();
-        units = gd.getUnits();
-        min = gd.getMin();
-        max = gd.getMax();
-        lowD = gd.getLoD();
-
-        lowW = gd.getLoW();
-        hiW = gd.getHiW();
-
-        hiD = gd.getHiD();
-        vd = gd.getVd();
-        ld = gd.getLd();
-        offsetAngle = gd.getOffsetAngle();
-        value = min; // Default value is min
-        
-        String orientation = gd.getOrientation();
-        if (orientation.toLowerCase().equals("horizontal"))
-        {
-            setOrientation(Orientation.HORIZONTAL);
-        }
-        else
-        {
-            setOrientation(Orientation.VERTICAL);
-        }        
-    }
-    
-    /**
-     * @param
-     */
-    public void setOrientation(Orientation orientation){}
-    
-    /**
-     * @return
-     */
     public Orientation getOrientation()
     {
         return Orientation.VERTICAL;
     }
-    
-    /**
-     * @return
-     */
+
     public double getOffsetAngle()
     {
         return offsetAngle;
     }
 
-    /**
-     * @param offsetAngle
-     */
     public void setOffsetAngle(double offsetAngle)
     {
         this.offsetAngle = offsetAngle;
     }
 
-    /**
-     * @return
-     */
     public GaugeDetails getDeadGauge()
     {
         return deadGauge;
     }
 
-    /**
-     * @param deadGauge
-     */
     public void setDeadGauge(GaugeDetails deadGauge)
     {
         this.deadGauge = deadGauge;
     }
-    
-    /**
-     * @return
-     */
-    public GestureDetector getGestureDetector()
-    {
-        return gestureDetector;
-    }
 
-    /**
-     * @param gestureDetector
-     */
-    public void setGestureDetector(GestureDetector gestureDetector)
+   
+    public String getType()
     {
-        this.gestureDetector = gestureDetector;
+        return "Indicator";
     }
-    
-    public abstract String getType();
 
     @Override
     public String toString()
     {
         return "Indicator [name=" + name + ", title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld
                 + ", value=" + value + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + "]";
+    }
+
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        IndicatorManager.INSTANCE.registerIndicator(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+
+        IndicatorManager.INSTANCE.deregisterIndicator(this);
+    }
+
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec)
+    {
+
+        //Default to creating a square area
+        int measuredWidth = MeasureSpec.getSize(widthSpec);
+
+        int measuredHeight = MeasureSpec.getSize(heightSpec);
+
+   
+        int diameter = Math.min(measuredHeight, measuredWidth);
+        setMeasuredDimension(diameter, diameter);
+    }
+
+    public Location getLocation()
+    {
+        return location;
+    }
+
+    public void setLocation(Location location)
+    {
+        this.location = location;
+    }
+
+    public void setDisplayType(DisplayType type)
+    {
+        this.type = type;
+        switch (type)
+        {
+        case BAR:
+            renderer = new BarGraph(this, getContext());
+            break;
+
+        case GAUGE:
+            renderer = new Gauge(this, getContext());
+            break;
+
+        case NUMERIC:
+            renderer = new NumericIndicator(this, getContext());
+            break;
+
+        }
+    }
+
+    public DisplayType getDisplayType()
+    {
+        return type;
+    }
+
+    @Override
+    public void draw(Canvas canvas)
+    {
+        renderer.paint(canvas);
+    }
+
+    @Override
+    public void update(Observable observable, Object data)
+    {
+        double newValue = DataManager.getInstance().getField(channel);
+        this.setValue(newValue);
+        invalidate();
     }
 }

@@ -1,0 +1,19 @@
+{
+  "dashboards": [
+    {
+      "indicators": [
+        {
+          "channel": "rpm",
+          "type": "gauge",
+          "location": [0, 0, 0.5, 0.5]
+        },
+        {
+          "channel": "mat",
+          "type": "bar",
+          "location": [0.5,0,1,0.5]
+        }
+      ]
+      
+    }
+  ]
+}
