@@ -73,7 +73,8 @@ public class Patterns
     static Pattern dialogField              = Pattern.compile("\\s*field\\s*=\\s*\"(.*)\"(,\\s*(.*?))?(,\\s*(\\{.*\\})\\s*)?");
     static Pattern dialogDisplayOnlyField   = Pattern.compile("\\s*displayOnlyField\\s*=\\s*\"(.*)\"(,\\s*(.*?))?(,\\s*(\\{.*\\})\\s*)?");
     static Pattern dialogPanel              = Pattern.compile("\\s*panel\\s*=\\s*(.*?)\\s*(,\\s*(.*?)\\s*)?(,\\s*(.*?)\\s*)?");
-
+    static Pattern commandButton            = Pattern.compile("\\s*commandButton\\s*=\\s*\"(.*)\"(,\\s*(.*?))?(,\\s*(\\{.*\\})\\s*)?(,\\s*(.*?)\\s*)?");
+    
     /*
      * Table Editor
      */

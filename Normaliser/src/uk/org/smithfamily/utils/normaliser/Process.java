@@ -947,6 +947,7 @@ public class Process
         Matcher dialogField = Patterns.dialogField.matcher(line);
         Matcher dialogDisplayOnlyField = Patterns.dialogDisplayOnlyField.matcher(line);
         Matcher dialogPanel = Patterns.dialogPanel.matcher(line);
+        Matcher commandButton = Patterns.commandButton.matcher(line);
 
         final List<UserDefinedTracker> dialogDefs = ecuData.getDialogDefs();
         UserDefinedTracker d = null;
@@ -970,11 +971,15 @@ public class Process
         }
         else if (dialogField.matches())
         {
-            createDialogField(ecuData, dialogField, d, false);
+            createDialogField(ecuData, dialogField, d, false, false);
         }
         else if (dialogDisplayOnlyField.matches())
         {
-            createDialogField(ecuData, dialogDisplayOnlyField, d, true);
+            createDialogField(ecuData, dialogDisplayOnlyField, d, true, false);
+        }
+        else if (commandButton.matches())
+        {
+            createDialogField(ecuData, commandButton, d, false, true);
         }
         else if (dialogPanel.matches())
         {
@@ -1018,7 +1023,7 @@ public class Process
         }
     }
 
-    private static void createDialogField(ECUData ecuData, Matcher dialogField, UserDefinedTracker d, boolean readOnly)
+    private static void createDialogField(ECUData ecuData, Matcher dialogField, UserDefinedTracker d, boolean readOnly, boolean isCommandButton)
     {
         final String label = dialogField.group(1).trim();
         final String name = dialogField.group(3);
@@ -1041,7 +1046,13 @@ public class Process
         }
         ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
 
-        UserDefinedField x = new UserDefinedField(label, name, readOnly);
+        String commandOnClose = "";
+        if (isCommandButton && dialogField.group(7) != null)
+        {
+            commandOnClose = dialogField.group(7); 
+        }
+        
+        UserDefinedField x = new UserDefinedField(label, name, readOnly, isCommandButton, commandOnClose);
         d.addItem(x);
     }
 

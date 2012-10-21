@@ -293,64 +293,77 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             {
                 TableRow tableRow = new TableRow(getContext());
                 
-                // For empty label or empty field name, we just insert an empty text view as second column of the row
-                if ((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null"))
+                // Dialog field is a command button
+                if (df.isCommandButton())
                 {
-                    // Special label used to identify hard coded required fuel panel in dialog
-                    if (df.getLabel().equals("std_required_fuel"))
+                    Button cmdButton = new Button(getContext());
+                    cmdButton.setText(df.getLabel());
+                    cmdButton.setLayoutParams(lpSpanWithMargins);
+                    
+                    tableRow.addView(cmdButton);
+                }
+                // Dialog field is not a command button
+                else
+                {
+                    // For empty label or empty field name, we just insert an empty text view as second column of the row
+                    if ((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null"))
                     {
-                       RelativeLayout requiredFuel = getRequiredFuelPanel();
-                       requiredFuel.setLayoutParams(lpWithTopBottomMargins);
-                       tableRow.addView(requiredFuel);
-                    }
-                    // Special label used to identify hard coded seek bar in std_accel dialog
-                    else if (df.getLabel().equals("std_accel_seek_bar"))
-                    {
-                        RelativeLayout accelSeekBar = getAccelSeekBar();
-                        accelSeekBar.setLayoutParams(lpWithTopBottomMargins);
-                        tableRow.addView(accelSeekBar);
-                    }
-                    else
-                    {
-                        TextView label = getLabel(df, constant);
-                        tableRow.addView(label);
-                        
-                        // No second column so label is used to separate so make it bold and merge columns
-                        label.setTypeface(null, Typeface.BOLD);
-                        
-                        // If it's not an empty label and not , add some top and bottom margins
-                        if (!df.getLabel().equals(""))
+                        // Special label used to identify hard coded required fuel panel in dialog
+                        if (df.getLabel().equals("std_required_fuel"))
                         {
-                            if (atLeastOneCompleteRow(dialog.getFieldsList()))
+                           RelativeLayout requiredFuel = getRequiredFuelPanel();
+                           requiredFuel.setLayoutParams(lpWithTopBottomMargins);
+                           tableRow.addView(requiredFuel);
+                        }
+                        // Special label used to identify hard coded seek bar in std_accel dialog
+                        else if (df.getLabel().equals("std_accel_seek_bar"))
+                        {
+                            RelativeLayout accelSeekBar = getAccelSeekBar();
+                            accelSeekBar.setLayoutParams(lpWithTopBottomMargins);
+                            tableRow.addView(accelSeekBar);
+                        }
+                        else
+                        {
+                            TextView label = getLabel(df, constant);
+                            tableRow.addView(label);
+                            
+                            // No second column so label is used to separate so make it bold and merge columns
+                            label.setTypeface(null, Typeface.BOLD);
+                            
+                            // If it's not an empty label and not , add some top and bottom margins
+                            if (!df.getLabel().equals(""))
                             {
-                                label.setLayoutParams(lpSpanWithMargins); 
-                            }
-                            else
-                            {
-                                label.setLayoutParams(lpWithTopBottomMargins); 
+                                if (atLeastOneCompleteRow(dialog.getFieldsList()))
+                                {
+                                    label.setLayoutParams(lpSpanWithMargins); 
+                                }
+                                else
+                                {
+                                    label.setLayoutParams(lpWithTopBottomMargins); 
+                                }
                             }
                         }
                     }
-                }
-                // Regular row with label and constant fields
-                else 
-                {
-                    TextView label = getLabel(df, constant);
-                    tableRow.addView(label, lp);
-                    
-                    // Multi-choice constant
-                    if (constant.getClassType().equals("bits"))
+                    // Regular row with label and constant fields
+                    else 
                     {
-                        Spinner spin = buildMultiValuesConstantField(dialog.getName(), df, constant);
+                        TextView label = getLabel(df, constant);
+                        tableRow.addView(label, lp);
                         
-                        tableRow.addView(spin);
-                    }
-                    // Single value constant
-                    else
-                    {
-                        EditText edit = buildSingleValueConstantField(dialog.getName(), df, constant);
-
-                        tableRow.addView(edit);
+                        // Multi-choice constant
+                        if (constant.getClassType().equals("bits"))
+                        {
+                            Spinner spin = buildMultiValuesConstantField(dialog.getName(), df, constant);
+                            
+                            tableRow.addView(spin);
+                        }
+                        // Single value constant
+                        else
+                        {
+                            EditText edit = buildSingleValueConstantField(dialog.getName(), df, constant);
+    
+                            tableRow.addView(edit);
+                        }
                     }
                 }
                 
