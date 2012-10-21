@@ -17,7 +17,7 @@ public class ExpressionWrangler
 		translations.put("RevLimCLTbased & 1", "(RevLimCLTbased & 1) != 0");
 		translations.put("RevLimOption & 4", "(RevLimOption & 4) != 0"); 
 		translations.put("RevLimOption & 1", "(RevLimOption & 1) != 0"); 
-		translations.put("!(status3 & 8)", "(status3 & 8) != 0");
+		translations.put("!(status3 & 8)", "(status3 & 8) == 0");
 		translations.put("status3 & 8", "(status3 & 8) != 0");
 		translations.put("secondtrigopts & 0x1", "(secondtrigopts & 0x1) != 0"); 
 		translations.put("(launchlimopt & 1) && (launch_opt_on >0)", "(launchlimopt & 1) !=0 && (launch_opt_on >0)"); 
