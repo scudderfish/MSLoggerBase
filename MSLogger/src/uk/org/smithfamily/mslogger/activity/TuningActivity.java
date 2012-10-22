@@ -40,7 +40,7 @@ public class TuningActivity extends Activity
 {
     private LinearLayout firstColumn;
     private LinearLayout secondColumn;
-    private final String[] EXLUDED_MENUS = new String[] {"Tools","Communications","Help"};
+    private final String[] EXLUDED_MENUS = new String[] {"Communications","Help"};
     
     private int currentIndexMenu = 0;
     
