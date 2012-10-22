@@ -120,6 +120,45 @@ public class MSUtilsShared
         return ret;
     }
     
+    public static String HexStringToBytes(String stringToConvert)
+    {
+        String ret = "";
+        boolean first = true;
+        stringToConvert = stringToConvert.replace("$tsCanId", "x00");
+        for (int positionInString = 0; positionInString < stringToConvert.length(); positionInString++)
+        {
+            if (!first)
+            {
+                ret += ",";
+            }
+            
+            char currentCharacter = stringToConvert.charAt(positionInString);
+            switch (currentCharacter)
+            {
+            case '\\':
+                positionInString++;
+                currentCharacter = stringToConvert.charAt(positionInString);
+                if (currentCharacter == '0')
+                {
+                    ret += OctalByteToDec(stringToConvert.substring(positionInString));
+                }
+                else
+                {
+                    ret += bytes(HexByteToDec(stringToConvert.substring(positionInString)));
+                }
+                positionInString = positionInString + 2;
+                break;
+            
+            default:
+                ret += Byte.toString((byte) currentCharacter);
+                break;
+            }
+            first = false;
+        }
+        
+        return ret;
+    }
+    
     /**
      * Convert a string from hexadecimal to decimal
      * 

@@ -106,6 +106,21 @@ public class DialogHelper
         {
             return buildStdConstants();
         }
+        // MS3 Real-time Clock
+        else if (dialogName.equals("std_ms3Rtc"))
+        {
+            return buildStdRtc();
+        }
+        // MS3 SDCard Console
+        else if (dialogName.equals("std_ms3SdConsole"))
+        {
+            return buildStdSdConsole();
+        }
+        // Trigger wizard
+        else if (dialogName.equals("std_trigwiz"))
+        {
+            return buildStdTriggerWizard();
+        }
         
         return null;
     }
@@ -360,6 +375,39 @@ public class DialogHelper
         
         MSDialog dialog = new MSDialog("std_realtime", "", "");
         ecu.addDialog(dialog);
+        
+        return dialog;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private static MSDialog buildStdRtc()
+    {
+        MSDialog dialog = new MSDialog("std_ms3Rtc", "MS3 Real-time Clock", "");
+        
+        return dialog;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private static MSDialog buildStdSdConsole()
+    {
+        MSDialog dialog = new MSDialog("std_ms3SdConsole", "MS3 SD Console", "");
+        
+        return dialog;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private static MSDialog buildStdTriggerWizard()
+    {
+        MSDialog dialog = new MSDialog("std_trigwiz", "Trigger Wizard", "");
         
         return dialog;
     }

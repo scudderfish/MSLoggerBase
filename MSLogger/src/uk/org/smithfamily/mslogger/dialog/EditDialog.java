@@ -12,15 +12,20 @@ import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
 import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
+import uk.org.smithfamily.mslogger.ecuDef.InjectedCommand;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtils;
+import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.TableEditor;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -79,6 +84,11 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     
     private OnEditDialogResult mDialogResult;
     
+    private String panelLabel = "";
+    
+    private BroadcastReceiver yourReceiver;
+    private static final int CONTROLLER_COMMAND = 1;
+    
     /**
      * Constructor for dialog which set the current dialog and ECU object
      * 
@@ -105,7 +115,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
-    
+       
     /**
      * @param savedInstanceState
      */
@@ -128,10 +138,49 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         drawDialogFields(null, dialog, dialog, false, "", null);
         
+        final IntentFilter injectCommandResultsFilter = new IntentFilter();
+        injectCommandResultsFilter.addAction(Megasquirt.INJECTED_COMMAND_RESULTS);
+        
+        this.yourReceiver = new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                String action = intent.getAction();
+                
+                if (action.equals(Megasquirt.INJECTED_COMMAND_RESULTS))
+                {
+                    int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
+                    
+                    if (resultId == EditDialog.CONTROLLER_COMMAND)
+                    {
+                        DebugLogManager.INSTANCE.log("Refreshing fields visibility after controller command", Log.DEBUG);
+                       
+                        // Re-evaluate the expressions with the data updated
+                        ecu.setUserDefinedVisibilityFlags();
+                        
+                        // Refresh the UI
+                        refreshFieldsVisibility(dialog);
+                    }
+                }
+            }
+        };
+        
+        // Registers the receiver so that your service will listen for broadcasts
+        getContext().registerReceiver(this.yourReceiver, injectCommandResultsFilter);
+        
         // Hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
-
+    
+    /**
+     * 
+     */
+    public void onStop()
+    {
+        getContext().unregisterReceiver(this.yourReceiver);
+    }
+    
     /**
      * Add the panel to the layout by looking at the orientation to insert the panel at the right place
      * 
@@ -247,7 +296,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         boolean atLeastOne = false;
         for (DialogField df : dialogFields)
         {
-            if (!((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null")))
+            if (!((df.getLabel().equals("") && df.getName().equals("null")) || df.getName().equals("null") || df.isCommandButton()))
             {
                 atLeastOne = true;
                 break;
@@ -275,9 +324,9 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         TableLayout panelLayout = new TableLayout(getContext());
         
         // If it's a panel or at least a dialog with one field or more, we can display its label
-        if (isPanel || dialog.getFieldsList().size() > 0)
+        if ((isPanel || dialog.getFieldsList().size() > 0) && !dialog.getLabel().equals(""))
         {
-            showPanelLabel(dialog.getLabel(), panelLayout);
+            panelLabel = dialog.getLabel();
         }
         
         // For each dialog field, add a row in the table layout
@@ -285,20 +334,49 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         {
             Constant constant = ecu.getConstantByName(df.getName());
 
-            if (constant == null && !df.getName().equals("null"))
+            if (constant == null && !df.isCommandButton() && !df.getName().equals("null"))
             {
                 showConstantDoesntExists(df.getName());
             }
             else 
             {
+                // If we have a panel label to add, add it!
+                if (!panelLabel.equals(""))
+                {
+                    panelLayout.addView(showPanelLabel(panelLabel, dialog.getFieldsList(), panelLayout));    
+                    
+                    panelLabel = "";
+                }
+                
                 TableRow tableRow = new TableRow(getContext());
                 
                 // Dialog field is a command button
                 if (df.isCommandButton())
                 {
+                    final String controllerCommandName = df.getName();
+                    
                     Button cmdButton = new Button(getContext());
+                    
                     cmdButton.setText(df.getLabel());
-                    cmdButton.setLayoutParams(lpSpanWithMargins);
+                    cmdButton.setTag(df.getName());
+                    cmdButton.setEnabled(ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName()));                    
+                    cmdButton.setOnClickListener(new Button.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            clickCmdButton(controllerCommandName);
+                        }
+                    });
+                    
+                    if (atLeastOneCompleteRow(dialog.getFieldsList()))
+                    {
+                        cmdButton.setLayoutParams(lpSpanWithMargins); 
+                    }
+                    else
+                    {
+                        cmdButton.setLayoutParams(lpWithTopBottomMargins); 
+                    }
                     
                     tableRow.addView(cmdButton);
                 }
@@ -377,7 +455,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
       
         RelativeLayout sameDialogPreviousLayoutPanel = null;
         
-        // If we are adding a panel after fields, we set the previous layout panel to that fields panel
+        // If we added at least one row to the previous layout (AKA there is at least one field)
         if (dialog.getFieldsList().size() > 0)
         {
             sameDialogPreviousLayoutPanel = containerPanelLayout;
@@ -433,6 +511,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         }
         
         return containerPanelLayout;
+    }
+    
+    /**
+     * @param controllerCommandName
+     */
+    private void clickCmdButton(String controllerCommandName)
+    {
+        String command = ecu.getControllerCommands().get(controllerCommandName);
+        command = MSUtilsShared.HexStringToBytes(command);
+
+        byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
+
+        InjectedCommand writeToRAM = new InjectedCommand(byteCommand, 300, true, EditDialog.CONTROLLER_COMMAND);
+        ecu.injectCommand(writeToRAM);
     }
     
     /**
@@ -643,6 +735,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         {
             label.setText(" " + label.getText().toString().substring(1)); // Replace the # by a space
             label.setBackgroundColor(Color.rgb(110, 110, 110));
+            label.setPadding(2, 8, 2, 8);
         }
         
         label.setLayoutParams(lpWithMargins);
@@ -904,28 +997,34 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
      * Add a label at the top of a panel
      * 
      * @param title The label of the panel
+     * @param fields The fields list of the panel
      * @param tl Table layout to add the table row to
+     * 
+     * @return true if a panel label will be shown, false otherwise
      */
-    private void showPanelLabel(String title, TableLayout tl)
-    {
+    private TableRow showPanelLabel(String title, List<DialogField> fields, TableLayout tl)
+    {        
+        TableRow tableRow = new TableRow(getContext());
+        
         if (!title.equals(""))
         {
             LayoutParams lpSpan = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-            lpSpan.span = 2;
             
-            TableRow tableRow = new TableRow(getContext());
-            tableRow.setLayoutParams(lpSpan);
+            if (atLeastOneCompleteRow(fields))
+            {
+                lpSpan.span = 2;
+            }
             
             TextView label = new TextView(getContext());
             label.setText(title);
             label.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
             label.setPadding(0, 0, 0, 10);
             label.setLayoutParams(lpSpan);
-            
+
             tableRow.addView(label);
-            
-            tl.addView(tableRow);
         }
+        
+        return tableRow;
     }
     
     /**
@@ -981,22 +1080,30 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     {
         for (DialogField df : dialog.getFieldsList())
         {
-            Constant constant = ecu.getConstantByName(df.getName());
+            // Field is not ready only and not disabled
+            boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName());
             
-            if (constant != null)
+            if (df.isCommandButton())
             {
-                // Field is not ready only and not disabled
-                boolean isFieldEnabled = !df.isDisplayOnly() && ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName());
+                Button button = (Button) content.findViewWithTag(df.getName());
+                button.setEnabled(isFieldEnabled);
+            }
+            else
+            {
+                Constant constant = ecu.getConstantByName(df.getName());
                 
-                if (constant.getClassType().equals("bits"))
+                if (constant != null)
                 {
-                    Spinner spin = (Spinner) content.findViewWithTag(df.getName());
-                    spin.setEnabled(isFieldEnabled);
-                }
-                else
-                {
-                    EditText edit = (EditText) content.findViewWithTag(df.getName());
-                    edit.setEnabled(isFieldEnabled);
+                    if (constant.getClassType().equals("bits"))
+                    {
+                        Spinner spin = (Spinner) content.findViewWithTag(df.getName());
+                        spin.setEnabled(isFieldEnabled);
+                    }
+                    else
+                    {
+                        EditText edit = (EditText) content.findViewWithTag(df.getName());
+                        edit.setEnabled(isFieldEnabled);
+                    }
                 }
             }
         }
@@ -1112,6 +1219,19 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         }
         else if (which == R.id.close)
         {
+            for (DialogField df : dialog.getFieldsList())
+            {
+                if (df.isCommandButton())
+                {
+                    boolean enabled = ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName());
+                    
+                    if (df.getCommandOnClose().equals("clickOnClose") || (enabled && df.getCommandOnClose().equals("clickOnCloseIfEnabled")) || (!enabled && df.getCommandOnClose().equals("clickOnCloseIfDisabled")))
+                    {
+                        clickCmdButton(df.getName());
+                    }
+                }
+            }
+            
             cancel();
         }
     }
