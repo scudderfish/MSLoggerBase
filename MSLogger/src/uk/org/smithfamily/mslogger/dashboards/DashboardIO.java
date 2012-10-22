@@ -17,6 +17,17 @@ import android.content.res.AssetManager;
 
 public class DashboardIO
 {
+    private static final String LABEL_DIGITS = "labelDigits";
+    private static final String VALUE_DIGITS = "valueDigits";
+    private static final String HI_D = "hiD";
+    private static final String HI_W = "hiW";
+    private static final String LOW_W = "lowW";
+    private static final String LOW_D = "lowD";
+    private static final String MAX = "max";
+    private static final String MIN = "min";
+    private static final String UNITS = "units";
+    private static final String GAUGE = "gauge";
+    private static final String RPM = "rpm";
     private static final String DASHBOARDS = "dashboards";
     private static final String INDICATORS = "indicators";
     private static final String LOCATION = "location";
@@ -65,20 +76,38 @@ public class DashboardIO
     private Indicator createIndicator(JSONObject jIndicator) throws JSONException
     {
         Indicator i = new Indicator(ApplicationSettings.INSTANCE.getContext());
-        String channel = jIndicator.getString(CHANNEL);
-        String type = jIndicator.getString(TYPE).toUpperCase();
+        String channel = jIndicator.optString(CHANNEL, RPM);
+        String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
         JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
         Location loc = createLocation(jLocation);
+        String units = jIndicator.optString(UNITS, "");
+        double min = jIndicator.optDouble(MIN, 0.0);
+        double max = jIndicator.optDouble(MAX, 7000);
+        double lowD = jIndicator.optDouble(LOW_D, 0);
+        double lowW = jIndicator.optDouble(LOW_W, 0);
+        double hiW = jIndicator.optDouble(HI_W, 5000);
+        double hiD = jIndicator.optDouble(HI_D, 7000);
+        int vd = jIndicator.optInt(VALUE_DIGITS, 0);
+        int ld = jIndicator.optInt(LABEL_DIGITS, 0);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
         i.setLocation(loc);
+        i.setUnits(units);
+        i.setMin(min);
+        i.setMax(max);
+        i.setLowD(lowD);
+        i.setLowW(lowW);
+        i.setHiW(hiW);
+        i.setHiD(hiD);
+        i.setVd(vd);
+        i.setLd(ld);
 
         return i;
     }
 
     private Location createLocation(JSONArray jLocation) throws JSONException
     {
-        return new Location(jLocation.getDouble(0), jLocation.getDouble(1), jLocation.getDouble(2), jLocation.getDouble(3));
+        return new Location(jLocation.optDouble(0, 0.0), jLocation.optDouble(1, 0.0), jLocation.optDouble(2, 0.5), jLocation.optDouble(3, 0.5));
     }
 
     private String readDefinition(String fileName)
