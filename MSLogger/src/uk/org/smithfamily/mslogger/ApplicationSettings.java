@@ -44,6 +44,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
     private BluetoothAdapter     defaultAdapter;
     private boolean              writable;
+    private File dashDir;
    
 
     /**
@@ -61,10 +62,18 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         String directoryName = prefs.getString("DataDir", context.getString(R.string.app_name));
         dataDir = new File(Environment.getExternalStorageDirectory(), directoryName);
         boolean mkDirs = dataDir.mkdirs();
+        
         if (!mkDirs)
         {
             DebugLogManager.INSTANCE.log("Unable to create directory " + directoryName + " at " + Environment.getExternalStorageDirectory(), Log.ERROR);
         }
+        dashDir = new File(dataDir,"dashboards");
+        mkDirs=dashDir.mkdirs();
+        if (!mkDirs)
+        {
+            DebugLogManager.INSTANCE.log("Unable to create directory " + directoryName + " at " + Environment.getExternalStorageDirectory(), Log.ERROR);
+        }
+        
         this.hertz = prefs.getInt(context.getString(R.string.hertz), 20);
     }
 
@@ -76,6 +85,10 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return dataDir;
     }
 
+    public File getDashDir()
+    {
+        return dashDir;
+    }
     /**
      * Get the context where the application settings are used
      */

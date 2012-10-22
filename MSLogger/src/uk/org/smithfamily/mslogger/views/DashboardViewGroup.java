@@ -47,7 +47,7 @@ public class DashboardViewGroup extends ViewGroup
         DashboardIO p = new DashboardIO();
         try
         {
-            List<Dashboard> d = p.parse();
+            List<Dashboard> d = p.loadDash("default");
             List<Indicator> indicators = d.get(0);
             for (Indicator i : indicators)
             {
@@ -107,27 +107,12 @@ public class DashboardViewGroup extends ViewGroup
 
             Location loc = child.getLocation();
 
-            int ctop = resolve(loc.getTop(), t, height, width);
-            int cleft = resolve(loc.getLeft(), l, height, width);
-            int cwidth = resolve(loc.getWidth(), r, height, width);
-            int cheight = resolve(loc.getHeight(), b, height, width);
-            child.layout(cleft, ctop, cleft+cwidth, ctop+cheight);
+            int ctop = (int) (loc.getTop() * height);
+            int cleft = (int) (loc.getLeft() * width);
+            int cright = (int) (loc.getRight() * width);
+            int cbottom = (int) (loc.getBottom() * height);
+            child.layout(cleft, ctop, cright, cbottom);
 
-        }
-    }
-
-    private int resolve(double ratio, int l, int height, int width)
-    {
-        int max = Math.max(height, width);
-        int min = Math.min(height, width);
-
-        if (ratio < 0)
-        {
-            return (int) (-ratio * max);
-        }
-        else
-        {
-            return (int) (ratio * min);
         }
     }
 }

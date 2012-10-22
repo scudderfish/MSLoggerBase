@@ -14,14 +14,14 @@ package uk.org.smithfamily.mslogger.widgets;
  */
 public class Location
 {
-    private double left, top, width, height;
+    private double left, top, right, bottom;
 
-    public Location(double left, double top, double width, double height)
+    public Location(double left, double top, double right, double bottom)
     {
         this.left = left;
         this.top = top;
-        this.width = width;
-        this.height = height;
+        this.right = right;
+        this.bottom = bottom;
     }
 
     public double getLeft()
@@ -34,19 +34,19 @@ public class Location
         return top;
     }
 
-    public double getWidth()
+    public double getRight()
     {
-        return width;
+        return right;
     }
 
-    public double getHeight()
+    public double getBottom()
     {
-        return height;
+        return bottom;
     }
 
     @Override
     public String toString()
     {
-        return String.format("Location [left=%s, top=%s, width=%s, height=%s]", left, top, width, height);
+        return String.format("Location [left=%s, top=%s, right=%s, bottom=%s]", left, top, right, bottom);
     }
 }
