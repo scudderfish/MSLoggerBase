@@ -8,6 +8,7 @@ import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.EditText;
@@ -67,12 +68,11 @@ public class DialogHelper
     /**
      * This function build the custom std_* dialog that aren't defined in the ini
      * 
-     * @param context The context the dialog will be used in
      * @param dialogName The name of the dialog to build
      * 
-     * @return The dialog 
+     * @return The dialog
      */
-    public static MSDialog getStdDialog(Context context, String dialogName)
+    public static MSDialog getStdDialog(String dialogName)
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
@@ -111,15 +111,29 @@ public class DialogHelper
         {
             return buildStdRtc();
         }
-        // MS3 SDCard Console
-        else if (dialogName.equals("std_ms3SdConsole"))
-        {
-            return buildStdSdConsole();
-        }
         // Trigger wizard
         else if (dialogName.equals("std_trigwiz"))
         {
             return buildStdTriggerWizard();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * This function return an instance of a custom dialog that cannot be covered by a simple MSDialog
+     * 
+     * @param context The context the dialog will be used in
+     * @param dialogName The name of the dialog to build
+     * 
+     * @return The custom dialog instance
+     */
+    public static Dialog getStdCustomDialog(Context context, String dialogName)
+    {
+        if (dialogName.equals("std_ms3SdConsole"))
+        {
+            SDCardConsole sdCardConsole = new SDCardConsole(context);
+            return sdCardConsole;
         }
         
         return null;
@@ -386,17 +400,6 @@ public class DialogHelper
     private static MSDialog buildStdRtc()
     {
         MSDialog dialog = new MSDialog("std_ms3Rtc", "MS3 Real-time Clock", "");
-        
-        return dialog;
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    private static MSDialog buildStdSdConsole()
-    {
-        MSDialog dialog = new MSDialog("std_ms3SdConsole", "MS3 SD Console", "");
         
         return dialog;
     }

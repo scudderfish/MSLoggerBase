@@ -169,5 +169,10 @@
 	<string name="properties">Properties</string>
 	<string name="edit_properties">Edit Properties</string>
 	<string name="other_flags">Other Flags</string>
-
+	
+	<!--  SD Card Console -->
+	<string name="ms3_sd_console">MS3 SD Console</string>
+	<string name="download">Download</string>
+	<string name="no_sd_card">No SD card currently inserted</string>
+	<string name="manage_sd_card">Manage SD card</string>
 </resources>

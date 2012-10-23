@@ -117,6 +117,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
        
     /**
+     * 
+     * 
      * @param savedInstanceState
      */
     @Override
@@ -478,7 +480,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             else
             {
                 // Not a regular dialog, but maybe it's an std_* dialog
-                dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+                dialogPanel = DialogHelper.getStdDialog(dp.getName());
                 
                 if (dialogPanel != null)
                 {
@@ -1110,7 +1112,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         
         for (DialogPanel dp : dialog.getPanelsList())
         {
-            MSDialog dialogPanel = DialogHelper.getStdDialog(getContext(), dp.getName());
+            MSDialog dialogPanel = DialogHelper.getStdDialog(dp.getName());
             
             // It's an std_* panel
             if (dialogPanel != null)
