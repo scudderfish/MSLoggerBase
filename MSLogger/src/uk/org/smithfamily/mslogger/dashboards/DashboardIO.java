@@ -15,8 +15,9 @@ import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.res.AssetManager;
 
-public class DashboardIO
+public enum DashboardIO
 {
+    INSTANCE;
     private static final String LABEL_DIGITS = "labelDigits";
     private static final String VALUE_DIGITS = "valueDigits";
     private static final String HI_D = "hiD";
@@ -34,11 +35,12 @@ public class DashboardIO
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
 
-    public void saveDash(String dashName, List<Dashboard> dashes) throws JSONException, FileNotFoundException
+    private List<Dashboard> dashboardDefintions = new ArrayList<Dashboard>();
+    public void saveDash(String dashName) throws JSONException, FileNotFoundException
     {
         JSONObject root = new JSONObject();
         JSONArray jDashes = new JSONArray();
-        for (Dashboard d : dashes)
+        for (Dashboard d : dashboardDefintions)
         {
             JSONObject jDash = generateJDash(d);
             jDashes.put(jDash);
@@ -88,9 +90,9 @@ public class DashboardIO
         return jLocation;
     }
 
-    public List<Dashboard> loadDash(String dashName) throws IOException
+    public synchronized List<Dashboard> loadDash(String dashName) throws IOException
     {
-        List<Dashboard> results = new ArrayList<Dashboard>();
+        dashboardDefintions = new ArrayList<Dashboard>();
         try
         {
             dashName += ".json";
@@ -103,14 +105,14 @@ public class DashboardIO
             for (int dashIndex = 0; dashIndex < dashes.length(); dashIndex++)
             {
                 JSONObject jDash = dashes.getJSONObject(dashIndex);
-                results.add(createDash(jDash));
+                dashboardDefintions.add(createDash(jDash));
             }
         }
         catch (JSONException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
-        return results;
+        return dashboardDefintions;
     }
 
     private Dashboard createDash(JSONObject jDash) throws JSONException

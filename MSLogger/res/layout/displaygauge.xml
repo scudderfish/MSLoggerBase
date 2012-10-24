@@ -9,10 +9,38 @@
     android:orientation="vertical"
     android:weightSum="100" >
 
-    <uk.org.smithfamily.mslogger.views.DashboardViewGroup
-        android:id="@+id/dashboard"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/dashboardpager"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="80"
+        android:baselineAligned="false" />
+
+    <View
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="20" />
+        android:layout_height="2dip"
+        android:background="#FF909090" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="20"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/messages"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dip"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/RPS"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dip"
+            android:gravity="right"
+            android:text="" />
+    </LinearLayout>
 
 </LinearLayout>

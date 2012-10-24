@@ -5,15 +5,48 @@
         {
           "channel": "rpm",
           "type": "gauge",
-          "location": [0, 0, 0.5, 0.5]
+          "location": [
+            0,
+            0,
+            0.5,
+            0.5
+          ]
         },
         {
-          "channel": "mat",
+          "channel": "coolant",
           "type": "bar",
-          "location": [0.5,0,1,0.5]
+          "location": [
+            0.5,
+            0,
+            1,
+            0.5
+          ]
         }
       ]
-      
+    },
+    {
+      "indicators": [
+        {
+          "channel": "rpm",
+          "type": "bar",
+          "location": [
+            0,
+            0,
+            0.5,
+            0.5
+          ]
+        },
+        {
+          "channel": "coolant",
+          "type": "gauge",
+          "location": [
+            0.5,
+            0,
+            1,
+            0.5
+          ]
+        }
+      ]
     }
   ]
 }

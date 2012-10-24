@@ -1,74 +1,41 @@
-package uk.org.smithfamily.mslogger.views;
+package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.IOException;
-import java.util.List;
-
-import uk.org.smithfamily.mslogger.dashboards.Dashboard;
-import uk.org.smithfamily.mslogger.dashboards.DashboardIO;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class DashboardViewGroup extends ViewGroup
 {
-    private Paint backgroundPaint;
+    private int position;
 
-    public DashboardViewGroup(Context context, AttributeSet attrs)
-    {
-        super(context, attrs);
-        init(context);
-    }
-
-    public DashboardViewGroup(Context context)
+    public DashboardViewGroup(Context context, int position)
     {
         super(context);
-        init(context);
+        this.position = position;
     }
 
-    public DashboardViewGroup(Context context, AttributeSet attrs, int defStyle)
+    private int measuredHeight;
+    private int measuredWidth;
+
+    public void setDashboard(Dashboard d)
     {
-        super(context, attrs, defStyle);
-
-        init(context);
-    }
-
-    private void init(Context context)
-    {
-        setWillNotDraw(false);
-        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(Color.CYAN);
-
-        DashboardIO p = new DashboardIO();
-        try
+        this.removeAllViews();
+        for (Indicator i : d)
         {
-            List<Dashboard> d = p.loadDash("default");
-            List<Indicator> indicators = d.get(0);
-            for (Indicator i : indicators)
-            {
-                this.addView(i);
-            }
-
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            this.addView(i);
         }
 
     }
 
+    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
-        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
-
+        measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+        
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 

@@ -1,9 +1,13 @@
 package uk.org.smithfamily.mslogger.activity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.json.JSONException;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ExtGPSManager;
@@ -12,12 +16,13 @@ import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
+import uk.org.smithfamily.mslogger.dashboards.DashboardIO;
+import uk.org.smithfamily.mslogger.dashboards.DashboardPagerAdapter;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
-import uk.org.smithfamily.mslogger.views.DashboardViewGroup;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,6 +41,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,10 +100,11 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
         dumpPreferences();
         
-        DashboardViewGroup dash = new DashboardViewGroup(this);
+        setContentView(R.layout.displaygauge);
+        ViewPager pager = (ViewPager)findViewById(R.id.dashboardpager);
         
-        setContentView(dash);
-
+        DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this);
+        pager.setAdapter(dashAdapter);
         
         /*
          * Get status message from saved instance, for example when switching from landscape to portrait mode
@@ -120,6 +127,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         ApplicationSettings.INSTANCE.setAutoConnectOverride(null);
 
         registerMessages();
+        
+        try
+        {   DashboardIO.INSTANCE.loadDash("default");
+            DashboardIO.INSTANCE.saveDash("output_test");
+        }
+        catch (JSONException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
