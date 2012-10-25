@@ -1,4 +1,4 @@
-package uk.org.smithfamily.mslogger.widgets.Renderers;
+package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import android.content.Context;
 import android.content.res.Resources;

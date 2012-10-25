@@ -1,4 +1,4 @@
-package uk.org.smithfamily.mslogger.widgets.Renderers;
+package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.Indicator;

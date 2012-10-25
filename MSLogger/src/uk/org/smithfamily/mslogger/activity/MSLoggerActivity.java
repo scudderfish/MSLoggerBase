@@ -11,6 +11,7 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
 import uk.org.smithfamily.mslogger.dashboards.DashboardPagerAdapter;
+import uk.org.smithfamily.mslogger.dashboards.pageindicators.CirclePageIndicator;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -85,6 +86,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this);
         pager.setAdapter(dashAdapter);
+        
+      //Bind the title indicator to the adapter
+        CirclePageIndicator circleIndicator = (CirclePageIndicator)findViewById(R.id.separator);
+        circleIndicator.setViewPager(pager);
 
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);

@@ -4,10 +4,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import uk.org.smithfamily.mslogger.DataManager;
-import uk.org.smithfamily.mslogger.widgets.Renderers.BarGraph;
-import uk.org.smithfamily.mslogger.widgets.Renderers.Gauge;
-import uk.org.smithfamily.mslogger.widgets.Renderers.NumericIndicator;
-import uk.org.smithfamily.mslogger.widgets.Renderers.Renderer;
+import uk.org.smithfamily.mslogger.widgets.renderers.BarGraph;
+import uk.org.smithfamily.mslogger.widgets.renderers.Gauge;
+import uk.org.smithfamily.mslogger.widgets.renderers.NumericIndicator;
+import uk.org.smithfamily.mslogger.widgets.renderers.Renderer;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
