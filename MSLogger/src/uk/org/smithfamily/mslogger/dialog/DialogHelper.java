@@ -399,7 +399,10 @@ public class DialogHelper
      */
     private static MSDialog buildStdRtc()
     {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
         MSDialog dialog = new MSDialog("std_ms3Rtc", "MS3 Real-time Clock", "");
+        ecu.addDialog(dialog);
         
         return dialog;
     }
@@ -410,7 +413,15 @@ public class DialogHelper
      */
     private static MSDialog buildStdTriggerWizard()
     {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
         MSDialog dialog = new MSDialog("std_trigwiz", "Trigger Wizard", "");
+        ecu.addDialog(dialog);
+        
+        // TODO: need numeric indicator added here
+        
+        dialog.addField(new DialogField("Match above value with timing light reading.", "null", false, false, ""));
+        dialog.addField(new DialogField("Ignition Offset Angle", "triggerOffset", false, false, ""));
         
         return dialog;
     }
