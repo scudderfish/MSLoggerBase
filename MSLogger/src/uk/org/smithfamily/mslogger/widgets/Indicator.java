@@ -80,19 +80,6 @@ public class Indicator extends View implements Observer
     }
 
     @Override
-    protected void onMeasure(int widthSpec, int heightSpec)
-    {
-
-        // Default to creating a square area
-        int measuredWidth = MeasureSpec.getSize(widthSpec);
-
-        int measuredHeight = MeasureSpec.getSize(heightSpec);
-
-        int diameter = Math.min(measuredHeight, measuredWidth);
-        setMeasuredDimension(diameter, diameter);
-    }
-
-    @Override
     public void draw(Canvas canvas)
     {
         renderer.paint(canvas);
@@ -295,5 +282,4 @@ public class Indicator extends View implements Observer
     {
         return units;
     }
-
 }

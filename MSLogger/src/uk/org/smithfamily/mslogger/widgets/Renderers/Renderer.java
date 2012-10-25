@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.Size;
 
 public abstract class Renderer
 {
@@ -54,6 +55,17 @@ public abstract class Renderer
         }
         
         return c;
+    }
+
+    /**
+     * Get the size this renderer wants to be given the maximum size it is allowed to be
+     * @param measuredWidth
+     * @param measuredHeight
+     * @return
+     */
+    public Size getSize(int measuredWidth, int measuredHeight)
+    {
+        return new Size(measuredWidth,measuredHeight);
     }
     
 }

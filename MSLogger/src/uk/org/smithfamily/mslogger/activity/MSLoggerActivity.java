@@ -128,20 +128,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         registerMessages();
         
-        try
-        {   DashboardIO.INSTANCE.loadDash("default");
-            DashboardIO.INSTANCE.saveDash("output_test");
-        }
-        catch (JSONException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     @Override

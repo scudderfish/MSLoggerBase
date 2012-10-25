@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.widgets.Renderers;
 
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.Size;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -51,24 +52,13 @@ public class Gauge extends Renderer
     @Override
     public void paint(Canvas canvas)
     {
-        int height = parent.getMeasuredHeight();
+        int height = parent.getHeight();
 
-        int width = parent.getMeasuredWidth();
+        int width = parent.getWidth();
 
-        float scale = (float) parent.getWidth();
+        float scale = (float) Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
-        float dx = 0.0f;
-        float dy = 0.0f;
-        if (width > height)
-        {
-            dx = (width - height) / 2.0f;
-        }
-        if (height > width)
-        {
-            dy = (height - width) / 2.0f;
-        }
-        canvas.translate(dx, dy);
 
         drawFace(canvas);
 
@@ -363,4 +353,10 @@ public class Gauge extends Renderer
     }
 
           
+    @Override
+    public Size getSize(int width,int height)
+    {
+        int diameter = Math.min(width, height);
+        return new Size(diameter,diameter);
+    }
 }
