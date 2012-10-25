@@ -1,12 +1,21 @@
 package uk.org.smithfamily.mslogger;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Hook class to allow initialisation actions. Originally used to initialise ACRA and Bugsense
@@ -59,6 +68,21 @@ public class MSLoggerApplication extends Application
     {
         super.onCreate();
         ApplicationSettings.INSTANCE.initialise(this);
+
+        DebugLogManager.INSTANCE.log(getPackageName(), Log.DEBUG);
+        try
+        {
+            String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+            DebugLogManager.INSTANCE.log(app_ver, Log.ASSERT);
+        }
+        catch (NameNotFoundException e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
+        dumpPreferences();
+      
+        
+        
         doBindService();
     }
 
@@ -91,4 +115,19 @@ public class MSLoggerApplication extends Application
         
         doUnbindService();
     }
+
+    /**
+     * Dump the user preference into the log file for easier debugging
+     */
+    private void dumpPreferences()
+    {
+        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(this);
+        Map<String, ?> prefs = prefsManager.getAll();
+        for (Entry<String, ?> entry : prefs.entrySet())
+        {
+            DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
+        }
+    }
+
+
 }

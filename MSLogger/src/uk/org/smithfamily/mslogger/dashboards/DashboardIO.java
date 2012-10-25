@@ -2,7 +2,9 @@ package uk.org.smithfamily.mslogger.dashboards;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,19 +37,22 @@ public enum DashboardIO
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
 
-    private List<Dashboard> dashboardDefintions = new ArrayList<Dashboard>();
+    private List<Dashboard> activeDashboardDefinitions = new ArrayList<Dashboard>();
+    private Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
+
     public void saveDash(String dashName) throws JSONException, FileNotFoundException
     {
         JSONObject root = new JSONObject();
         JSONArray jDashes = new JSONArray();
-        for (Dashboard d : dashboardDefintions)
+        for (Dashboard d : activeDashboardDefinitions)
         {
             JSONObject jDash = generateJDash(d);
             jDashes.put(jDash);
         }
         root.put(DASHBOARDS, jDashes);
         String definition = root.toString(2);
-        writeDefinition(dashName,definition);
+        writeDefinition(dashName, definition);
+        dashCache.put(dashName, activeDashboardDefinitions);
     }
 
     private JSONObject generateJDash(Dashboard d) throws JSONException
@@ -92,27 +97,33 @@ public enum DashboardIO
 
     public synchronized List<Dashboard> loadDash(String dashName) throws IOException
     {
-        dashboardDefintions = new ArrayList<Dashboard>();
-        try
+        activeDashboardDefinitions = dashCache.get(dashName);
+
+        if (activeDashboardDefinitions == null)
         {
-            dashName += ".json";
-            String dashDefinition = readDefinition(dashName);
-
-            JSONObject jsonObject = new JSONObject(dashDefinition);
-
-            JSONArray dashes = jsonObject.getJSONArray(DASHBOARDS);
-
-            for (int dashIndex = 0; dashIndex < dashes.length(); dashIndex++)
+            activeDashboardDefinitions = new ArrayList<Dashboard>();
+            try
             {
-                JSONObject jDash = dashes.getJSONObject(dashIndex);
-                dashboardDefintions.add(createDash(jDash));
+                dashName += ".json";
+                String dashDefinition = readDefinition(dashName);
+
+                JSONObject jsonObject = new JSONObject(dashDefinition);
+
+                JSONArray dashes = jsonObject.getJSONArray(DASHBOARDS);
+
+                for (int dashIndex = 0; dashIndex < dashes.length(); dashIndex++)
+                {
+                    JSONObject jDash = dashes.getJSONObject(dashIndex);
+                    activeDashboardDefinitions.add(createDash(jDash));
+                }
             }
+            catch (JSONException e)
+            {
+                DebugLogManager.INSTANCE.logException(e);
+            }
+            dashCache.put(dashName, activeDashboardDefinitions);
         }
-        catch (JSONException e)
-        {
-            DebugLogManager.INSTANCE.logException(e);
-        }
-        return dashboardDefintions;
+        return activeDashboardDefinitions;
     }
 
     private Dashboard createDash(JSONObject jDash) throws JSONException
@@ -167,14 +178,15 @@ public enum DashboardIO
         return new Location(jLocation.optDouble(0, 0.0), jLocation.optDouble(1, 0.0), jLocation.optDouble(2, 0.5), jLocation.optDouble(3, 0.5));
     }
 
-    private void writeDefinition(String name,String definition) throws FileNotFoundException
+    private void writeDefinition(String name, String definition) throws FileNotFoundException
     {
-        name+=".json";
-        File output = new File(ApplicationSettings.INSTANCE.getDashDir(),name);
+        name += ".json";
+        File output = new File(ApplicationSettings.INSTANCE.getDashDir(), name);
         PrintWriter p = new PrintWriter(output);
         p.println(definition);
         p.close();
     }
+
     private String readDefinition(String fileName)
     {
         StringBuilder sb = new StringBuilder();
