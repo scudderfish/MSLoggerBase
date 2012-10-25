@@ -40,7 +40,7 @@ public class Indicator extends View implements Observer
     private int vd = 0;
     private int ld = 0;
     private double value = 2500;
-    private boolean disabled = false;
+    private boolean disabled = true;
     private double offsetAngle = 45;
 
     private Location location;
@@ -88,6 +88,7 @@ public class Indicator extends View implements Observer
     @Override
     public void update(Observable observable, Object data)
     {
+        disabled = false;
         double newValue = DataManager.getInstance().getField(channel);
         this.setValue(newValue);
         invalidate();

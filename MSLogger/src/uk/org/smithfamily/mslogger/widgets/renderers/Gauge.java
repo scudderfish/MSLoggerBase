@@ -19,26 +19,30 @@ import android.graphics.Shader;
  */
 public class Gauge extends Renderer
 {
-    public Gauge(Indicator parent,Context c)
+    public Gauge(Indicator parent, Context c)
     {
-        super(parent,c);
+        super(parent, c);
     }
 
-    private double             pi          = Math.PI;
-    
-    private Paint              titlePaint;
-    private Paint              valuePaint;
-    private Paint              pointerPaint;
-    private Paint              scalePaint;
-    private RectF              rimRect;
-    private Paint              rimPaint;
-    private Paint              rimCirclePaint;
-    private RectF              faceRect;
-    private Paint              facePaint;
+    private double pi = Math.PI;
+    private double epsilon = 1E-5;
+    private Paint titlePaint;
+    private Paint valuePaint;
+    private Paint pointerPaint;
+    private Paint scalePaint;
+    private RectF rimRect;
+    private Paint rimPaint;
+    private Paint rimCirclePaint;
+    private RectF faceRect;
+    private Paint facePaint;
 
-    private static final float rimSize     = 0.02f;
+    private double currentValue;
 
-    
+    private static final float rimSize = 0.02f;
+    private static final double FULL_SWEEP_TIME = 1000;
+
+    private long lastUpdate = System.currentTimeMillis();
+
     @Override
     protected void init(Context c)
     {
@@ -64,7 +68,7 @@ public class Gauge extends Renderer
 
         drawScale(canvas);
         drawPointer(canvas);
-        
+
         if (!parent.isDisabled())
         {
             drawValue(canvas);
@@ -76,6 +80,49 @@ public class Gauge extends Renderer
 
         drawTitle(canvas);
         canvas.restore();
+    
+        double actualValue = parent.getValue();
+        if (Math.abs(actualValue - currentValue) > epsilon)
+        {
+            //Time in millis since last update
+            double delay = (System.currentTimeMillis() - lastUpdate);
+            
+            if(delay < 20)
+            {
+                //cap at 50fps
+                return;
+            }
+            
+            lastUpdate = System.currentTimeMillis();
+
+            
+            double range = parent.getMax() - parent.getMin();
+
+            //How far the pointer can move in 1 ms
+            double changePerMilli = range / FULL_SWEEP_TIME;
+            
+            //How far we need to move
+            double difference = actualValue - currentValue;
+
+            //The furthest we can move
+            double update = changePerMilli * delay;
+            
+            //Make sure we don't overshoot
+            update = Math.min(update, Math.abs(difference));
+            
+            //And we go in the right direction
+            update = update * Math.signum(difference);
+            currentValue = currentValue + update;
+            //Log.w("Gauge", String.format("%f,%f,%f,%f,%f,%f",range,changePerMilli,difference,update,currentValue,actualValue));
+            //Cause a repaint
+            parent.invalidate();
+        }
+        else
+        {
+            currentValue = actualValue;
+        }
+
+    
     }
 
     /**
@@ -104,8 +151,7 @@ public class Gauge extends Renderer
         if (!parent.isInEditMode())
         {
             rimPaint.setFlags(anti_alias_flag);
-            rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color
-                    .rgb(0x30, 0x31, 0x30), Shader.TileMode.CLAMP));
+            rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color.rgb(0x30, 0x31, 0x30), Shader.TileMode.CLAMP));
         }
         rimCirclePaint = new Paint();
         if (!parent.isInEditMode())
@@ -120,7 +166,7 @@ public class Gauge extends Renderer
         facePaint.setStyle(Paint.Style.FILL);
         facePaint.setColor(Color.BLACK);
         facePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        
+
         titlePaint = new Paint();
         titlePaint.setColor(Color.WHITE);
         titlePaint.setTextAlign(Paint.Align.CENTER);
@@ -133,7 +179,7 @@ public class Gauge extends Renderer
         valuePaint.setTextAlign(Paint.Align.CENTER);
         valuePaint.setFlags(anti_alias_flag);
         valuePaint.setAntiAlias(true);
-        
+
         pointerPaint = new Paint();
         pointerPaint.setColor(Color.WHITE);
         pointerPaint.setAntiAlias(true);
@@ -141,7 +187,7 @@ public class Gauge extends Renderer
         pointerPaint.setStyle(Style.FILL_AND_STROKE);
         pointerPaint.setFlags(anti_alias_flag);
         pointerPaint.setAntiAlias(true);
-        
+
         scalePaint = new Paint();
         scalePaint.setColor(Color.WHITE);
         scalePaint.setAntiAlias(true);
@@ -160,7 +206,7 @@ public class Gauge extends Renderer
         titlePaint.setTextSize(0.07f);
         titlePaint.setColor(getFgColour());
         canvas.drawText(parent.getTitle(), 0.5f, 0.25f, titlePaint);
-        
+
         titlePaint.setTextSize(0.05f);
         canvas.drawText(parent.getUnits(), 0.5f, 0.32f, titlePaint);
     }
@@ -196,9 +242,9 @@ public class Gauge extends Renderer
     private void drawPointer(Canvas canvas)
     {
         float back_radius = 0.042f;
-                
-        double range = 270.0 / (parent.getMax() - parent.getMin());
-        double pointerValue = parent.getValue();
+
+        double angularRange = 270.0 / (parent.getMax() - parent.getMin());
+        double pointerValue = currentValue;
         if (pointerValue < parent.getMin())
         {
             pointerValue = parent.getMin();
@@ -207,21 +253,21 @@ public class Gauge extends Renderer
         {
             pointerValue = parent.getMax();
         }
-        
+
         pointerPaint.setColor(getFgColour());
 
-        canvas.drawCircle(0.5f,0.5f,back_radius / 2.0f, pointerPaint);
-        
+        canvas.drawCircle(0.5f, 0.5f, back_radius / 2.0f, pointerPaint);
+
         Path pointerPath = new Path(); // X Y
         pointerPath.setFillType(FillType.EVEN_ODD);
 
-        pointerPath.moveTo(0.5f, 0.1f);                     // 0.500, 0.100
-        pointerPath.lineTo(0.5f + 0.010f, 0.5f + 0.05f);    // 0.501, 0.505
-        pointerPath.lineTo(0.5f - 0.010f, 0.5f + 0.05f);    // 0.499, 0.505
-        pointerPath.lineTo(0.5f, 0.1f);                     // 0.500, 0.100
+        pointerPath.moveTo(0.5f, 0.1f); // 0.500, 0.100
+        pointerPath.lineTo(0.5f + 0.010f, 0.5f + 0.05f); // 0.501, 0.505
+        pointerPath.lineTo(0.5f - 0.010f, 0.5f + 0.05f); // 0.499, 0.505
+        pointerPath.lineTo(0.5f, 0.1f); // 0.500, 0.100
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        
-        double angle = ((pointerValue - parent.getMin()) * range + parent.getOffsetAngle()) - 180;
+
+        double angle = ((pointerValue - parent.getMin()) * angularRange + parent.getOffsetAngle()) - 180;
         canvas.rotate((float) angle, 0.5f, 0.5f);
         canvas.drawPath(pointerPath, pointerPaint);
         canvas.restore();
@@ -250,7 +296,7 @@ public class Gauge extends Renderer
         {
             step = step / 2;
         }
-        
+
         for (double val = gaugeMin; val <= gaugeMax; val += step)
         {
             float displayValue = (float) (Math.floor(val / Math.pow(10, -parent.getLd()) + 0.5) * Math.pow(10, -parent.getLd()));
@@ -316,7 +362,7 @@ public class Gauge extends Renderer
         {
             c = Color.RED;
         }
-        
+
         return c;
     }
 
@@ -329,12 +375,12 @@ public class Gauge extends Renderer
         if (parent.isInEditMode())
         {
             facePaint.setColor(Color.RED);
-            
+
             facePaint.setStyle(Style.FILL);
             canvas.drawOval(rimRect, facePaint);
             return;
         }
-        
+
         canvas.drawOval(rimRect, rimPaint);
         // now the outer rim circle
         canvas.drawOval(rimRect, rimCirclePaint);
@@ -345,18 +391,17 @@ public class Gauge extends Renderer
     /**
      * 
      */
-    
+
     @Override
     public String getType()
     {
         return parent.getContext().getString(R.string.gauge);
     }
 
-          
     @Override
-    public Size getSize(int width,int height)
+    public Size getSize(int width, int height)
     {
         int diameter = Math.min(width, height);
-        return new Size(diameter,diameter);
+        return new Size(diameter, diameter);
     }
 }
