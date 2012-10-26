@@ -175,4 +175,12 @@
 	<string name="download">Download</string>
 	<string name="no_sd_card">No SD card currently inserted</string>
 	<string name="manage_sd_card">Manage SD card</string>
+	
+	<!-- SD Card Datalog Field Selector -->
+	<string name="select_one">&gt;</string>
+	<string name="select_all">&gt;&gt;</string>
+	<string name="deselect_one">&lt;</string>
+	<string name="deselect_all">&lt;&lt;</string>
+	<string name="available_datalog_fields">Available Datalog Fields</string>
+	<string name="selected_datalog_fields">Selected Datalog Fields</string>
 </resources>
