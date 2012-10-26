@@ -91,19 +91,6 @@
 		<item>@string/histogram</item>		
 	</string-array>
 	
-	<string-array name="indicatorpositions">
-	    <item>@string/indicatorFirst</item>
-	    <item>@string/indicatorSecond</item>
-	    <item>@string/indicatorThird</item>
-	    <item>@string/indicatorFourth</item>
-	    <item>@string/indicatorFifth</item>
-	    <item>@string/indicatorSixth</item>
-	    <item>@string/indicatorSeventh</item>
-	    <item>@string/indicatorEighth</item>
-	    <item>@string/indicatorNinth</item>
-	    <item>@string/indicatorTenth</item>
-	</string-array>
-	
 	<string-array name="indicatororientation">
 	    <item>@string/horizontal</item>
 	    <item>@string/vertical</item>

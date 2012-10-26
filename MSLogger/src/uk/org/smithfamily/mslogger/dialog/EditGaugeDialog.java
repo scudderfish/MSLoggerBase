@@ -66,7 +66,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         prepareChannelSpinner();
         prepareOrientationSpinner();
         prepareTypeSpinner();
-        prepareIndicatorPositionSpinner();
         
         Button buttonOK = (Button) findViewById(R.id.editOK);
         Button buttonReset = (Button) findViewById(R.id.editReset);
@@ -216,23 +215,6 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         });
     }
     
-    /**
-     * Prepare the indicator position spinner
-     */
-    private void prepareIndicatorPositionSpinner()
-    {
-        indicatorPositionSpinner = (Spinner) findViewById(R.id.spinnerIndicatorPosition);
-        
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> positionAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatorpositions, android.R.layout.simple_spinner_item);
-    
-        // Specify the layout to use when the list of choices appears
-        positionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
-        // Apply the adapter to the spinner
-        indicatorPositionSpinner.setAdapter(positionAdapter);
-    }    
-
     /**
      * Depending on the indicator type, decide if specific fields should be displayed or not
      */

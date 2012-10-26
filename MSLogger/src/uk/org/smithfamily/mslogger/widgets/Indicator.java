@@ -40,7 +40,7 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
     private double hiD = 7000;
     private int vd = 0;
     private int ld = 0;
-    private double value = 2500;
+    private double value = 0;
     private boolean disabled = true;
     private double offsetAngle = 45;
 
@@ -334,5 +334,25 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
     {
         super.onSizeChanged(w, h, oldw, oldh);
         renderer.onSizeChanged(w, h, oldw, oldh);
+    }
+
+    public void setEditMode(boolean gaugeEditEnabled)
+    {
+        if(gaugeEditEnabled)
+        {
+            this.setOnLongClickListener(new OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    // TODO Auto-generated method stub
+                    return false;
+                }});
+                
+        }
+        else
+        {
+           this.setOnLongClickListener(null);
+        }
     }
 }

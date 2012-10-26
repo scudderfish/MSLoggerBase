@@ -10,6 +10,7 @@ import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
+import uk.org.smithfamily.mslogger.dashboards.DashboardIO;
 import uk.org.smithfamily.mslogger.dashboards.DashboardPagerAdapter;
 import uk.org.smithfamily.mslogger.dashboards.pageindicators.CirclePageIndicator;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
@@ -17,6 +18,7 @@ import uk.org.smithfamily.mslogger.log.DatalogManager;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -377,7 +379,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         // Gauge editing is enabled
         if (gaugeEditEnabled)
         {
-            // saveGauges();
+            DashboardIO.INSTANCE.saveDash();
         }
         // Gauge editing is not enabled
         else
@@ -389,7 +391,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         gaugeEditEnabled = !gaugeEditEnabled;
-        // initGauges();
+        IndicatorManager.INSTANCE.setEditing(gaugeEditEnabled);
     }
 
     /**

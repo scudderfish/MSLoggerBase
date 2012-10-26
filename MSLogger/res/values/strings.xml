@@ -85,7 +85,7 @@
 	<string name="choose_indicator_channel">Choose the Indicator Channel</string>
 	<string name="indicator_orientation">Orientation</string>
 	<string name="choose_indicator_orientation">Choose the Indicator Orientation</string>
-	<string name="indicator_type">Gauge Type</string>
+	<string name="indicator_type">Type</string>
 	<string name="choose_indicator_type">Choose an Indicator Type</string>
 	<string name="offset_angle">Offset Angle</string>
 	<string name="label_decimal_places">Label Decimal Places</string>
@@ -101,17 +101,6 @@
 	<string name="units">Units</string>
 	<string name="horizontal">Horizontal</string>
 	<string name="vertical">Vertical</string>
-	
-	<string name="indicatorFirst">First</string>
-	<string name="indicatorSecond">Second</string>
-	<string name="indicatorThird">Third</string>
-	<string name="indicatorFourth">Fourth</string>
-	<string name="indicatorFifth">Fifth</string>
-	<string name="indicatorSixth">Sixth</string>
-	<string name="indicatorSeventh">Seventh</string>
-	<string name="indicatorEighth">Eighth</string>
-	<string name="indicatorNinth">Ninth</string>
-	<string name="indicatorTenth">Tenth</string>
 	
 	<!-- View Datalog -->
 	<string name="datalog_viewer_title">Datalog Viewer</string>

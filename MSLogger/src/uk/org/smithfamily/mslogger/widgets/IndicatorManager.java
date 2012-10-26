@@ -11,6 +11,7 @@ public enum IndicatorManager
     private Map<String, List<Indicator>> indicatorMap  = new HashMap<String, List<Indicator>>();
     private List<Indicator>              indicatorList = new ArrayList<Indicator>();
     private boolean                      disabled      = false;
+    private boolean editing;
 
     /**
      * 
@@ -79,6 +80,20 @@ public enum IndicatorManager
     public List<Indicator> getIndicators()
     {
         return indicatorList;
+    }
+
+    public void setEditing(boolean gaugeEditEnabled)
+    {
+        
+        if (gaugeEditEnabled != editing)
+        {
+            for (Indicator i : indicatorList)
+            {
+                i.setEditMode(gaugeEditEnabled);
+                i.invalidate();
+            }
+        }
+        this.editing=gaugeEditEnabled;
     }
 
 }

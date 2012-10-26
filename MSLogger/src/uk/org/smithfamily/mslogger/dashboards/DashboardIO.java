@@ -20,6 +20,7 @@ import android.content.res.AssetManager;
 public enum DashboardIO
 {
     INSTANCE;
+    private static final String DEFAULT = "default";
     private static final String LABEL_DIGITS = "labelDigits";
     private static final String VALUE_DIGITS = "valueDigits";
     private static final String HI_D = "hiD";
@@ -41,18 +42,29 @@ public enum DashboardIO
     private List<Dashboard> activeDashboardDefinitions = new ArrayList<Dashboard>();
     private Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
 
-    public void saveDash(String dashName) throws JSONException, FileNotFoundException
+    public void saveDash()
+    {
+        saveDash(DEFAULT);
+    }
+    public void saveDash(String dashName) 
     {
         JSONObject root = new JSONObject();
         JSONArray jDashes = new JSONArray();
-        for (Dashboard d : activeDashboardDefinitions)
+        try
         {
-            JSONObject jDash = generateJDash(d);
-            jDashes.put(jDash);
+            for (Dashboard d : activeDashboardDefinitions)
+            {
+                JSONObject jDash = generateJDash(d);
+                jDashes.put(jDash);
+            }
+            root.put(DASHBOARDS, jDashes);
+            String definition = root.toString(2);
+            writeDefinition(dashName, definition);
         }
-        root.put(DASHBOARDS, jDashes);
-        String definition = root.toString(2);
-        writeDefinition(dashName, definition);
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.logException(e);
+        }
         dashCache.put(dashName, activeDashboardDefinitions);
     }
 
@@ -103,7 +115,7 @@ public enum DashboardIO
         return jLocation;
     }
 
-    public synchronized List<Dashboard> loadDash(String dashName) throws IOException
+    public synchronized List<Dashboard> loadDash(String dashName)
     {
         activeDashboardDefinitions = dashCache.get(dashName);
 
@@ -249,5 +261,9 @@ public enum DashboardIO
             DebugLogManager.INSTANCE.logException(e);
         }
         return sb.toString();
+    }
+    public List<Dashboard> loadDash()
+    {
+        return loadDash(DEFAULT);
     }
 }

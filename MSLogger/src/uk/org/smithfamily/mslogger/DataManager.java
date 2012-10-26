@@ -1,19 +1,15 @@
 package uk.org.smithfamily.mslogger;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-import uk.org.smithfamily.mslogger.ecuDef.DataSource;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
 public class DataManager extends Observable
 {

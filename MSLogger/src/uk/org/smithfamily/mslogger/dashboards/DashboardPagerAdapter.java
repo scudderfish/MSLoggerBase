@@ -1,6 +1,5 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
@@ -18,15 +17,8 @@ public class DashboardPagerAdapter extends PagerAdapter
     public DashboardPagerAdapter(Context c)
     {
         this.context = c;
-        try
-        {
-            dashboards = DashboardIO.INSTANCE.loadDash("default");
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        dashboards = DashboardIO.INSTANCE.loadDash();
+        
     }
     @Override
     public int getCount()
@@ -63,5 +55,4 @@ public class DashboardPagerAdapter extends PagerAdapter
     {
         return view == ((View) o);
     }
-
 }
