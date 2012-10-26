@@ -33,6 +33,7 @@ public enum DashboardIO
     private static final String RPM = "rpm";
     private static final String DASHBOARDS = "dashboards";
     private static final String INDICATORS = "indicators";
+    private static final String INDICATORS_LANDSCAPE = "indicators_landscape";
     private static final String LOCATION = "location";
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
@@ -59,13 +60,20 @@ public enum DashboardIO
     {
         JSONObject jDash = new JSONObject();
         JSONArray jIndicators = new JSONArray();
-        for (Indicator i : d)
+        for (Indicator i : d.getPortrait())
         {
             JSONObject jIndicator = generateJIndicator(i);
             jIndicators.put(jIndicator);
         }
         jDash.put(INDICATORS, jIndicators);
-
+        jIndicators = new JSONArray();
+        for (Indicator i : d.getLandscape())
+        {
+            JSONObject jIndicator = generateJIndicator(i);
+            jIndicators.put(jIndicator);
+        }
+        jDash.put(INDICATORS_LANDSCAPE, jIndicators);
+        
         return jDash;
     }
 
@@ -135,9 +143,19 @@ public enum DashboardIO
             JSONObject jIndicator = indicators.getJSONObject(indIndex);
             Indicator i = createIndicator(jIndicator);
 
-            d.add(i);
+            d.add(i,false);
         }
+        indicators=jDash.optJSONArray(INDICATORS_LANDSCAPE);
+        if(indicators != null)
+        {
+            for (int indIndex = 0; indIndex < indicators.length(); indIndex++)
+            {
+                JSONObject jIndicator = indicators.getJSONObject(indIndex);
+                Indicator i = createIndicator(jIndicator);
 
+                d.add(i,true);
+            }
+        }
         return d;
     }
 

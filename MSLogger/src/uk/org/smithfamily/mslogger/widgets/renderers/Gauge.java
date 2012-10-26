@@ -4,6 +4,7 @@ import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Size;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -35,7 +36,8 @@ public class Gauge extends Renderer
     private Paint rimCirclePaint;
     private RectF faceRect;
     private Paint facePaint;
-
+    private Paint backgroundPaint;
+    private Bitmap background;
     private double currentValue;
 
     private static final float rimSize = 0.02f;
@@ -49,6 +51,40 @@ public class Gauge extends Renderer
         initDrawingTools(c);
     }
 
+    private void regenerateBackground()
+    {
+        // free the old bitmap
+        if (background != null)
+        {
+            background.recycle();
+        }
+
+        int height = parent.getHeight();
+
+        int width = parent.getWidth();
+
+        background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas backgroundCanvas = new Canvas(background);
+
+        float scale = (float) Math.min(height, width);
+        backgroundCanvas.save(Canvas.MATRIX_SAVE_FLAG);
+        backgroundCanvas.scale(scale, scale);
+
+        drawFace(backgroundCanvas);
+        drawScale(backgroundCanvas);
+        drawTitle(backgroundCanvas);
+    }
+
+    private void drawBackground(Canvas canvas)
+    {
+        if (background == null)
+        {
+            regenerateBackground();
+        }
+        canvas.drawBitmap(background, 0, 0, backgroundPaint);
+
+    }
+
     /**
      * 
      * @param canvas
@@ -56,6 +92,7 @@ public class Gauge extends Renderer
     @Override
     public void paint(Canvas canvas)
     {
+        drawBackground(canvas);
         int height = parent.getHeight();
 
         int width = parent.getWidth();
@@ -80,41 +117,40 @@ public class Gauge extends Renderer
 
         drawTitle(canvas);
         canvas.restore();
-    
+
         double actualValue = parent.getValue();
         if (Math.abs(actualValue - currentValue) > epsilon)
         {
-            //Time in millis since last update
+            // Time in millis since last update
             double delay = (System.currentTimeMillis() - lastUpdate);
-            
-            if(delay < 20)
+
+            if (delay < 20)
             {
-                //cap at 50fps
+                // cap at 50fps
                 return;
             }
-            
+
             lastUpdate = System.currentTimeMillis();
 
-            
             double range = parent.getMax() - parent.getMin();
 
-            //How far the pointer can move in 1 ms
+            // How far the pointer can move in 1 ms
             double changePerMilli = range / FULL_SWEEP_TIME;
-            
-            //How far we need to move
+
+            // How far we need to move
             double difference = actualValue - currentValue;
 
-            //The furthest we can move
+            // The furthest we can move
             double update = changePerMilli * delay;
-            
-            //Make sure we don't overshoot
+
+            // Make sure we don't overshoot
             update = Math.min(update, Math.abs(difference));
-            
-            //And we go in the right direction
+
+            // And we go in the right direction
             update = update * Math.signum(difference);
             currentValue = currentValue + update;
-            //Log.w("Gauge", String.format("%f,%f,%f,%f,%f,%f",range,changePerMilli,difference,update,currentValue,actualValue));
-            //Cause a repaint
+            // Log.w("Gauge", String.format("%f,%f,%f,%f,%f,%f",range,changePerMilli,difference,update,currentValue,actualValue));
+            // Cause a repaint
             parent.invalidate();
         }
         else
@@ -122,7 +158,6 @@ public class Gauge extends Renderer
             currentValue = actualValue;
         }
 
-    
     }
 
     /**
@@ -195,6 +230,9 @@ public class Gauge extends Renderer
         scalePaint.setTextAlign(Paint.Align.CENTER);
         scalePaint.setFlags(anti_alias_flag);
         scalePaint.setAntiAlias(true);
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setFilterBitmap(true);
     }
 
     /**
@@ -404,4 +442,11 @@ public class Gauge extends Renderer
         int diameter = Math.min(width, height);
         return new Size(diameter, diameter);
     }
+
+    @Override
+    public void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        regenerateBackground();
+    }
+
 }

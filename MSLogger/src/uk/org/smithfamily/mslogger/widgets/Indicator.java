@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import uk.org.smithfamily.mslogger.DataManager;
+import uk.org.smithfamily.mslogger.utils.Copyable;
 import uk.org.smithfamily.mslogger.widgets.renderers.BarGraph;
 import uk.org.smithfamily.mslogger.widgets.renderers.Gauge;
 import uk.org.smithfamily.mslogger.widgets.renderers.NumericIndicator;
@@ -16,7 +17,7 @@ import android.view.View;
 /**
  *
  */
-public class Indicator extends View implements Observer
+public class Indicator extends View implements Observer, Copyable<Indicator>
 {
     public enum Orientation
     {
@@ -282,5 +283,47 @@ public class Indicator extends View implements Observer
     public String getUnits()
     {
         return units;
+    }
+
+    @Override
+    public Indicator copy()
+    {
+        Indicator copy = createForCopy();
+        copyTo(copy);
+        return copy;
+    }
+
+    @Override
+    public Indicator createForCopy()
+    {
+        return new Indicator(this.getContext());
+    }
+
+    @Override
+    public void copyTo(Indicator dest)
+    {
+        dest.title = title;
+        dest.channel = channel;
+        dest.min = min;
+        dest.max = max;
+        dest.lowD = lowD;
+        dest.lowW = lowW;
+        dest.hiD = hiD;
+        dest.hiW = hiW;
+        dest.vd = vd;
+        dest.ld = ld;
+        dest.value = value;
+        dest.disabled = disabled;
+        dest.offsetAngle = offsetAngle;
+        dest.location = location.copy();
+        dest.type = type;
+        dest.renderer = renderer;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        super.onSizeChanged(w, h, oldw, oldh);
+        renderer.onSizeChanged(w, h, oldw, oldh);
     }
 }

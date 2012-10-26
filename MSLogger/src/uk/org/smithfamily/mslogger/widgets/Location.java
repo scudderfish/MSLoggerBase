@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.widgets;
 
+import uk.org.smithfamily.mslogger.utils.Copyable;
+
 /**
  * Represents a display independentish location for an Indicator. 
  * 
@@ -12,7 +14,7 @@ package uk.org.smithfamily.mslogger.widgets;
  * @author dgs
  * 
  */
-public class Location
+public class Location implements Copyable<Location>
 {
     private double left, top, right, bottom;
 
@@ -48,5 +50,24 @@ public class Location
     public String toString()
     {
         return String.format("Location [left=%s, top=%s, right=%s, bottom=%s]", left, top, right, bottom);
+    }
+
+    @Override
+    public Location copy()
+    {
+       Location copy = createForCopy();
+       copyTo(copy);
+       return copy;
+    }
+
+    @Override
+    public Location createForCopy()
+    {
+        return new Location(left,top,right,bottom);
+    }
+
+    @Override
+    public void copyTo(Location dest)
+    {
     }
 }

@@ -1,8 +1,11 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
+import java.util.List;
+
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,7 +25,16 @@ public class DashboardViewGroup extends ViewGroup
     public void setDashboard(Dashboard d)
     {
         this.removeAllViews();
-        for (Indicator i : d)
+        List<Indicator> indicators;
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            indicators = d.getLandscape();
+        }
+        else
+        {
+            indicators = d.getPortrait();
+        }
+        for (Indicator i : indicators)
         {
             this.addView(i);
         }

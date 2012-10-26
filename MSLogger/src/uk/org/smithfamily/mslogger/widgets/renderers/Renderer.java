@@ -67,5 +67,10 @@ public abstract class Renderer
     {
         return new Size(measuredWidth,measuredHeight);
     }
+
+    public void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        // Override if you care about this        
+    }
     
 }
