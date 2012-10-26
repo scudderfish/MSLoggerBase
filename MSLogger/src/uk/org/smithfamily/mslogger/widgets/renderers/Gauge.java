@@ -14,6 +14,7 @@ import android.graphics.Path;
 import android.graphics.Path.FillType;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.util.Log;
 
 /**
  *
@@ -40,10 +41,12 @@ public class Gauge extends Renderer
     private Bitmap background;
     private double currentValue;
 
+    private int lastBGColour;
     private static final float rimSize = 0.02f;
     private static final double FULL_SWEEP_TIME = 1000;
 
-    private long lastUpdate = System.currentTimeMillis();
+    private long lastPointerMoveTime = System.currentTimeMillis();
+    private long logTime = System.currentTimeMillis();
 
     @Override
     protected void init(Context c)
@@ -53,15 +56,19 @@ public class Gauge extends Renderer
 
     private void regenerateBackground()
     {
+        int height = parent.getHeight();
+        int width = parent.getWidth();
+
+        if (width == 0 || height == 0)
+        {// We're not ready to do this yet
+            return;
+        }
+
         // free the old bitmap
         if (background != null)
         {
             background.recycle();
         }
-
-        int height = parent.getHeight();
-
-        int width = parent.getWidth();
 
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas backgroundCanvas = new Canvas(background);
@@ -77,12 +84,12 @@ public class Gauge extends Renderer
 
     private void drawBackground(Canvas canvas)
     {
-        if (background == null)
+        if (background == null || getBgColour() != lastBGColour)
         {
             regenerateBackground();
+            lastBGColour = getBgColour();
         }
         canvas.drawBitmap(background, 0, 0, backgroundPaint);
-
     }
 
     /**
@@ -92,18 +99,19 @@ public class Gauge extends Renderer
     @Override
     public void paint(Canvas canvas)
     {
-        drawBackground(canvas);
-        int height = parent.getHeight();
 
+        drawBackground(canvas);
+
+        int height = parent.getHeight();
         int width = parent.getWidth();
 
         float scale = (float) Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
 
-        drawFace(canvas);
+//        drawFace(canvas);
 
-        drawScale(canvas);
+//        drawScale(canvas);
         drawPointer(canvas);
 
         if (!parent.isDisabled())
@@ -118,46 +126,50 @@ public class Gauge extends Renderer
         drawTitle(canvas);
         canvas.restore();
 
-        double actualValue = parent.getValue();
-        if (Math.abs(actualValue - currentValue) > epsilon)
+        if (pointerStale())
         {
-            // Time in millis since last update
-            double delay = (System.currentTimeMillis() - lastUpdate);
-
-            if (delay < 20)
-            {
-                // cap at 50fps
-                return;
-            }
-
-            lastUpdate = System.currentTimeMillis();
-
-            double range = parent.getMax() - parent.getMin();
-
-            // How far the pointer can move in 1 ms
-            double changePerMilli = range / FULL_SWEEP_TIME;
-
-            // How far we need to move
-            double difference = actualValue - currentValue;
-
-            // The furthest we can move
-            double update = changePerMilli * delay;
-
-            // Make sure we don't overshoot
-            update = Math.min(update, Math.abs(difference));
-
-            // And we go in the right direction
-            update = update * Math.signum(difference);
-            currentValue = currentValue + update;
-            // Log.w("Gauge", String.format("%f,%f,%f,%f,%f,%f",range,changePerMilli,difference,update,currentValue,actualValue));
-            // Cause a repaint
-            parent.invalidate();
+            moveHand();
         }
-        else
+    }
+
+    private void moveHand()
+    {
+        double actualValue = parent.getValue();
+
+        if (!pointerStale())
         {
             currentValue = actualValue;
+            lastPointerMoveTime = System.currentTimeMillis();
+            return;
         }
 
+        double range = parent.getMax() - parent.getMin();
+        double incPerMilli = range / FULL_SWEEP_TIME;
+
+        long currentTime = System.currentTimeMillis();
+        long delay = currentTime - lastPointerMoveTime;
+
+        if(currentTime - logTime > 1000)
+        {
+            Log.e("GaugeFPS",this.toString()+":"+(1000/delay)+":"+delay);
+            logTime = currentTime;
+        }
+       
+        double direction = Math.signum(actualValue - currentValue);
+
+        double delta = Math.abs(actualValue - currentValue);
+        double increment = Math.min(delta, delay * incPerMilli);
+
+        currentValue += (increment * direction);
+        lastPointerMoveTime = System.currentTimeMillis();
+        parent.invalidate();
+
+    }
+
+    private boolean pointerStale()
+    {
+        double actualValue = parent.getValue();
+        return (Math.abs(actualValue - currentValue) > epsilon);
     }
 
     /**
@@ -385,12 +397,12 @@ public class Gauge extends Renderer
         int c = Color.GRAY;
         if (parent.isDisabled())
         {
-            return c;
+            c = Color.GRAY;
         }
         double value = parent.getValue();
         if (value > parent.getLowW() && value < parent.getHiW())
         {
-            return Color.BLACK;
+            c = Color.BLACK;
         }
         else if (value <= parent.getLowW() || value >= parent.getHiW())
         {

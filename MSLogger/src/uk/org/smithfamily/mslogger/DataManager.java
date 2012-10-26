@@ -57,17 +57,7 @@ public class DataManager extends Observable
         {
             return value;
         }
-        DataSource source = oc.getSource();
-        Class<?> c = source.getClass();
-        try
-        {
-            Field f = c.getDeclaredField(channelName);
-            value = f.getDouble(source);
-        }
-        catch (Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
-        }
+        value = oc.getValue();
         return value;
     }
 

@@ -47,6 +47,7 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
     private Location location;
     private DisplayType type;
     private Renderer renderer;
+    private double epsilon=1e-5;
 
     public Indicator(Context c)
     {
@@ -271,8 +272,16 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
 
     public void setValue(double value)
     {
-        this.value = value;
-        invalidate();
+        if (Math.abs(value - this.value) > epsilon)
+        {
+            this.value = value;
+            invalidate();
+        }
+        else
+        {
+            this.value = value;
+            
+        }
     }
 
     public String getTitle()
