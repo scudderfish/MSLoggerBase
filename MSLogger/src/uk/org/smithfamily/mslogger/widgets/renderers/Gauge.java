@@ -54,16 +54,12 @@ public class Gauge extends Renderer
         initDrawingTools(c);
     }
 
-    private void regenerateBackground()
+    private void regenerateBackground(int width,int height)
     {
-        int height = parent.getHeight();
-        int width = parent.getWidth();
-
-        if (width == 0 || height == 0)
-        {// We're not ready to do this yet
+        if (height == 0 || width == 0)
+        {
             return;
         }
-
         // free the old bitmap
         if (background != null)
         {
@@ -84,9 +80,12 @@ public class Gauge extends Renderer
 
     private void drawBackground(Canvas canvas)
     {
+        int height = parent.getHeight();
+        int width = parent.getWidth();
+
         if (background == null || getBgColour() != lastBGColour)
         {
-            regenerateBackground();
+            regenerateBackground(width,height);
             lastBGColour = getBgColour();
         }
         canvas.drawBitmap(background, 0, 0, backgroundPaint);
@@ -99,11 +98,18 @@ public class Gauge extends Renderer
     @Override
     public void paint(Canvas canvas)
     {
-
-        drawBackground(canvas);
-
         int height = parent.getHeight();
         int width = parent.getWidth();
+
+        if (width == 0 || height == 0)
+        {// We're not ready to do this yet
+            return;
+        }
+
+        
+        drawBackground(canvas);
+
+        
 
         float scale = (float) Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
@@ -458,7 +464,9 @@ public class Gauge extends Renderer
     @Override
     public void onSizeChanged(int w, int h, int oldw, int oldh)
     {
-        regenerateBackground();
+        if(w == 0 || h == 0)
+            return;
+        regenerateBackground(w,h);
     }
 
 }

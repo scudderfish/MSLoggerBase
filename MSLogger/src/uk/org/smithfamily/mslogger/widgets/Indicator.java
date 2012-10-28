@@ -12,6 +12,7 @@ import uk.org.smithfamily.mslogger.widgets.renderers.Renderer;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.SurfaceView;
 import android.view.View;
 
 /**
@@ -47,7 +48,7 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
     private Location location;
     private DisplayType type;
     private Renderer renderer;
-    private double epsilon=1e-5;
+    private double epsilon = 1e-5;
 
     public Indicator(Context c)
     {
@@ -280,7 +281,7 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
         else
         {
             this.value = value;
-            
+
         }
     }
 
@@ -338,21 +339,29 @@ public class Indicator extends View implements Observer, Copyable<Indicator>
 
     public void setEditMode(boolean gaugeEditEnabled)
     {
-        if(gaugeEditEnabled)
+        if (gaugeEditEnabled)
         {
-            this.setOnLongClickListener(new OnLongClickListener(){
+            this.setOnLongClickListener(new OnLongClickListener()
+            {
 
                 @Override
                 public boolean onLongClick(View v)
                 {
                     // TODO Auto-generated method stub
                     return false;
-                }});
-                
+                }
+            });
+
         }
         else
         {
-           this.setOnLongClickListener(null);
+            this.setOnLongClickListener(null);
         }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom)
+    {
+        super.onLayout(changed, left, top, right, bottom);
     }
 }

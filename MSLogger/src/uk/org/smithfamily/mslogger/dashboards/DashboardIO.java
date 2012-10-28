@@ -14,6 +14,8 @@ import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefault;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefaults;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.res.AssetManager;
 
@@ -46,7 +48,8 @@ public enum DashboardIO
     {
         saveDash(DEFAULT);
     }
-    public void saveDash(String dashName) 
+
+    public void saveDash(String dashName)
     {
         JSONObject root = new JSONObject();
         JSONArray jDashes = new JSONArray();
@@ -85,7 +88,7 @@ public enum DashboardIO
             jIndicators.put(jIndicator);
         }
         jDash.put(INDICATORS_LANDSCAPE, jIndicators);
-        
+
         return jDash;
     }
 
@@ -155,17 +158,17 @@ public enum DashboardIO
             JSONObject jIndicator = indicators.getJSONObject(indIndex);
             Indicator i = createIndicator(jIndicator);
 
-            d.add(i,false);
+            d.add(i, false);
         }
-        indicators=jDash.optJSONArray(INDICATORS_LANDSCAPE);
-        if(indicators != null)
+        indicators = jDash.optJSONArray(INDICATORS_LANDSCAPE);
+        if (indicators != null)
         {
             for (int indIndex = 0; indIndex < indicators.length(); indIndex++)
             {
                 JSONObject jIndicator = indicators.getJSONObject(indIndex);
                 Indicator i = createIndicator(jIndicator);
 
-                d.add(i,true);
+                d.add(i, true);
             }
         }
         return d;
@@ -175,18 +178,19 @@ public enum DashboardIO
     {
         Indicator i = new Indicator(ApplicationSettings.INSTANCE.getContext());
         String channel = jIndicator.optString(CHANNEL, RPM);
+        IndicatorDefault id = IndicatorDefaults.defaults.get(channel);
         String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
         JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
         Location loc = createLocation(jLocation);
-        String units = jIndicator.optString(UNITS, "");
-        double min = jIndicator.optDouble(MIN, 0.0);
-        double max = jIndicator.optDouble(MAX, 7000);
-        double lowD = jIndicator.optDouble(LOW_D, 0);
-        double lowW = jIndicator.optDouble(LOW_W, 0);
-        double hiW = jIndicator.optDouble(HI_W, 5000);
-        double hiD = jIndicator.optDouble(HI_D, 7000);
-        int vd = jIndicator.optInt(VALUE_DIGITS, 0);
-        int ld = jIndicator.optInt(LABEL_DIGITS, 0);
+        String units = jIndicator.optString(UNITS, id != null ? id.getUnits() : "");
+        double min = jIndicator.optDouble(MIN, id != null ? id.getMin() : 0.0);
+        double max = jIndicator.optDouble(MAX, id != null ? id.getMax() : 7000);
+        double lowD = jIndicator.optDouble(LOW_D, id != null ? id.getLoD() : 0);
+        double lowW = jIndicator.optDouble(LOW_W, id != null ? id.getLoW() : 0);
+        double hiW = jIndicator.optDouble(HI_W, id != null ? id.getHiW() : 5000);
+        double hiD = jIndicator.optDouble(HI_D, id != null ? id.getHiD() : 7000);
+        int vd = jIndicator.optInt(VALUE_DIGITS, id != null ? id.getVd() : 0);
+        int ld = jIndicator.optInt(LABEL_DIGITS, id != null ? id.getLd() : 0);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
         i.setLocation(loc);
@@ -199,7 +203,10 @@ public enum DashboardIO
         i.setHiD(hiD);
         i.setVd(vd);
         i.setLd(ld);
-
+        if (id == null)
+        {
+            IndicatorDefaults.defaults.put(channel, new IndicatorDefault(channel, "", units, min, max, lowD, lowW, hiW, hiD, vd, ld));
+        }
         return i;
     }
 
@@ -262,6 +269,7 @@ public enum DashboardIO
         }
         return sb.toString();
     }
+
     public List<Dashboard> loadDash()
     {
         return loadDash(DEFAULT);
