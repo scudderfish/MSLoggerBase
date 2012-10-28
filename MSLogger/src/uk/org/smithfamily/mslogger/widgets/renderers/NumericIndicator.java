@@ -1,7 +1,7 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.IndicatorView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,7 +12,7 @@ import android.graphics.Paint;
  */
 public class NumericIndicator extends Renderer
 {
-    public NumericIndicator(Indicator parent, Context c)
+    public NumericIndicator(final IndicatorView parent, final Context c)
     {
         super(parent, c);
     }
@@ -24,7 +24,7 @@ public class NumericIndicator extends Renderer
     private Paint valuePaint;
 
     @Override
-    protected void init(Context c)
+    protected void init(final Context c)
     {
         initDrawingTools(c);
     }
@@ -33,7 +33,7 @@ public class NumericIndicator extends Renderer
      * 
      * @param context
      */
-    private void initDrawingTools(Context context)
+    private void initDrawingTools(final Context context)
     {
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
         if (parent.isInEditMode())
@@ -63,7 +63,7 @@ public class NumericIndicator extends Renderer
      * 
      * @param canvas
      */
-    private void drawBackground(Canvas canvas)
+    private void drawBackground(final Canvas canvas)
     {
         backgroundPaint.setColor(getBgColour());
 
@@ -74,14 +74,14 @@ public class NumericIndicator extends Renderer
      * 
      * @param canvas
      */
-    private void drawTitle(Canvas canvas)
+    private void drawTitle(final Canvas canvas)
     {
         titlePaint.setColor(getFgColour());
 
-        String text = parent.getTitle();
-        if (!parent.getUnits().equals(""))
+        String text = model.getTitle();
+        if (!model.getUnits().equals(""))
         {
-            text += " (" + parent.getUnits() + ")";
+            text += " (" + model.getUnits() + ")";
         }
 
         canvas.drawText(text, 0.48f, 0.65f, titlePaint);
@@ -91,15 +91,15 @@ public class NumericIndicator extends Renderer
      * 
      * @param canvas
      */
-    private void drawValue(Canvas canvas)
+    private void drawValue(final Canvas canvas)
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(parent.getValue() / Math.pow(10, -parent.getVd()) + 0.5) * Math.pow(10, -parent.getVd()));
+        final float displayValue = (float) (Math.floor((model.getValue() / Math.pow(10, -model.getVd())) + 0.5) * Math.pow(10, -model.getVd()));
 
         String text;
 
-        if (parent.getVd() <= 0)
+        if (model.getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -114,11 +114,11 @@ public class NumericIndicator extends Renderer
     @Override
     protected int getFgColour()
     {
-        if (parent.isDisabled())
+        if (model.isDisabled())
         {
             return Color.DKGRAY;
         }
-        if (parent.getValue() > parent.getLowW() && parent.getValue() < parent.getHiW())
+        if ((model.getValue() > model.getLowW()) && (model.getValue() < model.getHiW()))
         {
             return Color.WHITE;
         }
@@ -141,13 +141,13 @@ public class NumericIndicator extends Renderer
      * @param canvas
      */
     @Override
-    public void paint(Canvas canvas)
+    public void renderFrame(final Canvas canvas)
     {
-        int height = parent.getMeasuredHeight();
+        final int height = parent.getMeasuredHeight();
 
-        int width = parent.getMeasuredWidth();
+        final int width = parent.getMeasuredWidth();
 
-        float scale = (float) parent.getWidth();
+        final float scale = parent.getWidth();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
         float dx = 0.0f;
@@ -164,7 +164,7 @@ public class NumericIndicator extends Renderer
 
         drawBackground(canvas);
 
-        if (!parent.isDisabled())
+        if (!model.isDisabled())
         {
             drawValue(canvas);
         }

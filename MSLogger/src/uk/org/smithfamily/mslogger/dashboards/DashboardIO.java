@@ -1,6 +1,13 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,49 +49,49 @@ public enum DashboardIO
     private static final String CHANNEL = "channel";
 
     private List<Dashboard> activeDashboardDefinitions = new ArrayList<Dashboard>();
-    private Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
+    private final Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
 
     public void saveDash()
     {
         saveDash(DEFAULT);
     }
 
-    public void saveDash(String dashName)
+    public void saveDash(final String dashName)
     {
-        JSONObject root = new JSONObject();
-        JSONArray jDashes = new JSONArray();
+        final JSONObject root = new JSONObject();
+        final JSONArray jDashes = new JSONArray();
         try
         {
-            for (Dashboard d : activeDashboardDefinitions)
+            for (final Dashboard d : activeDashboardDefinitions)
             {
-                JSONObject jDash = generateJDash(d);
+                final JSONObject jDash = generateJDash(d);
                 jDashes.put(jDash);
             }
             root.put(DASHBOARDS, jDashes);
-            String definition = root.toString(2);
+            final String definition = root.toString(2);
             writeDefinition(dashName, definition);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
         dashCache.put(dashName, activeDashboardDefinitions);
     }
 
-    private JSONObject generateJDash(Dashboard d) throws JSONException
+    private JSONObject generateJDash(final Dashboard d) throws JSONException
     {
-        JSONObject jDash = new JSONObject();
+        final JSONObject jDash = new JSONObject();
         JSONArray jIndicators = new JSONArray();
-        for (Indicator i : d.getPortrait())
+        for (final Indicator i : d.getPortrait())
         {
-            JSONObject jIndicator = generateJIndicator(i);
+            final JSONObject jIndicator = generateJIndicator(i);
             jIndicators.put(jIndicator);
         }
         jDash.put(INDICATORS, jIndicators);
         jIndicators = new JSONArray();
-        for (Indicator i : d.getLandscape())
+        for (final Indicator i : d.getLandscape())
         {
-            JSONObject jIndicator = generateJIndicator(i);
+            final JSONObject jIndicator = generateJIndicator(i);
             jIndicators.put(jIndicator);
         }
         jDash.put(INDICATORS_LANDSCAPE, jIndicators);
@@ -92,9 +99,9 @@ public enum DashboardIO
         return jDash;
     }
 
-    private JSONObject generateJIndicator(Indicator i) throws JSONException
+    private JSONObject generateJIndicator(final Indicator i) throws JSONException
     {
-        JSONObject j = new JSONObject();
+        final JSONObject j = new JSONObject();
 
         j.put(CHANNEL, i.getChannel());
         j.put(TYPE, i.getDisplayType().name());
@@ -111,9 +118,9 @@ public enum DashboardIO
         return j;
     }
 
-    private JSONArray getJLocation(Location l) throws JSONException
+    private JSONArray getJLocation(final Location l) throws JSONException
     {
-        JSONArray jLocation = new JSONArray();
+        final JSONArray jLocation = new JSONArray();
         jLocation.put(l.getTop()).put(l.getLeft()).put(l.getBottom()).put(l.getRight());
         return jLocation;
     }
@@ -128,19 +135,19 @@ public enum DashboardIO
             try
             {
                 dashName += ".json";
-                String dashDefinition = readDefinition(dashName);
+                final String dashDefinition = readDefinition(dashName);
 
-                JSONObject jsonObject = new JSONObject(dashDefinition);
+                final JSONObject jsonObject = new JSONObject(dashDefinition);
 
-                JSONArray dashes = jsonObject.getJSONArray(DASHBOARDS);
+                final JSONArray dashes = jsonObject.getJSONArray(DASHBOARDS);
 
                 for (int dashIndex = 0; dashIndex < dashes.length(); dashIndex++)
                 {
-                    JSONObject jDash = dashes.getJSONObject(dashIndex);
+                    final JSONObject jDash = dashes.getJSONObject(dashIndex);
                     activeDashboardDefinitions.add(createDash(jDash));
                 }
             }
-            catch (JSONException e)
+            catch (final JSONException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
             }
@@ -149,14 +156,14 @@ public enum DashboardIO
         return activeDashboardDefinitions;
     }
 
-    private Dashboard createDash(JSONObject jDash) throws JSONException
+    private Dashboard createDash(final JSONObject jDash) throws JSONException
     {
-        Dashboard d = new Dashboard();
+        final Dashboard d = new Dashboard();
         JSONArray indicators = jDash.getJSONArray(INDICATORS);
         for (int indIndex = 0; indIndex < indicators.length(); indIndex++)
         {
-            JSONObject jIndicator = indicators.getJSONObject(indIndex);
-            Indicator i = createIndicator(jIndicator);
+            final JSONObject jIndicator = indicators.getJSONObject(indIndex);
+            final Indicator i = createIndicator(jIndicator);
 
             d.add(i, false);
         }
@@ -165,8 +172,8 @@ public enum DashboardIO
         {
             for (int indIndex = 0; indIndex < indicators.length(); indIndex++)
             {
-                JSONObject jIndicator = indicators.getJSONObject(indIndex);
-                Indicator i = createIndicator(jIndicator);
+                final JSONObject jIndicator = indicators.getJSONObject(indIndex);
+                final Indicator i = createIndicator(jIndicator);
 
                 d.add(i, true);
             }
@@ -174,23 +181,23 @@ public enum DashboardIO
         return d;
     }
 
-    private Indicator createIndicator(JSONObject jIndicator) throws JSONException
+    private Indicator createIndicator(final JSONObject jIndicator) throws JSONException
     {
-        Indicator i = new Indicator(ApplicationSettings.INSTANCE.getContext());
-        String channel = jIndicator.optString(CHANNEL, RPM);
-        IndicatorDefault id = IndicatorDefaults.defaults.get(channel);
-        String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
-        JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
-        Location loc = createLocation(jLocation);
-        String units = jIndicator.optString(UNITS, id != null ? id.getUnits() : "");
-        double min = jIndicator.optDouble(MIN, id != null ? id.getMin() : 0.0);
-        double max = jIndicator.optDouble(MAX, id != null ? id.getMax() : 7000);
-        double lowD = jIndicator.optDouble(LOW_D, id != null ? id.getLoD() : 0);
-        double lowW = jIndicator.optDouble(LOW_W, id != null ? id.getLoW() : 0);
-        double hiW = jIndicator.optDouble(HI_W, id != null ? id.getHiW() : 5000);
-        double hiD = jIndicator.optDouble(HI_D, id != null ? id.getHiD() : 7000);
-        int vd = jIndicator.optInt(VALUE_DIGITS, id != null ? id.getVd() : 0);
-        int ld = jIndicator.optInt(LABEL_DIGITS, id != null ? id.getLd() : 0);
+        final Indicator i = new Indicator();
+        final String channel = jIndicator.optString(CHANNEL, RPM);
+        final IndicatorDefault id = IndicatorDefaults.defaults.get(channel);
+        final String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
+        final JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
+        final Location loc = createLocation(jLocation);
+        final String units = jIndicator.optString(UNITS, id != null ? id.getUnits() : "");
+        final double min = jIndicator.optDouble(MIN, id != null ? id.getMin() : 0.0);
+        final double max = jIndicator.optDouble(MAX, id != null ? id.getMax() : 7000);
+        final double lowD = jIndicator.optDouble(LOW_D, id != null ? id.getLoD() : 0);
+        final double lowW = jIndicator.optDouble(LOW_W, id != null ? id.getLoW() : 0);
+        final double hiW = jIndicator.optDouble(HI_W, id != null ? id.getHiW() : 5000);
+        final double hiD = jIndicator.optDouble(HI_D, id != null ? id.getHiD() : 7000);
+        final int vd = jIndicator.optInt(VALUE_DIGITS, id != null ? id.getVd() : 0);
+        final int ld = jIndicator.optInt(LABEL_DIGITS, id != null ? id.getLd() : 0);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
         i.setLocation(loc);
@@ -210,27 +217,27 @@ public enum DashboardIO
         return i;
     }
 
-    private Location createLocation(JSONArray jLocation) throws JSONException
+    private Location createLocation(final JSONArray jLocation) throws JSONException
     {
         return new Location(jLocation.optDouble(0, 0.0), jLocation.optDouble(1, 0.0), jLocation.optDouble(2, 0.5), jLocation.optDouble(3, 0.5));
     }
 
-    private void writeDefinition(String name, String definition) throws FileNotFoundException
+    private void writeDefinition(String name, final String definition) throws FileNotFoundException
     {
         name += ".json";
-        File output = new File(ApplicationSettings.INSTANCE.getDashDir(), name);
-        PrintWriter p = new PrintWriter(output);
+        final File output = new File(ApplicationSettings.INSTANCE.getDashDir(), name);
+        final PrintWriter p = new PrintWriter(output);
         p.println(definition);
         p.close();
     }
 
-    private String readDefinition(String fileName)
+    private String readDefinition(final String fileName)
     {
-        StringBuilder sb = new StringBuilder();
-        String assetFileName = DASHBOARDS + File.separator + fileName;
-        File override = new File(ApplicationSettings.INSTANCE.getDashDir(), fileName);
+        final StringBuilder sb = new StringBuilder();
+        final String assetFileName = DASHBOARDS + File.separator + fileName;
+        final File override = new File(ApplicationSettings.INSTANCE.getDashDir(), fileName);
 
-        AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
+        final AssetManager assetManager = ApplicationSettings.INSTANCE.getContext().getResources().getAssets();
 
         BufferedReader input = null;
         try
@@ -259,11 +266,13 @@ public enum DashboardIO
             finally
             {
                 if (input != null)
+                {
                     input.close();
+                }
             }
 
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }

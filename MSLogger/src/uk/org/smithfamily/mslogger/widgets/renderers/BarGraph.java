@@ -1,8 +1,8 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
+import uk.org.smithfamily.mslogger.widgets.IndicatorView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,7 +14,7 @@ import android.graphics.Paint;
 public class BarGraph extends Renderer
 {
 
-    public BarGraph(Indicator parent, Context c)
+    public BarGraph(final IndicatorView parent, final Context c)
     {
         super(parent, c);
     }
@@ -23,10 +23,10 @@ public class BarGraph extends Renderer
     private Paint titlePaint;
     private Paint valuePaint;
 
-    private Orientation orientation = Orientation.HORIZONTAL;
+    private final Orientation orientation = Orientation.HORIZONTAL;
 
     @Override
-    protected void init(Context c)
+    protected void init(final Context c)
     {
         initDrawingTools(c);
     }
@@ -35,7 +35,7 @@ public class BarGraph extends Renderer
      * 
      * @param context
      */
-    private void initDrawingTools(Context context)
+    private void initDrawingTools(final Context context)
     {
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
         if (parent.isInEditMode())
@@ -65,18 +65,18 @@ public class BarGraph extends Renderer
      * @param canvas
      */
     @Override
-    public void paint(Canvas canvas)
+    public void renderFrame(final Canvas canvas)
     {
-        int height = parent.getHeight();
+        final int height = parent.getHeight();
 
-        int width = parent.getWidth();
+        final int width = parent.getWidth();
 
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(width, height);
 
         drawBars(canvas);
 
-        if (!parent.isDisabled())
+        if (!model.isDisabled())
         {
             drawValue(canvas);
         }
@@ -85,15 +85,15 @@ public class BarGraph extends Renderer
         canvas.restore();
     }
 
-    public void drawValue(Canvas canvas)
+    public void drawValue(final Canvas canvas)
     {
         valuePaint.setColor(getFgColour());
 
-        float displayValue = (float) (Math.floor(parent.getValue() / Math.pow(10, -parent.getVd()) + 0.5) * Math.pow(10, -parent.getVd()));
+        final float displayValue = (float) (Math.floor((model.getValue() / Math.pow(10, -model.getVd())) + 0.5) * Math.pow(10, -model.getVd()));
 
         String text;
 
-        if (parent.getVd() <= 0)
+        if (model.getVd() <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -105,25 +105,25 @@ public class BarGraph extends Renderer
         canvas.drawText(text, 0.9f, 0.95f, valuePaint);
     }
 
-    public void drawTitle(Canvas canvas)
+    public void drawTitle(final Canvas canvas)
     {
         titlePaint.setColor(getFgColour());
 
-        String text = parent.getTitle();
-        if (!parent.getUnits().equals(""))
+        String text = model.getTitle();
+        if (!model.getUnits().equals(""))
         {
-            text += " (" + parent.getUnits() + ")";
+            text += " (" + model.getUnits() + ")";
         }
 
         canvas.drawText(text, 0.05f, 0.95f, titlePaint);
     }
 
-    public void drawBars(Canvas canvas)
+    public void drawBars(final Canvas canvas)
     {
-        double percent = ((parent.getValue() - parent.getMin()) / (parent.getMax() - parent.getMin())) * 100;
+        final double percent = ((model.getValue() - model.getMin()) / (model.getMax() - model.getMin())) * 100;
 
         barPaint.setColor(Color.WHITE);
-        barPaint.setColor(getBarColour((((parent.getMax() - parent.getMin()) / 100) * percent) + parent.getMin()));
+        barPaint.setColor(getBarColour((((model.getMax() - model.getMin()) / 100) * percent) + model.getMin()));
 
         final float barWidth = 0.025f;
         final float barSpacing = 0.02f;
@@ -134,7 +134,7 @@ public class BarGraph extends Renderer
 
             for (int i = 1; i <= nbBars; i++)
             {
-                if ((i * 100 / nbBars) <= percent)
+                if (((i * 100) / nbBars) <= percent)
                 {
                     canvas.drawRect((i * (barWidth + barSpacing)) + 0.03f, 0.05f, (i * (barWidth + barSpacing)) + barWidth + 0.03f, 0.85f, barPaint);
                 }
@@ -146,9 +146,9 @@ public class BarGraph extends Renderer
 
             for (int i = 1; i <= nbBars; i++)
             {
-                if ((i * 100 / nbBars) <= percent)
+                if (((i * 100) / nbBars) <= percent)
                 {
-                    canvas.drawRect(0.05f, 0.9f - (i * (barWidth + barSpacing)), 0.9f, 0.9f - (i * (barWidth + barSpacing)) + barWidth, barPaint);
+                    canvas.drawRect(0.05f, 0.9f - (i * (barWidth + barSpacing)), 0.9f, (0.9f - (i * (barWidth + barSpacing))) + barWidth, barPaint);
                 }
             }
         }
@@ -158,22 +158,22 @@ public class BarGraph extends Renderer
      * 
      * @return
      */
-    private int getBarColour(double value)
+    private int getBarColour(final double value)
     {
         int c = Color.GRAY;
-        if (parent.isDisabled())
+        if (model.isDisabled())
         {
             return c;
         }
-        if (value > parent.getLowW() && value < parent.getHiW())
+        if ((value > model.getLowW()) && (value < model.getHiW()))
         {
             return Color.WHITE;
         }
-        else if (value <= parent.getLowW() || value >= parent.getHiW())
+        else if ((value <= model.getLowW()) || (value >= model.getHiW()))
         {
             c = Color.YELLOW;
         }
-        if (value <= parent.getLowD() || value >= parent.getHiD())
+        if ((value <= model.getLowD()) || (value >= model.getHiD()))
         {
             c = Color.RED;
         }

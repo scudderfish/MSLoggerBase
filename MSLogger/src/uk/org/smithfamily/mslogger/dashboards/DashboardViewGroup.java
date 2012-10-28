@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.dashboards;
 import java.util.List;
 
 import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.IndicatorView;
 import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,22 +12,24 @@ import android.view.ViewGroup;
 
 public class DashboardViewGroup extends ViewGroup
 {
-    private int position;
+    private final int position;
+    private final Context context;
 
-    public DashboardViewGroup(Context context, int position)
+    public DashboardViewGroup(final Context context, final int position)
     {
         super(context);
+        this.context = context;
         this.position = position;
     }
 
     private int measuredHeight;
     private int measuredWidth;
 
-    public void setDashboard(Dashboard d)
+    public void setDashboard(final Dashboard d)
     {
         this.removeAllViews();
         List<Indicator> indicators;
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
             indicators = d.getLandscape();
         }
@@ -34,28 +37,28 @@ public class DashboardViewGroup extends ViewGroup
         {
             indicators = d.getPortrait();
         }
-        for (Indicator i : indicators)
+        for (final Indicator i : indicators)
         {
-            this.addView(i);
+            final IndicatorView v = new IndicatorView(context, i);
+            this.addView(v);
         }
 
     }
 
-    
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec)
     {
         measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
         measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
-        
+
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b)
+    protected void onLayout(final boolean changed, final int l, final int t, final int r, final int b)
     {
-        int width = r - l;
-        int height = b - t;
+        final int width = r - l;
+        final int height = b - t;
 
         final int count = getChildCount();
 
@@ -78,18 +81,18 @@ public class DashboardViewGroup extends ViewGroup
 
         for (int i = 0; i < count; i++)
         {
-            final Indicator child = (Indicator) getChildAt(i);
+            final IndicatorView child = (IndicatorView) getChildAt(i);
             if (child.getVisibility() == GONE)
             {
                 continue;
             }
 
-            Location loc = child.getLocation();
+            final Location loc = child.getIndicator().getLocation();
 
-            int ctop = (int) (loc.getTop() * height);
-            int cleft = (int) (loc.getLeft() * width);
-            int cright = (int) (loc.getRight() * width);
-            int cbottom = (int) (loc.getBottom() * height);
+            final int ctop = (int) (loc.getTop() * height);
+            final int cleft = (int) (loc.getLeft() * width);
+            final int cright = (int) (loc.getRight() * width);
+            final int cbottom = (int) (loc.getBottom() * height);
             child.layout(cleft, ctop, cright, cbottom);
 
         }

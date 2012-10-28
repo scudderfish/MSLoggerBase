@@ -10,20 +10,25 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 /**
  * Dialog to change various gauge settings
  */
 public class EditGaugeDialog extends Dialog implements android.view.View.OnClickListener
 {
-    private MSLoggerActivity mainActivity;
-    private Indicator indicator;
-    private int indicatorIndex;
-    private String indicatorType;
+    private final MSLoggerActivity mainActivity;
+    private final Indicator indicator;
+    private final int indicatorIndex;
+    private final String indicatorType;
 
-    private Map<String, String[]> channels = new HashMap<String, String[]>();
+    private final Map<String, String[]> channels = new HashMap<String, String[]>();
 
     private Spinner channelSpinner;
     private Spinner indicatorPositionSpinner;
@@ -36,7 +41,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param context
      * @param indicator
      */
-    public EditGaugeDialog(Context context, Indicator indicator, int indicatorIndex, MSLoggerActivity mainActivity)
+    public EditGaugeDialog(final Context context, final Indicator indicator, final int indicatorIndex, final MSLoggerActivity mainActivity)
     {
         super(context);
 
@@ -53,7 +58,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param savedInstanceState
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onCreate(final Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
@@ -66,10 +71,10 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         prepareChannelSpinner();
         prepareOrientationSpinner();
         prepareTypeSpinner();
-        
-        Button buttonOK = (Button) findViewById(R.id.editOK);
-        Button buttonReset = (Button) findViewById(R.id.editReset);
-        Button buttonCancel = (Button) findViewById(R.id.editCancel);
+
+        final Button buttonOK = (Button) findViewById(R.id.editOK);
+        final Button buttonReset = (Button) findViewById(R.id.editReset);
+        final Button buttonCancel = (Button) findViewById(R.id.editCancel);
 
         buttonOK.setOnClickListener(this);
         buttonReset.setOnClickListener(this);
@@ -102,57 +107,39 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
     private void prepareChannelSpinner()
     {
         channelSpinner = (Spinner) findViewById(R.id.spinnerChannel);
-/*
-        Set<String> names = GaugeRegister.INSTANCE.getGaugeNames();
-        List<String> titles = new ArrayList<String>();
-
-        for (String name : names)
-        {
-            GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
-
-            String[] indicatorDetails = new String[2];
-            indicatorDetails[0] = gd.getName();
-            indicatorDetails[1] = gd.getTitle();
-
-            channels.put(gd.getChannel(), indicatorDetails);
-            titles.add(gd.getTitle());
-        }
-
-        Collections.sort(titles);
-
-        ArrayAdapter<String> channelArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, titles);
-
-        // Specify the layout to use when the list of choices appears
-        channelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        channelSpinner.setAdapter(channelArrayAdapter);
-
-        int channelPosition = channelArrayAdapter.getPosition(gd.getTitle());
-        if (channelPosition == -1)
-        {
-            channelPosition = 0;
-        }
-        
-        channelSpinner.setSelection(channelPosition);
-
-        channelSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-            {
-                String name = findNameForTitle(channelSpinner.getSelectedItem().toString());
-
-                GaugeDetails newIndicatorDetails = GaugeRegister.INSTANCE.getGaugeDetails(name);
-
-                populateFieldsForGaugeDetails(newIndicatorDetails);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0)
-            {
-            }
-        });
-*/
+        /*
+         * Set<String> names = GaugeRegister.INSTANCE.getGaugeNames(); List<String> titles = new ArrayList<String>();
+         * 
+         * for (String name : names) { GaugeDetails gd = GaugeRegister.INSTANCE.getGaugeDetails(name);
+         * 
+         * String[] indicatorDetails = new String[2]; indicatorDetails[0] = gd.getName(); indicatorDetails[1] = gd.getTitle();
+         * 
+         * channels.put(gd.getChannel(), indicatorDetails); titles.add(gd.getTitle()); }
+         * 
+         * Collections.sort(titles);
+         * 
+         * ArrayAdapter<String> channelArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, titles);
+         * 
+         * // Specify the layout to use when the list of choices appears
+         * channelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+         * 
+         * channelSpinner.setAdapter(channelArrayAdapter);
+         * 
+         * int channelPosition = channelArrayAdapter.getPosition(gd.getTitle()); if (channelPosition == -1) { channelPosition = 0; }
+         * 
+         * channelSpinner.setSelection(channelPosition);
+         * 
+         * channelSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+         * 
+         * @Override public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) { String name =
+         * findNameForTitle(channelSpinner.getSelectedItem().toString());
+         * 
+         * GaugeDetails newIndicatorDetails = GaugeRegister.INSTANCE.getGaugeDetails(name);
+         * 
+         * populateFieldsForGaugeDetails(newIndicatorDetails); }
+         * 
+         * @Override public void onNothingSelected(AdapterView<?> arg0) { } });
+         */
     }
 
     /**
@@ -163,7 +150,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> orientationAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatororientation, android.R.layout.simple_spinner_item);
+        final ArrayAdapter<CharSequence> orientationAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatororientation, android.R.layout.simple_spinner_item);
 
         // Specify the layout to use when the list of choices appears
         orientationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -177,7 +164,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         {
             orientationPosition = 0;
         }
-        
+
         orientationSpinner.setSelection(orientationPosition);
     }
 
@@ -189,7 +176,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         typeSpinner = (Spinner) findViewById(R.id.indicatorType);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatortypes, android.R.layout.simple_spinner_item);
+        final ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatortypes, android.R.layout.simple_spinner_item);
 
         // Specify the layout to use when the list of choices appears
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -203,27 +190,27 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
         {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            public void onItemSelected(final AdapterView<?> parentView, final View selectedItemView, final int position, final long id)
             {
                 adjustFieldsForIndicatorType();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView)
+            public void onNothingSelected(final AdapterView<?> parentView)
             {
             }
         });
     }
-    
+
     /**
      * Depending on the indicator type, decide if specific fields should be displayed or not
      */
     private void adjustFieldsForIndicatorType()
     {
-        TableRow orientationRow = (TableRow) findViewById(R.id.indicatorOrientationRow);
+        final TableRow orientationRow = (TableRow) findViewById(R.id.indicatorOrientationRow);
 
-        String selectedType = typeSpinner.getSelectedItem().toString();
-        
+        final String selectedType = typeSpinner.getSelectedItem().toString();
+
         // Display orientation spinner for bar graph
         if (selectedType.equals(getContext().getString(R.string.bargraph)))
         {
@@ -233,9 +220,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
         {
             orientationRow.setVisibility(View.GONE);
         }
-        
-        TableRow indicatorDetailsNumber = (TableRow) findViewById(R.id.indicatorDetailsNumber);
-        
+
+        final TableRow indicatorDetailsNumber = (TableRow) findViewById(R.id.indicatorDetailsNumber);
+
         // Display multiple indicators choses for table indicator
         if (selectedType.equals(getContext().getString(R.string.table_indicator)))
         {
@@ -253,9 +240,9 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param id ID of the view
      * @param value Value to set it to
      */
-    private void setValue(int id, String value)
+    private void setValue(final int id, final String value)
     {
-        View v = findViewById(id);
+        final View v = findViewById(id);
         if (v instanceof TextView)
         {
             ((TextView) v).setText(value);
@@ -267,88 +254,48 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      */
     public void saveDetails()
     {
-/*
-        
-        Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType);
-
-        String selectedIndicatorType = gaugeType.getSelectedItem().toString();
-
-        // Gauge type changed, need to rebuild the view
-        if (!selectedIndicatorType.equals(indicatorType))
-        {
-            Indicator newIndicator = null;
-
-            // Gauge
-            if (selectedIndicatorType.equals(getContext().getString(R.string.gauge)))
-            {
-                newIndicator = new Gauge(getContext());
-            }
-            // Histogram
-            else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram)))
-            {
-                newIndicator = new Histogram(getContext());
-            }
-            // Bar Graph
-            else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph)))
-            {
-                newIndicator = new BarGraph(getContext());
-            }
-            // Numeric Indicator
-            else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
-            {
-                newIndicator = new NumericIndicator(getContext());
-            }
-            // Table Indicator
-            else if (selectedIndicatorType.equals(getContext().getString(R.string.table_indicator)))
-            {
-                newIndicator = new TableIndicator(getContext());
-            }
-
-            if (newIndicator != null)
-            {
-                LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
-                newIndicator.setLayoutParams(params);
-
-                newIndicator.setFocusable(true);
-                newIndicator.setFocusableInTouchMode(true);
-
-                ViewGroup parentIndicatorView = (ViewGroup) indicator.getParent();
-                int index = parentIndicatorView.indexOfChild(indicator);
-                parentIndicatorView.removeViewAt(index);
-
-                parentIndicatorView.addView(newIndicator, index);
-
-                newIndicator.setId(indicator.getId());
-                newIndicator.initFromName(gd.getName());
-
-//                mainActivity.replaceIndicator(newIndicator, indicatorIndex);
-//                mainActivity.bindIndicatorsEditEventsToIndex(indicatorIndex);
-
-                indicator = newIndicator;
-            }
-        }
-
-        gd.setType(selectedIndicatorType);
-        gd.setOrientation(orientationSpinner.getSelectedItem().toString());
-        gd.setName(getValue(R.id.editName));
-        gd.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString()));
-        gd.setTitle(getValue(R.id.editTitle));
-        gd.setUnits(getValue(R.id.editUnits));
-        gd.setMax(getValueD(R.id.editHi));
-        gd.setMin(getValueD(R.id.editLo));
-        gd.setHiD(getValueD(R.id.editHiD));
-        gd.setHiW(getValueD(R.id.editHiW));
-        gd.setLoD(getValueD(R.id.editLoD));
-        gd.setLoW(getValueD(R.id.editLoW));
-        gd.setVd(getValueI(R.id.editVD));
-        gd.setLd(getValueI(R.id.editLD));
-        gd.setOffsetAngle(getValueD(R.id.editoffsetAngle));
-
-//        GaugeRegister.INSTANCE.persistDetails(gd);
-
-        indicator.initFromGD(gd);
-        indicator.invalidate();
-*/
+        /*
+         * 
+         * Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType);
+         * 
+         * String selectedIndicatorType = gaugeType.getSelectedItem().toString();
+         * 
+         * // Gauge type changed, need to rebuild the view if (!selectedIndicatorType.equals(indicatorType)) { Indicator newIndicator = null;
+         * 
+         * // Gauge if (selectedIndicatorType.equals(getContext().getString(R.string.gauge))) { newIndicator = new Gauge(getContext()); } // Histogram
+         * else if (selectedIndicatorType.equals(getContext().getString(R.string.histogram))) { newIndicator = new Histogram(getContext()); } // Bar
+         * Graph else if (selectedIndicatorType.equals(getContext().getString(R.string.bargraph))) { newIndicator = new BarGraph(getContext()); } //
+         * Numeric Indicator else if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator))) { newIndicator = new
+         * NumericIndicator(getContext()); } // Table Indicator else if
+         * (selectedIndicatorType.equals(getContext().getString(R.string.table_indicator))) { newIndicator = new TableIndicator(getContext()); }
+         * 
+         * if (newIndicator != null) { LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+         * newIndicator.setLayoutParams(params);
+         * 
+         * newIndicator.setFocusable(true); newIndicator.setFocusableInTouchMode(true);
+         * 
+         * ViewGroup parentIndicatorView = (ViewGroup) indicator.getParent(); int index = parentIndicatorView.indexOfChild(indicator);
+         * parentIndicatorView.removeViewAt(index);
+         * 
+         * parentIndicatorView.addView(newIndicator, index);
+         * 
+         * newIndicator.setId(indicator.getId()); newIndicator.initFromName(gd.getName());
+         * 
+         * // mainActivity.replaceIndicator(newIndicator, indicatorIndex); // mainActivity.bindIndicatorsEditEventsToIndex(indicatorIndex);
+         * 
+         * indicator = newIndicator; } }
+         * 
+         * gd.setType(selectedIndicatorType); gd.setOrientation(orientationSpinner.getSelectedItem().toString()); gd.setName(getValue(R.id.editName));
+         * gd.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString())); gd.setTitle(getValue(R.id.editTitle));
+         * gd.setUnits(getValue(R.id.editUnits)); gd.setMax(getValueD(R.id.editHi)); gd.setMin(getValueD(R.id.editLo));
+         * gd.setHiD(getValueD(R.id.editHiD)); gd.setHiW(getValueD(R.id.editHiW)); gd.setLoD(getValueD(R.id.editLoD));
+         * gd.setLoW(getValueD(R.id.editLoW)); gd.setVd(getValueI(R.id.editVD)); gd.setLd(getValueI(R.id.editLD));
+         * gd.setOffsetAngle(getValueD(R.id.editoffsetAngle));
+         * 
+         * // GaugeRegister.INSTANCE.persistDetails(gd);
+         * 
+         * indicator.initFromGD(gd); indicator.invalidate();
+         */
         dismiss();
     }
 
@@ -357,44 +304,28 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param value
      * @return
      */
-/*    private String findChannelForTitle(String indicatorTitle)
-    {
-        for (Map.Entry<String, String[]> entry : channels.entrySet())
-        {
-            String key = entry.getKey();
-            String[] value = entry.getValue();
-
-            if (value[1].equals(indicatorTitle))
-            {
-                return key;
-            }
-        }
-
-        return "";
-    }
-
-    private String findNameForTitle(String indicatorTitle)
-    {
-        for (String[] value : channels.values())
-        {
-            if (value[1].equals(indicatorTitle))
-            {
-                return value[0];
-            }
-        }
-
-        return "";
-    }
-*/
+    /*
+     * private String findChannelForTitle(String indicatorTitle) { for (Map.Entry<String, String[]> entry : channels.entrySet()) { String key =
+     * entry.getKey(); String[] value = entry.getValue();
+     * 
+     * if (value[1].equals(indicatorTitle)) { return key; } }
+     * 
+     * return ""; }
+     * 
+     * private String findNameForTitle(String indicatorTitle) { for (String[] value : channels.values()) { if (value[1].equals(indicatorTitle)) {
+     * return value[0]; } }
+     * 
+     * return ""; }
+     */
     /**
      * Reset gauge details to the firmware default
      */
     public void resetDetails()
     {
-//        GaugeRegister.INSTANCE.reset(gd.getName());
-//        gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
-//        indicator.initFromGD(gd);
-        indicator.invalidate();
+        // GaugeRegister.INSTANCE.reset(gd.getName());
+        // gd = GaugeRegister.INSTANCE.getGaugeDetails(gd.getName());
+        // indicator.initFromGD(gd);
+        // indicator.invalidate();
         dismiss();
     }
 
@@ -404,65 +335,39 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
      * @param id The ID of the view to get the value
      * @return Integer of the value
      */
- /*   private int getValueI(int id)
-    {
-        int val = 0;
-        View v = findViewById(id);
-        if (v instanceof TextView)
-        {
-            String txt = ((TextView) v).getText().toString();
-            val = Integer.parseInt(txt);
-        }
-        return val;
-    }
-*/
+    /*
+     * private int getValueI(int id) { int val = 0; View v = findViewById(id); if (v instanceof TextView) { String txt = ((TextView)
+     * v).getText().toString(); val = Integer.parseInt(txt); } return val; }
+     */
     /**
      * Get the value of a specific view as an double
      * 
      * @param id The ID of the view to get the value
      * @return Double of the value
      */
-/*
-    private double getValueD(int id)
-    {
-        double val = 0;
-        View v = findViewById(id);
-        if (v instanceof TextView)
-        {
-            String txt = ((TextView) v).getText().toString();
-            val = Double.parseDouble(txt);
-        }
-        return val;
-    }
-*/
+    /*
+     * private double getValueD(int id) { double val = 0; View v = findViewById(id); if (v instanceof TextView) { String txt = ((TextView)
+     * v).getText().toString(); val = Double.parseDouble(txt); } return val; }
+     */
     /**
      * Get the value of a specific view as a string
      * 
      * @param id The ID of the view to get the value
      * @return Double of the value
      */
-/*
-    private String getValue(int id)
-    {
-        String val = "";
-        View v = findViewById(id);
-        if (v instanceof TextView)
-        {
-            String txt = ((TextView) v).getText().toString();
-            val = txt;
-        }
-        return val;
-    }
-*/
+    /*
+     * private String getValue(int id) { String val = ""; View v = findViewById(id); if (v instanceof TextView) { String txt = ((TextView)
+     * v).getText().toString(); val = txt; } return val; }
+     */
     /**
      * Triggered when the bottom buttons of the dialog are clicked
      * 
      * @param v
      */
     @Override
-    public void onClick(View v)
+    public void onClick(final View v)
     {
-        int which = v.getId();
+        final int which = v.getId();
 
         if (which == R.id.editOK)
         {

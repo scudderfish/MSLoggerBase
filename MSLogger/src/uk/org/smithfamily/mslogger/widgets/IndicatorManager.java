@@ -1,6 +1,9 @@
 package uk.org.smithfamily.mslogger.widgets;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -8,23 +11,23 @@ import java.util.*;
 public enum IndicatorManager
 {
     INSTANCE;
-    private Map<String, List<Indicator>> indicatorMap  = new HashMap<String, List<Indicator>>();
-    private List<Indicator>              indicatorList = new ArrayList<Indicator>();
-    private boolean                      disabled      = false;
+    private final Map<String, List<Indicator>> indicatorMap = new HashMap<String, List<Indicator>>();
+    private final List<Indicator> indicatorList = new ArrayList<Indicator>();
+    private boolean disabled = false;
     private boolean editing;
 
     /**
      * 
      * @param d
      */
-    public void setDisabled(boolean d)
+    public void setDisabled(final boolean d)
     {
         if (d != disabled)
         {
-            for (Indicator i : indicatorList)
+            for (final Indicator i : indicatorList)
             {
                 i.setDisabled(d);
-                i.invalidate();
+
             }
         }
         disabled = d;
@@ -34,7 +37,7 @@ public enum IndicatorManager
      * 
      * @param i
      */
-    void registerIndicator(Indicator i)
+    void registerIndicator(final Indicator i)
     {
         indicatorList.add(i);
         List<Indicator> indicators = indicatorMap.get(i.getChannel());
@@ -51,10 +54,10 @@ public enum IndicatorManager
      * 
      * @param i
      */
-    void deregisterIndicator(Indicator i)
+    void deregisterIndicator(final Indicator i)
     {
         indicatorList.remove(i);
-        List<Indicator> indicators = indicatorMap.get(i.getChannel());
+        final List<Indicator> indicators = indicatorMap.get(i.getChannel());
         if (indicators == null)
         {
             // Ignore
@@ -68,9 +71,9 @@ public enum IndicatorManager
      * @param channel
      * @return
      */
-    public List<Indicator> getIndicators(String channel)
+    public List<Indicator> getIndicators(final String channel)
     {
-        List<Indicator> indicators = indicatorMap.get(channel);
+        final List<Indicator> indicators = indicatorMap.get(channel);
         return indicators;
     }
 
@@ -82,18 +85,18 @@ public enum IndicatorManager
         return indicatorList;
     }
 
-    public void setEditing(boolean gaugeEditEnabled)
+    public void setEditing(final boolean gaugeEditEnabled)
     {
-        
+
         if (gaugeEditEnabled != editing)
         {
-            for (Indicator i : indicatorList)
+            for (final Indicator i : indicatorList)
             {
-                i.setEditMode(gaugeEditEnabled);
-                i.invalidate();
+                // i.setEditMode(gaugeEditEnabled);
+                // i.invalidate();
             }
         }
-        this.editing=gaugeEditEnabled;
+        this.editing = gaugeEditEnabled;
     }
 
 }
