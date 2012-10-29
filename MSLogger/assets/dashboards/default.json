@@ -3,27 +3,13 @@
     {
       "indicators": [
         {
-          "channel": "rpm",
+          "channel": "RpmHiRes",
           "type": "gauge",
           "location": [
             0,
             0,
-            0.5,
-            0.5
-          ]
-        }
-      ]
-    },
-    {
-      "indicators": [
-        {
-          "channel": "rpm",
-          "type": "bar",
-          "location": [
-            0,
-            0,
-            0.5,
-            0.5
+            1.0,
+            1.0
           ]
         }
       ]

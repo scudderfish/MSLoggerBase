@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 
 public abstract class Renderer
 {
@@ -16,18 +17,20 @@ public abstract class Renderer
     protected double currentValue = 0.0;
     protected double targetValue = 0.0;
 
-    private final long FULL_SWEEP_TIME = 500;
-    private final int MAX_FPS = 30;
+    private final long FULL_SWEEP_TIME = 1000;
+    private final int MAX_FPS = 60;
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private final double epsilon = 1e-5;
-    private long lastPointerMoveTime;
+    private long lastPointerMoveTime = 0;
+    private int dirtyCount = 0;
+    private final RenderStats stats = new RenderStats();
 
     public Renderer(final IndicatorView parent, final Context c)
     {
         this.parent = parent;
         this.model = parent.getIndicator();
         init(c);
-        lastPointerMoveTime = System.currentTimeMillis();
+        lastPointerMoveTime = 0;
     }
 
     public void setTargetValue(final double value)
@@ -48,16 +51,23 @@ public abstract class Renderer
     public boolean updateAnimation()
     {
         boolean isDirty = false;
-        if (Math.abs(targetValue - currentValue) > epsilon)
+        if (offTarget())
         {
             isDirty = true;
-
+            dirtyCount++;
             final double range = model.getMax() - model.getMin();
             final double incPerMilli = range / FULL_SWEEP_TIME;
 
             final long currentTime = System.currentTimeMillis();
-            final long delay = currentTime - lastPointerMoveTime;
-
+            if (lastPointerMoveTime == 0)
+            {
+                lastPointerMoveTime = currentTime;
+            }
+            long delay = currentTime - lastPointerMoveTime;
+            if (delay == 0)
+            {
+                delay = 1;
+            }
             final double direction = Math.signum(targetValue - currentValue);
 
             final double delta = Math.abs(targetValue - currentValue);
@@ -65,12 +75,13 @@ public abstract class Renderer
 
             currentValue += (increment * direction);
             lastPointerMoveTime = System.currentTimeMillis();
-
+            long inducedDelay = 0;
             if (delay < DELAY_PER_FRAME)
             {
+                inducedDelay = DELAY_PER_FRAME - delay;
                 try
                 {
-                    Thread.sleep(DELAY_PER_FRAME - delay);
+                    Thread.sleep(inducedDelay);
                 }
                 catch (final InterruptedException e)
                 {
@@ -78,8 +89,21 @@ public abstract class Renderer
                     e.printStackTrace();
                 }
             }
+            stats.updateStats(delay, delta, inducedDelay);
+            if (!offTarget())
+            { // We are done
+                lastPointerMoveTime = 0;
+                stats.updateDirtyCount(dirtyCount);
+                dirtyCount = 0;
+            }
+
         }
         return isDirty;
+    }
+
+    private boolean offTarget()
+    {
+        return Math.abs(targetValue - currentValue) > epsilon;
     }
 
     public abstract String getType();
@@ -134,6 +158,57 @@ public abstract class Renderer
     public void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
     {
         // Override if you care about this
+    }
+
+}
+
+class RenderStats
+{
+    private static final long STATS_DELAY = 1000;
+    int minDirty = 0;
+    int maxDirty = 0;
+    float avgDirty = 0;
+    int dCounter = 0;
+    int sCounter = 0;
+    long minDelay = 0;
+    long maxDelay = 0;
+    float avgDelay = 0;
+    long minIndDelay = 0;
+    long maxIndDelay = 0;
+    float avgIndDelay = 0;
+    double minDelta = +1e100;
+    double maxDelta = -1e100;
+    double avgDelta = 0;
+    long lastOutput = System.currentTimeMillis();
+
+    public void updateStats(final long delay, final double delta, final long indDelay)
+    {
+        sCounter++;
+
+        minDelay = Math.min(minDelay, delay);
+        maxDelay = Math.max(maxDelay, delay);
+        avgDelay = avgDelay + ((delay - avgDelay) / sCounter);
+        minIndDelay = Math.min(minIndDelay, indDelay);
+        maxIndDelay = Math.max(maxIndDelay, indDelay);
+        avgIndDelay = avgIndDelay + ((indDelay - avgIndDelay) / sCounter);
+        minDelta = Math.min(minDelta, delta);
+        maxDelta = Math.max(maxDelta, delta);
+        avgDelta = avgDelta + ((delta - avgDelta) / sCounter);
+
+        final long now = System.currentTimeMillis();
+        if ((now - lastOutput) > STATS_DELAY)
+        {
+            lastOutput = now;
+            Log.i("RenderStats", String.format("minDelay=%d maxDelay=%d avgDelay=%.2f miniDelay=%d maxiDelay=%d avgiDelay=%.2f minDelta=%.2f maxDelta=%.2f avgDelta=%.2f minDirty=%d maxDirty=%d avgDirty=%.2f", minDelay, maxDelay, avgDelay,
+                    minIndDelay, maxIndDelay, avgIndDelay, minDelta, maxDelta, avgDelta, minDirty, maxDirty, avgDirty));
+        }
+    }
+
+    public void updateDirtyCount(final int dirtyCount)
+    {
+        minDirty = Math.min(minDirty, dirtyCount);
+        maxDirty = Math.max(maxDirty, dirtyCount);
+        avgDirty = avgDirty + ((dirtyCount - avgDirty) / (++dCounter));
     }
 
 }
