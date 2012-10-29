@@ -1,10 +1,21 @@
 package uk.org.smithfamily.mslogger.comms;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.ecuDef.InjectedCommand;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+
 /**
  * Class to send command to the SD card 
  */
 public class MS3SDCard
-{
+{    
+    private Megasquirt ecu;
+
+    public MS3SDCard()
+    {
+        this.ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+    }
+    
     /**
      * SD do command (w 00 00)
      * 
@@ -44,8 +55,8 @@ public class MS3SDCard
      * Returns: 16 bytes of info
      *   Byte 0 = Card status (same as outpc.sd_status)
      *   bit 0: 0=No card, 1=Card present
-     *   bit 1 : 0=SD, 1=SDHC
-     *   bit 2 : 0=Not Ready, 1=Ready
+     *   bit 1: 0=SD, 1=SDHC
+     *   bit 2: 0=Not Ready, 1=Ready
      *   bit 3: 0=Not logging, 1=Logging
      *   bit 4: 0=No error, 1=Error
      *   bit 5: 0=V1.x, 1=V2.0 card
@@ -62,7 +73,13 @@ public class MS3SDCard
      */
     public void status()
     {
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 04 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_STATUS_WRITE);
+        ecu.injectCommand(writeToRAM);
         
+        byte[] commandRead = { (byte) 'r', 00, 11, 00, 00, 00, 10 };
+        writeToRAM = new InjectedCommand(commandRead, 300, true, Megasquirt.MS3_SD_CARD_STATUS_READ);
+        ecu.injectCommand(writeToRAM);
     }
     
     /**

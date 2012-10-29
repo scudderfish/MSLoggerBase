@@ -87,7 +87,6 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     private String panelLabel = "";
     
     private BroadcastReceiver yourReceiver;
-    private static final int CONTROLLER_COMMAND = 1;
     
     /**
      * Constructor for dialog which set the current dialog and ECU object
@@ -154,7 +153,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 {
                     int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
                     
-                    if (resultId == EditDialog.CONTROLLER_COMMAND)
+                    if (resultId == Megasquirt.CONTROLLER_COMMAND)
                     {
                         DebugLogManager.INSTANCE.log("Refreshing fields visibility after controller command", Log.DEBUG);
                        
@@ -176,7 +175,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
-     * 
+     * Unregister the broadcast receiver when the dialog is closed
      */
     public void onStop()
     {
@@ -525,7 +524,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
 
         byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
 
-        InjectedCommand writeToRAM = new InjectedCommand(byteCommand, 300, true, EditDialog.CONTROLLER_COMMAND);
+        InjectedCommand writeToRAM = new InjectedCommand(byteCommand, 300, true, Megasquirt.CONTROLLER_COMMAND);
         ecu.injectCommand(writeToRAM);
     }
     

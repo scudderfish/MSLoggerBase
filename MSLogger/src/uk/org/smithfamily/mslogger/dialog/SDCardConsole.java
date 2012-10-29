@@ -3,14 +3,20 @@ package uk.org.smithfamily.mslogger.dialog;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.comms.MS3SDCard;
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DatalogRow;
 import uk.org.smithfamily.mslogger.log.DatalogRowAdapter;
 import uk.org.smithfamily.mslogger.log.DatalogRowAdapterCallback;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.view.View;
@@ -29,9 +35,15 @@ public class SDCardConsole extends Dialog implements android.view.View.OnClickLi
     private ListView datalogsList;
     private DatalogRowAdapter mDatalogsArrayAdapter;
     
+    private BroadcastReceiver yourReceiver;
+    
+    private MS3SDCard sdCard;
+    
     public SDCardConsole(Context context)
     {
         super(context);
+        
+        this.sdCard = new MS3SDCard();
     }
     
     /**
@@ -57,7 +69,47 @@ public class SDCardConsole extends Dialog implements android.view.View.OnClickLi
         
         datalogsList = (ListView) findViewById(android.R.id.list);
         
+        final IntentFilter injectCommandResultsFilter = new IntentFilter();
+        injectCommandResultsFilter.addAction(Megasquirt.INJECTED_COMMAND_RESULTS);
+        
+        sdCard.status();
+        
+        this.yourReceiver = new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                String action = intent.getAction();
+                
+                if (action.equals(Megasquirt.INJECTED_COMMAND_RESULTS))
+                {
+                    int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
+                    byte result[] = intent.getByteArrayExtra(Megasquirt.INJECTED_COMMAND_RESULT_DATA);
+                    
+                    if (resultId == Megasquirt.MS3_SD_CARD_STATUS_READ)
+                    {
+                        System.out.println("sd card status read: " + Arrays.toString(result));
+                    }
+                    else  if (resultId == Megasquirt.MS3_SD_CARD_STATUS_WRITE)
+                    {
+                        System.out.println("sd card status write: " + Arrays.toString(result));
+                    }
+                }
+            }
+        };
+        
+        // Registers the receiver so that your service will listen for broadcasts
+        getContext().registerReceiver(this.yourReceiver, injectCommandResultsFilter);
+        
         fillDatalogsListView();
+    }
+    
+    /**
+     * Unregister the broadcast receiver when the dialog is closed
+     */
+    public void onStop()
+    {
+        getContext().unregisterReceiver(this.yourReceiver);
     }
     
     /**

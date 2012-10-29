@@ -75,9 +75,14 @@ public class Megasquirt extends Service implements MSControllerInterface
     private static final String LAST_SIG = "LAST_SIG";
     private static final String LAST_PROBE = "LAST_PROBE";
     private static final int NOTIFICATION_ID = 0;
-    private static final int BURN_DATA = 10;
 
     private BroadcastReceiver yourReceiver;
+    
+    // Used by broadcast receiver
+    public static final int CONTROLLER_COMMAND = 1;
+    public static final int BURN_DATA = 10;
+    public static final int MS3_SD_CARD_STATUS_WRITE = 50;
+    public static final int MS3_SD_CARD_STATUS_READ = 51;
 
     private boolean constantsLoaded;
     private String trueSignature = "Unknown";
@@ -140,14 +145,19 @@ public class Megasquirt extends Service implements MSControllerInterface
                 {
                     int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
                     
-                    if (resultId == Megasquirt.BURN_DATA)
+                    switch (resultId)
                     {
+                    case Megasquirt.BURN_DATA:
                         // Wait til we get some data and flush it
                         try
                         {
                             Thread.sleep(200);
                         }
                         catch (InterruptedException e) {}
+                        
+                        break;
+                    default:
+                        break;
                     }
                 }
             }

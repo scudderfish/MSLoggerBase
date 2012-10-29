@@ -183,4 +183,11 @@
 	<string name="deselect_all">&lt;&lt;</string>
 	<string name="available_datalog_fields">Available Datalog Fields</string>
 	<string name="selected_datalog_fields">Selected Datalog Fields</string>
+	
+	<!-- Calibrate TPS -->
+	<string name="maximum_value">Maximum Value</string>
+	<string name="minimum_value">Minimum Value</string>
+	<string name="current_value">Current Value</string>
+	<string name="confirm">Confirm</string>
+	<string name="calibrate_tps_default_value">127</string>
 </resources>
