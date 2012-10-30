@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
@@ -11,7 +12,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableRow.LayoutParams;
 
 /**
  * Helper class used for dialogs
@@ -424,5 +431,72 @@ public class DialogHelper
         dialog.addField(new DialogField("Ignition Offset Angle", "triggerOffset", false, false, ""));
         
         return dialog;
+    }
+    
+    /**
+     * Build a custom layout panel and return it
+     * 
+     * @param panelName The panel of the panel to build
+     * 
+     * @return The relative layout instance with the custom components inside
+     */
+    public static RelativeLayout getCustomPanel(Context context, String panelName)
+    {
+        if (panelName.equals("dataLogFieldSelector"))
+        {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+            LinearLayout datalogFieldSelectorLayout = (LinearLayout) inflater.inflate(R.layout.sd_card_datalog_field_selector, null);
+            
+            // Wrap into relative layout
+            RelativeLayout containerPanelLayout = new RelativeLayout(context);
+            
+            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            containerPanelLayout.setLayoutParams(tlp);
+            containerPanelLayout.addView(datalogFieldSelectorLayout);
+            
+            Button selectAll = (Button) datalogFieldSelectorLayout.findViewById(R.id.select_all);
+            selectAll.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button deselectAll = (Button) datalogFieldSelectorLayout.findViewById(R.id.deselect_all);
+            deselectAll.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button selectOne = (Button) datalogFieldSelectorLayout.findViewById(R.id.select_one);
+            selectOne.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button deselectOne = (Button) datalogFieldSelectorLayout.findViewById(R.id.deselect_one);
+            deselectOne.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            return containerPanelLayout;
+        }
+        
+        return null;
     }
 }

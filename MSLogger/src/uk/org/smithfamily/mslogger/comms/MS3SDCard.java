@@ -17,33 +17,64 @@ public class MS3SDCard
     }
     
     /**
-     * SD do command (w 00 00)
+     * SD reset and go (w 00 00)
      * 
-     * Send w <canid> 11 00 00 00 01 XX
-     * 
-     * Where XX is:
-     *   00 Reset and return to normal
-     *   01 Reset and wait
-     *   02 Stop logging
-     *   03 Start logging
-     *   04 Put status into buffer
-     *   05 Re-initialise card
-     */
-    public void doCommand()
+     * Send w <canid> 11 00 00 00 01 00
+     */    
+    public void resetAndGo()
     {
-        
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 00 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_RESET_AND_GO);
+        ecu.injectCommand(writeToRAM);
     }
     
     /**
-     * SD fetch buffer command (r 00 00)
+     * SD reset and wait (w 00 00)
      * 
-     * Send: r <canid> 11 00 00 aa bb
+     * Send w <canid> 11 00 00 00 01 01
      * 
-     * Return aabb bytes from buffer. Used by all read commands.
      */
-    public void fetchBuffer()
+    public void resetAndWait()
     {
-        
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 01 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_RESET_AND_WAIT);
+        ecu.injectCommand(writeToRAM);
+    }
+    
+    /**
+     * SD stop logging (w 00 00)
+     * 
+     * Send w <canid> 11 00 00 00 01 02
+     */
+    public void stopLogging()
+    {
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 02 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_STOP_LOGGING);
+        ecu.injectCommand(writeToRAM);
+    }
+    
+    /**
+     * SD start logging (w 00 00)
+     * 
+     * Send w <canid> 11 00 00 00 01 03
+     */
+    public void startLogging()
+    {
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 03 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_START_LOGGING);
+        ecu.injectCommand(writeToRAM);  
+    }
+    
+    /**
+     * SD reinitialise card (w 00 00)
+     * 
+     * Send w <canid> 11 00 00 00 01 05
+     */
+    public void reinitialiseCard()
+    {
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 00, 00, 01, 05 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_REINITIALISE_CARD);
+        ecu.injectCommand(writeToRAM);   
     }
     
     /**
@@ -107,9 +138,11 @@ public class MS3SDCard
      * Note 3. directory chunk no. starts at 0.
      * 
      */
-    public void readDirectory()
+    public void readDirectory(byte chunk)
     {
-        
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 01, 00, 02, chunk };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_READ_DIRECTORY_WRITE);
+        ecu.injectCommand(writeToRAM);
     }
 
     /**
@@ -154,7 +187,9 @@ public class MS3SDCard
      */
     public void readStream()
     {
-        
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 04, 00, 01, 01 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_READ_STREAM);
+        ecu.injectCommand(writeToRAM);
     }
     
     /**
@@ -228,7 +263,13 @@ public class MS3SDCard
      */
     public void RTCRead()
     {
+        byte[] commandWrite = { (byte) 'w', 00, 11, 00, 8, 00, 8 };
+        InjectedCommand writeToRAM = new InjectedCommand(commandWrite, 300, true, Megasquirt.MS3_SD_CARD_READ_RTC_WRITE);
+        ecu.injectCommand(writeToRAM);
         
+        byte[] commandRead = { (byte) 'r', 00, 11, 00, 00, 02, 02 };
+        writeToRAM = new InjectedCommand(commandRead, 300, true, Megasquirt.MS3_SD_CARD_READ_RTC_READ);
+        ecu.injectCommand(writeToRAM);
     }
     
     /**

@@ -86,13 +86,22 @@ public class SDCardConsole extends Dialog implements android.view.View.OnClickLi
                     int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
                     byte result[] = intent.getByteArrayExtra(Megasquirt.INJECTED_COMMAND_RESULT_DATA);
                     
-                    if (resultId == Megasquirt.MS3_SD_CARD_STATUS_READ)
+                    switch (resultId)
                     {
+                    case Megasquirt.MS3_SD_CARD_STATUS_READ:
                         System.out.println("sd card status read: " + Arrays.toString(result));
-                    }
-                    else  if (resultId == Megasquirt.MS3_SD_CARD_STATUS_WRITE)
-                    {
+                        break;
+                    case Megasquirt.MS3_SD_CARD_STATUS_WRITE:
                         System.out.println("sd card status write: " + Arrays.toString(result));
+                        break;
+                    case Megasquirt.MS3_SD_CARD_READ_DIRECTORY_WRITE:
+                        break;
+                    case Megasquirt.MS3_SD_CARD_READ_DIRECTORY_READ:
+                        break;
+                    case Megasquirt.MS3_SD_CARD_READ_STREAM:
+                        break;
+                    default:
+                        break;
                     }
                 }
             }

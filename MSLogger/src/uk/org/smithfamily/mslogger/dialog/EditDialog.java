@@ -195,7 +195,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     {
         RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         
-        DebugLogManager.INSTANCE.log("PANEL tableLayoutToAdd id (" + dialogName + ") is " + relativeLayoutToAdd.getId(), Log.DEBUG);
+        DebugLogManager.INSTANCE.log("PANEL relativeLayoutToAdd id (" + dialogName + ") is " + relativeLayoutToAdd.getId(), Log.DEBUG);
         
         // This is not the first panel we add on this dialog
         if (previousPanelLayout != null)
@@ -308,6 +308,41 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     }
     
     /**
+     * Create controller command button with the properties and events
+     *
+     * @return An instance of Button
+     */
+    private Button createControllerCommandButton(MSDialog dialog, DialogField df)
+    {
+        final String controllerCommandName = df.getName();
+        
+        Button cmdButton = new Button(getContext());
+        
+        cmdButton.setText(df.getLabel());
+        cmdButton.setTag(df.getName());
+        cmdButton.setEnabled(ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName()));                    
+        cmdButton.setOnClickListener(new Button.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                clickCmdButton(controllerCommandName);
+            }
+        });
+        
+        if (atLeastOneCompleteRow(dialog.getFieldsList()))
+        {
+            cmdButton.setLayoutParams(lpSpanWithMargins); 
+        }
+        else
+        {
+            cmdButton.setLayoutParams(lpWithTopBottomMargins); 
+        }
+        
+        return cmdButton;
+    }
+    
+    /**
      * Recursive function that will draw fields and panels of a dialog.
      * It's called recursively until all fields and panels were drawn.
      * 
@@ -354,30 +389,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                 // Dialog field is a command button
                 if (df.isCommandButton())
                 {
-                    final String controllerCommandName = df.getName();
-                    
-                    Button cmdButton = new Button(getContext());
-                    
-                    cmdButton.setText(df.getLabel());
-                    cmdButton.setTag(df.getName());
-                    cmdButton.setEnabled(ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName()));                    
-                    cmdButton.setOnClickListener(new Button.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            clickCmdButton(controllerCommandName);
-                        }
-                    });
-                    
-                    if (atLeastOneCompleteRow(dialog.getFieldsList()))
-                    {
-                        cmdButton.setLayoutParams(lpSpanWithMargins); 
-                    }
-                    else
-                    {
-                        cmdButton.setLayoutParams(lpWithTopBottomMargins); 
-                    }
+                    Button cmdButton = createControllerCommandButton(dialog, df);
                     
                     tableRow.addView(cmdButton);
                 }
@@ -504,7 +516,20 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
                         }
                         else
                         {
-                            DebugLogManager.INSTANCE.log("Invalid panel name " + dp.getName(), Log.DEBUG);
+                            RelativeLayout rLayout = DialogHelper.getCustomPanel(getContext(), dp.getName());
+                            
+                            // Maybe it's a custom panel
+                            if (rLayout != null)
+                            {
+                                rLayout.setId(nbPanels);
+                                rLayout.setTag(dialog.getName());
+                                
+                                addPanel(parentLayout, rLayout, orientation, dialog.getName(), parentDialog.getAxis(), sameDialogPreviousLayoutPanel); 
+                            }
+                            else
+                            {
+                                DebugLogManager.INSTANCE.log("Invalid panel name " + dp.getName(), Log.DEBUG);
+                            }
                         }
                     }
                 }
@@ -656,6 +681,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         containerPanelLayout.addView(curveLayout);
         
         boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + curvePanel.getName());
+       
         // Table panel is disabled, make it look like it is
         if (!isPanelEnabled) 
         {
@@ -698,6 +724,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         panelLayout.addView(tableLayout);
         
         boolean isPanelEnabled = ecu.getUserDefinedVisibilityFlagsByName(parentDialogName + "_" + tablePanel.getName());
+        
         // Table panel is disabled, make it look like it is
         if (!isPanelEnabled) 
         {

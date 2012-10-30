@@ -80,10 +80,22 @@ public class Megasquirt extends Service implements MSControllerInterface
     
     // Used by broadcast receiver
     public static final int CONTROLLER_COMMAND = 1;
+    
     public static final int BURN_DATA = 10;
+    
     public static final int MS3_SD_CARD_STATUS_WRITE = 50;
     public static final int MS3_SD_CARD_STATUS_READ = 51;
-
+    public static final int MS3_SD_CARD_RESET_AND_GO = 52;
+    public static final int MS3_SD_CARD_RESET_AND_WAIT = 53;
+    public static final int MS3_SD_CARD_STOP_LOGGING = 54;
+    public static final int MS3_SD_CARD_START_LOGGING = 55;
+    public static final int MS3_SD_CARD_REINITIALISE_CARD = 56;
+    public static final int MS3_SD_CARD_READ_DIRECTORY_WRITE = 57;
+    public static final int MS3_SD_CARD_READ_DIRECTORY_READ = 58;
+    public static final int MS3_SD_CARD_READ_STREAM = 59;
+    public static final int MS3_SD_CARD_READ_RTC_WRITE = 60;
+    public static final int MS3_SD_CARD_READ_RTC_READ = 61;
+    
     private boolean constantsLoaded;
     private String trueSignature = "Unknown";
     private volatile ECUThread ecuThread;
