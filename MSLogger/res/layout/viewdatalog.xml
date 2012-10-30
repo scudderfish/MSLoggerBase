@@ -1,14 +1,23 @@
-<TabHost android:layout_width="fill_parent"
-    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+<TabHost
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:id="@+id/tabhost">
     
-    <LinearLayout android:orientation="vertical" android:layout_height="fill_parent"
-        android:layout_width="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
         
-        <TabWidget android:id="@android:id/tabs"
-            android:layout_height="wrap_content" android:layout_width="fill_parent"></TabWidget>
-        <FrameLayout android:id="@android:id/tabcontent"
-            android:layout_height="fill_parent" android:layout_width="fill_parent">           
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent" />
+        
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent">
            
 			<LinearLayout
 			    android:layout_width="fill_parent"
@@ -28,8 +37,8 @@
 			        android:layout_width="fill_parent"
 			        android:layout_height="0px"
 			        android:layout_weight="1"
-			        android:stackFromBottom="true" >
-			    </LinearLayout>			
+			        android:stackFromBottom="true">
+			    </LinearLayout>
 			
 			    <RelativeLayout
 			        android:id="@+id/RelativeLayout1"
@@ -50,12 +59,13 @@
 			<LinearLayout
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"
-			    android:orientation="vertical" android:id="@+id/scatter_plot">
+			    android:orientation="vertical"
+			    android:id="@+id/scatter_plot">
 			 
 			 	<LinearLayout
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
-			        android:padding="10dip" >			
+			        android:padding="10dip" >
 			        
 			        <TextView 
 			            android:layout_width="wrap_content"
@@ -127,8 +137,8 @@
 		 		        android:id="@+id/chart_scatter_plot"
 		 		        android:layout_width="0dip"
 		 		        android:layout_height="fill_parent"
-		 		        android:layout_weight="0.92">	 			    
-					</LinearLayout>	        
+		 		        android:layout_weight="0.92">
+					</LinearLayout>
 
 					<uk.org.smithfamily.mslogger.widgets.ScatterPlotZAxisGradient
 					    android:id="@+id/scatterPlotZAxisGradient"
@@ -138,7 +148,7 @@
 					    android:focusable="true"
 					    android:focusableInTouchMode="true" />
 		   		</LinearLayout>
-			</LinearLayout>            
+			</LinearLayout>
         </FrameLayout>
-    </LinearLayout>    
+    </LinearLayout>
 </TabHost>

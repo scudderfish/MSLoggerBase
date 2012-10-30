@@ -8,24 +8,20 @@ import java.util.List;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.log.DatalogRow;
+import uk.org.smithfamily.mslogger.log.DatalogRowAdapter;
+import uk.org.smithfamily.mslogger.log.DatalogRowAdapterCallback;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.log.EmailManager;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StatFs;
 import android.text.format.Formatter;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -149,180 +145,6 @@ public class ManageDatalogsActivity  extends ListActivity
     }
     
     /**
-     *  Class that define the components of a datalog row
-     */
-    public class DatalogRow
-    {
-        private String datalogName = "";
-        private String datalogSize = "";
-        private boolean selected = false;
-        
-        public String getDatalogName()
-        {
-            return datalogName;
-        }
-
-        public void setDatalogName(String datalogName)
-        {
-            this.datalogName = datalogName;
-        }
-        
-        public String getDatalogSize()
-        {
-            return datalogSize;
-        }
-        
-        public void setDatalogSize(String datalogSize)
-        {
-            this.datalogSize = datalogSize;
-        }
-
-        public boolean isSelected()
-        {
-            return selected;
-        }
-
-        public void setSelected(boolean selected)
-        {
-            this.selected = selected;
-        }
-    }
-    
-    /**
-     * Custom adapter which have two rows (datalog name and datalog size) + a checkbox
-     */
-    public class DatalogRowAdapter extends BaseAdapter
-    {
-       private List<DatalogRow> datalogRows;
-       
-       private LayoutInflater mInflater;
-
-       public DatalogRowAdapter(Context context, ArrayList<DatalogRow> results)
-       {
-           datalogRows = results;
-           mInflater = LayoutInflater.from(context);
-       }
-
-       public void clear()
-       {
-           datalogRows.clear();
-       }
-       
-        @Override
-        public int getCount()
-        {
-            return datalogRows.size();
-        }
-    
-        @Override
-        public Object getItem(int position)
-        {
-            return datalogRows.get(position);
-        }
-    
-        @Override
-        public long getItemId(int position)
-        {
-            return position;
-        }
-        
-        public boolean isItemSelected(int position)
-        {
-            return datalogRows.get(position).isSelected();
-        }
-        
-        public List<DatalogRow> getAllSelected()
-        {
-            List<DatalogRow> selectedRows = new ArrayList<DatalogRow>();
-            
-            for (DatalogRow datalogRow : datalogRows)
-            {
-                if (datalogRow.isSelected())
-                {
-                    selectedRows.add(datalogRow);
-                }
-            }
-            
-            return selectedRows;
-        }
-    
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent)
-        {
-            ViewHolder holder;
-            
-            if (convertView == null)
-            {
-                convertView = mInflater.inflate(R.layout.viewdatalog_row, null);
-                
-                holder = new ViewHolder();
-                holder.txtDatalogName = (TextView) convertView.findViewById(R.id.datalog_name);
-                holder.txtDatalogSize = (TextView) convertView.findViewById(R.id.datalog_size);
-                holder.chkSelected = (CheckBox) convertView.findViewById(R.id.selected);
-
-                convertView.setTag(holder);
-            }
-            else
-            {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            
-            holder.chkSelected.setOnCheckedChangeListener(new OnCheckedChangeListener()
-            {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-                {                     
-                    datalogRows.get(position).setSelected(isChecked);
-                    
-                    // If more then one datalog is checked, make send by email button visible
-                    if (getCountDatalogsChecked() > 0) 
-                    {
-                        showBottomButtons();
-                    }
-                    else 
-                    {
-                        hideBottomButtons();
-                    }
-                }
-            });
-            
-            convertView.setOnClickListener(new OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    CheckBox selected = (CheckBox) v.findViewById(R.id.selected);
-                    
-                    selected.setChecked(!selected.isChecked());    
-                    
-                    datalogRows.get(position).setSelected(selected.isChecked());
-                    
-                    if (getCountDatalogsChecked() > 0)
-                    {
-                        showBottomButtons();
-                    }
-                    else {
-                        hideBottomButtons();
-                    }
-                }
-            });
-            
-            holder.txtDatalogName.setText(datalogRows.get(position).getDatalogName());
-            holder.txtDatalogSize.setText(datalogRows.get(position).getDatalogSize());
-            holder.chkSelected.setChecked(datalogRows.get(position).isSelected());
-            
-            return convertView;
-        }
-
-        class ViewHolder
-        {
-            TextView txtDatalogName;
-            TextView txtDatalogSize;
-            CheckBox chkSelected;
-        }
-}
-    
-    /**
      * Prepare the listview for datalogs
      */
     private void fillDatalogsListView() 
@@ -353,15 +175,30 @@ public class ManageDatalogsActivity  extends ListActivity
                 DatalogRow datalogRow = new DatalogRow();
                 
                 datalogRow.setDatalogName(datalog.getName());
-                datalogRow.setDatalogSize("Size: " + Formatter.formatFileSize(this,datalog.length()));
+                datalogRow.setDatalogSize("Size: " + Formatter.formatFileSize(this, datalog.length()));
                 
                 datalogRows.add(datalogRow);
                 
                 datalogsSize += datalog.length();
             }
 
-            mDatalogsArrayAdapter = new DatalogRowAdapter(this,datalogRows);    
-
+            mDatalogsArrayAdapter = new DatalogRowAdapter(this, datalogRows);    
+            mDatalogsArrayAdapter.setCallback(new DatalogRowAdapterCallback()
+            {
+                public void onDatalogSelected()
+                {
+                    // If more then one datalog is checked, make send by email button visible
+                    if (getCountDatalogsChecked() > 0)
+                    {
+                        showBottomButtons();
+                    }
+                    else
+                    {
+                        hideBottomButtons();
+                    }
+                }
+            });
+            
             datalogsList.setAdapter(mDatalogsArrayAdapter);
             
             datalogsList.setVisibility(View.VISIBLE);
@@ -402,7 +239,7 @@ public class ManageDatalogsActivity  extends ListActivity
     /**
      * @return The number of checked datalogs
      */
-    public int getCountDatalogsChecked()
+    private int getCountDatalogsChecked()
     {
         int nbChecked = 0;
         
@@ -420,7 +257,7 @@ public class ManageDatalogsActivity  extends ListActivity
     /**
      * Show the bottom buttons
      */ 
-    public void showBottomButtons()
+    private void showBottomButtons()
     {
         sendByEmail.setVisibility(View.VISIBLE);
         delete.setVisibility(View.VISIBLE);
@@ -438,7 +275,7 @@ public class ManageDatalogsActivity  extends ListActivity
     /**
      * Hide the bottoms buttons
      */ 
-    public void hideBottomButtons()
+    private void hideBottomButtons()
     {
         view.setVisibility(View.GONE);
         sendByEmail.setVisibility(View.GONE);
