@@ -85,8 +85,7 @@ public abstract class Renderer
                 }
                 catch (final InterruptedException e)
                 {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    // Swallow
                 }
             }
             stats.updateStats(delay, delta, inducedDelay);

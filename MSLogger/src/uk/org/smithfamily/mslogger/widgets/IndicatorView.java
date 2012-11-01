@@ -28,15 +28,45 @@ public class IndicatorView extends SurfaceView implements SurfaceHolder.Callback
         setFocusable(true);
     }
 
+    class SetDelayedValue implements Runnable
+    {
+        private final Indicator indicator;
+        private final double value;
+        private final long delay;
+
+        SetDelayedValue(final Indicator i, final double value, final long delay)
+        {
+            this.indicator = i;
+            this.value = value;
+            this.delay = delay;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                Thread.sleep(delay);
+            }
+            catch (final InterruptedException e)
+            {
+                // swallow
+            }
+            indicator.setValue(value);
+        }
+    }
+
     class IndicatorThread extends Thread implements Observer
     {
         private volatile boolean running = false;
         private final Context context;
         private final SurfaceHolder holder;
+        @SuppressWarnings("unused")
         private final Resources resources;
         private final IndicatorView parentView;
         private final Indicator indicator;
         private Renderer renderer;
+        private Indicator.DisplayType lastType;
         private final Object updateLock = new Object();
 
         public IndicatorThread(final SurfaceHolder holder, final Context context, final IndicatorView indicatorView)
@@ -47,21 +77,30 @@ public class IndicatorView extends SurfaceView implements SurfaceHolder.Callback
             this.indicator = parentView.getIndicator();
             this.resources = context.getResources();
             this.setName("IndicatorThread:" + indicator.getChannel());
-            switch (indicator.getDisplayType())
+            lastType = indicator.getDisplayType();
+            renderer = createRenderer(lastType, context, indicatorView);
+
+        }
+
+        private Renderer createRenderer(final Indicator.DisplayType type, final Context context, final IndicatorView indicatorView)
+        {
+            final Renderer r;
+            switch (lastType)
             {
             case GAUGE:
-                renderer = new Gauge(indicatorView, context);
+                r = new Gauge(indicatorView, context);
                 break;
             case BAR:
-                renderer = new BarGraph(indicatorView, context);
+                r = new BarGraph(indicatorView, context);
                 break;
             case NUMERIC:
-                renderer = new NumericIndicator(indicatorView, context);
+                r = new NumericIndicator(indicatorView, context);
                 break;
             default:
-                renderer = new Gauge(indicatorView, context);
+                r = new Gauge(indicatorView, context);
                 break;
             }
+            return r;
         }
 
         public void setRunning(final boolean r)
@@ -75,6 +114,9 @@ public class IndicatorView extends SurfaceView implements SurfaceHolder.Callback
         {
             Canvas c;
             indicator.addObserver(this);
+            new Thread(new SetDelayedValue(indicator, indicator.getMax(), 100)).start();
+            new Thread(new SetDelayedValue(indicator, indicator.getMin(), 1100)).start();
+
             while (running)
             {
                 while (isDirty)
@@ -106,8 +148,7 @@ public class IndicatorView extends SurfaceView implements SurfaceHolder.Callback
                 }
                 catch (final InterruptedException e)
                 {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    // Swallow
                 }
             }
             indicator.deleteObserver(this);
@@ -118,6 +159,11 @@ public class IndicatorView extends SurfaceView implements SurfaceHolder.Callback
         {
             synchronized (updateLock)
             {
+                if (lastType != indicator.getDisplayType())
+                {
+                    renderer = createRenderer(lastType, context, parentView);
+                    lastType = indicator.getDisplayType();
+                }
                 renderer.setTargetValue(indicator.getValue());
                 updateLock.notifyAll();
             }

@@ -40,10 +40,6 @@ public class Gauge extends Renderer
 
     private int lastBGColour;
     private static final float rimSize = 0.02f;
-    private static final double FULL_SWEEP_TIME = 1000;
-
-    private final long lastPointerMoveTime = System.currentTimeMillis();
-    private final long logTime = System.currentTimeMillis();
 
     @Override
     protected void init(final Context c)
@@ -109,9 +105,6 @@ public class Gauge extends Renderer
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.scale(scale, scale);
 
-        // drawFace(canvas);
-
-        // drawScale(canvas);
         drawPointer(canvas);
 
         if (!model.isDisabled())
