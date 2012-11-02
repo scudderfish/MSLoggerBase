@@ -73,8 +73,7 @@ public abstract class Renderer
 
             currentValue += (increment * direction);
             lastPointerMoveTime = System.currentTimeMillis();
-            final long inducedDelay = 0;
-            stats.updateStats(delay, delta, inducedDelay);
+            stats.updateStats(delay, delta);
             if (!offTarget())
             { // We are done
                 lastPointerMoveTime = 0;
@@ -86,7 +85,7 @@ public abstract class Renderer
         return isDirty;
     }
 
-    private boolean offTarget()
+    public boolean offTarget()
     {
         return Math.abs(targetValue - currentValue) > epsilon;
     }
@@ -158,24 +157,18 @@ class RenderStats
     long minDelay = 0;
     long maxDelay = 0;
     float avgDelay = 0;
-    long minIndDelay = 0;
-    long maxIndDelay = 0;
-    float avgIndDelay = 0;
     double minDelta = +1e100;
     double maxDelta = -1e100;
     double avgDelta = 0;
     long lastOutput = System.currentTimeMillis();
 
-    public void updateStats(final long delay, final double delta, final long indDelay)
+    public void updateStats(final long delay, final double delta)
     {
         sCounter++;
 
         minDelay = Math.min(minDelay, delay);
         maxDelay = Math.max(maxDelay, delay);
         avgDelay = avgDelay + ((delay - avgDelay) / sCounter);
-        minIndDelay = Math.min(minIndDelay, indDelay);
-        maxIndDelay = Math.max(maxIndDelay, indDelay);
-        avgIndDelay = avgIndDelay + ((indDelay - avgIndDelay) / sCounter);
         minDelta = Math.min(minDelta, delta);
         maxDelta = Math.max(maxDelta, delta);
         avgDelta = avgDelta + ((delta - avgDelta) / sCounter);
@@ -184,9 +177,10 @@ class RenderStats
         if ((now - lastOutput) > STATS_DELAY)
         {
             lastOutput = now;
-            Log.i("RenderStats", String.format("minDelay=%d maxDelay=%d avgDelay=%.2f miniDelay=%d maxiDelay=%d avgiDelay=%.2f minDelta=%.2f maxDelta=%.2f avgDelta=%.2f minDirty=%d maxDirty=%d avgDirty=%.2f", minDelay, maxDelay, avgDelay,
-                    minIndDelay, maxIndDelay, avgIndDelay, minDelta, maxDelta, avgDelta, minDirty, maxDirty, avgDirty));
+            Log.i("RenderStats",
+                    String.format("minDelay=%d maxDelay=%d avgDelay=%.2f minDelta=%.2f maxDelta=%.2f avgDelta=%.2f minDirty=%d maxDirty=%d avgDirty=%.2f", minDelay, maxDelay, avgDelay, minDelta, maxDelta, avgDelta, minDirty, maxDirty, avgDirty));
         }
+        Log.d("RenderStatsFull", String.format("delta=%.2f", delta));
     }
 
     public void updateDirtyCount(final int dirtyCount)

@@ -176,7 +176,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
             while (running)
             {
-                while (isDirty)
+                while (indicatorsOutOfDate())
                 {
                     c = null;
                     try
@@ -226,6 +226,18 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
 
+        private boolean indicatorsOutOfDate()
+        {
+            for (final Indicator i : indicators)
+            {
+                if (manageRenderer(i) || i.getRenderer().offTarget())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         @Override
         public void update(final Observable observable, final Object data)
         {
@@ -259,10 +271,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 indicatorDirty = manageRenderer(i);
                 final Renderer r = i.getRenderer();
                 indicatorDirty |= r.updateAnimation();
-                if (indicatorDirty)
-                {
-                    r.renderFrame(c);
-                }
+                r.renderFrame(c);
                 isDirty |= indicatorDirty;
             }
         }

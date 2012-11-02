@@ -43,7 +43,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     private int left;
     private int top;
     private int right;
-    private Object bottom;
+    private int bottom;
 
     public Indicator()
     {
@@ -319,7 +319,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         return right;
     }
 
-    public Object getBottom()
+    public int getBottom()
     {
         return bottom;
     }
@@ -327,5 +327,15 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     public void setType(final DisplayType type)
     {
         this.type = type;
+    }
+
+    public int getHeight()
+    {
+        return bottom - top;
+    }
+
+    public int getWidth()
+    {
+        return right - left;
     }
 }
