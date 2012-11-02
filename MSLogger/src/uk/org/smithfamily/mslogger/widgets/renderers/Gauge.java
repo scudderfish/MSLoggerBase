@@ -11,7 +11,7 @@ import android.graphics.Path.FillType;
 /**
  *
  */
-public class Gauge extends Renderer
+public class Gauge extends Painter
 {
 
     public Gauge(final DashboardView parent, final Indicator model, final Context c)

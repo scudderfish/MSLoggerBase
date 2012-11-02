@@ -142,9 +142,9 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             this.setName("DashboardThread" + parent.position);
         }
 
-        private Renderer createRenderer(final Indicator i, final Context context, final DashboardView dashboardView)
+        private Painter createRenderer(final Indicator i, final Context context, final DashboardView dashboardView)
         {
-            final Renderer r;
+            final Painter r;
             switch (i.getDisplayType())
             {
             case GAUGE:
@@ -269,7 +269,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             for (final Indicator i : parent.getIndicators())
             {
                 indicatorDirty = manageRenderer(i);
-                final Renderer r = i.getRenderer();
+                final Painter r = i.getRenderer();
                 indicatorDirty |= r.updateAnimation();
                 r.renderFrame(c);
                 isDirty |= indicatorDirty;

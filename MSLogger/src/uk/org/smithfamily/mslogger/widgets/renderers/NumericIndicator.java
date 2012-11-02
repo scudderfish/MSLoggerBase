@@ -9,7 +9,7 @@ import android.graphics.*;
 /**
  * 
  */
-public class NumericIndicator extends Renderer
+public class NumericIndicator extends Painter
 {
 
     public NumericIndicator(final DashboardView parent, final Indicator model, final Context c)

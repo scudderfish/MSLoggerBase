@@ -9,7 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
 
-public abstract class Renderer
+public abstract class Painter
 {
     protected DashboardView parent;
     protected final Indicator model;
@@ -23,7 +23,7 @@ public abstract class Renderer
     private int dirtyCount = 0;
     private final RenderStats stats = new RenderStats();
 
-    public Renderer(final DashboardView parent, final Indicator model, final Context c)
+    public Painter(final DashboardView parent, final Indicator model, final Context c)
     {
         this.parent = parent;
         this.model = model;

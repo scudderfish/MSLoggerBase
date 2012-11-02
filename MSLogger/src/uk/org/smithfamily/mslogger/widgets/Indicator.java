@@ -5,7 +5,7 @@ import java.util.Observer;
 
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.utils.Copyable;
-import uk.org.smithfamily.mslogger.widgets.renderers.Renderer;
+import uk.org.smithfamily.mslogger.widgets.renderers.Painter;
 
 /**
  * This class is a bean that holds the information necessary to model an Indicator
@@ -39,7 +39,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     private Location location;
     private DisplayType type;
-    private Renderer renderer;
+    private Painter renderer;
     private int left;
     private int top;
     private int right;
@@ -294,12 +294,12 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         this.bottom = cbottom;
     }
 
-    public synchronized Renderer getRenderer()
+    public synchronized Painter getRenderer()
     {
         return renderer;
     }
 
-    public synchronized void setRenderer(final Renderer renderer)
+    public synchronized void setRenderer(final Painter renderer)
     {
         this.renderer = renderer;
     }

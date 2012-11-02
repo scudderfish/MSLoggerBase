@@ -6,7 +6,7 @@ import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
 import android.graphics.*;
 
-public class Histogram extends Renderer
+public class Histogram extends Painter
 {
 
     public Histogram(final DashboardView parent, final Indicator model, final Context c)

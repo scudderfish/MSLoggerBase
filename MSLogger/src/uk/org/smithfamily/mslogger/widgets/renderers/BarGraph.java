@@ -10,7 +10,7 @@ import android.graphics.*;
 /**
  *
  */
-public class BarGraph extends Renderer
+public class BarGraph extends Painter
 {
 
     public BarGraph(final DashboardView parent, final Indicator model, final Context c)
