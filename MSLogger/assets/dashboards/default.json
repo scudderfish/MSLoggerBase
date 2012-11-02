@@ -5,12 +5,22 @@
         {
           "channel": "RpmHiRes",
           "type": "gauge",
-          "location": [
-            0.00,
-            0.0,
-            1,
-            0.7
-          ]
+          "location": {"left" : 0.0, "top" : 0.0,"right" : 1.0,"bottom" : 0.7}
+        },
+        {
+          "channel": "coolant",
+          "type": "gauge",
+          "location": {"left" : 0.0,"top" : 0.7,"right" : 0.3,"bottom" : 1.0}
+        },
+        {
+          "channel": "lambda",
+          "type": "gauge",
+          "location": {"left" : 0.3,"top" : 0.7,"right" : 0.6,"bottom" : 1.0}
+        },
+        {
+          "channel": "mat",
+          "type": "gauge",
+          "location": {"left" : 0.6,"top" : 0.7,"right" : 0.9,"bottom" : 1.0}
         }
       ]
     }
