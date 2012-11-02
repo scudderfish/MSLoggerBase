@@ -9,15 +9,15 @@ import uk.org.smithfamily.mslogger.log.*;
 
 /**
  * Base class for any ECU simulators
- *
+ * 
  */
 public abstract class MSSimulator implements Runnable
 {
-    
+
     public static final int SERVERPORT = 1052;
-    //Approx allowing for start/stop bits etc
+    // Approx allowing for start/stop bits etc
     private static final double BAUD_PER_BYTE = 10;
-    //The log file we're going to play back
+    // The log file we're going to play back
     FRDLogFile frdFile;
     Thread simThread = null;
     ServerSocket serverSocket;
@@ -39,22 +39,23 @@ public abstract class MSSimulator implements Runnable
         {
             try
             {
-                Socket client = serverSocket.accept();
+                final Socket client = serverSocket.accept();
 
-                //Get the streams...
-                InputStream is = client.getInputStream();
-                OutputStream os = client.getOutputStream();
+                // Get the streams...
+                final InputStream is = client.getInputStream();
+                final OutputStream os = client.getOutputStream();
 
-                //And process them
+                // And process them
                 while (running)
                 {
-                    int b = is.read();
+                    final int b = is.read();
                     process(b, is, os);
                     os.flush();
                 }
-            } catch (IOException e)
+            }
+            catch (final IOException e)
             {
-                //Something borked.  Drop the connection and try again
+                // Something borked. Drop the connection and try again
                 DebugLogManager.INSTANCE.logException(e);
             }
 
@@ -63,21 +64,23 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * Pull a page of firmware from a previously saved file
+     * 
      * @param pageNo
      * @return
      */
-    protected byte[] getFirmwarePage(int pageNo)
+    protected byte[] getFirmwarePage(final int pageNo)
     {
-        byte[] page = new byte[getFirmwarePageSize(pageNo)];
+        final byte[] page = new byte[getFirmwarePageSize(pageNo)];
 
-        File firmwareFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFirmwareFile());
+        final File firmwareFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFirmwareFile());
         try
         {
-            FileInputStream r = new FileInputStream(firmwareFile);
+            final FileInputStream r = new FileInputStream(firmwareFile);
             r.skip((pageNo - 1) * getFirmwarePageSize(pageNo));
             r.read(page);
             r.close();
-        } catch (IOException e)
+        }
+        catch (final IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
@@ -87,13 +90,14 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * Pull from the previously loaded list, the next set of runtime vars
+     * 
      * @return
      * @throws IOException
      */
     protected byte[] getNextPageOfVars() throws IOException
     {
         final FRDLogFileRecord nextRecord = frdFile.getNextRecord();
-        byte[] vars = nextRecord.getOchBuffer();
+        final byte[] vars = nextRecord.getOchBuffer();
 
         return vars;
     }
@@ -106,7 +110,8 @@ public abstract class MSSimulator implements Runnable
         try
         {
             serverSocket = new ServerSocket(SERVERPORT);
-        } catch (IOException e)
+        }
+        catch (final IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
@@ -115,12 +120,13 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * Load up the FRD file and launch the simulator thread
+     * 
      * @throws IOException
      */
     public synchronized void startRunning() throws IOException
     {
-        File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFRDFilename());
-        FileInputStream fis = new FileInputStream(logFile);
+        final File logFile = new File(ApplicationSettings.INSTANCE.getDataDir(), getFRDFilename());
+        final FileInputStream fis = new FileInputStream(logFile);
         frdFile = FRDLogManager.INSTANCE.loadFile(fis);
         fis.close();
         simThread = new Thread(this);
@@ -131,6 +137,7 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * Shut down the simulator thread
+     * 
      * @throws IOException
      */
     public synchronized void stopRunning() throws IOException
@@ -141,10 +148,11 @@ public abstract class MSSimulator implements Runnable
             simThread.interrupt();
             simThread = null;
         }
-      }
+    }
 
     /**
-     * Default baud rate.  Should probably be lower to simulate BT being a bit rubbish
+     * Default baud rate. Should probably be lower to simulate BT being a bit rubbish
+     * 
      * @return
      */
     int getBaudRate()
@@ -154,22 +162,24 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * Attempt to feed data back at a rate approximating the baud rate
+     * 
      * @param os
      * @param data
      * @throws IOException
      */
-    void speedLimitedWrite(OutputStream os, byte[] data) throws IOException
+    void speedLimitedWrite(final OutputStream os, final byte[] data) throws IOException
     {
-        int dataSize = data.length;
+        final int dataSize = data.length;
 
-        double msPerByte = (1000.0 / getBaudRate()) * BAUD_PER_BYTE;
+        final double msPerByte = (1000.0 / getBaudRate()) * BAUD_PER_BYTE;
 
-        long delay = (long) (msPerByte * dataSize);
+        final long delay = (long) (msPerByte * dataSize);
 
         try
         {
             Thread.sleep(delay);
-        } catch (InterruptedException e)
+        }
+        catch (final InterruptedException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
@@ -177,8 +187,8 @@ public abstract class MSSimulator implements Runnable
     }
 
     /**
-     * Given a command byte, process it (and any other relevant bytes) and fire
-     * the result back up the OutputStream
+     * Given a command byte, process it (and any other relevant bytes) and fire the result back up the OutputStream
+     * 
      * @param b
      * @param is
      * @param os
@@ -188,19 +198,21 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * The signature of this simulated ECU
+     * 
      * @return
      */
     abstract String getSignature();
 
-    
     /**
      * Location of the file containing a dump of the firmware
+     * 
      * @return
      */
     abstract String getFirmwareFile();
-    
+
     /**
      * Return the size of a given page of the firmware
+     * 
      * @param pageNo
      * @return
      */
@@ -208,6 +220,7 @@ public abstract class MSSimulator implements Runnable
 
     /**
      * return the name of the FRD log file to play back
+     * 
      * @return
      */
     abstract String getFRDFilename();
