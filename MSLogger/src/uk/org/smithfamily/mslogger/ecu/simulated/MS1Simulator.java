@@ -11,6 +11,9 @@ public class MS1Simulator extends MSSimulator
 
     String signature = "MS1/Extra format 029y3 *********";
 
+    private static final boolean simulateData = true;
+    private static int cycleCounter = 0;
+
     @Override
     void process(final int b, final InputStream is, final OutputStream os) throws IOException
     {
@@ -93,6 +96,22 @@ public class MS1Simulator extends MSSimulator
     {
         // All MS1 pages are the same size
         return 189;
+    }
+
+    @Override
+    protected byte[] getNextPageOfVars() throws IOException
+    {
+        cycleCounter++;
+        final byte[] buffer = super.getNextPageOfVars();
+        if (simulateData)
+        {
+            buffer[22] = (byte) (buffer[22] + ((byte) (cycleCounter % 32) - 3)); // RpmHiRes
+            buffer[6] = (byte) (buffer[6] + ((cycleCounter % 17) - 2)); // Coolant
+            buffer[9] = (byte) ((buffer[9] + (cycleCounter % 8)) - 4);// egoADC
+            buffer[4] = (byte) ((buffer[4] + (cycleCounter % 10)) - 4);// mapADC
+            buffer[5] = (byte) ((buffer[5] + (cycleCounter % 6)) - 4);// matADC
+        }
+        return buffer;
     }
 
 }
