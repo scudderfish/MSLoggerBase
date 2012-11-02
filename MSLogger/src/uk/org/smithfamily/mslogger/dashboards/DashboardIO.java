@@ -14,6 +14,10 @@ import android.content.res.AssetManager;
 public enum DashboardIO
 {
     INSTANCE;
+    private static final String TOP = "top";
+    private static final String LEFT = "left";
+    private static final String BOTTOM = "bottom";
+    private static final String RIGHT = "right";
     private static final String DEFAULT = "default";
     private static final String LABEL_DIGITS = "labelDigits";
     private static final String VALUE_DIGITS = "valueDigits";
@@ -172,7 +176,7 @@ public enum DashboardIO
         final String channel = jIndicator.optString(CHANNEL, RPM);
         final IndicatorDefault id = IndicatorDefaults.defaults.get(channel);
         final String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
-        final JSONArray jLocation = jIndicator.getJSONArray(LOCATION);
+        final JSONObject jLocation = jIndicator.getJSONObject(LOCATION);
         final Location loc = createLocation(jLocation);
         final String units = jIndicator.optString(UNITS, id != null ? id.getUnits() : "");
         final double min = jIndicator.optDouble(MIN, id != null ? id.getMin() : 0.0);
@@ -202,9 +206,9 @@ public enum DashboardIO
         return i;
     }
 
-    private Location createLocation(final JSONArray jLocation) throws JSONException
+    private Location createLocation(final JSONObject jLocation) throws JSONException
     {
-        return new Location(jLocation.optDouble(0, 0.0), jLocation.optDouble(1, 0.0), jLocation.optDouble(2, 0.5), jLocation.optDouble(3, 0.5));
+        return new Location(jLocation.optDouble(LEFT, 0.0), jLocation.optDouble(TOP, 0.0), jLocation.optDouble(RIGHT, 0.5), jLocation.optDouble(BOTTOM, 0.5));
     }
 
     private void writeDefinition(String name, final String definition) throws FileNotFoundException
