@@ -30,7 +30,7 @@ public class DashboardPagerAdapter extends PagerAdapter
     public Object instantiateItem(ViewGroup collection, int position)
     {
  
-        DashboardViewGroup dvg = new DashboardViewGroup(context,position);
+        DashboardView dvg = new DashboardView(context,position);
         Dashboard d = dashboards.get(position);
         
         dvg.setDashboard(d);

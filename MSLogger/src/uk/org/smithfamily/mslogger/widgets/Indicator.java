@@ -19,7 +19,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public enum DisplayType
     {
-        NUMERIC, BAR, GAUGE
+        NUMERIC, BAR, GAUGE, HISTOGRAM
     }
 
     private String title = "RPM";
@@ -40,6 +40,10 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     private Location location;
     private DisplayType type;
     private Renderer renderer;
+    private int left;
+    private int top;
+    private int right;
+    private Object bottom;
 
     public Indicator()
     {
@@ -107,11 +111,6 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         this.offsetAngle = offsetAngle;
         updateWatchers();
 
-    }
-
-    public String getType()
-    {
-        return "Indicator";
     }
 
     public Location getLocation()
@@ -285,5 +284,48 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     {
         setChanged();
         notifyObservers();
+    }
+
+    public void setLayout(final int cleft, final int ctop, final int cright, final int cbottom)
+    {
+        this.left = cleft;
+        this.top = ctop;
+        this.right = cright;
+        this.bottom = cbottom;
+    }
+
+    public synchronized Renderer getRenderer()
+    {
+        return renderer;
+    }
+
+    public synchronized void setRenderer(final Renderer renderer)
+    {
+        this.renderer = renderer;
+    }
+
+    public int getLeft()
+    {
+        return left;
+    }
+
+    public int getTop()
+    {
+        return top;
+    }
+
+    public int getRight()
+    {
+        return right;
+    }
+
+    public Object getBottom()
+    {
+        return bottom;
+    }
+
+    public void setType(final DisplayType type)
+    {
+        this.type = type;
     }
 }

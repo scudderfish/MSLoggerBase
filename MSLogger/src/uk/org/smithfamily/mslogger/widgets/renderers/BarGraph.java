@@ -1,12 +1,11 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
-import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.dashboards.DashboardView;
+import uk.org.smithfamily.mslogger.widgets.*;
+import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
-import uk.org.smithfamily.mslogger.widgets.IndicatorView;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 
 /**
  *
@@ -14,9 +13,9 @@ import android.graphics.Paint;
 public class BarGraph extends Renderer
 {
 
-    public BarGraph(final IndicatorView parent, final Context c)
+    public BarGraph(final DashboardView parent, final Indicator model, final Context c)
     {
-        super(parent, c);
+        super(parent, model, c);
     }
 
     private Paint barPaint;
@@ -182,9 +181,9 @@ public class BarGraph extends Renderer
     }
 
     @Override
-    public String getType()
+    public DisplayType getType()
     {
-        return parent.getContext().getString(R.string.bargraph);
+        return DisplayType.BAR;
     }
 
 }

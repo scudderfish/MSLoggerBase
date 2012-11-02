@@ -1,28 +1,22 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
-import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.IndicatorView;
-import uk.org.smithfamily.mslogger.widgets.Size;
+import uk.org.smithfamily.mslogger.dashboards.DashboardView;
+import uk.org.smithfamily.mslogger.widgets.*;
+import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.graphics.Path;
 import android.graphics.Path.FillType;
-import android.graphics.RectF;
-import android.graphics.Shader;
 
 /**
  *
  */
 public class Gauge extends Renderer
 {
-    public Gauge(final IndicatorView parent, final Context c)
+
+    public Gauge(final DashboardView parent, final Indicator model, final Context c)
     {
-        super(parent, c);
+        super(parent, model, c);
     }
 
     private final double pi = Math.PI;
@@ -394,9 +388,9 @@ public class Gauge extends Renderer
      */
 
     @Override
-    public String getType()
+    public DisplayType getType()
     {
-        return parent.getContext().getString(R.string.gauge);
+        return DisplayType.GAUGE;
     }
 
     @Override

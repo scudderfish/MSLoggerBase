@@ -3,15 +3,10 @@ package uk.org.smithfamily.mslogger;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -33,9 +28,10 @@ public class MSLoggerApplication extends Application
 
     private Megasquirt boundService;
 
-    private ServiceConnection mConnection = new ServiceConnection()
+    private final ServiceConnection mConnection = new ServiceConnection()
     {
-        public void onServiceConnected(ComponentName className, IBinder service)
+        @Override
+        public void onServiceConnected(final ComponentName className, final IBinder service)
         {
             // This is called when the connection with the service has been
             // established, giving us the service object we can use to
@@ -45,17 +41,18 @@ public class MSLoggerApplication extends Application
             boundService = ((Megasquirt.LocalBinder) service).getService();
 
             // Tell the user about this for our demo.
-            //Toast.makeText(Binding.this, R.string.local_service_connected, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(Binding.this, R.string.local_service_connected, Toast.LENGTH_SHORT).show();
         }
 
-        public void onServiceDisconnected(ComponentName className)
+        @Override
+        public void onServiceDisconnected(final ComponentName className)
         {
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
             // Because it is running in our same process, we should never
             // see this happen.
             boundService = null;
-            //Toast.makeText(Binding.this, R.string.local_service_disconnected, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(Binding.this, R.string.local_service_disconnected, Toast.LENGTH_SHORT).show();
         }
     };
     private boolean mIsBound;
@@ -72,20 +69,17 @@ public class MSLoggerApplication extends Application
         DebugLogManager.INSTANCE.log(getPackageName(), Log.DEBUG);
         try
         {
-            String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+            final String app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
             DebugLogManager.INSTANCE.log(app_ver, Log.ASSERT);
         }
-        catch (NameNotFoundException e)
+        catch (final NameNotFoundException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
         dumpPreferences();
-      
-        
-        
+
         doBindService();
     }
-
 
     void doBindService()
     {
@@ -93,7 +87,7 @@ public class MSLoggerApplication extends Application
         // class name because we want a specific service implementation that
         // we know will be running in our own process (and thus won't be
         // supporting component replacement by other applications).
-        Intent serviceIntent = new Intent(this, Megasquirt.class);
+        final Intent serviceIntent = new Intent(this, Megasquirt.class);
         bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
     }
@@ -112,7 +106,7 @@ public class MSLoggerApplication extends Application
     public void onTerminate()
     {
         super.onTerminate();
-        
+
         doUnbindService();
     }
 
@@ -121,13 +115,12 @@ public class MSLoggerApplication extends Application
      */
     private void dumpPreferences()
     {
-        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(this);
-        Map<String, ?> prefs = prefsManager.getAll();
-        for (Entry<String, ?> entry : prefs.entrySet())
+        final SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(this);
+        final Map<String, ?> prefs = prefsManager.getAll();
+        for (final Entry<String, ?> entry : prefs.entrySet())
         {
             DebugLogManager.INSTANCE.log("Preference:" + entry.getKey() + ":" + entry.getValue(), Log.ASSERT);
         }
     }
-
 
 }

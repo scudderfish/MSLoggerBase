@@ -1,18 +1,18 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
-import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.IndicatorView;
+import uk.org.smithfamily.mslogger.dashboards.DashboardView;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 
 public class Histogram extends Renderer
 {
 
-    public Histogram(final IndicatorView parent, final Context c)
+    public Histogram(final DashboardView parent, final Indicator model, final Context c)
     {
-        super(parent, c);
+        super(parent, model, c);
+
     }
 
     private Paint backgroundPaint;
@@ -206,8 +206,8 @@ public class Histogram extends Renderer
     }
 
     @Override
-    public String getType()
+    public DisplayType getType()
     {
-        return parent.getContext().getString(R.string.histogram);
+        return DisplayType.HISTOGRAM;
     }
 }

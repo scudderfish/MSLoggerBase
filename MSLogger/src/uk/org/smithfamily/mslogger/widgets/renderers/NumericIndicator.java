@@ -1,20 +1,20 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
-import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.widgets.IndicatorView;
+import uk.org.smithfamily.mslogger.dashboards.DashboardView;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 
 /**
  * 
  */
 public class NumericIndicator extends Renderer
 {
-    public NumericIndicator(final IndicatorView parent, final Context c)
+
+    public NumericIndicator(final DashboardView parent, final Indicator model, final Context c)
     {
-        super(parent, c);
+        super(parent, model, c);
     }
 
     final float scale = getResources().getDisplayMetrics().density;
@@ -174,8 +174,8 @@ public class NumericIndicator extends Renderer
     }
 
     @Override
-    public String getType()
+    public DisplayType getType()
     {
-        return parent.getContext().getString(R.string.numeric_indicator);
+        return DisplayType.NUMERIC;
     }
 }

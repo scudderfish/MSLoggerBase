@@ -1,7 +1,7 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
+import uk.org.smithfamily.mslogger.dashboards.DashboardView;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.IndicatorView;
 import uk.org.smithfamily.mslogger.widgets.Size;
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,24 +11,22 @@ import android.util.Log;
 
 public abstract class Renderer
 {
-    protected IndicatorView parent;
+    protected DashboardView parent;
     protected final Indicator model;
 
     protected double currentValue = 0.0;
     protected double targetValue = 0.0;
 
     private final long FULL_SWEEP_TIME = 1000;
-    private final int MAX_FPS = 60;
-    private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private final double epsilon = 1e-5;
     private long lastPointerMoveTime = 0;
     private int dirtyCount = 0;
     private final RenderStats stats = new RenderStats();
 
-    public Renderer(final IndicatorView parent, final Context c)
+    public Renderer(final DashboardView parent, final Indicator model, final Context c)
     {
         this.parent = parent;
-        this.model = parent.getIndicator();
+        this.model = model;
         init(c);
         lastPointerMoveTime = 0;
     }
@@ -75,19 +73,7 @@ public abstract class Renderer
 
             currentValue += (increment * direction);
             lastPointerMoveTime = System.currentTimeMillis();
-            long inducedDelay = 0;
-            if (delay < DELAY_PER_FRAME)
-            {
-                inducedDelay = DELAY_PER_FRAME - delay;
-                try
-                {
-                    Thread.sleep(inducedDelay);
-                }
-                catch (final InterruptedException e)
-                {
-                    // Swallow
-                }
-            }
+            final long inducedDelay = 0;
             stats.updateStats(delay, delta, inducedDelay);
             if (!offTarget())
             { // We are done
@@ -105,7 +91,7 @@ public abstract class Renderer
         return Math.abs(targetValue - currentValue) > epsilon;
     }
 
-    public abstract String getType();
+    public abstract Indicator.DisplayType getType();
 
     /**
      * 

@@ -10,13 +10,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 /**
  * Dialog to change various gauge settings
@@ -47,7 +42,7 @@ public class EditGaugeDialog extends Dialog implements android.view.View.OnClick
 
         this.indicator = indicator;
 
-        this.indicatorType = indicator.getType();
+        this.indicatorType = indicator.getDisplayType().toString();
         this.indicatorIndex = indicatorIndex;
         this.mainActivity = mainActivity;
     }
