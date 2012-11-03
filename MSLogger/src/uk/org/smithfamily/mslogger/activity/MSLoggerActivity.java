@@ -63,7 +63,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         setContentView(R.layout.main);
         pager = (DashboardViewPager) findViewById(R.id.dashboardpager);
 
-        final DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this);
+        final DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this, pager);
         pager.setAdapter(dashAdapter);
 
         // Bind the title indicator to the adapter
