@@ -3,23 +3,22 @@ package uk.org.smithfamily.mslogger.dashboards;
 import java.util.List;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.view.*;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-public class DashboardPagerAdapter extends PagerAdapter
+public class DashboardPagerAdapter extends PagerAdapter implements OnPageChangeListener
 {
-    private Context context;
-    private List<Dashboard> dashboards;
+    private final Context context;
+    private final List<Dashboard> dashboards;
 
-    public DashboardPagerAdapter(Context c)
+    public DashboardPagerAdapter(final Context c)
     {
         this.context = c;
         dashboards = DashboardIO.INSTANCE.loadDash();
-        
     }
+
     @Override
     public int getCount()
     {
@@ -27,32 +26,53 @@ public class DashboardPagerAdapter extends PagerAdapter
     }
 
     @Override
-    public Object instantiateItem(ViewGroup collection, int position)
+    public Object instantiateItem(final ViewGroup collection, final int position)
     {
- 
-        DashboardView dvg = new DashboardView(context,position);
-        Dashboard d = dashboards.get(position);
-        
+
+        final DashboardView dvg = new DashboardView(context, position);
+        final Dashboard d = dashboards.get(position);
+
         dvg.setDashboard(d);
-        
+
         ((ViewPager) collection).addView(dvg, 0);
 
         return dvg;
     }
 
     @Override
-    public void destroyItem(View collection, int position, Object v)
+    public void destroyItem(final View collection, final int position, final Object v)
     {
-        
-        ViewPager viewPager = (ViewPager) collection;
-        View view = (View) v;
-        
+
+        final ViewPager viewPager = (ViewPager) collection;
+        final View view = (View) v;
+
         viewPager.removeView(view);
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object o)
+    public boolean isViewFromObject(final View view, final Object o)
     {
         return view == ((View) o);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(final int arg0)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onPageScrolled(final int arg0, final float arg1, final int arg2)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onPageSelected(final int arg0)
+    {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -5,8 +5,9 @@ import java.util.Map;
 
 /**
  * Default indicator settings culled by grep | sort | uniq on all GaugeDetails from an earlier iteration
+ * 
  * @author dgs
- *
+ * 
  */
 public class IndicatorDefaults
 {
@@ -265,6 +266,7 @@ public class IndicatorDefaults
             put("pwseq8", new IndicatorDefault("pwseq8", "Pulse Width Seq 8", "mSec", 0, 25.5, 1, 1.2, 20, 25, 3, 1));
             put("pwseq9", new IndicatorDefault("pwseq9", "Pulse Width Seq 9", "mSec", 0, 25.5, 1, 1.2, 20, 25, 3, 1));
             put("rpm", new IndicatorDefault("rpm", "Engine Speed", "RPM", 0, 8000, 300, 600, 3000, 5000, 0, 0));
+            put("RpmHiRes", new IndicatorDefault("RpmHiRes", "Engine Speed", "RPM", 0, 8000, 300, 600, 7500, 8000, 0, 0));
             put("rpmdot", new IndicatorDefault("rpmdot", "rpmdot", "rpm/sec", -15000, 15000, 65535, 65535, 65535, 65535, 0, 0));
             put("sd_error", new IndicatorDefault("sd_error", "SDcard error", "", 0, 255, 255, 255, 255, 255, 0, 0));
             put("sd_filenum", new IndicatorDefault("sd_filenum", "SDcard file number", "", 0, 9999, 9999, 9999, 9999, 9999, 0, 0));
@@ -346,6 +348,5 @@ public class IndicatorDefaults
             put("water_duty", new IndicatorDefault("water_duty", "Water Duty", "%", 0, 100, 100, 100, 100, 100, 0, 0));
         }
     };
-   
-}
 
+}

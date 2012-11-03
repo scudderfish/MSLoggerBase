@@ -1,25 +1,20 @@
 package uk.org.smithfamily.mslogger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 
 public class DataManager extends Observable
 {
-    private Map<String, OutputChannel> dataChannels = new HashMap<String, OutputChannel>();
+    private final Map<String, OutputChannel> dataChannels = new HashMap<String, OutputChannel>();
     private static DataManager instance = new DataManager();
 
     private DataManager()
     {
 
-        IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
+        final IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, dataFilter);
 
     }
@@ -29,27 +24,32 @@ public class DataManager extends Observable
         return instance;
     }
 
+    public void tickle()
+    {
+        setChanged();
+        notifyObservers();
+    }
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
-        public void onReceive(Context context, Intent intent)
+        public void onReceive(final Context context, final Intent intent)
         {
-            setChanged();
-            notifyObservers();
+            tickle();
         }
     };
 
-    public void addOutputChannel(OutputChannel o)
+    public void addOutputChannel(final OutputChannel o)
     {
         dataChannels.put(o.getName(), o);
     }
 
-    public double getField(String channelName)
+    public double getField(final String channelName)
     {
-        
+
         double value = 0;
-        OutputChannel oc = dataChannels.get(channelName);
-        if(oc == null)
+        final OutputChannel oc = dataChannels.get(channelName);
+        if (oc == null)
         {
             return value;
         }

@@ -2,6 +2,10 @@ package uk.org.smithfamily.mslogger.dashboards;
 
 import java.util.*;
 
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
+
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Location;
@@ -13,7 +17,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback
+public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<Indicator>
 {
     private final int position;
     private final Context context;
@@ -29,6 +33,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         super(context);
         this.context = context;
         this.position = position;
+
         indicators = new ArrayList<Indicator>();
         getHolder().addCallback(this);
         thread = new DashboardThread(getHolder(), context, this);
@@ -173,7 +178,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         public void run()
         {
             Canvas c;
-
+            new IndicatorsToLimits(true, 100).start();
+            new IndicatorsToLimits(false, 1200).start();
             while (running)
             {
                 while (indicatorsOutOfDate())
@@ -182,6 +188,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     try
                     {
                         c = holder.lockCanvas();
+
+                        c.drawARGB(255, 127, 127, 127);
                         synchronized (holder)
                         {
                             drawIndicators(c);
@@ -277,9 +285,80 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
+    class IndicatorsToLimits extends Thread
+    {
+        private final long delay;
+        private final boolean toMax;
+
+        public IndicatorsToLimits(final boolean toMax, final long delay)
+        {
+            this.toMax = toMax;
+            this.delay = delay;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                Thread.sleep(delay);
+                setIndicatorsToLimit(toMax);
+            }
+            catch (final InterruptedException e)
+            {
+                // Swallow
+            }
+
+        }
+    }
+
+    void setIndicatorsToLimit(final boolean max)
+    {
+        for (final Indicator i : indicators)
+        {
+            if (max)
+            {
+                i.setValue(i.getMax());
+            }
+            else
+
+            {
+                i.setValue(i.getMin());
+            }
+        }
+        DataManager.getInstance().tickle();
+    }
+
     public List<Indicator> getIndicators()
     {
         return indicators;
     }
 
+    @Override
+    public Indicator getDraggableObjectAtPoint(final PointInfo touchPoint)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void getPositionAndScale(final Indicator obj, final PositionAndScale objPosAndScaleOut)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean setPositionAndScale(final Indicator obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void selectObject(final Indicator obj, final PointInfo touchPoint)
+    {
+        // TODO Auto-generated method stub
+
+    }
 }

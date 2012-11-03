@@ -3,56 +3,32 @@ package uk.org.smithfamily.mslogger.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.ExtGPSManager;
-import uk.org.smithfamily.mslogger.GPSLocationManager;
-import uk.org.smithfamily.mslogger.MSLoggerApplication;
-import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.comms.Connection;
 import uk.org.smithfamily.mslogger.comms.ConnectionFactory;
-import uk.org.smithfamily.mslogger.dashboards.DashboardIO;
-import uk.org.smithfamily.mslogger.dashboards.DashboardPagerAdapter;
+import uk.org.smithfamily.mslogger.dashboards.*;
 import uk.org.smithfamily.mslogger.dashboards.pageindicators.CirclePageIndicator;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.log.DatalogManager;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.log.EmailManager;
-import uk.org.smithfamily.mslogger.log.FRDLogManager;
+import uk.org.smithfamily.mslogger.log.*;
 import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.*;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.*;
+import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 /**
  * Main activity class where the main window (gauges) are and where the bottom menu is handled
  */
 public class MSLoggerActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener, OnClickListener
 {
-    private BroadcastReceiver updateReceiver = new Reciever();
+    private final BroadcastReceiver updateReceiver = new Reciever();
     private TextView messages;
     private TextView rps;
     private static Boolean ready = null;
@@ -62,16 +38,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private static final int SHOW_PREFS = 124230;
 
     private boolean registered;
+    private DashboardViewPager pager;
 
     /**
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onCreate(final Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        Connection conn = ConnectionFactory.INSTANCE.getConnection();
+        final Connection conn = ConnectionFactory.INSTANCE.getConnection();
 
         // Bluetooth is not supported on this Android device
         if (!conn.connectionPossible())
@@ -84,13 +61,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         setGaugesOrientation();
 
         setContentView(R.layout.main);
-        ViewPager pager = (ViewPager) findViewById(R.id.dashboardpager);
+        pager = (DashboardViewPager) findViewById(R.id.dashboardpager);
 
-        DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this);
+        final DashboardPagerAdapter dashAdapter = new DashboardPagerAdapter(this);
         pager.setAdapter(dashAdapter);
-        
-      //Bind the title indicator to the adapter
-        CirclePageIndicator circleIndicator = (CirclePageIndicator)findViewById(R.id.separator);
+
+        // Bind the title indicator to the adapter
+        final CirclePageIndicator circleIndicator = (CirclePageIndicator) findViewById(R.id.separator);
         circleIndicator.setViewPager(pager);
 
         messages = (TextView) findViewById(R.id.messages);
@@ -117,7 +94,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
         }
 
-        SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
+        final SharedPreferences prefsManager = PreferenceManager.getDefaultSharedPreferences(MSLoggerActivity.this);
         prefsManager.registerOnSharedPreferenceChangeListener(MSLoggerActivity.this);
 
         ApplicationSettings.INSTANCE.setDefaultAdapter(BluetoothAdapter.getDefaultAdapter());
@@ -141,7 +118,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void setGaugesOrientation()
     {
-        String activityOrientation = ApplicationSettings.INSTANCE.getGaugesOrientation();
+        final String activityOrientation = ApplicationSettings.INSTANCE.getGaugesOrientation();
 
         // Force landscape
         if (activityOrientation.equals("FORCE_LANDSCAPE"))
@@ -163,7 +140,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * Save the bottom text views content so they can keep their state while device is rotated
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState)
+    protected void onSaveInstanceState(final Bundle outState)
     {
         super.onSaveInstanceState(outState);
 
@@ -177,7 +154,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void checkSDCard()
     {
-        boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        final boolean cardOK = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
         ApplicationSettings.INSTANCE.setWritable(cardOK);
         if (!cardOK)
         {
@@ -210,31 +187,31 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void registerMessages()
     {
-        IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
+        final IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
         registerReceiver(updateReceiver, connectedFilter);
 
-        IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
+        final IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
         registerReceiver(updateReceiver, disconnectedFilter);
 
-        IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
+        final IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         registerReceiver(updateReceiver, dataFilter);
 
-        IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
+        final IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
         registerReceiver(updateReceiver, msgFilter);
 
-        IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
+        final IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
         registerReceiver(updateReceiver, rpsFilter);
 
-        IntentFilter toastFilter = new IntentFilter(ApplicationSettings.TOAST);
+        final IntentFilter toastFilter = new IntentFilter(ApplicationSettings.TOAST);
         registerReceiver(updateReceiver, toastFilter);
 
-        IntentFilter unknownEcuFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU);
+        final IntentFilter unknownEcuFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU);
         registerReceiver(updateReceiver, unknownEcuFilter);
 
-        IntentFilter unknownEcuBTFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU_BT);
+        final IntentFilter unknownEcuBTFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU_BT);
         registerReceiver(updateReceiver, unknownEcuBTFilter);
 
-        IntentFilter probeEcuFilter = new IntentFilter(Megasquirt.PROBE_ECU);
+        final IntentFilter probeEcuFilter = new IntentFilter(Megasquirt.PROBE_ECU);
         registerReceiver(updateReceiver, probeEcuFilter);
 
         registered = true;
@@ -256,9 +233,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param menu
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+    public boolean onCreateOptionsMenu(final Menu menu)
     {
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
@@ -269,10 +246,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param menu
      */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu)
+    public boolean onPrepareOptionsMenu(final Menu menu)
     {
-        MenuItem editItem = menu.findItem(R.id.gaugeEditing);
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        final MenuItem editItem = menu.findItem(R.id.gaugeEditing);
+        final Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         editItem.setEnabled(ecuDefinition != null);
         if (gaugeEditEnabled)
@@ -285,8 +262,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             editItem.setIcon(R.drawable.ic_menu_enable_gauge_editing);
             editItem.setTitle(R.string.enable_gauge_edit);
         }
-        MenuItem connectionItem = menu.findItem(R.id.forceConnection);
-        if (ecuDefinition != null && ecuDefinition.isConnected())
+        final MenuItem connectionItem = menu.findItem(R.id.forceConnection);
+        if ((ecuDefinition != null) && ecuDefinition.isConnected())
         {
             connectionItem.setIcon(R.drawable.ic_menu_disconnect);
             connectionItem.setTitle(R.string.disconnect);
@@ -297,10 +274,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             connectionItem.setTitle(R.string.connect);
         }
 
-        MenuItem loggingItem = menu.findItem(R.id.forceLogging);
-        loggingItem.setEnabled(ecuDefinition != null && ecuDefinition.isConnected());
+        final MenuItem loggingItem = menu.findItem(R.id.forceLogging);
+        loggingItem.setEnabled((ecuDefinition != null) && ecuDefinition.isConnected());
 
-        if (ecuDefinition != null && ecuDefinition.isLogging())
+        if ((ecuDefinition != null) && ecuDefinition.isLogging())
         {
             loggingItem.setIcon(R.drawable.ic_menu_stop_logging);
             loggingItem.setTitle(R.string.stop_logging);
@@ -311,8 +288,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             loggingItem.setTitle(R.string.start_logging);
         }
 
-        MenuItem tuningItem = menu.findItem(R.id.tuning);
-        tuningItem.setEnabled(ecuDefinition != null && ecuDefinition.isConnected());
+        final MenuItem tuningItem = menu.findItem(R.id.tuning);
+        tuningItem.setEnabled((ecuDefinition != null) && ecuDefinition.isConnected());
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -323,9 +300,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param item The clicked menu item
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(final MenuItem item)
     {
-        int itemId = item.getItemId();
+        final int itemId = item.getItemId();
         switch (itemId)
         {
 
@@ -384,14 +361,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         // Gauge editing is not enabled
         else
         {
-            for (int i = 0; i < 2; i++)
-            {
-                Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
-            }
+            Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
         }
 
         gaugeEditEnabled = !gaugeEditEnabled;
         IndicatorManager.INSTANCE.setEditing(gaugeEditEnabled);
+        pager.setEditMode(gaugeEditEnabled);
     }
 
     /**
@@ -399,9 +374,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleLogging()
     {
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        final Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null && ecu.isConnected())
+        if ((ecu != null) && ecu.isConnected())
         {
             if (ecu.isLogging())
             {
@@ -424,13 +399,13 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             DatalogManager.INSTANCE.close();
             FRDLogManager.INSTANCE.close();
-            List<String> paths = new ArrayList<String>();
+            final List<String> paths = new ArrayList<String>();
             paths.add(DatalogManager.INSTANCE.getAbsolutePath());
             paths.add(FRDLogManager.INSTANCE.getAbsolutePath());
             paths.add(DebugLogManager.INSTANCE.getAbsolutePath());
-            String emailText = getString(R.string.email_body);
+            final String emailText = getString(R.string.email_body);
 
-            String subject = String.format(getString(R.string.email_subject), System.currentTimeMillis());
+            final String subject = String.format(getString(R.string.email_subject), System.currentTimeMillis());
             EmailManager.email(this, ApplicationSettings.INSTANCE.getEmailDestination(), null, subject, emailText, paths);
         }
 
@@ -443,16 +418,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     {
         ApplicationSettings.INSTANCE.setAutoConnectOverride(false);
         ExtGPSManager.INSTANCE.stop();
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        final Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ecu != null && ecu.isConnected())
+        if ((ecu != null) && ecu.isConnected())
         {
             ecu.stop();
         }
 
         sendLogs();
 
-        if (ecu != null && ecu.isConnected())
+        if ((ecu != null) && ecu.isConnected())
         {
             ecu.reset();
         }
@@ -465,8 +440,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleConnection()
     {
-        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-        if (ecu != null && ecu.isConnected())
+        final Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        if ((ecu != null) && ecu.isConnected())
         {
             ecu.stop();
         }
@@ -481,28 +456,28 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void showAbout()
     {
-        Dialog dialog = new Dialog(this);
+        final Dialog dialog = new Dialog(this);
 
         dialog.setContentView(R.layout.about);
 
-        TextView text = (TextView) dialog.findViewById(R.id.text);
+        final TextView text = (TextView) dialog.findViewById(R.id.text);
         String title = "";
         try
         {
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
-            ApplicationInfo ai = pInfo.applicationInfo;
+            final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+            final ApplicationInfo ai = pInfo.applicationInfo;
 
             final String applicationName = (ai != null) ? getPackageManager().getApplicationLabel(ai).toString() : "(unknown)";
             title = applicationName + " " + pInfo.versionName;
         }
-        catch (NameNotFoundException e)
+        catch (final NameNotFoundException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
         dialog.setTitle(title);
 
         text.setText(R.string.about_text);
-        ImageView image = (ImageView) dialog.findViewById(R.id.image);
+        final ImageView image = (ImageView) dialog.findViewById(R.id.image);
         image.setImageResource(R.drawable.icon);
 
         dialog.show();
@@ -513,7 +488,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void openCalibrateTPS()
     {
-        Intent launchCalibrate = new Intent(this, CalibrateActivity.class);
+        final Intent launchCalibrate = new Intent(this, CalibrateActivity.class);
         startActivity(launchCalibrate);
     }
 
@@ -522,7 +497,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void openManageDatalogs()
     {
-        Intent lauchManageDatalogs = new Intent(this, ManageDatalogsActivity.class);
+        final Intent lauchManageDatalogs = new Intent(this, ManageDatalogsActivity.class);
         startActivity(lauchManageDatalogs);
     }
 
@@ -531,7 +506,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void openTuning()
     {
-        Intent launchTuning = new Intent(this, TuningActivity.class);
+        final Intent launchTuning = new Intent(this, TuningActivity.class);
         startActivity(launchTuning);
     }
 
@@ -540,7 +515,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void openPreferences()
     {
-        Intent launchPrefs = new Intent(this, PreferencesActivity.class);
+        final Intent launchPrefs = new Intent(this, PreferencesActivity.class);
         startActivityForResult(launchPrefs, SHOW_PREFS);
     }
 
@@ -551,7 +526,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param data
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK)
@@ -559,10 +534,10 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             switch (requestCode)
             {
             case SHOW_PREFS:
-                Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
+                final Boolean dirty = (Boolean) data.getExtras().get(PreferencesActivity.DIRTY);
                 if (dirty)
                 {
-                    Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+                    final Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
                     if (ecuDefinition != null)
                     {
                         ecuDefinition.refreshFlags();
@@ -577,7 +552,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 if (resultCode == Activity.RESULT_OK)
                 {
                     // Get the device MAC address
-                    String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    final String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 
                     ApplicationSettings.INSTANCE.setECUBluetoothMac(address);
                 }
@@ -593,21 +568,21 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param key
      */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(final SharedPreferences prefs, final String key)
     {
-        if (ready == null || !ready)
+        if ((ready == null) || !ready)
         {
             return;
         }
-        Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
+        final Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
-        if (ApplicationSettings.INSTANCE.btDeviceSelected() && ecuDefinition != null)
+        if (ApplicationSettings.INSTANCE.btDeviceSelected() && (ecuDefinition != null))
         {
             ecuDefinition.refreshFlags();
         }
 
         // When the TEMP/MAP/EGO are changed in preferences, we refresh the ECU flags if we are online
-        if ((key.equals("temptype") || key.equals("maptype") || key.equals("egotype")) && ecuDefinition != null)
+        if ((key.equals("temptype") || key.equals("maptype") || key.equals("egotype")) && (ecuDefinition != null))
         {
             ecuDefinition.refreshFlags();
         }
@@ -618,7 +593,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * @param v
      */
     @Override
-    public void onClick(View v)
+    public void onClick(final View v)
     {
     }
 
@@ -634,17 +609,17 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
          * @param intent
          */
         @Override
-        public void onReceive(Context context, Intent intent)
+        public void onReceive(final Context context, final Intent intent)
         {
-            String action = intent.getAction();
-            boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
+            final String action = intent.getAction();
+            final boolean autoLoggingEnabled = ApplicationSettings.INSTANCE.getAutoLogging();
 
             if (action.equals(Megasquirt.CONNECTED))
             {
-                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+                final Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
 
                 DebugLogManager.INSTANCE.log(action, Log.INFO);
-                if (autoLoggingEnabled && ecu != null && ecu.isConnected())
+                if (autoLoggingEnabled && (ecu != null) && ecu.isConnected())
                 {
                     ecu.startLogging();
                 }
@@ -660,28 +635,28 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 messages.setText(R.string.disconnected_from_ms);
                 rps.setText("");
 
-                Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-                if (ecu != null && ecu.isConnected())
+                final Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+                if ((ecu != null) && ecu.isConnected())
                 {
                     ecu.stop();
                 }
             }
             else if (action.equals(ApplicationSettings.GENERAL_MESSAGE))
             {
-                String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
+                final String msg = intent.getStringExtra(ApplicationSettings.MESSAGE);
 
                 messages.setText(msg);
                 DebugLogManager.INSTANCE.log("Message : " + msg, Log.INFO);
             }
             else if (action.equals(ApplicationSettings.RPS_MESSAGE))
             {
-                String RPS = intent.getStringExtra(ApplicationSettings.RPS);
+                final String RPS = intent.getStringExtra(ApplicationSettings.RPS);
 
                 rps.setText(RPS + " reads / second");
             }
             else if (action.equals(ApplicationSettings.TOAST))
             {
-                String msg = intent.getStringExtra(ApplicationSettings.TOAST_MESSAGE);
+                final String msg = intent.getStringExtra(ApplicationSettings.TOAST_MESSAGE);
 
                 // The toast is called in a loop so it can be displayed longer (Toast.LENGTH_LONG = 3.5 seconds)
                 for (int j = 0; j < 2; j++)
@@ -695,15 +670,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                 {
                     return;
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(MSLoggerActivity.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MSLoggerActivity.this);
                 builder.setMessage(R.string.unrecognised_ecu).setTitle(R.string.app_name).setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
                 {
-                    public void onClick(DialogInterface dialog, int id)
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int id)
                     {
                         constructEmail(ApplicationSettings.INSTANCE.getEcuDefinition().getTrueSignature());
                     }
 
-                    private void constructEmail(String trueSignature)
+                    private void constructEmail(final String trueSignature)
                     {
                         EmailManager.email(MSLoggerActivity.this, "mslogger.android@gmail.com", null, "Unrecognised firmware signature", "An unknown firmware was detected with a signature of '" + trueSignature
                                 + "'.\n\nPlease consider this for the next release.", null);
@@ -711,13 +687,14 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
                 }).setNegativeButton(R.string.bt_cancel, new DialogInterface.OnClickListener()
                 {
-                    public void onClick(DialogInterface dialog, int which)
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which)
                     {
                         dialog.cancel();
                     }
                 });
 
-                AlertDialog alert = builder.create();
+                final AlertDialog alert = builder.create();
                 if (!isFinishing())
                 {
                     alert.show();
@@ -726,7 +703,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             }
             else if (action.equals(Megasquirt.UNKNOWN_ECU_BT))
             {
-                Intent serverIntent = new Intent(MSLoggerActivity.this, DeviceListActivity.class);
+                final Intent serverIntent = new Intent(MSLoggerActivity.this, DeviceListActivity.class);
                 startActivityForResult(serverIntent, MSLoggerApplication.REQUEST_CONNECT_DEVICE);
             }
         }
@@ -737,15 +714,16 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     public void finishDialogNoBluetooth()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.no_bt).setIcon(android.R.drawable.ic_dialog_info).setTitle(R.string.app_name).setCancelable(false).setPositiveButton(R.string.bt_ok, new DialogInterface.OnClickListener()
         {
-            public void onClick(DialogInterface dialog, int id)
+            @Override
+            public void onClick(final DialogInterface dialog, final int id)
             {
                 finish();
             }
         });
-        AlertDialog alert = builder.create();
+        final AlertDialog alert = builder.create();
         alert.show();
     }
 }

@@ -107,10 +107,10 @@ public enum DashboardIO
         return j;
     }
 
-    private JSONArray getJLocation(final Location l) throws JSONException
+    private JSONObject getJLocation(final Location l) throws JSONException
     {
-        final JSONArray jLocation = new JSONArray();
-        jLocation.put(l.getTop()).put(l.getLeft()).put(l.getBottom()).put(l.getRight());
+        final JSONObject jLocation = new JSONObject();
+        jLocation.put(TOP, l.getTop()).put(LEFT, l.getLeft()).put(BOTTOM, l.getBottom()).put(RIGHT, l.getRight());
         return jLocation;
     }
 
