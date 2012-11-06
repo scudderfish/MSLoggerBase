@@ -27,17 +27,17 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private int measuredHeight;
     private int measuredWidth;
-
+    private final DashboardViewPager parentPager;
     private final MultiTouchController<Indicator> multiTouchController;
     private Indicator selectedIndicator;
     private PointInfo selectedPosition;
 
-    public DashboardView(final Context context, final int position)
+    public DashboardView(final Context context, final int position, final DashboardViewPager parent)
     {
         super(context);
         this.context = context;
         this.position = position;
-
+        this.parentPager = parent;
         indicators = new ArrayList<Indicator>();
         getHolder().addCallback(this);
         thread = new DashboardThread(getHolder(), context, this);
@@ -189,7 +189,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             new IndicatorsToLimits(false, 1200).start();
             while (running)
             {
-                while (indicatorsOutOfDate())
+                while ((parentPager.getCurrentItem() == position) && indicatorsOutOfDate())
                 {
                     c = null;
                     try

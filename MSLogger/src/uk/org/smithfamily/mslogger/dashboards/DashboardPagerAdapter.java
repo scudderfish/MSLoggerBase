@@ -12,10 +12,12 @@ public class DashboardPagerAdapter extends PagerAdapter implements OnPageChangeL
 {
     private final Context context;
     private final List<Dashboard> dashboards;
+    private final DashboardViewPager parent;
 
-    public DashboardPagerAdapter(final Context c)
+    public DashboardPagerAdapter(final Context c, final DashboardViewPager parent)
     {
         this.context = c;
+        this.parent = parent;
         dashboards = DashboardIO.INSTANCE.loadDash();
     }
 
@@ -29,7 +31,7 @@ public class DashboardPagerAdapter extends PagerAdapter implements OnPageChangeL
     public Object instantiateItem(final ViewGroup collection, final int position)
     {
 
-        final DashboardView dvg = new DashboardView(context, position);
+        final DashboardView dvg = new DashboardView(context, position, parent);
         final Dashboard d = dashboards.get(position);
 
         dvg.setDashboard(d);
