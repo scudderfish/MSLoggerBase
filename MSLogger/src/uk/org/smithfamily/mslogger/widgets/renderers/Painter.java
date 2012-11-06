@@ -180,7 +180,6 @@ class RenderStats
             Log.i("RenderStats",
                     String.format("minDelay=%d maxDelay=%d avgDelay=%.2f minDelta=%.2f maxDelta=%.2f avgDelta=%.2f minDirty=%d maxDirty=%d avgDirty=%.2f", minDelay, maxDelay, avgDelay, minDelta, maxDelta, avgDelta, minDirty, maxDirty, avgDirty));
         }
-        Log.d("RenderStatsFull", String.format("delta=%.2f", delta));
     }
 
     public void updateDirtyCount(final int dirtyCount)

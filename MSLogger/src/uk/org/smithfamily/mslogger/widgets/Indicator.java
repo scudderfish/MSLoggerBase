@@ -40,10 +40,6 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     private Location location;
     private DisplayType type;
     private Painter renderer;
-    private int left;
-    private int top;
-    private int right;
-    private int bottom;
 
     public Indicator()
     {
@@ -288,10 +284,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public void setLayout(final int cleft, final int ctop, final int cright, final int cbottom)
     {
-        this.left = cleft;
-        this.top = ctop;
-        this.right = cright;
-        this.bottom = cbottom;
+        location = new Location(cleft, ctop, cright, cbottom);
     }
 
     public synchronized Painter getRenderer()
@@ -306,22 +299,22 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public int getLeft()
     {
-        return left;
+        return (int) location.getLeft();
     }
 
     public int getTop()
     {
-        return top;
+        return (int) location.getTop();
     }
 
     public int getRight()
     {
-        return right;
+        return (int) location.getRight();
     }
 
     public int getBottom()
     {
-        return bottom;
+        return (int) location.getBottom();
     }
 
     public void setType(final DisplayType type)
@@ -331,11 +324,11 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public int getHeight()
     {
-        return bottom - top;
+        return (int) location.getHeight();
     }
 
     public int getWidth()
     {
-        return right - left;
+        return (int) location.getWidth();
     }
 }

@@ -69,7 +69,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         // Bind the title indicator to the adapter
         final CirclePageIndicator circleIndicator = (CirclePageIndicator) findViewById(R.id.separator);
         circleIndicator.setViewPager(pager);
-
+        circleIndicator.setOnPageChangeListener(dashAdapter);
         messages = (TextView) findViewById(R.id.messages);
         rps = (TextView) findViewById(R.id.RPS);
 

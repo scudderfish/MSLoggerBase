@@ -235,12 +235,9 @@ public enum DashboardIO
         {
             try
             {
-                if (override.canRead())
-                {
-                    data = new FileInputStream(override);
-                }
-                else
-                {
+                /*
+                 * if (override.canRead()) { data = new FileInputStream(override); } else
+                 */{
                     data = assetManager.open(assetFileName);
                 }
 

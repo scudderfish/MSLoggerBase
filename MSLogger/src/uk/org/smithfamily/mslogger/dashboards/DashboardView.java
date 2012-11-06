@@ -2,6 +2,7 @@ package uk.org.smithfamily.mslogger.dashboards;
 
 import java.util.*;
 
+import org.metalev.multitouch.controller.*;
 import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
@@ -14,8 +15,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.*;
 
 public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<Indicator>
 {
@@ -27,6 +27,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private int measuredHeight;
     private int measuredWidth;
+
+    private final MultiTouchController<Indicator> multiTouchController;
+    private Indicator selectedIndicator;
+    private PointInfo selectedPosition;
 
     public DashboardView(final Context context, final int position)
     {
@@ -40,6 +44,9 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
         // DataManager will ping when the ECU has finished a cycle
         DataManager.getInstance().addObserver(this);
+
+        multiTouchController = new MultiTouchController<Indicator>(this);
+
     }
 
     @Override
@@ -334,31 +341,48 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         return indicators;
     }
 
+    /** Pass touch events to the MT controller */
+    @Override
+    public boolean onTouchEvent(final MotionEvent event)
+    {
+        return multiTouchController.onTouchEvent(event);
+    }
+
     @Override
     public Indicator getDraggableObjectAtPoint(final PointInfo touchPoint)
     {
-        // TODO Auto-generated method stub
-        return null;
+        final float px = touchPoint.getX();
+        final float py = touchPoint.getY();
+        Indicator found = null;
+        for (final Indicator i : indicators)
+        {
+            if ((px >= i.getLeft()) && (px <= i.getRight()) && (py >= i.getTop()) && (py <= i.getBottom()))
+            {
+                found = i;
+            }
+        }
+        return found;
     }
 
     @Override
     public void getPositionAndScale(final Indicator obj, final PositionAndScale objPosAndScaleOut)
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public boolean setPositionAndScale(final Indicator obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
-        // TODO Auto-generated method stub
-        return false;
+        final float xoff = newObjPosAndScale.getXOff();
+        final float yoff = newObjPosAndScale.getYOff();
+
+        obj.getLocation().update(xoff, yoff);
+        return true;
     }
 
     @Override
     public void selectObject(final Indicator obj, final PointInfo touchPoint)
     {
-        // TODO Auto-generated method stub
-
+        selectedIndicator = obj;
+        selectedPosition = touchPoint;
     }
 }
