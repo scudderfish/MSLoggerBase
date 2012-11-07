@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -66,18 +67,35 @@ public class Megasquirt extends Service implements MSControllerInterface
     public static final String UNKNOWN_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU";
     public static final String UNKNOWN_ECU_BT = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU_BT";
     public static final String PROBE_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ECU_PROBED";
-    private static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
-    private static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
-    private static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
+    public static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
+    public static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
+    public static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
     
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LAST_SIG = "LAST_SIG";
     private static final String LAST_PROBE = "LAST_PROBE";
     private static final int NOTIFICATION_ID = 0;
-    private static final int BURN_DATA = 10;
 
     private BroadcastReceiver yourReceiver;
-
+    
+    // Used by broadcast receiver
+    public static final int CONTROLLER_COMMAND = 1;
+    
+    public static final int BURN_DATA = 10;
+    
+    public static final int MS3_SD_CARD_STATUS_WRITE = 50;
+    public static final int MS3_SD_CARD_STATUS_READ = 51;
+    public static final int MS3_SD_CARD_RESET_AND_GO = 52;
+    public static final int MS3_SD_CARD_RESET_AND_WAIT = 53;
+    public static final int MS3_SD_CARD_STOP_LOGGING = 54;
+    public static final int MS3_SD_CARD_START_LOGGING = 55;
+    public static final int MS3_SD_CARD_REINITIALISE_CARD = 56;
+    public static final int MS3_SD_CARD_READ_DIRECTORY_WRITE = 57;
+    public static final int MS3_SD_CARD_READ_DIRECTORY_READ = 58;
+    public static final int MS3_SD_CARD_READ_STREAM = 59;
+    public static final int MS3_SD_CARD_READ_RTC_WRITE = 60;
+    public static final int MS3_SD_CARD_READ_RTC_READ = 61;
+    
     private boolean constantsLoaded;
     private String trueSignature = "Unknown";
     private volatile ECUThread ecuThread;
@@ -139,14 +157,19 @@ public class Megasquirt extends Service implements MSControllerInterface
                 {
                     int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
                     
-                    if (resultId == Megasquirt.BURN_DATA)
+                    switch (resultId)
                     {
+                    case Megasquirt.BURN_DATA:
                         // Wait til we get some data and flush it
                         try
                         {
                             Thread.sleep(200);
                         }
                         catch (InterruptedException e) {}
+                        
+                        break;
+                    default:
+                        break;
                     }
                 }
             }
@@ -1651,7 +1674,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         return ecuImplementation.getSettingGroups();
     }
     
-    public List<ControllerCommand> getControllerCommands()
+    public Map<String, String> getControllerCommands()
     {
         ecuImplementation.createControllerCommands();
         return ecuImplementation.getControllerCommands();

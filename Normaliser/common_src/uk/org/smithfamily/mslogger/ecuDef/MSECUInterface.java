@@ -26,7 +26,7 @@ public interface MSECUInterface
     
     List<SettingGroup> settingGroups = new ArrayList<SettingGroup>();
     
-    List<ControllerCommand> controllerCommands = new ArrayList<ControllerCommand>();
+    Map<String,String> controllerCommands = new HashMap<String,String>();
 
     void setFlags();
     public abstract String getSignature();
@@ -91,6 +91,6 @@ public interface MSECUInterface
     
     public abstract void createControllerCommands();
     
-    public abstract List<ControllerCommand> getControllerCommands();
+    public abstract Map<String, String> getControllerCommands();
     
 }

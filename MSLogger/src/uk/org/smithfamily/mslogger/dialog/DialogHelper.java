@@ -1,6 +1,7 @@
 package uk.org.smithfamily.mslogger.dialog;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
 import uk.org.smithfamily.mslogger.ecuDef.CurveEditor;
 import uk.org.smithfamily.mslogger.ecuDef.DialogField;
@@ -8,9 +9,16 @@ import uk.org.smithfamily.mslogger.ecuDef.DialogPanel;
 import uk.org.smithfamily.mslogger.ecuDef.MSDialog;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableRow.LayoutParams;
 
 /**
  * Helper class used for dialogs
@@ -67,12 +75,11 @@ public class DialogHelper
     /**
      * This function build the custom std_* dialog that aren't defined in the ini
      * 
-     * @param context The context the dialog will be used in
      * @param dialogName The name of the dialog to build
      * 
-     * @return The dialog 
+     * @return The dialog
      */
-    public static MSDialog getStdDialog(Context context, String dialogName)
+    public static MSDialog getStdDialog(String dialogName)
     {
         Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
         
@@ -105,6 +112,35 @@ public class DialogHelper
         else if (dialogName.equals("std_constants"))
         {
             return buildStdConstants();
+        }
+        // MS3 Real-time Clock
+        else if (dialogName.equals("std_ms3Rtc"))
+        {
+            return buildStdRtc();
+        }
+        // Trigger wizard
+        else if (dialogName.equals("std_trigwiz"))
+        {
+            return buildStdTriggerWizard();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * This function return an instance of a custom dialog that cannot be covered by a simple MSDialog
+     * 
+     * @param context The context the dialog will be used in
+     * @param dialogName The name of the dialog to build
+     * 
+     * @return The custom dialog instance
+     */
+    public static Dialog getStdCustomDialog(Context context, String dialogName)
+    {
+        if (dialogName.equals("std_ms3SdConsole"))
+        {
+            SDCardConsole sdCardConsole = new SDCardConsole(context);
+            return sdCardConsole;
         }
         
         return null;
@@ -362,5 +398,105 @@ public class DialogHelper
         ecu.addDialog(dialog);
         
         return dialog;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private static MSDialog buildStdRtc()
+    {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        MSDialog dialog = new MSDialog("std_ms3Rtc", "MS3 Real-time Clock", "");
+        ecu.addDialog(dialog);
+        
+        return dialog;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private static MSDialog buildStdTriggerWizard()
+    {
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        
+        MSDialog dialog = new MSDialog("std_trigwiz", "Trigger Wizard", "");
+        ecu.addDialog(dialog);
+        
+        // TODO: need numeric indicator added here
+        
+        dialog.addField(new DialogField("Match above value with timing light reading.", "null", false, false, ""));
+        dialog.addField(new DialogField("Ignition Offset Angle", "triggerOffset", false, false, ""));
+        
+        return dialog;
+    }
+    
+    /**
+     * Build a custom layout panel and return it
+     * 
+     * @param panelName The panel of the panel to build
+     * 
+     * @return The relative layout instance with the custom components inside
+     */
+    public static RelativeLayout getCustomPanel(Context context, String panelName)
+    {
+        if (panelName.equals("dataLogFieldSelector"))
+        {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);       
+            LinearLayout datalogFieldSelectorLayout = (LinearLayout) inflater.inflate(R.layout.sd_card_datalog_field_selector, null);
+            
+            // Wrap into relative layout
+            RelativeLayout containerPanelLayout = new RelativeLayout(context);
+            
+            RelativeLayout.LayoutParams tlp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            containerPanelLayout.setLayoutParams(tlp);
+            containerPanelLayout.addView(datalogFieldSelectorLayout);
+            
+            Button selectAll = (Button) datalogFieldSelectorLayout.findViewById(R.id.select_all);
+            selectAll.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button deselectAll = (Button) datalogFieldSelectorLayout.findViewById(R.id.deselect_all);
+            deselectAll.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button selectOne = (Button) datalogFieldSelectorLayout.findViewById(R.id.select_one);
+            selectOne.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            Button deselectOne = (Button) datalogFieldSelectorLayout.findViewById(R.id.deselect_one);
+            deselectOne.setOnClickListener(new Button.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    
+                }
+            });
+            
+            return containerPanelLayout;
+        }
+        
+        return null;
     }
 }
