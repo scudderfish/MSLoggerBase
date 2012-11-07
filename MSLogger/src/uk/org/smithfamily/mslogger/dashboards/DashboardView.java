@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.*;
 
 public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<Indicator>
@@ -121,7 +122,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             final int cleft = (int) (loc.getLeft() * width);
             final int cright = (int) (loc.getRight() * width);
             final int cbottom = (int) (loc.getBottom() * height);
-            i.setLayout(cleft, ctop, cright, cbottom);
+            i.setLayout(cleft, ctop, cright, cbottom, measuredWidth, measuredHeight);
         }
     }
 
@@ -372,10 +373,20 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public boolean setPositionAndScale(final Indicator obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
-        final float xoff = newObjPosAndScale.getXOff();
-        final float yoff = newObjPosAndScale.getYOff();
+        final int xoff = (int) newObjPosAndScale.getXOff();
+        final int yoff = (int) newObjPosAndScale.getYOff();
+        final int t = obj.getTop();
+        final int l = obj.getLeft();
+        final int b = obj.getBottom();
+        final int r = obj.getRight();
 
-        obj.getLocation().update(xoff, yoff);
+        if ((yoff > 0) || (xoff > 0))
+        {
+            final int foo = 1;
+            Log.d("DashboardView", "foo=" + foo);
+        }
+        obj.setLayout(l + xoff, t + yoff, r + xoff, b + yoff, measuredWidth, measuredHeight);
+
         return true;
     }
 

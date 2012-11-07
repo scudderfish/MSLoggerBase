@@ -40,6 +40,10 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     private Location location;
     private DisplayType type;
     private Painter renderer;
+    private int left;
+    private int top;
+    private int right;
+    private int bottom;
 
     public Indicator()
     {
@@ -282,9 +286,13 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         notifyObservers();
     }
 
-    public void setLayout(final int cleft, final int ctop, final int cright, final int cbottom)
+    public void setLayout(final int cleft, final int ctop, final int cright, final int cbottom, final int width, final int height)
     {
-        location = new Location(cleft, ctop, cright, cbottom);
+        this.left = cleft;
+        this.top = ctop;
+        this.right = cright;
+        this.bottom = cbottom;
+        location = new Location((float) cleft / (float) width, (float) ctop / (float) height, (float) cright / (float) width, (float) cbottom / (float) height);
     }
 
     public synchronized Painter getRenderer()
@@ -299,22 +307,22 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public int getLeft()
     {
-        return (int) location.getLeft();
+        return left;
     }
 
     public int getTop()
     {
-        return (int) location.getTop();
+        return top;
     }
 
     public int getRight()
     {
-        return (int) location.getRight();
+        return right;
     }
 
     public int getBottom()
     {
-        return (int) location.getBottom();
+        return bottom;
     }
 
     public void setType(final DisplayType type)
@@ -324,11 +332,21 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public int getHeight()
     {
-        return (int) location.getHeight();
+        return bottom - top;
     }
 
     public int getWidth()
     {
-        return (int) location.getWidth();
+        return right - left;
+    }
+
+    public int getCentreX()
+    {
+        return (left + right) / 2;
+    }
+
+    public int getCentreY()
+    {
+        return (top + bottom) / 2;
     }
 }

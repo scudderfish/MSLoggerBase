@@ -16,7 +16,7 @@ import uk.org.smithfamily.mslogger.utils.Copyable;
  */
 public class Location implements Copyable<Location>
 {
-    private double left, top, right, bottom;
+    private final double left, top, right, bottom;
 
     public Location(final double left, final double top, final double right, final double bottom)
     {
@@ -24,14 +24,6 @@ public class Location implements Copyable<Location>
         this.top = top;
         this.right = right;
         this.bottom = bottom;
-    }
-
-    public void update(final float xOffset, final float yOffset)
-    {
-        left += xOffset;
-        right += xOffset;
-        top += yOffset;
-        bottom += yOffset;
     }
 
     public double getHeight()
