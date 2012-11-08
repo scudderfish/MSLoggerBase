@@ -25,6 +25,8 @@ public class DashboardElement
     private float top;
     private float right;
     private float bottom;
+    private int parentH;
+    private int parentW;
 
     public DashboardElement(final Context c, final Indicator i, final DashboardView parent)
     {
@@ -46,7 +48,8 @@ public class DashboardElement
         final float centreX = (float) ((right + left) / 2.0);
         final float centreY = (float) ((top + bottom) / 2.0);
         painter.setPos(left, top, right, bottom, centreX, centreY, 1, 1, 0);
-
+        this.parentW = w;
+        this.parentH = h;
     }
 
     private void checkPainterMatchesIndicator()
@@ -108,7 +111,10 @@ public class DashboardElement
     /** Set the position and scale of an image in screen coordinates */
     private boolean setPos(final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
     {
-        final float ws = (getWidth() / 2) * scaleX, hs = (getHeight() / 2) * scaleY;
+        final float width = getWidth();
+        final float height = getHeight();
+        final float ws = (width / 2) * scaleX;
+        final float hs = (height / 2) * scaleY;
         final float newleft = centerX - ws, newtop = centerY - hs, newright = centerX + ws, newbottom = centerY + hs;
         this.left = newleft;
         this.top = newtop;
@@ -116,6 +122,8 @@ public class DashboardElement
         this.bottom = newbottom;
 
         painter.setPos(newleft, newtop, newright, newbottom, centerX, centerY, scaleX, scaleY, angle);
+        final Location l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
+        indicator.setLocation(l);
         return true;
     }
 
@@ -129,11 +137,19 @@ public class DashboardElement
         return bottom - top;
     }
 
-    /** Return whether or not the given screen coords are inside this image */
     public boolean contains(final float scrnX, final float scrnY)
     {
-        // FIXME: need to correctly account for image rotation
         return ((scrnX >= left) && (scrnX <= right) && (scrnY >= top) && (scrnY <= bottom));
+    }
+
+    public float getCentreY()
+    {
+        return (float) ((left + right) / 2.0);
+    }
+
+    public float getCentreX()
+    {
+        return (float) ((top + bottom) / 2.0);
     }
 
 }

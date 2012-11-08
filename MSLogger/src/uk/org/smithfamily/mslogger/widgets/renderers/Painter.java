@@ -148,11 +148,6 @@ public abstract class Painter
         return new Size(measuredWidth, measuredHeight);
     }
 
-    public void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
-    {
-        // Override if you care about this
-    }
-
     /** Set the position and scale of an image in screen coordinates */
     public boolean setPos(final float newleft, final float newtop, final float newright, final float newbottom, final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
     {
@@ -169,7 +164,16 @@ public abstract class Painter
         this.top = newtop;
         this.right = newright;
         this.bottom = newbottom;
+
+        if ((scaleX != 1.0) || (scaleY != 1.0))
+        {
+            invalidateCaches();
+        }
         return true;
+    }
+
+    protected void invalidateCaches()
+    {
     }
 }
 

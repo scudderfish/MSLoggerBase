@@ -30,7 +30,7 @@ public class Gauge extends Painter
     private RectF faceRect;
     private Paint facePaint;
     private Paint backgroundPaint;
-    private Bitmap background;
+    private volatile Bitmap background;
 
     private int lastBGColour;
     private static final float rimSize = 0.02f;
@@ -41,7 +41,7 @@ public class Gauge extends Painter
         initDrawingTools(c);
     }
 
-    private void regenerateBackground(final int width, final int height)
+    private synchronized void regenerateBackground(final int width, final int height)
     {
         if ((height == 0) || (width == 0))
         {
@@ -65,7 +65,7 @@ public class Gauge extends Painter
         drawTitle(backgroundCanvas);
     }
 
-    private void drawBackground(final Canvas canvas)
+    private synchronized void drawBackground(final Canvas canvas)
     {
         final int height = (int) (bottom - top);
         final int width = (int) (right - left);
@@ -402,13 +402,12 @@ public class Gauge extends Painter
     }
 
     @Override
-    public void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
+    protected synchronized void invalidateCaches()
     {
-        if ((w == 0) || (h == 0))
+        if (background != null)
         {
-            return;
+            background.recycle();
+            background = null;
         }
-        regenerateBackground(w, h);
     }
-
 }
