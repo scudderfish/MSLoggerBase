@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.ControllerCommand;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
+import uk.org.smithfamily.utils.normaliser.controllercommand.ControllerCommand;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
 import uk.org.smithfamily.utils.normaliser.tableeditor.TableTracker;

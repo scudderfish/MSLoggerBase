@@ -1,4 +1,4 @@
-package uk.org.smithfamily.mslogger.ecuDef;
+package uk.org.smithfamily.utils.normaliser.controllercommand;
 
 public class ControllerCommand
 {

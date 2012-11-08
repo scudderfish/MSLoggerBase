@@ -40,7 +40,7 @@ public class TuningActivity extends Activity
 {
     private LinearLayout firstColumn;
     private LinearLayout secondColumn;
-    private final String[] EXLUDED_MENUS = new String[] {"Tools","Data Logging","Communications","Help"};
+    private final String[] EXLUDED_MENUS = new String[] {"Communications","Help"};
     
     private int currentIndexMenu = 0;
     
@@ -306,7 +306,7 @@ public class TuningActivity extends Activity
                 else
                 {
                     // Not a regular dialog, but maybe it's an std_* dialog
-                    dialog = DialogHelper.getStdDialog(getBaseContext(), name);
+                    dialog = DialogHelper.getStdDialog(name);
                     
                     if (dialog != null)
                     {
@@ -315,22 +315,34 @@ public class TuningActivity extends Activity
 
                         this.currentDialog = editDialog;
                     }
-                    // No idea what it is, we're screwed!
+                    
                     else
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
-                        builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
-                                .setIcon(android.R.drawable.ic_dialog_info)
-                                .setTitle("Unsupported")
-                                .setCancelable(true)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                                {
-                                    public void onClick(DialogInterface dialog, int id)
-                                    {}
-                                });
+                        Dialog customDialog = DialogHelper.getStdCustomDialog(TuningActivity.this, name);
                         
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                        if (customDialog != null)
+                        {
+                            customDialog.show();
+                            
+                            this.currentDialog = customDialog;
+                        }
+                        // No idea what it is, we're screwed!
+                        else
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(TuningActivity.this);
+                            builder.setMessage("Sorry, \"" + name + "\" is not currently supported.")
+                                    .setIcon(android.R.drawable.ic_dialog_info)
+                                    .setTitle("Unsupported")
+                                    .setCancelable(true)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                                    {
+                                        public void onClick(DialogInterface dialog, int id)
+                                        {}
+                                    });
+                            
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
                     }
                 }
             }

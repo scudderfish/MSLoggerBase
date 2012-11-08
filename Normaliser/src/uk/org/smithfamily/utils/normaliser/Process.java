@@ -8,10 +8,10 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.ControllerCommand;
 import uk.org.smithfamily.mslogger.ecuDef.MSUtilsShared;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
+import uk.org.smithfamily.utils.normaliser.controllercommand.ControllerCommand;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveColumnLabel;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveDefinition;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveGauge;
@@ -987,7 +987,11 @@ public class Process
     private static void createDialogField(ECUData ecuData, Matcher dialogField, UserDefinedTracker d, boolean readOnly, boolean isCommandButton)
     {
         final String label = dialogField.group(1).trim();
-        final String name = dialogField.group(3);
+        String name = dialogField.group(3);
+        if (name != null) 
+        {
+            name = name.trim();
+        }
         String expression = dialogField.group(5);
         String visibilityFlag = d.getName() + "_" + name;
         if (visibilityFlag.equals("null_staged_extended_opts_simult"))
