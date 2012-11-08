@@ -9,28 +9,24 @@ import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.Location;
-import uk.org.smithfamily.mslogger.widgets.renderers.*;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.*;
 
-public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<Indicator>
+public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<DashboardElement>
 {
     private final int position;
     private final Context context;
-    private final List<Indicator> indicators;
+    private final List<DashboardElement> elements;
     private final DashboardThread thread;
     private final int MAX_FPS = 60;
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private int measuredHeight;
     private int measuredWidth;
     private final DashboardViewPager parentPager;
-    private final MultiTouchController<Indicator> multiTouchController;
-    private Indicator selectedIndicator;
+    private final MultiTouchController<DashboardElement> multiTouchController;
     private PointInfo selectedPosition;
 
     public DashboardView(final Context context, final int position, final DashboardViewPager parent)
@@ -39,14 +35,14 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         this.context = context;
         this.position = position;
         this.parentPager = parent;
-        indicators = new ArrayList<Indicator>();
+        elements = new ArrayList<DashboardElement>();
         getHolder().addCallback(this);
         thread = new DashboardThread(getHolder(), context, this);
 
         // DataManager will ping when the ECU has finished a cycle
         DataManager.getInstance().addObserver(this);
 
-        multiTouchController = new MultiTouchController<Indicator>(this);
+        multiTouchController = new MultiTouchController<DashboardElement>(this);
 
     }
 
@@ -86,7 +82,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
     public void setDashboard(final Dashboard d)
     {
-        indicators.clear();
+        elements.clear();
         List<Indicator> indicatorsFromDash;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
@@ -96,7 +92,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         {
             indicatorsFromDash = d.getPortrait();
         }
-        indicators.addAll(indicatorsFromDash);
+        for (final Indicator i : indicatorsFromDash)
+        {
+            elements.add(new DashboardElement(context, i, this));
+        }
     }
 
     @Override
@@ -106,24 +105,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         setMeasuredDimension(measuredWidth, measuredHeight);
-    }
-
-    @Override
-    protected void onLayout(final boolean changed, final int l, final int t, final int r, final int b)
-    {
-        final int width = r - l;
-        final int height = b - t;
-
-        for (final Indicator i : indicators)
-        {
-            final Location loc = i.getLocation();
-
-            final int ctop = (int) (loc.getTop() * height);
-            final int cleft = (int) (loc.getLeft() * width);
-            final int cright = (int) (loc.getRight() * width);
-            final int cbottom = (int) (loc.getBottom() * height);
-            i.setLayout(cleft, ctop, cright, cbottom, measuredWidth, measuredHeight);
-        }
     }
 
     @Override
@@ -155,27 +136,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             this.setName("DashboardThread" + parent.position);
         }
 
-        private Painter createRenderer(final Indicator i, final Context context, final DashboardView dashboardView)
-        {
-            final Painter r;
-            switch (i.getDisplayType())
-            {
-            case GAUGE:
-                r = new Gauge(dashboardView, i, context);
-                break;
-            case BAR:
-                r = new BarGraph(dashboardView, i, context);
-                break;
-            case NUMERIC:
-                r = new NumericIndicator(dashboardView, i, context);
-                break;
-            default:
-                r = new Gauge(dashboardView, i, context);
-                break;
-            }
-            return r;
-        }
-
         public void setRunning(final boolean r)
         {
             running = r;
@@ -186,11 +146,9 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         public void run()
         {
             Canvas c;
-            new IndicatorsToLimits(true, 100).start();
-            new IndicatorsToLimits(false, 1200).start();
             while (running)
             {
-                while ((parentPager.getCurrentItem() == position) && indicatorsOutOfDate())
+                while ((parentPager.getCurrentItem() == position))
                 {
                     c = null;
                     try
@@ -242,104 +200,30 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
 
-        private boolean indicatorsOutOfDate()
-        {
-            for (final Indicator i : indicators)
-            {
-                if (manageRenderer(i) || i.getRenderer().offTarget())
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         @Override
         public void update(final Observable observable, final Object data)
         {
             synchronized (updateLock)
             {
-                for (final Indicator i : indicators)
+                for (final DashboardElement i : elements)
                 {
-                    manageRenderer(i);
-                    i.getRenderer().setTargetValue(i.getValue());
+                    i.setTargetValue();
                 }
                 updateLock.notifyAll();
             }
-        }
-
-        private boolean manageRenderer(final Indicator i)
-        {
-            if ((i.getRenderer() == null) || (i.getRenderer().getType() != i.getDisplayType()))
-            {
-                i.setRenderer(createRenderer(i, context, parent));
-                return true;
-            }
-            return false;
         }
 
         public void drawIndicators(final Canvas c)
         {
             isDirty = false;
             boolean indicatorDirty = false;
-            for (final Indicator i : parent.getIndicators())
+            for (final DashboardElement i : elements)
             {
-                indicatorDirty = manageRenderer(i);
-                final Painter r = i.getRenderer();
-                indicatorDirty |= r.updateAnimation();
-                r.renderFrame(c);
+                indicatorDirty |= i.updateAnimation();
+                i.renderFrame(c);
                 isDirty |= indicatorDirty;
             }
         }
-    }
-
-    class IndicatorsToLimits extends Thread
-    {
-        private final long delay;
-        private final boolean toMax;
-
-        public IndicatorsToLimits(final boolean toMax, final long delay)
-        {
-            this.toMax = toMax;
-            this.delay = delay;
-        }
-
-        @Override
-        public void run()
-        {
-            try
-            {
-                Thread.sleep(delay);
-                setIndicatorsToLimit(toMax);
-            }
-            catch (final InterruptedException e)
-            {
-                // Swallow
-            }
-
-        }
-    }
-
-    void setIndicatorsToLimit(final boolean max)
-    {
-        for (final Indicator i : indicators)
-        {
-            if (max)
-            {
-                i.setValue(i.getMax());
-            }
-            else
-
-            {
-                i.setValue(i.getMin());
-            }
-        }
-        DataManager.getInstance().tickle();
-    }
-
-    public List<Indicator> getIndicators()
-    {
-        return indicators;
     }
 
     /** Pass touch events to the MT controller */
@@ -350,50 +234,48 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     }
 
     @Override
-    public Indicator getDraggableObjectAtPoint(final PointInfo touchPoint)
+    public DashboardElement getDraggableObjectAtPoint(final PointInfo touchPoint)
     {
         final float px = touchPoint.getX();
         final float py = touchPoint.getY();
-        Indicator found = null;
-        for (final Indicator i : indicators)
+        DashboardElement found = null;
+        for (final DashboardElement i : elements)
         {
-            if ((px >= i.getLeft()) && (px <= i.getRight()) && (py >= i.getTop()) && (py <= i.getBottom()))
+            if (i.contains(px, py))
             {
                 found = i;
             }
         }
         return found;
+
     }
 
     @Override
-    public void getPositionAndScale(final Indicator obj, final PositionAndScale objPosAndScaleOut)
+    public void getPositionAndScale(final DashboardElement obj, final PositionAndScale objPosAndScaleOut)
     {
     }
 
     @Override
-    public boolean setPositionAndScale(final Indicator obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
+    public boolean setPositionAndScale(final DashboardElement obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
-        final int xoff = (int) newObjPosAndScale.getXOff();
-        final int yoff = (int) newObjPosAndScale.getYOff();
-        final int t = obj.getTop();
-        final int l = obj.getLeft();
-        final int b = obj.getBottom();
-        final int r = obj.getRight();
-
-        if ((yoff > 0) || (xoff > 0))
-        {
-            final int foo = 1;
-            Log.d("DashboardView", "foo=" + foo);
-        }
-        obj.setLayout(l + xoff, t + yoff, r + xoff, b + yoff, measuredWidth, measuredHeight);
-
-        return true;
+        return obj.setPos(newObjPosAndScale);
     }
 
     @Override
-    public void selectObject(final Indicator obj, final PointInfo touchPoint)
+    public void selectObject(final DashboardElement obj, final PointInfo touchPoint)
     {
-        selectedIndicator = obj;
         selectedPosition = touchPoint;
+    }
+
+    @Override
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
+    {
+        // TODO Auto-generated method stub
+        super.onSizeChanged(w, h, oldw, oldh);
+        for (final DashboardElement i : elements)
+        {
+            i.scaleToParent(w, h);
+        }
+
     }
 }

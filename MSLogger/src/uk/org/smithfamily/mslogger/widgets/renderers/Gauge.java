@@ -67,15 +67,15 @@ public class Gauge extends Painter
 
     private void drawBackground(final Canvas canvas)
     {
-        final int height = model.getBottom() - model.getTop();
-        final int width = model.getRight() - model.getLeft();
+        final int height = (int) (bottom - top);
+        final int width = (int) (right - left);
 
         if ((background == null) || (getBgColour() != lastBGColour))
         {
             regenerateBackground(width, height);
             lastBGColour = getBgColour();
         }
-        canvas.drawBitmap(background, model.getLeft(), model.getTop(), backgroundPaint);
+        canvas.drawBitmap(background, left, top, backgroundPaint);
     }
 
     /**
@@ -85,8 +85,8 @@ public class Gauge extends Painter
     @Override
     public void renderFrame(final Canvas canvas)
     {
-        final int height = model.getHeight();
-        final int width = model.getWidth();
+        final int height = (int) (bottom - top);
+        final int width = (int) (right - left);
 
         if ((width == 0) || (height == 0))
         {// We're not ready to do this yet
@@ -97,7 +97,7 @@ public class Gauge extends Painter
 
         final float scale = Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.translate(model.getLeft(), model.getTop());
+        canvas.translate(left, top);
         canvas.scale(scale, scale);
 
         drawPointer(canvas);

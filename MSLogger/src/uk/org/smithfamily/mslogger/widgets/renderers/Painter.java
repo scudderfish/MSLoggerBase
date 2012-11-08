@@ -22,6 +22,15 @@ public abstract class Painter
     private long lastPointerMoveTime = 0;
     private int dirtyCount = 0;
     private final RenderStats stats = new RenderStats();
+    protected float centerX;
+    protected float centerY;
+    protected float scaleX;
+    protected float scaleY;
+    protected float angle;
+    protected float left;
+    protected float top;
+    protected float right;
+    protected float bottom;
 
     public Painter(final DashboardView parent, final Indicator model, final Context c)
     {
@@ -144,6 +153,24 @@ public abstract class Painter
         // Override if you care about this
     }
 
+    /** Set the position and scale of an image in screen coordinates */
+    public boolean setPos(final float newleft, final float newtop, final float newright, final float newbottom, final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
+    {
+        /*
+         * if ((newleft > (displayWidth - SCREEN_MARGIN)) || (newright < SCREEN_MARGIN) || (newtop > (displayHeight - SCREEN_MARGIN)) || (newbottom <
+         * SCREEN_MARGIN)) { return false; }
+         */
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.angle = angle;
+        this.left = newleft;
+        this.top = newtop;
+        this.right = newright;
+        this.bottom = newbottom;
+        return true;
+    }
 }
 
 class RenderStats
