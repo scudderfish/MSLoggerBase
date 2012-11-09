@@ -56,6 +56,36 @@ public class Location implements Copyable<Location>
         return bottom;
     }
 
+    public double getLeft(final float screenWidth)
+    {
+        return left * screenWidth;
+    }
+
+    public double getRight(final float screenWidth)
+    {
+        return right * screenWidth;
+    }
+
+    public double getTop(final float screenHeight)
+    {
+        return top * screenHeight;
+    }
+
+    public double getBottom(final float screenHeight)
+    {
+        return bottom * screenHeight;
+    }
+
+    public double getWidth(final float screenWidth)
+    {
+        return getWidth() * screenWidth;
+    }
+
+    public double getHeight(final float screenHeight)
+    {
+        return getHeight() * screenHeight;
+    }
+
     @Override
     public String toString()
     {
@@ -79,5 +109,16 @@ public class Location implements Copyable<Location>
     @Override
     public void copyTo(final Location dest)
     {
+    }
+
+    public float getCentreY(final float parentH)
+    {
+        return (float) (parentH * ((top + bottom) / 2.0));
+    }
+
+    public float getCentreX(final float parentW)
+    {
+
+        return (float) (parentW * ((left + right) / 2.0));
     }
 }

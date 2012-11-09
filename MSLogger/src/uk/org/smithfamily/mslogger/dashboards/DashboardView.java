@@ -13,12 +13,11 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.*;
 
 public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<DashboardElement>
 {
-    private static final String TAG = "DashboardView";
+    // private static final String TAG = "DashboardView";
     private final int position;
     private final Context context;
     private final List<DashboardElement> elements;
@@ -255,17 +254,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
-        objPosAndScaleOut.set(e.getCentreX(), e.getCentreY(), true, 1.0f, false, 1.0f, 1.0f, false, 0);
+        objPosAndScaleOut.set(e.getCentreX(), e.getCentreY(), true, e.getScale(), false, e.getScale(), e.getScale(), false, 0);
     }
 
     @Override
     public boolean setPositionAndScale(final DashboardElement obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
-        final float sx = newObjPosAndScale.getScale();
-        if (sx != 1.0)
-        {
-            Log.e(TAG, "scale is " + sx);
-        }
         return obj.setPos(newObjPosAndScale);
     }
 

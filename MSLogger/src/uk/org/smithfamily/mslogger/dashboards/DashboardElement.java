@@ -21,12 +21,11 @@ public class DashboardElement
     private Painter painter;
     private final DashboardView parent;
     private final Context context;
-    private float left;
-    private float top;
-    private float right;
-    private float bottom;
-    private int parentH;
-    private int parentW;
+    private float parentH;
+    private float parentW;
+    private float originalWidth;
+    private float originalHeight;
+    private float scale;
 
     public DashboardElement(final Context c, final Indicator i, final DashboardView parent)
     {
@@ -40,16 +39,18 @@ public class DashboardElement
     {
         final Location l = indicator.getLocation();
 
-        left = (float) (l.getLeft() * w);
-        right = (float) (l.getRight() * w);
-        top = (float) (l.getTop() * h);
-        bottom = (float) (l.getBottom() * h);
+        final float left = (float) (l.getLeft(w));
+        final float right = (float) (l.getRight(w));
+        final float top = (float) (l.getTop(h));
+        final float bottom = (float) (l.getBottom(h));
 
         final float centreX = (float) ((right + left) / 2.0);
         final float centreY = (float) ((top + bottom) / 2.0);
         painter.setPos(left, top, right, bottom, centreX, centreY, 1, 1, 0);
         this.parentW = w;
         this.parentH = h;
+        originalWidth = (float) l.getWidth(w);
+        originalHeight = (float) l.getHeight(h);
     }
 
     private void checkPainterMatchesIndicator()
@@ -111,45 +112,49 @@ public class DashboardElement
     /** Set the position and scale of an image in screen coordinates */
     private boolean setPos(final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
     {
-        final float width = getWidth();
-        final float height = getHeight();
-        final float ws = (width / 2) * scaleX;
-        final float hs = (height / 2) * scaleY;
+        Location l = indicator.getLocation();
+        final float width = originalWidth;
+        final float height = originalHeight;
+        float ws = (width / 2) * scaleX;
+        float hs = (height / 2) * scaleY;
+        ws = Math.max(ws, parentW / 20f);
+        hs = Math.max(hs, parentH / 20f);
         final float newleft = centerX - ws, newtop = centerY - hs, newright = centerX + ws, newbottom = centerY + hs;
-        this.left = newleft;
-        this.top = newtop;
-        this.right = newright;
-        this.bottom = newbottom;
+        final float left = newleft;
+        final float top = newtop;
+        final float right = newright;
+        final float bottom = newbottom;
+        this.scale = (scaleX + scaleY) / 2.0f;
 
         painter.setPos(newleft, newtop, newright, newbottom, centerX, centerY, scaleX, scaleY, angle);
-        final Location l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
+        l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
         indicator.setLocation(l);
         return true;
     }
 
-    private float getWidth()
-    {
-        return right - left;
-    }
-
-    private float getHeight()
-    {
-        return bottom - top;
-    }
-
     public boolean contains(final float scrnX, final float scrnY)
     {
-        return ((scrnX >= left) && (scrnX <= right) && (scrnY >= top) && (scrnY <= bottom));
+        final Location l = indicator.getLocation();
+
+        return ((scrnX >= l.getLeft(parentW)) && (scrnX <= l.getRight(parentW)) && (scrnY >= l.getTop(parentH)) && (scrnY <= l.getBottom(parentH)));
     }
 
     public float getCentreY()
     {
-        return (float) ((left + right) / 2.0);
+        final Location l = indicator.getLocation();
+
+        return l.getCentreY(parentH);
     }
 
     public float getCentreX()
     {
-        return (float) ((top + bottom) / 2.0);
+        final Location l = indicator.getLocation();
+
+        return l.getCentreX(parentW);
     }
 
+    public float getScale()
+    {
+        return scale;
+    }
 }
