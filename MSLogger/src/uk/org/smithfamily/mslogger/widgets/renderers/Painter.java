@@ -155,6 +155,12 @@ public abstract class Painter
          * if ((newleft > (displayWidth - SCREEN_MARGIN)) || (newright < SCREEN_MARGIN) || (newtop > (displayHeight - SCREEN_MARGIN)) || (newbottom <
          * SCREEN_MARGIN)) { return false; }
          */
+
+        if ((scaleX != this.scaleX) || (scaleY != this.scaleY))
+        {
+            invalidateCaches();
+        }
+
         this.centerX = centerX;
         this.centerY = centerY;
         this.scaleX = scaleX;
@@ -164,16 +170,26 @@ public abstract class Painter
         this.top = newtop;
         this.right = newright;
         this.bottom = newbottom;
-
-        if ((scaleX != 1.0) || (scaleY != 1.0))
-        {
-            invalidateCaches();
-        }
+        normaliseDimensions();
         return true;
+    }
+
+    protected void normaliseDimensions()
+    {
     }
 
     protected void invalidateCaches()
     {
+    }
+
+    public float getWidth()
+    {
+        return right - left;
+    }
+
+    public float getHeight()
+    {
+        return bottom - top;
     }
 }
 

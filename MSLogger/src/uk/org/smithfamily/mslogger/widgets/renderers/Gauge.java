@@ -410,4 +410,16 @@ public class Gauge extends Painter
             background = null;
         }
     }
+
+    @Override
+    protected void normaliseDimensions()
+    {
+        float width = right - left;
+        float height = bottom - top;
+
+        width = Math.min(width, height);
+        height = width;
+        bottom = top + height;
+        right = left + width;
+    }
 }
