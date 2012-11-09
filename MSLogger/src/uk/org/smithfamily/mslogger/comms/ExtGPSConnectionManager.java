@@ -1,5 +1,7 @@
 package uk.org.smithfamily.mslogger.comms;
 
+// Licensed under LGPL http://www.gnu.org/copyleft/lesser.html
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -8,7 +10,7 @@ import java.io.OutputStream;
  */
 public class ExtGPSConnectionManager extends ConnectionManager
 {
-    
+
     // Private constructor prevents instantiation from other classes
     private ExtGPSConnectionManager()
     {
@@ -26,7 +28,8 @@ public class ExtGPSConnectionManager extends ConnectionManager
     {
         return SingletonHolder.INSTANCE;
     }
-    
+
+    @Override
     public String getInstanceName()
     {
         return "ExtGPSConnectionManager";
