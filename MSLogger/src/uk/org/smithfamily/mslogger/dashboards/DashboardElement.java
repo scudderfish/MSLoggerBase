@@ -44,6 +44,7 @@ public class DashboardElement
         final float top = (float) (l.getTop(h));
         final float bottom = (float) (l.getBottom(h));
 
+        // Work out where the middle is as that is what MTC really wants to deal in
         final float centreX = (float) ((right + left) / 2.0);
         final float centreY = (float) ((top + bottom) / 2.0);
         painter.setPos(left, top, right, bottom, centreX, centreY, 1, 1, 0);
@@ -118,20 +119,23 @@ public class DashboardElement
         final float height = originalHeight;
         float ws = (width / 2) * scaleX;
         float hs = (height / 2) * scaleY;
+
+        // Try to ensure we don't vanish into a pixel
         ws = Math.max(ws, parentW / 20f);
         hs = Math.max(hs, parentH / 20f);
-        final float newleft = centerX - ws, newtop = centerY - hs, newright = centerX + ws, newbottom = centerY + hs;
-        final float left = newleft;
-        final float top = newtop;
-        final float right = newright;
-        final float bottom = newbottom;
+
+        final float left = centerX - ws;
+        final float top = centerY - hs;
+        final float right = centerX + ws;
+        final float bottom = centerY + hs;
+
         this.scale = (scaleX + scaleY) / 2.0f;
 
-        if ((newleft < 0) || (newtop < 0) || (newright > parentW) || (newbottom > parentH))
+        if ((left < 0) || (top < 0) || (right > parentW) || (bottom > parentH))
         {
             return false;
         }
-        painter.setPos(newleft, newtop, newright, newbottom, centerX, centerY, scaleX, scaleY, angle);
+        painter.setPos(left, top, right, bottom, centerX, centerY, scaleX, scaleY, angle);
         l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
         indicator.setLocation(l);
         return true;

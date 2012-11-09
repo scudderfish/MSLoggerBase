@@ -188,6 +188,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             Canvas c;
             while (running)
             {
+                // Only bother updating if this is the displayed page
                 while ((parentPager.getCurrentItem() == position))
                 {
                     c = null;
@@ -195,6 +196,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     {
                         c = holder.lockCanvas();
 
+                        // Put down a background to show the boundaries
                         c.drawARGB(255, 127, 127, 127);
                         synchronized (holder)
                         {
@@ -212,6 +214,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     final long delay = now - lastUpdate;
                     if (delay < DELAY_PER_FRAME)
                     {
+                        // We're running faster than the desired framerate, so throttle back
                         final long inducedDelay = DELAY_PER_FRAME - delay;
                         try
                         {

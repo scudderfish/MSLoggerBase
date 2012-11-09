@@ -2,7 +2,6 @@ package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import uk.org.smithfamily.mslogger.dashboards.DashboardView;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
-import uk.org.smithfamily.mslogger.widgets.Size;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -136,26 +135,10 @@ public abstract class Painter
         return c;
     }
 
-    /**
-     * Get the size this renderer wants to be given the maximum size it is allowed to be
-     * 
-     * @param measuredWidth
-     * @param measuredHeight
-     * @return
-     */
-    public Size getSize(final int measuredWidth, final int measuredHeight)
-    {
-        return new Size(measuredWidth, measuredHeight);
-    }
-
     /** Set the position and scale of an image in screen coordinates */
     public boolean setPos(final float newleft, final float newtop, final float newright, final float newbottom, final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
     {
-        /*
-         * if ((newleft > (displayWidth - SCREEN_MARGIN)) || (newright < SCREEN_MARGIN) || (newtop > (displayHeight - SCREEN_MARGIN)) || (newbottom <
-         * SCREEN_MARGIN)) { return false; }
-         */
-
+        // If the size has changed, we need to flush any stored bitmaps
         if ((scaleX != this.scaleX) || (scaleY != this.scaleY))
         {
             invalidateCaches();
@@ -170,14 +153,18 @@ public abstract class Painter
         this.top = newtop;
         this.right = newright;
         this.bottom = newbottom;
+
         normaliseDimensions();
+
         return true;
     }
 
+    // Override this if a painter subclass has constrained dimensions (i.e. a gauge has the same width/height)
     protected void normaliseDimensions()
     {
     }
 
+    // Override this to clear out any cached, size dependent bitmaps
     protected void invalidateCaches()
     {
     }

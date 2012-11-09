@@ -1,7 +1,7 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
 import uk.org.smithfamily.mslogger.dashboards.DashboardView;
-import uk.org.smithfamily.mslogger.widgets.*;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
 import android.graphics.*;
@@ -392,13 +392,6 @@ public class Gauge extends Painter
     public DisplayType getType()
     {
         return DisplayType.GAUGE;
-    }
-
-    @Override
-    public Size getSize(final int width, final int height)
-    {
-        final int diameter = Math.min(width, height);
-        return new Size(diameter, diameter);
     }
 
     @Override
