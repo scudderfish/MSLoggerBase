@@ -12,8 +12,8 @@ public enum ConnectionFactory
      */
     public Connection getConnection()
     {
-        // return new BluetoothConnection();
-        return SocketConnection.INSTANCE;
+        return new BluetoothConnection();
+        // return SocketConnection.INSTANCE;
     }
 
 }
