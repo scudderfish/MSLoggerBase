@@ -49,8 +49,9 @@ public class DashboardElement
         painter.setPos(left, top, right, bottom, centreX, centreY, 1, 1, 0);
         this.parentW = w;
         this.parentH = h;
-        originalWidth = (float) l.getWidth(w);
-        originalHeight = (float) l.getHeight(h);
+
+        originalWidth = painter.getWidth();
+        originalHeight = painter.getHeight();
     }
 
     private void checkPainterMatchesIndicator()
@@ -126,6 +127,10 @@ public class DashboardElement
         final float bottom = newbottom;
         this.scale = (scaleX + scaleY) / 2.0f;
 
+        if ((newleft < 0) || (newtop < 0) || (newright > parentW) || (newbottom > parentH))
+        {
+            return false;
+        }
         painter.setPos(newleft, newtop, newright, newbottom, centerX, centerY, scaleX, scaleY, angle);
         l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
         indicator.setLocation(l);
@@ -156,5 +161,17 @@ public class DashboardElement
     public float getScale()
     {
         return scale;
+    }
+
+    public void editStart()
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void editFinished()
+    {
+        // TODO Auto-generated method stub
+
     }
 }
