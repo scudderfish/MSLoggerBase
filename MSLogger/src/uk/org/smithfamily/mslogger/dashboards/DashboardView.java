@@ -29,6 +29,33 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final DashboardViewPager parentPager;
     private final MultiTouchController<DashboardElement> multiTouchController;
     private PointInfo selectedPosition;
+    private DashboardElement editedItem;
+    private final GestureDetector gestureScanner;
+
+    class GestureProcessor extends GestureDetector.SimpleOnGestureListener
+    {
+
+        @Override
+        public boolean onDoubleTap(final MotionEvent e)
+        {
+
+            final float px = e.getX();
+            final float py = e.getY();
+            final DashboardElement element = getElementAtCoOrds(px, py);
+
+            if (element != null)
+            {
+                editElement(element);
+            }
+            else
+            {
+                addNewElement();
+            }
+
+            return super.onDoubleTap(e);
+        }
+
+    }
 
     public DashboardView(final Context context, final int position, final DashboardViewPager parent)
     {
@@ -44,6 +71,18 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         DataManager.getInstance().addObserver(this);
 
         multiTouchController = new MultiTouchController<DashboardElement>(this);
+        gestureScanner = new GestureDetector(context, new GestureProcessor());
+    }
+
+    public void editElement(final DashboardElement element)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void addNewElement()
+    {
+        // TODO Auto-generated method stub
 
     }
 
@@ -227,11 +266,18 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /** Pass touch events to the MT controller */
+    /** Pass touch events to the MT controller if the gestureScanner doesn't like it */
     @Override
     public boolean onTouchEvent(final MotionEvent event)
     {
-        return multiTouchController.onTouchEvent(event);
+        if (gestureScanner.onTouchEvent(event))
+        {
+            return true;
+        }
+        else
+        {
+            return multiTouchController.onTouchEvent(event);
+        }
     }
 
     @Override
@@ -239,6 +285,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     {
         final float px = touchPoint.getX();
         final float py = touchPoint.getY();
+        return getElementAtCoOrds(px, py);
+
+    }
+
+    private DashboardElement getElementAtCoOrds(final float px, final float py)
+    {
         DashboardElement found = null;
         for (final DashboardElement i : elements)
         {
@@ -248,7 +300,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
         return found;
-
     }
 
     @Override
@@ -267,6 +318,22 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     public void selectObject(final DashboardElement obj, final PointInfo touchPoint)
     {
         selectedPosition = touchPoint;
+        if (obj != null)
+        {
+            if (editedItem == null)
+            {
+                editedItem = obj;
+                editedItem.editStart();
+            }
+        }
+        else
+        {
+            if (editedItem != null)
+            {
+                editedItem.editFinished();
+                editedItem = null;
+            }
+        }
     }
 
     @Override
