@@ -3,6 +3,7 @@ package uk.org.smithfamily.mslogger.comms;
 public enum ConnectionFactory
 {
     INSTANCE;
+    private static final boolean useSim = false;
 
     /**
      * Return the Connection instance to use. This should be switchable somehow but as I'm in a hotel, I'm hardwiring it to a simulator as my ECU is
@@ -12,8 +13,15 @@ public enum ConnectionFactory
      */
     public Connection getConnection()
     {
-        return new BluetoothConnection();
-        // return SocketConnection.INSTANCE;
+        if (useSim)
+        {
+            return SocketConnection.INSTANCE;
+        }
+        else
+        {
+
+            return new BluetoothConnection();
+        }
     }
 
 }
