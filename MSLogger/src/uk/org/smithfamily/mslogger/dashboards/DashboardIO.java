@@ -11,6 +11,9 @@ import uk.org.smithfamily.mslogger.widgets.*;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.res.AssetManager;
 
+/**
+ * This is used to load and save dashboard files
+ */
 public enum DashboardIO
 {
     INSTANCE;
@@ -40,12 +43,20 @@ public enum DashboardIO
     private List<Dashboard> activeDashboardDefinitions = new ArrayList<Dashboard>();
     private final Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
 
+    /**
+     * Save the default dashboard to a file
+     */
     public void saveDash()
     {
         saveDash(DEFAULT);
     }
 
-    public void saveDash(final String dashName)
+    /**
+     * Build the JSON string that can be saved to a JSON formatted file
+     * 
+     * @param dashName The dashboard name to save
+     */
+    public synchronized void saveDash(final String dashName)
     {
         final JSONObject root = new JSONObject();
         final JSONArray jDashes = new JSONArray();
@@ -64,9 +75,17 @@ public enum DashboardIO
         {
             DebugLogManager.INSTANCE.logException(e);
         }
+        
         dashCache.put(dashName, activeDashboardDefinitions);
     }
 
+    /**
+     * Generate a JSON object from a Dashboard object
+     * 
+     * @param d The dashboard object
+     * @return A JSON object
+     * @throws JSONException
+     */
     private JSONObject generateJDash(final Dashboard d) throws JSONException
     {
         final JSONObject jDash = new JSONObject();
@@ -88,6 +107,13 @@ public enum DashboardIO
         return jDash;
     }
 
+    /**
+     * Generate a JSON object of an indicator
+     * 
+     * @param i The indicator to generate the JSON object for
+     * @return The JSON object representing an indicator
+     * @throws JSONException
+     */
     private JSONObject generateJIndicator(final Indicator i) throws JSONException
     {
         final JSONObject j = new JSONObject();
@@ -107,6 +133,13 @@ public enum DashboardIO
         return j;
     }
 
+    /**
+     * Get the JSON object of a location object of an indicator
+     * 
+     * @param l The Location object
+     * @return A JSON object representing a location
+     * @throws JSONException
+     */
     private JSONObject getJLocation(final Location l) throws JSONException
     {
         final JSONObject jLocation = new JSONObject();
@@ -114,6 +147,12 @@ public enum DashboardIO
         return jLocation;
     }
 
+    /**
+     * Load a dashboard by its name
+     * 
+     * @param dashName Name of the dashboard
+     * @return A list of Dashboard object
+     */
     public synchronized List<Dashboard> loadDash(String dashName)
     {
         activeDashboardDefinitions = dashCache.get(dashName);
@@ -145,6 +184,13 @@ public enum DashboardIO
         return activeDashboardDefinitions;
     }
 
+    /**
+     * Create a Dashboard object from a JSON dashboard object
+     * 
+     * @param jDash The JSONObject of the dashboard
+     * @return The Dashboard object
+     * @throws JSONException
+     */
     private Dashboard createDash(final JSONObject jDash) throws JSONException
     {
         final Dashboard d = new Dashboard();
@@ -170,6 +216,13 @@ public enum DashboardIO
         return d;
     }
 
+    /**
+     * Create an Indicator object from a JSON indicator object
+     * 
+     * @param jIndicator The JSONObject of the indicator
+     * @return An instance of Indicator
+     * @throws JSONException
+     */
     private Indicator createIndicator(final JSONObject jIndicator) throws JSONException
     {
         final Indicator i = new Indicator();
@@ -206,20 +259,40 @@ public enum DashboardIO
         return i;
     }
 
+    /**
+     * Create a Location object from a JSON location object
+     * 
+     * @param jLocation The JSONObject of the location
+     * @return An instance of Location
+     * @throws JSONException
+     */
     private Location createLocation(final JSONObject jLocation) throws JSONException
     {
         return new Location(jLocation.optDouble(LEFT, 0.0), jLocation.optDouble(TOP, 0.0), jLocation.optDouble(RIGHT, 0.5), jLocation.optDouble(BOTTOM, 0.5));
     }
 
-    private void writeDefinition(String name, final String definition) throws FileNotFoundException
+    /**
+     * Write a dashboard to a file
+     * 
+     * @param fileName The dashboard file name
+     * @param definition The JSON string of the dashboard
+     * @throws FileNotFoundException
+     */
+    private void writeDefinition(String fileName, final String definition) throws FileNotFoundException
     {
-        name += ".json";
-        final File output = new File(ApplicationSettings.INSTANCE.getDashDir(), name);
+        fileName += ".json";
+        final File output = new File(ApplicationSettings.INSTANCE.getDashDir(), fileName);
         final PrintWriter p = new PrintWriter(output);
         p.println(definition);
         p.close();
     }
 
+    /**
+     * Read a dashboard from a file
+     * 
+     * @param fileName The dashboard file name
+     * @return A JSON string of the dashboard
+     */
     private String readDefinition(final String fileName)
     {
         final StringBuilder sb = new StringBuilder();
@@ -270,6 +343,11 @@ public enum DashboardIO
         return sb.toString();
     }
 
+    /**
+     * Load a dashboard
+     * 
+     * @return A dashboard list
+     */
     public List<Dashboard> loadDash()
     {
         return loadDash(DEFAULT);

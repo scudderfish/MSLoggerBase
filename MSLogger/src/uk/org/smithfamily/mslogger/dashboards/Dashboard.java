@@ -5,11 +5,20 @@ import java.util.List;
 
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 
+/**
+ * Dashboard class that contain a list of indicators
+ */
 public class Dashboard
 {
     private List<Indicator> portraitDash = null;
     private List<Indicator> landscapeDash = null;
 
+    /**
+     * Add an indicator to the dashboard
+     * 
+     * @param i The indicator to add
+     * @param landscape true = landspace, false = portrait
+     */
     public void add(Indicator i, boolean landscape)
     {
         if (landscape)
@@ -22,6 +31,12 @@ public class Dashboard
         }
     }
 
+    /**
+     * Return the list of indicators of the dashboard
+     * 
+     * @param landscape true = landspace, false = portrait
+     * @return The list of Indicators of the Dashboard
+     */
     public List<Indicator> getIndicators(boolean landscape)
     {
         if (landscape)
@@ -35,7 +50,10 @@ public class Dashboard
         }
     }
 
-    List<Indicator> getPortrait()
+    /**
+     * @return The list of indicators for the portrait dashboard
+     */
+    public List<Indicator> getPortrait()
     {
         if (portraitDash != null)
         {
@@ -53,7 +71,10 @@ public class Dashboard
         }
     }
 
-    List<Indicator> getLandscape()
+    /** 
+     * @return The list of indicators for the landscape dashboard
+     */
+    public List<Indicator> getLandscape()
     {
         if (landscapeDash != null)
         {
@@ -71,6 +92,12 @@ public class Dashboard
         }
     }
 
+    /**
+     * Take a list of indicators and return a copy of it
+     * 
+     * @param source The list of indicators to copy
+     * @return The copied list of indicators
+     */
     private List<Indicator> copyOf(List<Indicator> source)
     {
         List<Indicator> dest = new ArrayList<Indicator>();

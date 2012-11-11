@@ -27,6 +27,12 @@ public class DashboardElement
     private float originalHeight;
     private float scale;
 
+    /**
+     * 
+     * @param c
+     * @param i
+     * @param parent
+     */
     public DashboardElement(final Context c, final Indicator i, final DashboardView parent)
     {
         this.context = c;
@@ -35,6 +41,11 @@ public class DashboardElement
         checkPainterMatchesIndicator();
     }
 
+    /**
+     * 
+     * @param w
+     * @param h
+     */
     public void scaleToParent(final int w, final int h)
     {
         final Location l = indicator.getLocation();
@@ -55,6 +66,9 @@ public class DashboardElement
         originalHeight = painter.getHeight();
     }
 
+    /**
+     * 
+     */
     private void checkPainterMatchesIndicator()
     {
         if ((painter == null) || (painter.getType() != indicator.getDisplayType()))
@@ -63,6 +77,9 @@ public class DashboardElement
         }
     }
 
+    /**
+     * Create a Painter object for the dashboard element
+     */
     private void createPainter()
     {
         final Painter r;
@@ -77,6 +94,9 @@ public class DashboardElement
         case NUMERIC:
             r = new NumericIndicator(parent, indicator, context);
             break;
+        case HISTOGRAM:
+            r = new Histogram(parent, indicator, context);
+            break;
         default:
             r = new Gauge(parent, indicator, context);
             break;
@@ -84,34 +104,70 @@ public class DashboardElement
         painter = r;
     }
 
+    /**
+     * @return The Indicator object of the dashboard element
+     */
+    public Indicator getIndicator()
+    {
+        return indicator;
+    }
+    
+    /**
+     * @return The Painter object of the dashboard element
+     */
     public Painter getPainter()
     {
         checkPainterMatchesIndicator();
         return painter;
     }
 
+    /**
+     * 
+     */
     public void setTargetValue()
     {
         painter.setTargetValue(indicator.getValue());
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean updateAnimation()
     {
         return painter.updateAnimation();
     }
 
+    /**
+     * 
+     * @param c
+     */
     public void renderFrame(final Canvas c)
     {
         painter.renderFrame(c);
     }
-
-    /** Set the position and scale of an image in screen coordinates */
+    
+    /**
+     * Set the position and scale of an image in screen coordinates
+     * 
+     * @param newImgPosAndScale
+     * @return
+     */
     public boolean setPos(final PositionAndScale newImgPosAndScale)
     {
         return setPos(newImgPosAndScale.getXOff(), newImgPosAndScale.getYOff(), newImgPosAndScale.getScale(), newImgPosAndScale.getScale(), newImgPosAndScale.getAngle());
     }
 
-    /** Set the position and scale of an image in screen coordinates */
+    /**
+     * Set the position and scale of an image in screen coordinates
+     * 
+     * @param centerX
+     * @param centerY
+     * @param scaleX
+     * @param scaleY
+     * @param angle
+     * @return
+     */
     private boolean setPos(final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
     {
         Location l = indicator.getLocation();
@@ -141,6 +197,12 @@ public class DashboardElement
         return true;
     }
 
+    /**
+     * 
+     * @param scrnX
+     * @param scrnY
+     * @return
+     */
     public boolean contains(final float scrnX, final float scrnY)
     {
         final Location l = indicator.getLocation();
@@ -148,6 +210,9 @@ public class DashboardElement
         return ((scrnX >= l.getLeft(parentW)) && (scrnX <= l.getRight(parentW)) && (scrnY >= l.getTop(parentH)) && (scrnY <= l.getBottom(parentH)));
     }
 
+    /**
+     * @return
+     */
     public float getCentreY()
     {
         final Location l = indicator.getLocation();
@@ -155,6 +220,9 @@ public class DashboardElement
         return l.getCentreY(parentH);
     }
 
+    /**
+     * @return
+     */
     public float getCentreX()
     {
         final Location l = indicator.getLocation();
@@ -162,17 +230,26 @@ public class DashboardElement
         return l.getCentreX(parentW);
     }
 
+    /**
+     * @return
+     */
     public float getScale()
     {
         return scale;
     }
 
+    /**
+     * 
+     */
     public void editStart()
     {
         // TODO Auto-generated method stub
 
     }
 
+    /**
+     * 
+     */
     public void editFinished()
     {
         // TODO Auto-generated method stub

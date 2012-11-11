@@ -28,7 +28,7 @@
 	<string name="disconnect">Disconnect</string>
 	<string name="please_select">Please select your Bluetooth device in Preferences</string>
 	<string name="enable_gauge_edit">Enable Gauge Editing</string>
-	<string name="edit_gauges_instructions">You can double tap on any indicator to edit its details. You can also drag an indicator onto another to change their positions.</string>
+	<string name="edit_gauges_instructions">You can double tap on any indicator to edit its details. You can also create a new one by double tapping on an empty space on the dashboard.</string>
 	<string name="disable_gauge_edit">Disable Gauge Editing</string>
 	<string name="autoconnect">Enable auto-connect</string>
 	<string name="autoconnect_summary">Automatically manage the connection to the ECU</string>
