@@ -159,12 +159,16 @@ public abstract class Painter
         return true;
     }
 
-    // Override this if a painter subclass has constrained dimensions (i.e. a gauge has the same width/height)
+    /**
+     * Override this if a painter subclass has constrained dimensions (i.e. a gauge has the same width/height)
+     */
     protected void normaliseDimensions()
     {
     }
 
-    // Override this to clear out any cached, size dependent bitmaps
+    /**
+     * Override this to clear out any cached, size dependent bitmaps
+     */
     protected void invalidateCaches()
     {
     }

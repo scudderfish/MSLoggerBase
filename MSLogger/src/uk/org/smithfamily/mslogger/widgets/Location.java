@@ -118,7 +118,6 @@ public class Location implements Copyable<Location>
 
     public float getCentreX(final float parentW)
     {
-
         return (float) (parentW * ((left + right) / 2.0));
     }
 }

@@ -275,7 +275,21 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         dest.type = type;
         dest.renderer = renderer;
     }
-
+    
+    public void copyFrom(final IndicatorDefault from)
+    {
+        title = from.getTitle();
+        min = from.getMin();
+        max = from.getMax();
+        lowD = from.getLoD();
+        lowW = from.getLoW();
+        hiD = from.getHiD();
+        hiW = from.getHiW();
+        vd = from.getVd();
+        ld = from.getLd();
+        offsetAngle = 45;
+    }
+    
     private void updateWatchers()
     {
         setChanged();

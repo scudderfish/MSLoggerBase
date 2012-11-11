@@ -1,20 +1,31 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import org.metalev.multitouch.controller.*;
+import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
 import uk.org.smithfamily.mslogger.DataManager;
+import uk.org.smithfamily.mslogger.dialog.EditIndicatorDialog;
+import uk.org.smithfamily.mslogger.dialog.EditIndicatorDialog.OnEditIndicatorResult;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.view.*;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
+/**
+ *
+ */
 public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<DashboardElement>
 {
     // private static final String TAG = "DashboardView";
@@ -32,9 +43,16 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private DashboardElement editedItem;
     private final GestureDetector gestureScanner;
 
+    /**
+     *
+     */
     class GestureProcessor extends GestureDetector.SimpleOnGestureListener
     {
 
+        /**
+         * 
+         * @param e
+         */
         @Override
         public boolean onDoubleTap(final MotionEvent e)
         {
@@ -43,13 +61,15 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             final float py = e.getY();
             final DashboardElement element = getElementAtCoOrds(px, py);
 
-            if (element != null)
-            {
-                editElement(element);
-            }
-            else
+            // Double tap on an empty section of the dashboard, we're going to trigger the creation of a new element
+            if (element == null)
             {
                 addNewElement();
+            }
+            // Double tap on an existing indicator on the dash, we're going to trigger the edit dialog for the element
+            else
+            {
+               editElement(element);
             }
 
             return super.onDoubleTap(e);
@@ -57,6 +77,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
     }
 
+    /**
+     * 
+     * @param context
+     * @param position
+     * @param parent
+     */
     public DashboardView(final Context context, final int position, final DashboardViewPager parent)
     {
         super(context);
@@ -74,24 +100,62 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         gestureScanner = new GestureDetector(context, new GestureProcessor());
     }
 
+    /**
+     * Edit an element from the DashboardView
+     * 
+     * @param element DashboardElement to edit
+     */
     public void editElement(final DashboardElement element)
     {
-        // TODO Auto-generated method stub
-
+        EditIndicatorDialog dialog = new EditIndicatorDialog(context, element);
+        dialog.show();
+        dialog.setDialogResult(new OnEditIndicatorResult()
+        {
+            public void finish(DashboardElement element)
+            {
+            }
+        });
     }
 
+    /**
+     * Add a new element to the DashboardView
+     */
     public void addNewElement()
     {
-        // TODO Auto-generated method stub
-
+        // Create new Indicator and DashboardElement
+        Indicator indicator = new Indicator();
+        DashboardElement element = new DashboardElement(context, indicator, this);
+        
+        // Open dialog and bind dialog result event
+        EditIndicatorDialog dialog = new EditIndicatorDialog(context, element);
+        dialog.show();
+        dialog.setDialogResult(new OnEditIndicatorResult()
+        {
+            public void finish(DashboardElement element)
+            {
+                elements.add(element);
+            }
+        });
     }
 
+    
+    /**
+     * 
+     * @param holder
+     * @param format
+     * @param width
+     * @param height
+     */
     @Override
     public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height)
     {
 
     }
 
+    /**
+     * 
+     * @param holder
+     */
     @Override
     public void surfaceCreated(final SurfaceHolder holder)
     {
@@ -99,6 +163,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         thread.start();
     }
 
+    /**
+     * 
+     * @param holder
+     */
     @Override
     public void surfaceDestroyed(final SurfaceHolder holder)
     {
@@ -120,6 +188,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
     }
 
+    /**
+     * 
+     * @param d
+     */
     public void setDashboard(final Dashboard d)
     {
         elements.clear();
@@ -138,6 +210,11 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
+    /**
+     * 
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec)
     {
@@ -147,14 +224,21 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
+    /**
+     * 
+     * @param observable
+     * @param data
+     */
     @Override
     public void update(final Observable observable, final Object data)
     {
         // Delegate the update
         thread.update(observable, data);
-
     }
 
+    /**
+     *
+     */
     class DashboardThread extends Thread implements Observer
     {
         private volatile boolean running = false;
@@ -167,6 +251,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         private boolean isDirty;
         private long lastUpdate = System.currentTimeMillis();
 
+        /**
+         * 
+         * @param holder
+         * @param context
+         * @param parent
+         */
         public DashboardThread(final SurfaceHolder holder, final Context context, final DashboardView parent)
         {
             this.holder = holder;
@@ -176,12 +266,19 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             this.setName("DashboardThread" + parent.position);
         }
 
+        /**
+         * 
+         * @param r
+         */
         public void setRunning(final boolean r)
         {
             running = r;
             isDirty = r;
         }
 
+        /**
+         * 
+         */
         @Override
         public void run()
         {
@@ -243,6 +340,11 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
 
+        /**
+         * 
+         * @param observable
+         * @param data
+         */
         @Override
         public void update(final Observable observable, final Object data)
         {
@@ -256,6 +358,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
 
+        /**
+         * 
+         * @param c
+         */
         public void drawIndicators(final Canvas c)
         {
             isDirty = false;
@@ -269,7 +375,11 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /** Pass touch events to the MT controller if the gestureScanner doesn't like it */
+    /**
+     * Pass touch events to the MT controller if the gestureScanner doesn't like it 
+     *  
+     * @param event
+     */
     @Override
     public boolean onTouchEvent(final MotionEvent event)
     {
@@ -283,6 +393,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
+    /**
+     * 
+     * @param touchPoint
+     */
     @Override
     public DashboardElement getDraggableObjectAtPoint(final PointInfo touchPoint)
     {
@@ -292,6 +406,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
     }
 
+    /**
+     * 
+     * @param px
+     * @param py
+     * @return
+     */
     private DashboardElement getElementAtCoOrds(final float px, final float py)
     {
         DashboardElement found = null;
@@ -305,18 +425,34 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         return found;
     }
 
+    /**
+     * 
+     * @param e
+     * @param objPosAndScaleOut
+     */
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
         objPosAndScaleOut.set(e.getCentreX(), e.getCentreY(), true, e.getScale(), false, e.getScale(), e.getScale(), false, 0);
     }
 
+    /**
+     * 
+     * @param obj
+     * @param newObjPosAndScale
+     * @param touchPoint
+     */
     @Override
     public boolean setPositionAndScale(final DashboardElement obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
         return obj.setPos(newObjPosAndScale);
     }
 
+    /**
+     * 
+     * @param obj
+     * @param touchPoint
+     */
     @Override
     public void selectObject(final DashboardElement obj, final PointInfo touchPoint)
     {
@@ -339,10 +475,16 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
+    /**
+     * 
+     * @param w Width
+     * @param h Height
+     * @param oldw Old width
+     * @param oldh Old height
+     */
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
     {
-        // TODO Auto-generated method stub
         super.onSizeChanged(w, h, oldw, oldh);
         for (final DashboardElement i : elements)
         {
