@@ -13,10 +13,8 @@ public class DataManager extends Observable
 
     private DataManager()
     {
-
         final IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, dataFilter);
-
     }
 
     public static DataManager getInstance()
@@ -38,6 +36,11 @@ public class DataManager extends Observable
             tickle();
         }
     };
+    
+    public Map<String, OutputChannel> getOutputChannels()
+    {
+        return dataChannels;
+    }
 
     public void addOutputChannel(final OutputChannel o)
     {

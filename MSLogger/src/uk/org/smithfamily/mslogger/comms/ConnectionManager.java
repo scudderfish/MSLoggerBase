@@ -234,7 +234,7 @@ abstract class ConnectionManager
     /**
      * Close input and output Bluetooth streams and socket
      */
-    public void tearDown()
+    public synchronized void tearDown()
     {
         if (conn != null)
         {

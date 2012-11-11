@@ -3,7 +3,7 @@
     {
       "indicators": [
         {
-          "channel": "RpmHiRes",
+          "channel": "rpm",
           "type": "gauge",
           "location": {
             "top":0.00,
