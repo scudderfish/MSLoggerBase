@@ -306,4 +306,10 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         this.renderer = renderer;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Indicator [title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld + ", value=" + value
+                + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + ", location=" + location + ", type=" + type + ", renderer=" + renderer + "]";
+    }
 }
