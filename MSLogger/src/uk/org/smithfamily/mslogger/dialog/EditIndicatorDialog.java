@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.dashboards.DashboardElement;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
@@ -35,7 +34,7 @@ import android.widget.TextView;
  */
 public class EditIndicatorDialog extends Dialog implements android.view.View.OnClickListener
 {
-    private final DashboardElement element;
+    private final Indicator indicator;
 
     private final Map<String, String[]> channels = new HashMap<String, String[]>();
 
@@ -46,11 +45,11 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      * @param context
      * @param indicator
      */
-    public EditIndicatorDialog(final Context context, final DashboardElement element)
+    public EditIndicatorDialog(final Context context, final Indicator indicator)
     {
         super(context);
 
-        this.element = element;
+        this.indicator = indicator;
     }
 
     /**
@@ -88,9 +87,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      * @param gd GaugeDetails to populate the fields with
      */
     private void populateFields()
-    {
-        Indicator indicator = element.getIndicator();
-        
+    {        
         setValue(R.id.editTitle, indicator.getTitle());
         setValue(R.id.editUnits, indicator.getUnits());
         setValue(R.id.editHi, Double.toString(indicator.getMax()));
@@ -158,7 +155,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
 
         channelSpinner.setAdapter(channelArrayAdapter);
         
-        String indicatorChannel = element.getIndicator().getChannel();
+        String indicatorChannel = indicator.getChannel();
         
         int channelPosition = channelArrayAdapter.getPosition(IndicatorDefaults.defaults.get(indicatorChannel).getTitle());
         if (channelPosition == -1)
@@ -228,7 +225,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         orientationSpinner.setAdapter(orientationAdapter);
         
         // Select currently selected orientation
-        int orientationPosition = orientationAdapter.getPosition(element.getIndicator().getOrientation().name().toLowerCase());
+        int orientationPosition = orientationAdapter.getPosition(indicator.getOrientation().name().toLowerCase());
         if (orientationPosition == -1)
         {
             orientationPosition = 0;
@@ -242,7 +239,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     private void prepareTypeSpinner()
     {
-        DisplayType indicatorType = element.getIndicator().getDisplayType();
+        DisplayType indicatorType = indicator.getDisplayType();
         
         Spinner typeSpinner = (Spinner) findViewById(R.id.indicatorType);
 
@@ -331,8 +328,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         
         final String selectedIndicatorType = gaugeType.getSelectedItem().toString();
         
-        Indicator indicator = element.getIndicator();
-        
         Orientation orientation = Orientation.VERTICAL;
         if (orientationSpinner.getSelectedItem().toString().equals("horizontal")) {
             orientation = Orientation.HORIZONTAL;
@@ -351,7 +346,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         {
             displayType = DisplayType.HISTOGRAM;
         }
-
+        
         indicator.setDisplayType(displayType);
         indicator.setOrientation(orientation);
         indicator.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString()));
@@ -367,7 +362,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         indicator.setLd(getValueI(R.id.editLD));
         indicator.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 
-        mDialogResult.finish(element);
+        mDialogResult.finish(indicator);
         
         dismiss();
     }
@@ -398,8 +393,8 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     public void resetDetails()
     {
-        IndicatorDefault id = IndicatorDefaults.defaults.get(element.getIndicator().getChannel());
-        element.getIndicator().copyFrom(id);
+        IndicatorDefault id = IndicatorDefaults.defaults.get(indicator.getChannel());
+        indicator.copyFrom(id);
         
         dismiss();
     }
@@ -497,6 +492,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     public interface OnEditIndicatorResult
     {
-       void finish(DashboardElement element);
+       void finish(Indicator Indicator);
     }
 }

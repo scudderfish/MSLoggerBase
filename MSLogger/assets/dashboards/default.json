@@ -6,7 +6,7 @@
           "channel": "rpm",
           "type": "gauge",
           "location": {
-            "top":0.00,
+            "top":0.0,
             "left":0.0,
             "right":1,
             "bottom":0.7

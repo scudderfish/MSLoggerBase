@@ -49,8 +49,8 @@ public class DashboardPagerAdapter extends PagerAdapter implements OnPageChangeL
     @Override
     public Object instantiateItem(final ViewGroup collection, final int position)
     {
-        final DashboardView dvg = new DashboardView(context, position, parent);
         final Dashboard d = dashboards.get(position);
+        final DashboardView dvg = new DashboardView(context, position, parent, d);
 
         dvg.setDashboard(d);
 
