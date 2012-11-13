@@ -1,11 +1,8 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
-import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.*;
 import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
@@ -19,10 +16,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.*;
 
 /**
  *
@@ -70,7 +64,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             // Double tap on an existing indicator on the dash, we're going to trigger the edit dialog for the element
             else
             {
-               editElement(element);
+                editElement(element);
             }
 
             return super.onDoubleTap(e);
@@ -109,13 +103,14 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
      */
     public void editElement(final DashboardElement element)
     {
-        Indicator indicator = element.getIndicator();
-        
-        EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
+        final Indicator indicator = element.getIndicator();
+
+        final EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
         dialog.show();
         dialog.setDialogResult(new OnEditIndicatorResult()
         {
-            public void finish(Indicator indicator)
+            @Override
+            public void finish(final Indicator indicator)
             {
             }
         });
@@ -130,54 +125,43 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     public void addNewElement(final float px, final float py)
     {
         // Create new Indicator
-        final Indicator indicator = new Indicator();   
-        
+        final Indicator indicator = new Indicator();
+
         final DashboardView dv = this;
-        
+
         // Open dialog and bind dialog result event
-        EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
+        final EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
         dialog.show();
         dialog.setDialogResult(new OnEditIndicatorResult()
         {
             // Back from the dialog, lets add the element
-            public void finish(Indicator indicator)
+            @Override
+            public void finish(final Indicator indicator)
             {
                 // Set position and scale for the element
-                double left = 0.25;
-                double top = 0.25;
-                double right = 0.75;
-                double bottom = 0.75;
-                
+                final double left = 0.25;
+                final double top = 0.25;
+                final double right = 0.75;
+                final double bottom = 0.75;
+
                 /*
-                 TODO Test and use this after the rest works
-                double left = px / dv.getWidth();
-                double top = py / dv.getHeight();
-                double right = left + 0.2; // 20% of the screen for the width
-                double bottom = top + 0.2; // 20% of the screen for the height
-                
-                // Would go outside of screen, going to move left and right some
-                if (right > 1.0)
-                {
-                    double diff = right - 1.0;
-                    
-                    right = 1.0;
-                    left -= diff;
-                }
-                
-                // Would go outside of screen, going to move top and bottom some
-                if (bottom > 1.0)
-                {
-                    double diff = bottom - 1.0;
-                    
-                    bottom = 1.0;
-                    top -= diff;
-                }*/
-                
+                 * TODO Test and use this after the rest works double left = px / dv.getWidth(); double top = py / dv.getHeight(); double right = left
+                 * + 0.2; // 20% of the screen for the width double bottom = top + 0.2; // 20% of the screen for the height
+                 * 
+                 * // Would go outside of screen, going to move left and right some if (right > 1.0) { double diff = right - 1.0;
+                 * 
+                 * right = 1.0; left -= diff; }
+                 * 
+                 * // Would go outside of screen, going to move top and bottom some if (bottom > 1.0) { double diff = bottom - 1.0;
+                 * 
+                 * bottom = 1.0; top -= diff; }
+                 */
+
                 // Set location for the new indicator
                 indicator.setLocation(new Location(left, top, right, bottom));
-                
+
                 boolean landscape = false;
-                
+
                 // Figure out in which orientation the device is
                 if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
                 {
@@ -186,17 +170,17 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
                 // Add indicator to current dashboard
                 dashboard.add(indicator, landscape);
-                
+
                 // Create dashboard element
-                final DashboardElement element = new DashboardElement(context, indicator, dv);                
-                
+                final DashboardElement element = new DashboardElement(context, indicator, dv);
+                element.scaleToParent(getWidth(), getHeight());
+
                 // Add dashboard element to dashboard view
                 elements.add(element);
             }
         });
     }
 
-    
     /**
      * 
      * @param holder
@@ -434,8 +418,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     }
 
     /**
-     * Pass touch events to the MT controller if the gestureScanner doesn't like it 
-     *  
+     * Pass touch events to the MT controller if the gestureScanner doesn't like it
+     * 
      * @param event
      */
     @Override
@@ -460,7 +444,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     {
         final float px = touchPoint.getX();
         final float py = touchPoint.getY();
-        
+
         return getElementAtCoOrds(px, py);
     }
 
