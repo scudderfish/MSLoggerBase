@@ -10,7 +10,6 @@ import uk.org.smithfamily.mslogger.dashboards.*;
 import uk.org.smithfamily.mslogger.dashboards.pageindicators.CirclePageIndicator;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.*;
-import uk.org.smithfamily.mslogger.widgets.IndicatorManager;
 import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
@@ -365,7 +364,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         }
 
         gaugeEditEnabled = !gaugeEditEnabled;
-        IndicatorManager.INSTANCE.setEditing(gaugeEditEnabled);
         pager.setEditMode(gaugeEditEnabled);
     }
 

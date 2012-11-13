@@ -5,7 +5,6 @@ import java.util.Observer;
 
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.utils.Copyable;
-import uk.org.smithfamily.mslogger.widgets.renderers.Painter;
 
 /**
  * This class is a bean that holds the information necessary to model an Indicator
@@ -39,7 +38,6 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     private Location location;
     private DisplayType type;
-    private Painter renderer;
 
     public Indicator()
     {
@@ -273,9 +271,8 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         dest.offsetAngle = offsetAngle;
         dest.location = location.copy();
         dest.type = type;
-        dest.renderer = renderer;
     }
-    
+
     public void copyFrom(final IndicatorDefault from)
     {
         title = from.getTitle();
@@ -289,27 +286,17 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
         ld = from.getLd();
         offsetAngle = 45;
     }
-    
+
     private void updateWatchers()
     {
         setChanged();
         notifyObservers();
     }
 
-    public synchronized Painter getRenderer()
-    {
-        return renderer;
-    }
-
-    public synchronized void setRenderer(final Painter renderer)
-    {
-        this.renderer = renderer;
-    }
-
     @Override
     public String toString()
     {
         return "Indicator [title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld + ", value=" + value
-                + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + ", location=" + location + ", type=" + type + ", renderer=" + renderer + "]";
+                + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + ", location=" + location + ", type=" + type + "]";
     }
 }
