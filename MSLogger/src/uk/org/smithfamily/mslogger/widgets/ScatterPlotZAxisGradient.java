@@ -21,6 +21,7 @@ public class ScatterPlotZAxisGradient extends View
     DecimalFormat decimalFormat;
     
     private boolean ready = false;
+    private final int GRADIENT_NB_LINES = 1020;
     
     ZAxisGradient color;
 
@@ -110,7 +111,7 @@ public class ScatterPlotZAxisGradient extends View
     /**
      * Method where everything is drawn
      * 
-     * @param canvas
+     * @param canvas The canvas to draw on
      */
     @Override
     protected void onDraw(Canvas canvas)
@@ -121,7 +122,7 @@ public class ScatterPlotZAxisGradient extends View
             
             // Draw the gradient line per line
             int y = 0;
-            while (y < 1020)
+            while (y < GRADIENT_NB_LINES)
             {
                 gradientPaint.setColor(color.getColorForValue(y));
                    
@@ -138,7 +139,7 @@ public class ScatterPlotZAxisGradient extends View
             
             // Draw the scale
             for (int i = 0; i < nbSteps; i ++)
-            {                
+            {
                 canvas.drawText(decimalFormat.format(max - (i * step)), 25, 12 + (i * textHeight), valuePaint);
             }
         }

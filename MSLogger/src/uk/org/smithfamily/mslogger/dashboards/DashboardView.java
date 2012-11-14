@@ -34,7 +34,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private int measuredWidth;
     private final DashboardViewPager parentPager;
     private final MultiTouchController<DashboardElement> multiTouchController;
-    private PointInfo selectedPosition;
     private DashboardElement editedItem;
     private final GestureDetector gestureScanner;
     private final Dashboard dashboard;
@@ -110,8 +109,18 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         dialog.setDialogResult(new OnEditIndicatorResult()
         {
             @Override
-            public void finish(final Indicator indicator)
+            public void finish(final Indicator indicator, final boolean toRemove)
             {
+                // User asked to delete this indicator from Remove button on the edit indicator dialog
+                if (toRemove)
+                {
+                    // TODO
+                    // Find element to remove in List and remove it
+                }
+                else
+                {
+                    element.checkPainterMatchesIndicator();
+                }
             }
         });
     }
@@ -136,26 +145,30 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         {
             // Back from the dialog, lets add the element
             @Override
-            public void finish(final Indicator indicator)
+            public void finish(final Indicator indicator, final boolean toRemove)
             {
                 // Set position and scale for the element
-                final double left = 0.25;
-                final double top = 0.25;
-                final double right = 0.75;
-                final double bottom = 0.75;
-
-                /*
-                 * TODO Test and use this after the rest works double left = px / dv.getWidth(); double top = py / dv.getHeight(); double right = left
-                 * + 0.2; // 20% of the screen for the width double bottom = top + 0.2; // 20% of the screen for the height
-                 * 
-                 * // Would go outside of screen, going to move left and right some if (right > 1.0) { double diff = right - 1.0;
-                 * 
-                 * right = 1.0; left -= diff; }
-                 * 
-                 * // Would go outside of screen, going to move top and bottom some if (bottom > 1.0) { double diff = bottom - 1.0;
-                 * 
-                 * bottom = 1.0; top -= diff; }
-                 */
+                double left = px / dv.getWidth();
+                double top = py / dv.getHeight();
+                double right = left + 0.3; // 30% of the screen for the width
+                double bottom = top + 0.3; // 30% of the screen for the height
+               
+                // Would go outside of screen, going to move left and right some
+                if (right > 1.0)
+                {
+                    double diff = right - 1.0;
+                    
+                    right = 1.0;
+                    left -= diff;
+                }
+                // Would go outside of screen, going to move top and bottom some
+                if (bottom > 1.0)
+                {
+                    double diff = bottom - 1.0;
+                    
+                    bottom = 1.0;
+                    top -= diff;
+                }
 
                 // Set location for the new indicator
                 indicator.setLocation(new Location(left, top, right, bottom));
@@ -173,7 +186,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
                 // Create dashboard element
                 final DashboardElement element = new DashboardElement(context, indicator, dv);
-                element.scaleToParent(getWidth(), getHeight());
 
                 // Add dashboard element to dashboard view
                 elements.add(element);
@@ -498,7 +510,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void selectObject(final DashboardElement obj, final PointInfo touchPoint)
     {
-        selectedPosition = touchPoint;
         if (obj != null)
         {
             if (editedItem == null)
@@ -518,6 +529,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     }
 
     /**
+     * 
      * 
      * @param w Width
      * @param h Height

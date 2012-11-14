@@ -67,8 +67,8 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         {
             DebugLogManager.INSTANCE.log("Unable to create directory " + directoryName + " at " + Environment.getExternalStorageDirectory(), Log.ERROR);
         }
-        dashDir = new File(dataDir,"dashboards");
-        mkDirs=dashDir.mkdirs();
+        dashDir = new File(dataDir, "dashboards");
+        mkDirs = dashDir.mkdirs();
         if (!mkDirs)
         {
             DebugLogManager.INSTANCE.log("Unable to create directory " + directoryName + " at " + Environment.getExternalStorageDirectory(), Log.ERROR);

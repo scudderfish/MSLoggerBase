@@ -11,9 +11,10 @@ public class ZAxisGradient
     private double max;
     
     /**
+     * Set the minimum and maximum values
      * 
-     * @param min
-     * @param max
+     * @param min Minimum value of the gradient
+     * @param max Maximum value of the gradient
      */
     public ZAxisGradient(double min, double max)
     {
@@ -22,9 +23,10 @@ public class ZAxisGradient
     }
     
     /**
+     * From a value between min and max, get an ROYGB color
      * 
-     * @param value
-     * @return
+     * @param value The value to get the color for
+     * @return An integer representing the color of the value
      */
     public int getColorForValue(double value)
     {

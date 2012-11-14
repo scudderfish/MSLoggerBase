@@ -7,6 +7,7 @@ public class MS1Simulator extends MSSimulator
     // Prepopulated FRD file from a previous run
     static final String fileName = "20110710095409.frd";
 
+    @SuppressWarnings("unused")
     private static final String TAG = "MS1Simulator";
 
     String signature = "MS1/Extra format 029y3 *********";
@@ -67,32 +68,32 @@ public class MS1Simulator extends MSSimulator
     }
 
     @Override
-    String getSignature()
+    public String getSignature()
     {
         return signature;
     }
 
     @Override
-    String getFirmwareFile()
+    public String getFirmwareFile()
     {
         return "uk.org.smithfamily.mslogger.ecuDef.gen.Msns_extra29y.firmware";
     }
 
     @Override
-    String getFRDFilename()
+    public String getFRDFilename()
     {
         return fileName;
     }
 
     @Override
-    int getBaudRate()
+    public int getBaudRate()
     {
         // Should really be 9600, but keep it nearer to what BT does.
         return 5000;
     }
 
     @Override
-    int getFirmwarePageSize(final int pageNo)
+    public int getFirmwarePageSize(final int pageNo)
     {
         // All MS1 pages are the same size
         return 189;

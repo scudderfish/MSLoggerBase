@@ -86,9 +86,8 @@
 	<string-array name="indicatortypes">
 	    <item>@string/gauge</item>
 	   	<item>@string/numeric_indicator</item>
-	   	<item>@string/table_indicator</item>
 	   	<item>@string/bargraph</item>
-		<item>@string/histogram</item>		
+		<item>@string/histogram</item>
 	</string-array>
 	
 	<string-array name="indicatororientation">

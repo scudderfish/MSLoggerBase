@@ -39,6 +39,7 @@ public enum DashboardIO
     private static final String LOCATION = "location";
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
+    private static final String TITLE = "title";
 
     private List<Dashboard> activeDashboardDefinitions = new ArrayList<Dashboard>();
     private final Map<String, List<Dashboard>> dashCache = new HashMap<String, List<Dashboard>>();
@@ -118,6 +119,7 @@ public enum DashboardIO
     {
         final JSONObject j = new JSONObject();
 
+        j.put(TITLE, i.getTitle());
         j.put(CHANNEL, i.getChannel());
         j.put(TYPE, i.getDisplayType().name());
         j.put(UNITS, i.getUnits());
@@ -228,6 +230,7 @@ public enum DashboardIO
         final Indicator i = new Indicator();
         final String channel = jIndicator.optString(CHANNEL, RPM);
         final IndicatorDefault id = IndicatorDefaults.defaults.get(channel);
+        final String title = jIndicator.optString(TITLE, id != null ? id.getTitle() : "");
         final String type = jIndicator.optString(TYPE, GAUGE).toUpperCase();
         final JSONObject jLocation = jIndicator.getJSONObject(LOCATION);
         final Location loc = createLocation(jLocation);
@@ -240,6 +243,7 @@ public enum DashboardIO
         final double hiD = jIndicator.optDouble(HI_D, id != null ? id.getHiD() : 7000);
         final int vd = jIndicator.optInt(VALUE_DIGITS, id != null ? id.getVd() : 0);
         final int ld = jIndicator.optInt(LABEL_DIGITS, id != null ? id.getLd() : 0);
+        i.setTitle(title);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
         i.setLocation(loc);
