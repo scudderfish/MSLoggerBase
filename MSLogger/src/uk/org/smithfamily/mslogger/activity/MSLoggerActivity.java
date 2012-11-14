@@ -539,8 +539,6 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
                     if (ecuDefinition != null)
                     {
                         ecuDefinition.refreshFlags();
-                        // ecuDefinition.initGauges();
-                        // initGauges();
                     }
                 }
                 break;

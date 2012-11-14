@@ -173,7 +173,7 @@ public class IndicatorDefaults
             put("fuelComposition", new IndicatorDefault("fuelComposition", "Ethanol Percentage", "%", 0, 100, -1, -1, 85, 101, 0, 0));
             put("fuelCorrection", new IndicatorDefault("fuelCorrection", "E85 Fuel Correction", "%", 100, 200, 99, 99, 164, 170, 0, 0));
             put("fuel_pct", new IndicatorDefault("fuel_pct", "Ethanol Percentage", "%", 0, 100, -1, -1, 85, 101, 0, 0));
-            put("fuel_temp", new IndicatorDefault("fuel_temp", "Fuel Temp", "¡C", -40, 110, -100, -100, 95, 105, 0, 0));
+            put("fuel_temp", new IndicatorDefault("fuel_temp", "Fuel Temp", "°C", -40, 110, -100, -100, 95, 105, 0, 0));
             put("fuelflow", new IndicatorDefault("fuelflow", "Fuel flow (avg)", "cc/min", 0, 65535, -1, -1, 99999, 99999, 0, 0));
             put("fuelload", new IndicatorDefault("fuelload", "Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0));
             put("fuelload2", new IndicatorDefault("fuelload2", "Secondary Fuel Load", "%", 0, 255, 0, 20, 200, 245, 1, 0));
