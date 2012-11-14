@@ -38,13 +38,16 @@ public class DashboardElement
         this.context = c;
         this.indicator = i;
         this.parent = parent;
+        
         checkPainterMatchesIndicator();
+        scaleToParent(parent.getWidth(), parent.getHeight());
     }
 
     /**
+     * Scale the dashboard element according to its parent (A dashboard view)
      * 
-     * @param w
-     * @param h
+     * @param w The width of the parent
+     * @param h The height of the parent
      */
     public void scaleToParent(final int w, final int h)
     {
@@ -67,9 +70,9 @@ public class DashboardElement
     }
 
     /**
-     * 
+     * Create a new painter if none already exists or when the display type of the indicator changed
      */
-    private void checkPainterMatchesIndicator()
+    public void checkPainterMatchesIndicator()
     {
         if ((painter == null) || (painter.getType() != indicator.getDisplayType()))
         {
@@ -184,13 +187,15 @@ public class DashboardElement
         final float top = centerY - hs;
         final float right = centerX + ws;
         final float bottom = centerY + hs;
-
-        this.scale = (scaleX + scaleY) / 2.0f;
-
+        
+        // If we are out of the screen, we don't do anything
         if ((left < 0) || (top < 0) || (right > parentW) || (bottom > parentH))
         {
             return false;
         }
+        
+        this.scale = (scaleX + scaleY) / 2.0f;
+
         painter.setPos(left, top, right, bottom, centerX, centerY, scaleX, scaleY, angle);
         l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
         indicator.setLocation(l);

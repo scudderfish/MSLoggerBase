@@ -62,7 +62,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.editgauge);
+        setContentView(R.layout.editindicator);
 
         setTitle(R.string.edit_gauge_title);
 
@@ -74,11 +74,11 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         
         final Button buttonOK = (Button) findViewById(R.id.editOK);
         final Button buttonReset = (Button) findViewById(R.id.editReset);
-        final Button buttonCancel = (Button) findViewById(R.id.editCancel);
+        final Button buttonRemove = (Button) findViewById(R.id.editRemove);
 
         buttonOK.setOnClickListener(this);
         buttonReset.setOnClickListener(this);
-        buttonCancel.setOnClickListener(this);
+        buttonRemove.setOnClickListener(this);
     }
 
     /**
@@ -288,18 +288,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         {
             orientationRow.setVisibility(View.GONE);
         }
-
-        final TableRow indicatorDetailsNumber = (TableRow) findViewById(R.id.indicatorDetailsNumber);
-
-        // Display multiple indicators choses for table indicator
-        if (selectedType.equals(getContext().getString(R.string.table_indicator)))
-        {
-            indicatorDetailsNumber.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            indicatorDetailsNumber.setVisibility(View.GONE);
-        }
     }
 
     /**
@@ -362,7 +350,17 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         indicator.setLd(getValueI(R.id.editLD));
         indicator.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 
-        mDialogResult.finish(indicator);
+        mDialogResult.finish(indicator, false);
+        
+        dismiss();
+    }
+    
+    /**
+     * Ask to remove the indicator from the current dashboard
+     */
+    public void removeIndicator()
+    {
+        mDialogResult.finish(indicator , true);
         
         dismiss();
     }
@@ -471,9 +469,9 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         {
             resetDetails();
         }
-        else
+        else if (which == R.id.editRemove)
         {
-            cancel();
+            removeIndicator();
         }
     }
     
@@ -492,6 +490,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     public interface OnEditIndicatorResult
     {
-       void finish(Indicator Indicator);
+       void finish(Indicator Indicator, boolean toRemove);
     }
 }

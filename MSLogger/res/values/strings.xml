@@ -53,6 +53,7 @@
     <string name="bt_cancel">Cancel</string>
     <string name="bt_reset">Reset</string>
     <string name="bt_close">Close</string>
+    <string name="bt_remove">Remove</string>
     
     <string name="no_bt">Bluetooth is not available on your Android device.  You won\'t be able to connect to a Megasquirt ECU.</string>
 	<string name="no_comms">Cannot connect to your ECU.  Check that it is powered up and the Bluetooth adapter is working</string>
@@ -75,7 +76,6 @@
 	<string name="histogram">Histogram</string>
 	<string name="bargraph">Bar Graph</string>
 	<string name="numeric_indicator">Numeric Indicator</string>
-	<string name="table_indicator">Table Indicator</string>
 	
 	<!-- Edit gauge -->
 	<string name="edit_gauge_title">Edit Gauge Properties</string>
