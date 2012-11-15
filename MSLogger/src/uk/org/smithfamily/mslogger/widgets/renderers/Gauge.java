@@ -340,10 +340,7 @@ public class Gauge extends Painter
     private int getBgColour()
     {
         int c = Color.GRAY;
-        if (model.isDisabled())
-        {
-            c = Color.GRAY;
-        }
+
         final double value = model.getValue();
         if ((value > model.getLowW()) && (value < model.getHiW()))
         {
@@ -357,7 +354,10 @@ public class Gauge extends Painter
         {
             c = Color.RED;
         }
-
+        if (model.isDisabled())
+        {
+            c = Color.GRAY;
+        }
         return c;
     }
 

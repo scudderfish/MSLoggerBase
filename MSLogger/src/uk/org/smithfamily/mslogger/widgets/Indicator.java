@@ -48,8 +48,12 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     @Override
     public void update(final Observable observable, final Object data)
     {
-        disabled = false;
-        final double newValue = DataManager.getInstance().getField(channel);
+        disabled = DataManager.getInstance().isDisabled();
+        double newValue = min;
+        if (!disabled)
+        {
+            newValue = DataManager.getInstance().getField(channel);
+        }
         this.setValue(newValue);
     }
 
