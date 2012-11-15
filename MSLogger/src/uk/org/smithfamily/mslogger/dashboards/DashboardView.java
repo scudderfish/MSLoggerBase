@@ -114,13 +114,18 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 // User asked to delete this indicator from Remove button on the edit indicator dialog
                 if (toRemove)
                 {
-                    // TODO
-                    // Find element to remove in List and remove it
+                    synchronized (elements)
+                    {
+                        elements.remove(element);
+                    }
+
                 }
                 else
                 {
                     element.checkPainterMatchesIndicator();
                 }
+                // Let the dash know it's dirty
+                thread.invalidate();
             }
         });
     }
@@ -192,6 +197,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 {
                     elements.add(element);
                 }
+                // Let the dash know it's dirty
+                thread.invalidate();
             }
         });
     }
@@ -516,9 +523,9 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
-        float centreX = e.getCentreX();
-        float centreY = e.getCentreY();
-        float scale = e.getScale();
+        final float centreX = e.getCentreX();
+        final float centreY = e.getCentreY();
+        final float scale = e.getScale();
         objPosAndScaleOut.set(centreX, centreY, true, scale, false, scale, scale, false, 0);
     }
 
