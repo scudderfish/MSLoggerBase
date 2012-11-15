@@ -111,7 +111,6 @@ public class Gauge extends Painter
             model.setValue(model.getMin());
         }
 
-        drawTitle(canvas);
         canvas.restore();
 
     }
