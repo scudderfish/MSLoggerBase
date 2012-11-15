@@ -251,19 +251,22 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
      */
     public void setDashboard(final Dashboard d)
     {
-        elements.clear();
-        List<Indicator> indicatorsFromDash;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+        synchronized (elements)
         {
-            indicatorsFromDash = d.getLandscape();
-        }
-        else
-        {
-            indicatorsFromDash = d.getPortrait();
-        }
-        for (final Indicator i : indicatorsFromDash)
-        {
-            elements.add(new DashboardElement(context, i, this));
+            elements.clear();
+            List<Indicator> indicatorsFromDash;
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            {
+                indicatorsFromDash = d.getLandscape();
+            }
+            else
+            {
+                indicatorsFromDash = d.getPortrait();
+            }
+            for (final Indicator i : indicatorsFromDash)
+            {
+                elements.add(new DashboardElement(context, i, this));
+            }
         }
     }
 
@@ -405,9 +408,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         @Override
         public void update(final Observable observable, final Object data)
         {
-            for (final DashboardElement i : elements)
+            synchronized (elements)
             {
-                i.setTargetValue();
+                for (final DashboardElement i : elements)
+                {
+                    i.setTargetValue();
+                }
             }
             invalidate();
         }
@@ -510,8 +516,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
-        objPosAndScaleOut.set(e.getCentreX(), e.getCentreY(), true, e.getScale(), false, e.getScale(), e.getScale(), false, 0);
-
+        float centreX = e.getCentreX();
+        float centreY = e.getCentreY();
+        float scale = e.getScale();
+        objPosAndScaleOut.set(centreX, centreY, true, scale, false, scale, scale, false, 0);
     }
 
     /**
@@ -569,9 +577,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh)
     {
         super.onSizeChanged(w, h, oldw, oldh);
-        for (final DashboardElement i : elements)
+        synchronized (elements)
         {
-            i.scaleToParent(w, h);
+            for (final DashboardElement i : elements)
+            {
+                i.scaleToParent(w, h);
+            }
         }
 
     }

@@ -38,7 +38,7 @@ public class DashboardElement
         this.context = c;
         this.indicator = i;
         this.parent = parent;
-        
+
         checkPainterMatchesIndicator();
         scaleToParent(parent.getWidth(), parent.getHeight());
     }
@@ -51,12 +51,16 @@ public class DashboardElement
      */
     public void scaleToParent(final int w, final int h)
     {
-        final Location l = indicator.getLocation();
+        if ((w == 0) || (h == 0))
+        {
+            return;
+        }
+        Location l = indicator.getLocation();
 
         final float left = (float) (l.getLeft(w));
-        final float right = (float) (l.getRight(w));
+        float right = (float) (l.getRight(w));
         final float top = (float) (l.getTop(h));
-        final float bottom = (float) (l.getBottom(h));
+        float bottom = (float) (l.getBottom(h));
 
         // Work out where the middle is as that is what MTC really wants to deal in
         final float centreX = (float) ((right + left) / 2.0);
@@ -67,6 +71,11 @@ public class DashboardElement
 
         originalWidth = painter.getWidth();
         originalHeight = painter.getHeight();
+
+        right = left + originalWidth;
+        bottom = top + originalHeight;
+        l = new Location(left / w, top / h, right / w, bottom / h);
+        indicator.setLocation(l);
     }
 
     /**
@@ -114,7 +123,7 @@ public class DashboardElement
     {
         return indicator;
     }
-    
+
     /**
      * @return The Painter object of the dashboard element
      */
@@ -149,7 +158,7 @@ public class DashboardElement
     {
         painter.renderFrame(c);
     }
-    
+
     /**
      * Set the position and scale of an image in screen coordinates
      * 
@@ -187,13 +196,13 @@ public class DashboardElement
         final float top = centerY - hs;
         final float right = centerX + ws;
         final float bottom = centerY + hs;
-        
+
         // If we are out of the screen, we don't do anything
         if ((left < 0) || (top < 0) || (right > parentW) || (bottom > parentH))
         {
             return false;
         }
-        
+
         this.scale = (scaleX + scaleY) / 2.0f;
 
         painter.setPos(left, top, right, bottom, centerX, centerY, scaleX, scaleY, angle);
