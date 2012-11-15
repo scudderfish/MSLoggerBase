@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.*;
 
 /**
@@ -189,7 +188,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 final DashboardElement element = new DashboardElement(context, indicator, dv);
 
                 // Add dashboard element to dashboard view
-                elements.add(element);
+                synchronized (elements)
+                {
+                    elements.add(element);
+                }
             }
         });
     }
@@ -377,10 +379,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                             // Swallow
                         }
                     }
-                    else
-                    {
-                        Log.d("DashboardView", "Missed frame rate by " + (delay - DELAY_PER_FRAME) + "ms");
-                    }
                     lastUpdate = System.currentTimeMillis();
 
                 }
@@ -432,11 +430,14 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         {
             isDirty = false;
             boolean indicatorDirty = false;
-            for (final DashboardElement i : elements)
+            synchronized (elements)
             {
-                indicatorDirty |= i.updateAnimation();
-                i.renderFrame(c);
-                isDirty |= indicatorDirty;
+                for (final DashboardElement i : elements)
+                {
+                    indicatorDirty |= i.updateAnimation();
+                    i.renderFrame(c);
+                    isDirty |= indicatorDirty;
+                }
             }
         }
     }
@@ -481,11 +482,21 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private DashboardElement getElementAtCoOrds(final float px, final float py)
     {
         DashboardElement found = null;
-        for (final DashboardElement i : elements)
+        synchronized (elements)
         {
-            if (i.contains(px, py))
+            for (final DashboardElement i : elements)
             {
-                found = i;
+                if (i.contains(px, py))
+                {
+                    found = i;
+                }
+            }
+            if (found != null)
+            {
+                // This little bit of trickery pushes the touched element to the end of the list,
+                // which in turn makes it last to be drawn, so it gets pulled to the front.
+                elements.remove(found);
+                elements.add(found);
             }
         }
         return found;
