@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.*;
 
 /**
@@ -28,7 +29,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final Context context;
     private final List<DashboardElement> elements;
     private final DashboardThread thread;
-    private final int MAX_FPS = 60;
+    private final int MAX_FPS = 50;
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private int measuredHeight;
     private int measuredWidth;
@@ -152,20 +153,20 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 double top = py / dv.getHeight();
                 double right = left + 0.3; // 30% of the screen for the width
                 double bottom = top + 0.3; // 30% of the screen for the height
-               
+
                 // Would go outside of screen, going to move left and right some
                 if (right > 1.0)
                 {
-                    double diff = right - 1.0;
-                    
+                    final double diff = right - 1.0;
+
                     right = 1.0;
                     left -= diff;
                 }
                 // Would go outside of screen, going to move top and bottom some
                 if (bottom > 1.0)
                 {
-                    double diff = bottom - 1.0;
-                    
+                    final double diff = bottom - 1.0;
+
                     bottom = 1.0;
                     top -= diff;
                 }
@@ -302,7 +303,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         private final Resources resources;
         private final Object updateLock = new Object();
         private final DashboardView parent;
-        private boolean isDirty;
+        private volatile boolean isDirty;
         private long lastUpdate = System.currentTimeMillis();
 
         /**
@@ -340,17 +341,17 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             while (running)
             {
                 // Only bother updating if this is the displayed page
-                while ((parentPager.getCurrentItem() == position))
+                while (isDirty && (parentPager.getCurrentItem() == position))
                 {
                     c = null;
                     try
                     {
                         c = holder.lockCanvas();
-
-                        // Put down a background to show the boundaries
-                        c.drawARGB(255, 127, 127, 127);
-                        synchronized (holder)
+                        if ((c != null) && running)
                         {
+                            // Put down a background to show the boundaries
+
+                            c.drawARGB(255, 127, 127, 127);
                             drawIndicators(c);
                         }
                     }
@@ -375,6 +376,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                         {
                             // Swallow
                         }
+                    }
+                    else
+                    {
+                        Log.d("DashboardView", "Missed frame rate by " + (delay - DELAY_PER_FRAME) + "ms");
                     }
                     lastUpdate = System.currentTimeMillis();
 
@@ -402,14 +407,21 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         @Override
         public void update(final Observable observable, final Object data)
         {
+            for (final DashboardElement i : elements)
+            {
+                i.setTargetValue();
+            }
+            invalidate();
+        }
+
+        public void invalidate()
+        {
             synchronized (updateLock)
             {
-                for (final DashboardElement i : elements)
-                {
-                    i.setTargetValue();
-                }
+                isDirty = true;
                 updateLock.notifyAll();
             }
+
         }
 
         /**
@@ -488,6 +500,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
         objPosAndScaleOut.set(e.getCentreX(), e.getCentreY(), true, e.getScale(), false, e.getScale(), e.getScale(), false, 0);
+
     }
 
     /**
@@ -499,7 +512,12 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public boolean setPositionAndScale(final DashboardElement obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
-        return obj.setPos(newObjPosAndScale);
+        final boolean b = obj.setPos(newObjPosAndScale);
+        if (b)
+        {
+            thread.invalidate();
+        }
+        return b;
     }
 
     /**
