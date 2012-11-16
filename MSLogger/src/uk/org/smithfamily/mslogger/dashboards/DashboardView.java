@@ -27,7 +27,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final int position;
     private final Context context;
     private final List<DashboardElement> elements;
-    private final DashboardThread thread;
+    private DashboardThread thread = null;
     private final int MAX_FPS = 50;
     private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
     private int measuredHeight;
@@ -86,7 +86,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         this.dashboard = dashboard;
         elements = new ArrayList<DashboardElement>();
         getHolder().addCallback(this);
-        thread = new DashboardThread(getHolder(), context, this);
 
         // DataManager will ping when the ECU has finished a cycle
         DataManager.getInstance().addObserver(this);
@@ -125,7 +124,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     element.checkPainterMatchesIndicator();
                 }
                 // Let the dash know it's dirty
-                thread.invalidate();
+                if (thread != null)
+                {
+                    thread.invalidate();
+                }
             }
         });
     }
@@ -198,7 +200,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     elements.add(element);
                 }
                 // Let the dash know it's dirty
-                thread.invalidate();
+                if (thread != null)
+                {
+                    thread.invalidate();
+                }
             }
         });
     }
@@ -223,6 +228,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void surfaceCreated(final SurfaceHolder holder)
     {
+        thread = new DashboardThread(getHolder(), context, this);
+
         thread.setRunning(true);
         thread.start();
     }
@@ -234,22 +241,25 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void surfaceDestroyed(final SurfaceHolder holder)
     {
-        boolean retry = true;
-        thread.setRunning(false);
-        while (retry)
+        if (thread != null)
         {
-            try
+            boolean retry = true;
+            thread.setRunning(false);
+            while (retry)
             {
-                thread.interrupt();
-                thread.join();
-                retry = false;
+                try
+                {
+                    thread.interrupt();
+                    thread.join();
+                    retry = false;
+                }
+                catch (final InterruptedException e)
+                {
+                    // we will try it again and again...
+                }
             }
-            catch (final InterruptedException e)
-            {
-                // we will try it again and again...
-            }
+            thread = null;
         }
-
     }
 
     /**
@@ -300,7 +310,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     public void update(final Observable observable, final Object data)
     {
         // Delegate the update
-        thread.update(observable, data);
+        if (thread != null)
+        {
+            thread.update(observable, data);
+        }
     }
 
     /**
