@@ -1,9 +1,7 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
@@ -30,7 +28,8 @@ public class ECUConnectionManager extends ConnectionManager
     {
         return SingletonHolder.INSTANCE;
     }
-    
+
+    @Override
     public String getInstanceName()
     {
         return "ECUConnectionManager";
@@ -41,6 +40,7 @@ public class ECUConnectionManager extends ConnectionManager
      * 
      * @throws IOException
      */
+    @Override
     protected synchronized void checkConnection() throws IOException
     {
         if (currentState == ConnectionState.STATE_DISCONNECTED)
@@ -56,7 +56,7 @@ public class ECUConnectionManager extends ConnectionManager
      * @param d Delay to wait after sending command
      * @throws IOException
      */
-    public synchronized void writeCommand(byte[] command, int d, boolean isCRC32) throws IOException
+    public synchronized void writeCommand(byte[] command, final int d, final boolean isCRC32) throws IOException
     {
         if (!conn.isConnected())
         {
@@ -70,11 +70,11 @@ public class ECUConnectionManager extends ConnectionManager
 
         DebugLogManager.INSTANCE.log("Writing", command, Log.VERBOSE);
 
-        if (command.length == 7 && (command[0] == 'r' || command[0] == 'w' || command[0] == 'e'))
+        if ((command.length == 7) && ((command[0] == 'r') || (command[0] == 'w') || (command[0] == 'e')))
         {
             // MS2 hack
-            byte[] select = new byte[3];
-            byte[] range = new byte[4];
+            final byte[] select = new byte[3];
+            final byte[] range = new byte[4];
             System.arraycopy(command, 0, select, 0, 3);
             System.arraycopy(command, 3, range, 0, 4);
             this.mmOutStream.write(select);
@@ -100,12 +100,12 @@ public class ECUConnectionManager extends ConnectionManager
      * @throws IOException
      * @throws CRC32Exception
      */
-    public byte[] writeAndRead(byte[] cmd, int d, boolean isCRC32) throws IOException, CRC32Exception
+    public byte[] writeAndRead(final byte[] cmd, final int d, final boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
 
-        byte[] result = readBytes(isCRC32);
+        final byte[] result = readBytes(isCRC32);
         return result;
     }
 
@@ -118,7 +118,7 @@ public class ECUConnectionManager extends ConnectionManager
      * @throws IOException
      * @throws CRC32Exception
      */
-    public void writeAndRead(byte[] cmd, byte[] result, int d, boolean isCRC32) throws IOException, CRC32Exception
+    public void writeAndRead(final byte[] cmd, final byte[] result, final int d, final boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
@@ -133,18 +133,18 @@ public class ECUConnectionManager extends ConnectionManager
      * @throws IOException
      * @throws CRC32Exception
      */
-    public void readBytes(byte[] bytes, boolean isCRC32) throws IOException, CRC32Exception
+    public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception
     {
-        TimerTask reaper = new Reaper(this);
+        final TimerTask reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
-
+        final boolean logit = DebugLogManager.checkLogLevel(Log.VERBOSE);
         int target = bytes.length;
         if (isCRC32)
         {
             target += CRC32ProtocolHandler.getValidationLength();
         }
 
-        byte[] buffer = new byte[target];
+        final byte[] buffer = new byte[target];
         int read = 0;
         try
         {
@@ -152,17 +152,25 @@ public class ECUConnectionManager extends ConnectionManager
             {
                 while (read < target)
                 {
-                    int numRead = mmInStream.read(buffer, read, target - read);
+                    final int numRead = mmInStream.read(buffer, read, target - read);
                     if (numRead == -1)
                     {
                         throw new IOException("End of stream attempting to read");
                     }
                     read += numRead;
-                    DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);
+
+                    if (logit)
+                    {
+                        DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);
+
+                    }
                 }
             }
             reaper.cancel();
-            DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.VERBOSE);
+            if (logit)
+            {
+                DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.VERBOSE);
+            }
             if (isCRC32)
             {
                 if (!CRC32ProtocolHandler.check(buffer))
@@ -170,7 +178,7 @@ public class ECUConnectionManager extends ConnectionManager
                     throw new CRC32Exception("CRC32 check failed");
                 }
 
-                byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
+                final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
                 System.arraycopy(actual, 0, bytes, 0, bytes.length);
             }
             else
@@ -178,7 +186,7 @@ public class ECUConnectionManager extends ConnectionManager
                 System.arraycopy(buffer, 0, bytes, 0, bytes.length);
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             if (timerTriggered)
             {
@@ -195,22 +203,22 @@ public class ECUConnectionManager extends ConnectionManager
      * @throws IOException
      * @throws CRC32Exception
      */
-    public byte[] readBytes(boolean isCRC32) throws IOException, CRC32Exception
+    public byte[] readBytes(final boolean isCRC32) throws IOException, CRC32Exception
     {
-        List<Byte> read = new ArrayList<Byte>();
+        final List<Byte> read = new ArrayList<Byte>();
 
         synchronized (this)
         {
             while (mmInStream.available() > 0)
             {
-                byte b = (byte) mmInStream.read();
+                final byte b = (byte) mmInStream.read();
                 read.add(b);
             }
         }
 
         byte[] result = new byte[read.size()];
         int i = 0;
-        for (Byte b : read)
+        for (final Byte b : read)
         {
             result[i++] = b;
         }

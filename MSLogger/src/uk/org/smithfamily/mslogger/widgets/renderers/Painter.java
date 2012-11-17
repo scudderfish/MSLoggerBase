@@ -187,6 +187,7 @@ public abstract class Painter
 class RenderStats
 {
     private static final long STATS_DELAY = 1000;
+    private static final boolean LOG_PAINTER_STATS = false;
     int minDirty = 0;
     int maxDirty = 0;
     float avgDirty = 0;
@@ -200,6 +201,7 @@ class RenderStats
     double avgDelta = 0;
     long lastOutput = System.currentTimeMillis();
 
+    @SuppressWarnings("unused")
     public void updateStats(final long delay, final double delta)
     {
         sCounter++;
@@ -212,7 +214,7 @@ class RenderStats
         avgDelta = avgDelta + ((delta - avgDelta) / sCounter);
 
         final long now = System.currentTimeMillis();
-        if ((now - lastOutput) > STATS_DELAY)
+        if (LOG_PAINTER_STATS && ((now - lastOutput) > STATS_DELAY))
         {
             lastOutput = now;
             Log.i("RenderStats",
