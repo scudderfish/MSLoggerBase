@@ -260,6 +260,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 try
                 {
                     thread.interrupt();
+                    thread.invalidate();
                     thread.join();
                     retry = false;
                 }
@@ -376,18 +377,21 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             while (running)
             {
                 // Only bother updating if this is the displayed page
-                while (isDirty && (parentPager.getCurrentItem() == position))
+                while (running && isDirty && (parentPager.getCurrentItem() == position))
                 {
                     c = null;
                     try
                     {
-                        c = holder.lockCanvas();
-                        if ((c != null) && running)
+                        if (running)
                         {
-                            // Put down a background to show the boundaries
+                            c = holder.lockCanvas();
+                            if ((c != null) && running)
+                            {
+                                // Put down a background to show the boundaries
 
-                            c.drawARGB(255, 127, 127, 127);
-                            drawIndicators(c);
+                                c.drawARGB(255, 127, 127, 127);
+                                drawIndicators(c);
+                            }
                         }
                     }
                     finally
@@ -419,7 +423,10 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 {
                     synchronized (updateLock)
                     {
-                        updateLock.wait();
+                        if (running)
+                        {
+                            updateLock.wait();
+                        }
                         isDirty = true;
                     }
                 }
