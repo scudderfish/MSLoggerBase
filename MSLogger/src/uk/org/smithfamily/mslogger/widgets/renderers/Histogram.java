@@ -5,23 +5,26 @@ import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.Region.Op;
 
 public class Histogram extends Painter
 {
+
+    private Paint backgroundPaint;
+    private Paint linePaint;
+    private Paint valuePaint;
+    private RectF borderRect;
+    private static final int NB_VALUES = 100;
+    private final float[] values = new float[NB_VALUES];
+
+    private int indexValue = 0;
+    Path linePath;
 
     public Histogram(final DashboardView parent, final Indicator model, final Context c)
     {
         super(parent, model, c);
 
     }
-
-    private Paint backgroundPaint;
-    private Paint linePaint;
-    private Paint valuePaint;
-
-    private static final int NB_VALUES = 100;
-    private final double[] values = new double[NB_VALUES];
-    private int indexValue = 0;
 
     @Override
     protected void init(final Context c)
@@ -41,6 +44,8 @@ public class Histogram extends Painter
             anti_alias_flag = 0;
         }
 
+        linePath = new Path();
+
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.WHITE);
         backgroundPaint.setTextSize(0.06f);
@@ -48,7 +53,6 @@ public class Histogram extends Painter
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setFlags(anti_alias_flag);
         backgroundPaint.setAntiAlias(true);
-        
 
         valuePaint = new Paint();
         valuePaint.setColor(Color.DKGRAY);
@@ -61,6 +65,9 @@ public class Histogram extends Painter
         linePaint.setColor(Color.BLUE);
         linePaint.setFlags(anti_alias_flag);
         linePaint.setAntiAlias(true);
+        linePaint.setStyle(Paint.Style.STROKE);
+        borderRect = new RectF();
+        borderRect.set(0.05f, 0.05f, 0.94f, 0.83f);
     }
 
     /**
@@ -70,22 +77,9 @@ public class Histogram extends Painter
      */
     public void addValue(final double value)
     {
-        // We haven't reach the limit of the array yet
-        if (indexValue < NB_VALUES)
-        {
-            values[indexValue++] = (float) value;
-        }
-        // Otherwise we shift all the values and replace the last one with the new value
-        else
-        {
-            int i;
-            for (i = 0; i < (NB_VALUES - 1); i++)
-            {
-                values[i] = values[i + 1];
-            }
-
-            values[i] = value;
-        }
+        values[indexValue] = (float) value;
+        indexValue++;
+        indexValue = indexValue % NB_VALUES;
     }
 
     /**
@@ -104,43 +98,65 @@ public class Histogram extends Painter
 
         drawBackground(canvas);
 
-        final float scale = Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.translate(left, top);
-        canvas.scale(scale, scale);
+        canvas.scale(width, height);
 
         drawBackground(canvas);
 
-        if (model.isDisabled())
-        {
-            model.setValue(model.getMin());
-        }
-        else
-        {
-            drawValue(canvas);
-        }
-        
         addValue(model.getValue());
-
         drawTitle(canvas);
+
+        drawLines(canvas, width, height);
+        // this.drawValue(canvas);
 
         canvas.restore();
     }
 
+    private void drawLines(final Canvas canvas, final float width, final float height)
+    {
+        linePath.reset();
+        // linePath.setFillType(Path.FillType.WINDING);
+        final double min = model.getMin();
+        final double max = model.getMax();
+        final double range = model.getMax() - min;
+        canvas.clipRect(borderRect, Op.INTERSECT);
+        float x;
+        float y;
+        float value;
+        int idx;
+        for (int i = 1; i <= NB_VALUES; i++)
+        {
+            idx = (indexValue + i) % NB_VALUES;
+            value = values[idx];
+            x = (float) i / (float) NB_VALUES;
+
+            y = (float) (1.0f - ((value - min) / range));
+
+            linePath.lineTo(x, y);
+        }
+        canvas.drawPath(linePath, linePaint);
+    }
+
     public void drawBackground(final Canvas canvas)
     {
-        canvas.drawRect(0.05f, 0.05f, 0.94f, 0.83f, backgroundPaint);
+        canvas.drawRect(borderRect, backgroundPaint);
     }
 
     public void drawValue(final Canvas canvas)
     {
         valuePaint.setColor(getFgColour());
 
-        final float displayValue = (float) (Math.floor((model.getValue() / Math.pow(10, -model.getVd())) + 0.5) * Math.pow(10, -model.getVd()));
+        final double min = model.getMin();
+        final double max = model.getMax();
+
+        final double value = model.getValue();
+        final int valueDigits = model.getVd();
+        final float displayValue = (float) (Math.floor((value / Math.pow(10, -valueDigits)) + 0.5) * Math.pow(10, -valueDigits));
 
         String text;
 
-        if (model.getVd() <= 0)
+        if (valueDigits <= 0)
         {
             text = Integer.toString((int) displayValue);
         }
@@ -163,8 +179,7 @@ public class Histogram extends Painter
             {
                 final double oldValue = values[i - 1];
                 final double currentValue = values[i];
-
-                double currentPercent = (1 - ((currentValue - model.getMin()) / (model.getMax() - model.getMin())));
+                double currentPercent = (1 - ((currentValue - min) / (max - min)));
                 if (currentPercent < 0)
                 {
                     currentPercent = 0;
@@ -176,7 +191,7 @@ public class Histogram extends Painter
 
                 final double currentY = y + (height * currentPercent);
 
-                double oldPercent = (1 - ((oldValue - model.getMin()) / (model.getMax() - model.getMin())));
+                double oldPercent = (1 - ((oldValue - min) / (max - min)));
                 if (oldPercent < 0)
                 {
                     oldPercent = 0;
