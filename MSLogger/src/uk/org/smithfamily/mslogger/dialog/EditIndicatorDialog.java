@@ -224,14 +224,16 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         // Apply the adapter to the spinner
         orientationSpinner.setAdapter(orientationAdapter);
         
-        // Select currently selected orientation
-        int orientationPosition = orientationAdapter.getPosition(indicator.getOrientation().name().toLowerCase());
-        if (orientationPosition == -1)
+        // Find the indicator to select
+        Orientation orientation = indicator.getOrientation();
+        int selection = 0;
+       
+        if (orientation == Orientation.VERTICAL)
         {
-            orientationPosition = 0;
+            selection = orientationAdapter.getPosition(getContext().getString(R.string.vertical));
         }
 
-        orientationSpinner.setSelection(orientationPosition);
+        orientationSpinner.setSelection(selection);
     }
 
     /**
@@ -239,8 +241,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     private void prepareTypeSpinner()
     {
-        DisplayType indicatorType = indicator.getDisplayType();
-        
         Spinner typeSpinner = (Spinner) findViewById(R.id.indicatorType);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -252,8 +252,25 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         // Apply the adapter to the spinner
         typeSpinner.setAdapter(typeAdapter);
 
-        // Select current gauge type
-        typeSpinner.setSelection(typeAdapter.getPosition(indicatorType.toString()));
+        // Find the indicator to select
+        DisplayType indicatorType = indicator.getDisplayType();
+        int selection = 0;
+       
+        if (indicatorType == DisplayType.NUMERIC)
+        {
+            selection = typeAdapter.getPosition(getContext().getString(R.string.numeric_indicator));
+        }
+        else if (indicatorType == DisplayType.BAR)
+        {
+            selection = typeAdapter.getPosition(getContext().getString(R.string.bargraph));
+        }
+        else if (indicatorType == DisplayType.HISTOGRAM)
+        {
+            selection = typeAdapter.getPosition(getContext().getString(R.string.histogram));
+        }
+        
+        // Select current indicator type
+        typeSpinner.setSelection(selection);
 
         typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
         {
@@ -317,7 +334,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         final String selectedIndicatorType = gaugeType.getSelectedItem().toString();
         
         Orientation orientation = Orientation.VERTICAL;
-        if (orientationSpinner.getSelectedItem().toString().equals("horizontal")) {
+        if (orientationSpinner.getSelectedItem().toString().toLowerCase().equals("horizontal")) {
             orientation = Orientation.HORIZONTAL;
         }
         

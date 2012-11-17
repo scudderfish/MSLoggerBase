@@ -1,14 +1,30 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.widgets.*;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
+import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefault;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefaults;
+import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.res.AssetManager;
 
 /**
@@ -37,6 +53,8 @@ public enum DashboardIO
     private static final String INDICATORS = "indicators";
     private static final String INDICATORS_LANDSCAPE = "indicators_landscape";
     private static final String LOCATION = "location";
+    private static final String ORIENTATION = "orientation";
+    private static final String HORIZONTAL = "horizontal";
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
     private static final String TITLE = "title";
@@ -132,6 +150,8 @@ public enum DashboardIO
         j.put(VALUE_DIGITS, i.getVd());
         j.put(LABEL_DIGITS, i.getLd());
         j.put(LOCATION, getJLocation(i.getLocation()));
+        j.put(ORIENTATION, i.getOrientation().name());
+        
         return j;
     }
 
@@ -243,6 +263,7 @@ public enum DashboardIO
         final double hiD = jIndicator.optDouble(HI_D, id != null ? id.getHiD() : 7000);
         final int vd = jIndicator.optInt(VALUE_DIGITS, id != null ? id.getVd() : 0);
         final int ld = jIndicator.optInt(LABEL_DIGITS, id != null ? id.getLd() : 0);
+        final String orientation = jIndicator.optString(ORIENTATION, HORIZONTAL).toUpperCase();
         i.setTitle(title);
         i.setChannel(channel);
         i.setDisplayType(DisplayType.valueOf(type));
@@ -256,6 +277,7 @@ public enum DashboardIO
         i.setHiD(hiD);
         i.setVd(vd);
         i.setLd(ld);
+        i.setOrientation(Orientation.valueOf(orientation));
         if (id == null)
         {
             IndicatorDefaults.defaults.put(channel, new IndicatorDefault(channel, "", units, min, max, lowD, lowW, hiW, hiD, vd, ld));

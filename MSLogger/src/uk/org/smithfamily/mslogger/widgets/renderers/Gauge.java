@@ -102,13 +102,14 @@ public class Gauge extends Painter
 
         drawPointer(canvas);
 
-        if (!model.isDisabled())
+        if (model.isDisabled())
         {
-            drawValue(canvas);
+            model.setValue(model.getMin());
+            
         }
         else
         {
-            model.setValue(model.getMin());
+            drawValue(canvas);
         }
 
         canvas.restore();
