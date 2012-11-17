@@ -118,6 +118,16 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                         elements.remove(element);
                     }
 
+                    boolean landscape = false;
+
+                    // Figure out in which orientation the device is
+                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+                    {
+                        landscape = true;
+                    }
+
+                    // Remove indicator from current dashboard
+                    dashboard.remove(indicator, landscape);
                 }
                 else
                 {

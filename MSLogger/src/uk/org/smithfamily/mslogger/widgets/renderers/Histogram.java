@@ -19,7 +19,7 @@ public class Histogram extends Painter
     private Paint linePaint;
     private Paint valuePaint;
 
-    private static final int NB_VALUES = 50;
+    private static final int NB_VALUES = 100;
     private final double[] values = new double[NB_VALUES];
     private int indexValue = 0;
 
@@ -48,6 +48,7 @@ public class Histogram extends Painter
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setFlags(anti_alias_flag);
         backgroundPaint.setAntiAlias(true);
+        
 
         valuePaint = new Paint();
         valuePaint.setColor(Color.DKGRAY);
@@ -63,9 +64,11 @@ public class Histogram extends Painter
     }
 
     /**
+     * Add a value to display on the histogram
+     * 
      * @param value
      */
-    public void setValue(final double value)
+    public void addValue(final double value)
     {
         // We haven't reach the limit of the array yet
         if (indexValue < NB_VALUES)
@@ -83,8 +86,6 @@ public class Histogram extends Painter
 
             values[i] = value;
         }
-
-        model.setValue((float) value);
     }
 
     /**
@@ -93,31 +94,33 @@ public class Histogram extends Painter
     @Override
     public void renderFrame(final Canvas canvas)
     {
-        final int height = parent.getMeasuredHeight();
+        final int height = (int) (bottom - top);
+        final int width = (int) (right - left);
 
-        final int width = parent.getMeasuredWidth();
-
-        final float scale = parent.getWidth();
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.scale(scale, scale);
-        float dx = 0.0f;
-        float dy = 0.0f;
-        if (width > height)
-        {
-            dx = (width - height) / 2.0f;
+        if ((width == 0) || (height == 0))
+        {// We're not ready to do this yet
+            return;
         }
-        if (height > width)
-        {
-            dy = (height - width) / 2.0f;
-        }
-        canvas.translate(dx, dy);
 
         drawBackground(canvas);
 
-        if (!model.isDisabled())
+        final float scale = Math.min(height, width);
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.translate(left, top);
+        canvas.scale(scale, scale);
+
+        drawBackground(canvas);
+
+        if (model.isDisabled())
+        {
+            model.setValue(model.getMin());
+        }
+        else
         {
             drawValue(canvas);
         }
+        
+        addValue(model.getValue());
 
         drawTitle(canvas);
 
@@ -146,15 +149,15 @@ public class Histogram extends Painter
             text = Float.toString(displayValue);
         }
 
-        canvas.drawText(text, 0.93f, 0.90f, valuePaint);
+        canvas.drawText(text, 0.94f, 0.90f, valuePaint);
 
         // We need at least two pair of coords to draw a line
         if (indexValue > 1)
         {
-            final float x = 0.035f;
+            final float x = 0.040f;
             final float y = 0.06f;
             final float height = 0.76f;
-            final float pixelsBetweenValue = 0.018f;
+            final float pixelsBetweenValue = 0.009f;
 
             for (int i = 1; i < indexValue; i++)
             {

@@ -30,6 +30,25 @@ public class Dashboard
             getPortrait().add(i);
         }
     }
+    
+    /**
+     * Remove an indicator from the dashboard
+     * 
+     * @param i The indicator to remove
+     * @param landscape = true = landscape, false = portrait
+     */
+    
+    public void remove(Indicator i, boolean landscape)
+    {
+        if (landscape)
+        {
+            getLandscape().remove(i);
+        }
+        else
+        {
+            getPortrait().remove(i);
+        }
+    }
 
     /**
      * Return the list of indicators of the dashboard

@@ -38,6 +38,7 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     private Location location;
     private DisplayType type;
+    private Orientation orientation = Orientation.VERTICAL;
 
     public Indicator()
     {
@@ -92,11 +93,12 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
 
     public void setOrientation(final Orientation orientation)
     {
+        this.orientation = orientation;
     }
 
     public Orientation getOrientation()
     {
-        return Orientation.VERTICAL;
+        return orientation;
     }
 
     public double getOffsetAngle()
@@ -301,6 +303,6 @@ public class Indicator extends Observable implements Observer, Copyable<Indicato
     public String toString()
     {
         return "Indicator [title=" + title + ", channel=" + channel + ", units=" + units + ", min=" + min + ", max=" + max + ", lowD=" + lowD + ", lowW=" + lowW + ", hiW=" + hiW + ", hiD=" + hiD + ", vd=" + vd + ", ld=" + ld + ", value=" + value
-                + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + ", location=" + location + ", type=" + type + "]";
+                + ", disabled=" + disabled + ", offsetAngle=" + offsetAngle + ", location=" + location + ", type=" + type + ", orientation=" + orientation + "]";
     }
 }
