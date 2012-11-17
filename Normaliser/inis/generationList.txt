@@ -79,3 +79,8 @@ MS3 Format 0256.000.ini
 # MegaShift       #
 ###################
 GPIO_MShift_2109.ini
+
+###################
+# Microsquirt     #
+###################
+microsquirt-II.ini
