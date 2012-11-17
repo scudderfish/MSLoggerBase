@@ -22,8 +22,6 @@ public class BarGraph extends Painter
     private Paint titlePaint;
     private Paint valuePaint;
 
-    private final Orientation orientation = Orientation.HORIZONTAL;
-
     @Override
     protected void init(final Context c)
     {
@@ -66,16 +64,26 @@ public class BarGraph extends Painter
     @Override
     public void renderFrame(final Canvas canvas)
     {
-        final int height = parent.getHeight();
+        final int height = (int) (bottom - top);
+        final int width = (int) (right - left);
 
-        final int width = parent.getWidth();
+        if ((width == 0) || (height == 0))
+        {// We're not ready to do this yet
+            return;
+        }
 
+        final float scale = Math.min(height, width);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.scale(width, height);
+        canvas.translate(left, top);
+        canvas.scale(scale, scale);
 
         drawBars(canvas);
 
-        if (!model.isDisabled())
+        if (model.isDisabled())
+        {
+            model.setValue(model.getMin());
+        }
+        else
         {
             drawValue(canvas);
         }
@@ -126,8 +134,8 @@ public class BarGraph extends Painter
 
         final float barWidth = 0.025f;
         final float barSpacing = 0.02f;
-
-        if (orientation == Orientation.VERTICAL)
+        
+        if (model.getOrientation() == Orientation.VERTICAL)
         {
             final int nbBars = 21;
 

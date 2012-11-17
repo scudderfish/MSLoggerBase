@@ -134,7 +134,27 @@ public class NumericIndicator extends Painter
      */
     private int getBgColour()
     {
-        return super.getFgColour();
+        int c = Color.GRAY;
+
+        final double value = model.getValue();
+        if ((value > model.getLowW()) && (value < model.getHiW()))
+        {
+            c = Color.BLACK;
+        }
+        else if ((value <= model.getLowW()) || (value >= model.getHiW()))
+        {
+            c = Color.YELLOW;
+        }
+        if ((value <= model.getLowD()) || (value >= model.getHiD()))
+        {
+            c = Color.RED;
+        }
+        if (model.isDisabled())
+        {
+            c = Color.GRAY;
+        }
+        
+        return c;
     }
 
     /**
@@ -143,28 +163,28 @@ public class NumericIndicator extends Painter
     @Override
     public void renderFrame(final Canvas canvas)
     {
-        final int height = parent.getMeasuredHeight();
+        final int height = (int) (bottom - top);
+        final int width = (int) (right - left);
 
-        final int width = parent.getMeasuredWidth();
-
-        final float scale = parent.getWidth();
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.scale(scale, scale);
-        float dx = 0.0f;
-        float dy = 0.0f;
-        if (width > height)
-        {
-            dx = (width - height) / 2.0f;
+        if ((width == 0) || (height == 0))
+        {// We're not ready to do this yet
+            return;
         }
-        if (height > width)
-        {
-            dy = (height - width) / 2.0f;
-        }
-        canvas.translate(dx, dy);
 
         drawBackground(canvas);
 
-        if (!model.isDisabled())
+        final float scale = Math.min(height, width);
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.translate(left, top);
+        canvas.scale(scale, scale);
+
+        drawBackground(canvas);
+
+        if (model.isDisabled())
+        {
+            model.setValue(model.getMin());
+        }
+        else
         {
             drawValue(canvas);
         }
