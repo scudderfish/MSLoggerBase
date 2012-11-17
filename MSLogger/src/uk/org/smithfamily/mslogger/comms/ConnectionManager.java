@@ -6,6 +6,7 @@ import java.util.*;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.os.*;
+import android.os.Process;
 import android.util.Log;
 
 /**
@@ -17,7 +18,7 @@ abstract class ConnectionManager
     {
         ConnectionManager parent;
 
-        Reaper(ConnectionManager p)
+        Reaper(final ConnectionManager p)
         {
             this.parent = p;
         }
@@ -26,6 +27,7 @@ abstract class ConnectionManager
         public void run()
         {
             parent.timerTriggered = true;
+            Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT);
             parent.tearDown();
         }
 
@@ -45,7 +47,7 @@ abstract class ConnectionManager
     };
 
     protected volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
-    
+
     /**
      * Get the instance name
      * 
@@ -81,7 +83,7 @@ abstract class ConnectionManager
      * 
      * @param handler
      */
-    public void setHandler(Handler handler)
+    public void setHandler(final Handler handler)
     {
         this.handler = handler;
     }
@@ -95,13 +97,15 @@ abstract class ConnectionManager
      * @param adapter
      * @param h
      */
-    public synchronized void init(Handler handler, String addr)
+    public synchronized void init(final Handler handler, final String addr)
     {
         this.handler = handler;
         if (conn == null)
+        {
             conn = ConnectionFactory.INSTANCE.getConnection();
+        }
         conn.init(addr);
-        if (currentState != ConnectionState.STATE_DISCONNECTED && !conn.isInitialised())
+        if ((currentState != ConnectionState.STATE_DISCONNECTED) && !conn.isInitialised())
         {
             tearDown();
             setState(ConnectionState.STATE_DISCONNECTED);
@@ -114,7 +118,7 @@ abstract class ConnectionManager
      * 
      * @param state
      */
-    private void setState(ConnectionState state)
+    private void setState(final ConnectionState state)
     {
         currentState = state;
         DebugLogManager.INSTANCE.log(getInstanceName() + ".setState " + state, Log.DEBUG);
@@ -142,7 +146,7 @@ abstract class ConnectionManager
 
             conn.connect();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
             delay(1000);
@@ -151,7 +155,7 @@ abstract class ConnectionManager
             {
                 conn.disconnect();
             }
-            catch (Exception e1)
+            catch (final Exception e1)
             {
                 DebugLogManager.INSTANCE.logException(e1);
             }
@@ -160,7 +164,7 @@ abstract class ConnectionManager
             {
                 conn.connect();
             }
-            catch (IOException e1)
+            catch (final IOException e1)
             {
                 // that didn't work, switch back and throw
                 DebugLogManager.INSTANCE.logException(e1);
@@ -178,14 +182,14 @@ abstract class ConnectionManager
             tmpIn = conn.getInputStream();
             tmpOut = conn.getOutputStream();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
-        if (mmInStream != null && mmOutStream != null)
+        if ((mmInStream != null) && (mmOutStream != null))
         {
             setState(ConnectionState.STATE_CONNECTED);
             DebugLogManager.INSTANCE.log(getInstanceName() + ".connect() : Current state " + currentState, Log.DEBUG);
@@ -218,14 +222,13 @@ abstract class ConnectionManager
      * 
      * @param d Delay
      */
-    protected void delay(int d)
+    protected void delay(final int d)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName() + ".delay(" + d + "ms)", Log.VERBOSE);
         try
         {
             Thread.sleep(d);
         }
-        catch (InterruptedException e)
+        catch (final InterruptedException e)
         {
             DebugLogManager.INSTANCE.log(getInstanceName() + " Sleep was interrupted", Log.ERROR);
         }
@@ -234,7 +237,7 @@ abstract class ConnectionManager
     /**
      * Close input and output Bluetooth streams and socket
      */
-    public synchronized void tearDown()
+    public void tearDown()
     {
         if (conn != null)
         {
@@ -250,7 +253,7 @@ abstract class ConnectionManager
      * @param data Data byte[] to send
      * @throws IOException
      */
-    public synchronized void writeData(byte[] data) throws IOException
+    public synchronized void writeData(final byte[] data) throws IOException
     {
         checkConnection();
         if (!conn.isConnected())
@@ -272,7 +275,7 @@ abstract class ConnectionManager
      * @return
      * @throws IOException
      */
-    public byte[] writeAndRead(byte[] data) throws IOException
+    public byte[] writeAndRead(final byte[] data) throws IOException
     {
         checkConnection();
         writeData(data);
@@ -287,20 +290,20 @@ abstract class ConnectionManager
      */
     public byte[] readBytes() throws IOException
     {
-        List<Byte> read = new ArrayList<Byte>();
+        final List<Byte> read = new ArrayList<Byte>();
 
         synchronized (this)
         {
             while (mmInStream.available() > 0)
             {
-                byte b = (byte) mmInStream.read();
+                final byte b = (byte) mmInStream.read();
                 read.add(b);
             }
         }
 
-        byte[] result = new byte[read.size()];
+        final byte[] result = new byte[read.size()];
         int i = 0;
-        for (Byte b : read)
+        for (final Byte b : read)
         {
             result[i++] = b;
         }
@@ -332,14 +335,14 @@ abstract class ConnectionManager
      * 
      * @param msgStr Message to be broadcasted
      */
-    public void sendStatus(String msgStr)
+    public void sendStatus(final String msgStr)
     {
-        DebugLogManager.INSTANCE.log(getInstanceName() + ".sendStatus "+msgStr, Log.DEBUG);
+        DebugLogManager.INSTANCE.log(getInstanceName() + ".sendStatus " + msgStr, Log.DEBUG);
 
         if (handler != null)
         {
-            Message msg = handler.obtainMessage(MSLoggerApplication.MESSAGE_TOAST);
-            Bundle bundle = new Bundle();
+            final Message msg = handler.obtainMessage(MSLoggerApplication.MESSAGE_TOAST);
+            final Bundle bundle = new Bundle();
             bundle.putString(MSLoggerApplication.MSG_ID, msgStr);
             msg.setData(bundle);
             handler.sendMessage(msg);
