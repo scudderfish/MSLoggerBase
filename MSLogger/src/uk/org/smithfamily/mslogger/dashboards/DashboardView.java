@@ -553,10 +553,14 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
+        final boolean isotropic = e.getPainter().isIsotropic();
         final float centreX = e.getCentreX();
         final float centreY = e.getCentreY();
         final float scale = e.getScale();
-        objPosAndScaleOut.set(centreX, centreY, true, scale, false, scale, scale, false, 0);
+        final float scaleX = e.getScaleX();
+        final float scaleY = e.getScaleY();
+        final float angle = (float) e.getAngle();
+        objPosAndScaleOut.set(centreX, centreY, true, scale, !isotropic, scaleX, scaleY, true, angle);
     }
 
     /**

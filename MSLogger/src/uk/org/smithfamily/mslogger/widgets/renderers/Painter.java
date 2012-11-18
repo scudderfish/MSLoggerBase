@@ -164,6 +164,16 @@ public abstract class Painter
      */
     protected void normaliseDimensions()
     {
+        if (isIsotropic())
+        {
+            float width = right - left;
+            float height = bottom - top;
+
+            width = Math.min(width, height);
+            height = width;
+            bottom = top + height;
+            right = left + width;
+        }
     }
 
     /**
@@ -181,6 +191,11 @@ public abstract class Painter
     public float getHeight()
     {
         return bottom - top;
+    }
+
+    public boolean isIsotropic()
+    {
+        return true;
     }
 }
 

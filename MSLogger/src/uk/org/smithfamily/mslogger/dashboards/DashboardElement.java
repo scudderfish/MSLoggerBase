@@ -26,6 +26,8 @@ public class DashboardElement
     private float originalWidth;
     private float originalHeight;
     private float scale;
+    private float scaleY;
+    private float scaleX;
 
     /**
      * 
@@ -204,6 +206,8 @@ public class DashboardElement
         }
 
         this.scale = (scaleX + scaleY) / 2.0f;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
 
         painter.setPos(left, top, right, bottom, centerX, centerY, scaleX, scaleY, angle);
         l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
@@ -268,5 +272,20 @@ public class DashboardElement
     {
         // TODO Auto-generated method stub
 
+    }
+
+    public double getAngle()
+    {
+        return indicator.getOffsetAngle();
+    }
+
+    public float getScaleX()
+    {
+        return scaleX;
+    }
+
+    public float getScaleY()
+    {
+        return scaleY;
     }
 }

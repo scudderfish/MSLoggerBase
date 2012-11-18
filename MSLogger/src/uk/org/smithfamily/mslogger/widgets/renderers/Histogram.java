@@ -98,7 +98,7 @@ public class Histogram extends Painter
 
         drawBackground(canvas);
 
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save(Canvas.ALL_SAVE_FLAG);
         canvas.translate(left, top);
         canvas.scale(width, height);
 
@@ -227,5 +227,11 @@ public class Histogram extends Painter
     public DisplayType getType()
     {
         return DisplayType.HISTOGRAM;
+    }
+
+    @Override
+    public boolean isIsotropic()
+    {
+        return false;
     }
 }
