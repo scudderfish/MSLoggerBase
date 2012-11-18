@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.graphics.Path.FillType;
+import android.util.SparseArray;
 
 /**
  *
@@ -31,7 +32,7 @@ public class Gauge extends Painter
     private Paint facePaint;
     private Paint backgroundPaint;
     private volatile Bitmap background;
-
+    private final SparseArray<Bitmap> backgrounds = new SparseArray<Bitmap>(4);
     private int lastBGColour;
     private static final float rimSize = 0.02f;
 
@@ -47,10 +48,12 @@ public class Gauge extends Painter
         {
             return;
         }
-        // free the old bitmap
+        final int index = getBgColour();
+
+        background = backgrounds.get(index);
         if (background != null)
         {
-            background.recycle();
+            return;
         }
 
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -63,6 +66,7 @@ public class Gauge extends Painter
         drawFace(backgroundCanvas);
         drawScale(backgroundCanvas);
         drawTitle(backgroundCanvas);
+        backgrounds.put(index, background);
     }
 
     private synchronized void drawBackground(final Canvas canvas)
@@ -105,7 +109,7 @@ public class Gauge extends Painter
         if (model.isDisabled())
         {
             model.setValue(model.getMin());
-            
+
         }
         else
         {
@@ -397,22 +401,14 @@ public class Gauge extends Painter
     @Override
     protected synchronized void invalidateCaches()
     {
-        if (background != null)
+        int key = 0;
+        for (int i = 0; i < backgrounds.size(); i++)
         {
-            background.recycle();
-            background = null;
+            key = backgrounds.keyAt(i);
+            final Bitmap b = backgrounds.get(key);
+            b.recycle();
         }
-    }
-
-    @Override
-    protected void normaliseDimensions()
-    {
-        float width = right - left;
-        float height = bottom - top;
-
-        width = Math.min(width, height);
-        height = width;
-        bottom = top + height;
-        right = left + width;
+        backgrounds.clear();
+        background = null;
     }
 }
