@@ -18,7 +18,7 @@ public class Histogram extends Painter
     private final float[] values = new float[NB_VALUES];
 
     private int indexValue = 0;
-    Path linePath;
+    private Path linePath;
 
     public Histogram(final DashboardView parent, final Indicator model, final Context c)
     {
@@ -58,6 +58,7 @@ public class Histogram extends Painter
         valuePaint.setColor(Color.DKGRAY);
         valuePaint.setTextSize(0.06f);
         valuePaint.setTextAlign(Paint.Align.RIGHT);
+        backgroundPaint.setStyle(Paint.Style.STROKE);
         valuePaint.setFlags(anti_alias_flag);
         valuePaint.setAntiAlias(true);
 
@@ -66,6 +67,7 @@ public class Histogram extends Painter
         linePaint.setFlags(anti_alias_flag);
         linePaint.setAntiAlias(true);
         linePaint.setStyle(Paint.Style.STROKE);
+        
         borderRect = new RectF();
         borderRect.set(0.05f, 0.05f, 0.94f, 0.83f);
     }
@@ -106,20 +108,19 @@ public class Histogram extends Painter
 
         addValue(model.getValue());
         drawTitle(canvas);
-
-        drawLines(canvas, width, height);
-        // this.drawValue(canvas);
+        drawValue(canvas);
+        drawLines(canvas);
 
         canvas.restore();
     }
 
-    private void drawLines(final Canvas canvas, final float width, final float height)
+    private void drawLines(final Canvas canvas)
     {
         linePath.reset();
-        // linePath.setFillType(Path.FillType.WINDING);
+
         final double min = model.getMin();
         final double max = model.getMax();
-        final double range = model.getMax() - min;
+        final double range = max - min;
         canvas.clipRect(borderRect, Op.INTERSECT);
         float x;
         float y;
@@ -147,9 +148,6 @@ public class Histogram extends Painter
     {
         valuePaint.setColor(getFgColour());
 
-        final double min = model.getMin();
-        final double max = model.getMax();
-
         final double value = model.getValue();
         final int valueDigits = model.getVd();
         final float displayValue = (float) (Math.floor((value / Math.pow(10, -valueDigits)) + 0.5) * Math.pow(10, -valueDigits));
@@ -166,48 +164,6 @@ public class Histogram extends Painter
         }
 
         canvas.drawText(text, 0.94f, 0.90f, valuePaint);
-
-        // We need at least two pair of coords to draw a line
-        if (indexValue > 1)
-        {
-            final float x = 0.040f;
-            final float y = 0.06f;
-            final float height = 0.76f;
-            final float pixelsBetweenValue = 0.009f;
-
-            for (int i = 1; i < indexValue; i++)
-            {
-                final double oldValue = values[i - 1];
-                final double currentValue = values[i];
-                double currentPercent = (1 - ((currentValue - min) / (max - min)));
-                if (currentPercent < 0)
-                {
-                    currentPercent = 0;
-                }
-                if (currentPercent > 100)
-                {
-                    currentPercent = 100;
-                }
-
-                final double currentY = y + (height * currentPercent);
-
-                double oldPercent = (1 - ((oldValue - min) / (max - min)));
-                if (oldPercent < 0)
-                {
-                    oldPercent = 0;
-                }
-                if (oldPercent > 100)
-                {
-                    oldPercent = 100;
-                }
-
-                final double oldX = x + (pixelsBetweenValue * i);
-                final double oldY = y + (height * oldPercent);
-
-                // Draw one value
-                canvas.drawLine((float) oldX, (float) oldY, (float) oldX + pixelsBetweenValue, (float) currentY, linePaint);
-            }
-        }
     }
 
     public void drawTitle(final Canvas canvas)
