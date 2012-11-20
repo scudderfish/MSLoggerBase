@@ -132,6 +132,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 else
                 {
                     element.checkPainterMatchesIndicator();
+                    element.scaleToParent(getWidth(), getHeight());
                 }
                 // Let the dash know it's dirty
                 if (thread != null)
