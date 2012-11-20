@@ -81,7 +81,7 @@
             android:entries="@array/gaugesorientationnames"
             android:entryValues="@array/gaugesorientationvalues"
             android:key="gaugesorientation"
-            android:title="@string/gauges_orientation" />
+            android:title="@string/dashboard_orientation" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Debug">
