@@ -1,33 +1,22 @@
 package uk.org.smithfamily.mslogger.dialog;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.*;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
-import uk.org.smithfamily.mslogger.widgets.IndicatorDefault;
-import uk.org.smithfamily.mslogger.widgets.IndicatorDefaults;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 /**
  * Dialog to change various gauge settings
@@ -39,7 +28,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
     private final Map<String, String[]> channels = new HashMap<String, String[]>();
 
     private OnEditIndicatorResult mDialogResult;
-    
+
     /**
      * 
      * @param context
@@ -71,7 +60,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         prepareChannelSpinner();
         prepareOrientationSpinner();
         prepareTypeSpinner();
-        
+
         final Button buttonOK = (Button) findViewById(R.id.editOK);
         final Button buttonReset = (Button) findViewById(R.id.editReset);
         final Button buttonRemove = (Button) findViewById(R.id.editRemove);
@@ -87,7 +76,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      * @param gd GaugeDetails to populate the fields with
      */
     private void populateFields()
-    {        
+    {
         setValue(R.id.editTitle, indicator.getTitle());
         setValue(R.id.editUnits, indicator.getUnits());
         setValue(R.id.editHi, Double.toString(indicator.getMax()));
@@ -100,9 +89,9 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         setValue(R.id.editLD, Integer.toString(indicator.getLd()));
         setValue(R.id.editoffsetAngle, Double.toString(indicator.getOffsetAngle()));
     }
-    
-    private void populateFields(IndicatorDefault id)
-    {        
+
+    private void populateFields(final IndicatorDefault id)
+    {
         setValue(R.id.editTitle, id.getTitle());
         setValue(R.id.editUnits, id.getUnits());
         setValue(R.id.editHi, Double.toString(id.getMax()));
@@ -122,14 +111,14 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
     private void prepareChannelSpinner()
     {
         final Spinner channelSpinner = (Spinner) findViewById(R.id.spinnerChannel);
-        
-        Map<String, OutputChannel> outputChannels = DataManager.getInstance().getOutputChannels();
 
-        List<String> titles = new ArrayList<String>();
+        final Map<String, OutputChannel> outputChannels = DataManager.getInstance().getOutputChannels();
 
-        for (Entry<String, OutputChannel> entry : outputChannels.entrySet())
+        final List<String> titles = new ArrayList<String>();
+
+        for (final Entry<String, OutputChannel> entry : outputChannels.entrySet())
         {
-            IndicatorDefault id = IndicatorDefaults.defaults.get(entry.getKey());
+            final IndicatorDefault id = IndicatorDefaults.defaults.get(entry.getKey());
 
             if (id == null)
             {
@@ -137,67 +126,67 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
             }
             else
             {
-                String[] indicatorDetails = new String[2];
+                final String[] indicatorDetails = new String[2];
                 indicatorDetails[0] = id.getChannel();
                 indicatorDetails[1] = id.getTitle();
-    
+
                 channels.put(id.getChannel(), indicatorDetails);
                 titles.add(id.getTitle());
             }
         }
-        
+
         Collections.sort(titles);
 
-        ArrayAdapter<String> channelArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, titles);
+        final ArrayAdapter<String> channelArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, titles);
 
         // Specify the layout to use when the list of choices appears
         channelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         channelSpinner.setAdapter(channelArrayAdapter);
-        
-        String indicatorChannel = indicator.getChannel();
-        
+
+        final String indicatorChannel = indicator.getChannel();
+
         int channelPosition = channelArrayAdapter.getPosition(IndicatorDefaults.defaults.get(indicatorChannel).getTitle());
         if (channelPosition == -1)
         {
             channelPosition = 0;
         }
-        
+
         channelSpinner.setSelection(channelPosition);
 
         channelSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
         {
             boolean ignoreEvent = true;
-            
+
             @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+            public void onItemSelected(final AdapterView<?> arg0, final View arg1, final int arg2, final long arg3)
             {
                 // First onItemSelected event of the spinner come from populating it, ignore it!
                 if (ignoreEvent)
                 {
                     ignoreEvent = false;
                 }
-                else 
+                else
                 {
-                    String name = findNameForTitle(channelSpinner.getSelectedItem().toString());
-    
-                    IndicatorDefault id = IndicatorDefaults.defaults.get(name);
-                    
+                    final String name = findNameForTitle(channelSpinner.getSelectedItem().toString());
+
+                    final IndicatorDefault id = IndicatorDefaults.defaults.get(name);
+
                     populateFields(id);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> arg0)
+            public void onNothingSelected(final AdapterView<?> arg0)
             {
             }
         });
-         
+
     }
-    
-    private String findNameForTitle(String indicatorTitle)
+
+    private String findNameForTitle(final String indicatorTitle)
     {
-        for (String[] value : channels.values())
+        for (final String[] value : channels.values())
         {
             if (value[1].equals(indicatorTitle))
             {
@@ -213,7 +202,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     private void prepareOrientationSpinner()
     {
-        Spinner orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
+        final Spinner orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         final ArrayAdapter<CharSequence> orientationAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatororientation, android.R.layout.simple_spinner_item);
@@ -223,11 +212,11 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
 
         // Apply the adapter to the spinner
         orientationSpinner.setAdapter(orientationAdapter);
-        
+
         // Find the indicator to select
-        Orientation orientation = indicator.getOrientation();
+        final Orientation orientation = indicator.getOrientation();
         int selection = 0;
-       
+
         if (orientation == Orientation.VERTICAL)
         {
             selection = orientationAdapter.getPosition(getContext().getString(R.string.vertical));
@@ -241,7 +230,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     private void prepareTypeSpinner()
     {
-        Spinner typeSpinner = (Spinner) findViewById(R.id.indicatorType);
+        final Spinner typeSpinner = (Spinner) findViewById(R.id.indicatorType);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         final ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.indicatortypes, android.R.layout.simple_spinner_item);
@@ -253,9 +242,9 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         typeSpinner.setAdapter(typeAdapter);
 
         // Find the indicator to select
-        DisplayType indicatorType = indicator.getDisplayType();
+        final DisplayType indicatorType = indicator.getDisplayType();
         int selection = 0;
-       
+
         if (indicatorType == DisplayType.NUMERIC)
         {
             selection = typeAdapter.getPosition(getContext().getString(R.string.numeric_indicator));
@@ -268,7 +257,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         {
             selection = typeAdapter.getPosition(getContext().getString(R.string.histogram));
         }
-        
+
         // Select current indicator type
         typeSpinner.setSelection(selection);
 
@@ -292,7 +281,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     private void adjustFieldsForIndicatorType()
     {
-        final TableRow orientationRow = (TableRow) findViewById(R.id.indicatorOrientationRow);
+        final LinearLayout orientationRow = (LinearLayout) findViewById(R.id.indicatorOrientationRow);
         final Spinner typeSpinner = (Spinner) findViewById(R.id.indicatorType);
         final String selectedType = typeSpinner.getSelectedItem().toString();
 
@@ -327,18 +316,19 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     public void saveDetails()
     {
-        final Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType); 
+        final Spinner gaugeType = (Spinner) findViewById(R.id.indicatorType);
         final Spinner orientationSpinner = (Spinner) findViewById(R.id.indicatorOrientation);
         final Spinner channelSpinner = (Spinner) findViewById(R.id.spinnerChannel);
-        
+
         final String selectedIndicatorType = gaugeType.getSelectedItem().toString();
-        
+
         Orientation orientation = Orientation.VERTICAL;
-        if (orientationSpinner.getSelectedItem().toString().toLowerCase().equals("horizontal")) {
+        if (orientationSpinner.getSelectedItem().toString().toLowerCase().equals("horizontal"))
+        {
             orientation = Orientation.HORIZONTAL;
         }
-        
-        DisplayType displayType = DisplayType.GAUGE;        
+
+        DisplayType displayType = DisplayType.GAUGE;
         if (selectedIndicatorType.equals(getContext().getString(R.string.numeric_indicator)))
         {
             displayType = DisplayType.NUMERIC;
@@ -351,7 +341,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         {
             displayType = DisplayType.HISTOGRAM;
         }
-        
+
         indicator.setDisplayType(displayType);
         indicator.setOrientation(orientation);
         indicator.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString()));
@@ -368,31 +358,31 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         indicator.setOffsetAngle(getValueD(R.id.editoffsetAngle));
 
         mDialogResult.finish(indicator, false);
-        
+
         dismiss();
     }
-    
+
     /**
      * Ask to remove the indicator from the current dashboard
      */
     public void removeIndicator()
     {
-        mDialogResult.finish(indicator , true);
-        
+        mDialogResult.finish(indicator, true);
+
         dismiss();
     }
 
     /**
-    *
-    * @param value
-    * @return
-    */
-    private String findChannelForTitle(String indicatorTitle)
+     * 
+     * @param value
+     * @return
+     */
+    private String findChannelForTitle(final String indicatorTitle)
     {
-        for (Map.Entry<String, String[]> entry : channels.entrySet())
+        for (final Map.Entry<String, String[]> entry : channels.entrySet())
         {
-            String key = entry.getKey();
-            String[] value = entry.getValue();
+            final String key = entry.getKey();
+            final String[] value = entry.getValue();
 
             if (value[1].equals(indicatorTitle))
             {
@@ -402,72 +392,72 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
 
         return "";
     }
-    
+
     /**
      * Reset indicators details to the firmware default
      */
     public void resetDetails()
     {
-        IndicatorDefault id = IndicatorDefaults.defaults.get(indicator.getChannel());
+        final IndicatorDefault id = IndicatorDefaults.defaults.get(indicator.getChannel());
         indicator.copyFrom(id);
-        
+
         dismiss();
     }
 
-   /**
-    * Get the value of a specific view as an integer
-    *
-    * @param id The ID of the view to get the value
-    * @return Integer of the value
-    */
-    private int getValueI(int id)
+    /**
+     * Get the value of a specific view as an integer
+     * 
+     * @param id The ID of the view to get the value
+     * @return Integer of the value
+     */
+    private int getValueI(final int id)
     {
         int val = 0;
-        View v = findViewById(id);
+        final View v = findViewById(id);
         if (v instanceof TextView)
         {
-            String txt = ((TextView) v).getText().toString();
+            final String txt = ((TextView) v).getText().toString();
             val = Integer.parseInt(txt);
         }
         return val;
     }
 
-   /**
-    * Get the value of a specific view as an double
-    *
-    * @param id The ID of the view to get the value
-    * @return Double of the value
-    */
-        private double getValueD(int id)
-        {
-            double val = 0;
-            View v = findViewById(id);
-            if (v instanceof TextView)
-            {
-                String txt = ((TextView) v).getText().toString();
-                val = Double.parseDouble(txt);
-            }
-            return val;
-        }
-
-   /**
-    * Get the value of a specific view as a string
-    *
-    * @param id The ID of the view to get the value
-    * @return Double of the value
-    */
-    private String getValue(int id)
+    /**
+     * Get the value of a specific view as an double
+     * 
+     * @param id The ID of the view to get the value
+     * @return Double of the value
+     */
+    private double getValueD(final int id)
     {
-        String val = "";
-        View v = findViewById(id);
+        double val = 0;
+        final View v = findViewById(id);
         if (v instanceof TextView)
         {
-            String txt = ((TextView) v).getText().toString();
+            final String txt = ((TextView) v).getText().toString();
+            val = Double.parseDouble(txt);
+        }
+        return val;
+    }
+
+    /**
+     * Get the value of a specific view as a string
+     * 
+     * @param id The ID of the view to get the value
+     * @return Double of the value
+     */
+    private String getValue(final int id)
+    {
+        String val = "";
+        final View v = findViewById(id);
+        if (v instanceof TextView)
+        {
+            final String txt = ((TextView) v).getText().toString();
             val = txt;
         }
         return val;
     }
-        
+
     /**
      * Triggered when the bottom buttons of the dialog are clicked
      * 
@@ -491,13 +481,13 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
             removeIndicator();
         }
     }
-    
+
     /**
      * Used by the parent to set a new OnEditIndicatorResult to the dialog
      * 
      * @param dialogResult
      */
-    public void setDialogResult(OnEditIndicatorResult dialogResult)
+    public void setDialogResult(final OnEditIndicatorResult dialogResult)
     {
         mDialogResult = dialogResult;
     }
@@ -507,6 +497,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
      */
     public interface OnEditIndicatorResult
     {
-       void finish(Indicator Indicator, boolean toRemove);
+        void finish(Indicator Indicator, boolean toRemove);
     }
 }
