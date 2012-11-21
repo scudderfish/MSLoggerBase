@@ -175,14 +175,14 @@ public class DashboardElement
     /**
      * Set the position and scale of an image in screen coordinates
      * 
-     * @param centerX
-     * @param centerY
+     * @param centreX
+     * @param centreY
      * @param scaleX
      * @param scaleY
      * @param angle
      * @return
      */
-    private boolean setPos(final float centerX, final float centerY, final float scaleX, final float scaleY, final float angle)
+    private boolean setPos(float centreX, float centreY, final float scaleX, final float scaleY, final float angle)
     {
         Location l = indicator.getLocation();
         final float width = originalWidth;
@@ -194,22 +194,42 @@ public class DashboardElement
         ws = Math.max(ws, parentW / 20f);
         hs = Math.max(hs, parentH / 20f);
 
-        final float left = centerX - ws;
-        final float top = centerY - hs;
-        final float right = centerX + ws;
-        final float bottom = centerY + hs;
+        float left = centreX - ws;
+        float top = centreY - hs;
+        float right = centreX + ws;
+        float bottom = centreY + hs;
 
-        // If we are out of the screen, we don't do anything
-        if ((left < 0) || (top < 0) || (right > parentW) || (bottom > parentH))
+        if (left < 0)
         {
-            return false;
+            centreX -= left;
+            right -= left;
+            left = 0;
+        }
+
+        if (top < 0)
+        {
+            centreY -= top;
+            bottom -= top;
+            top = 0;
+        }
+        if (right > parentW)
+        {
+            centreX -= (right - parentW);
+            left -= (right - parentW);
+            right = parentW;
+        }
+        if (bottom > parentH)
+        {
+            centreY -= (bottom - parentH);
+            top -= (bottom - parentH);
+            bottom = parentH;
         }
 
         this.scale = (scaleX + scaleY) / 2.0f;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
 
-        painter.setPos(left, top, right, bottom, centerX, centerY, scaleX, scaleY, angle);
+        painter.setPos(left, top, right, bottom, centreX, centreY, scaleX, scaleY, angle);
         l = new Location(left / parentW, top / parentH, right / parentW, bottom / parentH);
         indicator.setLocation(l);
         return true;
