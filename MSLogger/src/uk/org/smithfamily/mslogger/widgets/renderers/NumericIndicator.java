@@ -178,8 +178,6 @@ public class NumericIndicator extends Painter
         canvas.translate(left, top);
         canvas.scale(scale, scale);
 
-        drawBackground(canvas);
-
         if (model.isDisabled())
         {
             model.setValue(model.getMin());
@@ -197,5 +195,11 @@ public class NumericIndicator extends Painter
     public DisplayType getType()
     {
         return DisplayType.NUMERIC;
+    }
+    
+    @Override
+    public boolean isIsotropic()
+    {
+        return false;
     }
 }

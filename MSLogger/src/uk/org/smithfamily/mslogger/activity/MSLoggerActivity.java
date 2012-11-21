@@ -32,7 +32,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     private TextView rps;
     private static Boolean ready = null;
 
-    private boolean gaugeEditEnabled;
+    private boolean dashboardEditEnabled;
 
     private static final int SHOW_PREFS = 124230;
 
@@ -89,7 +89,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
             if (savedInstanceState.getBoolean("gauge_edit"))
             {
-                gaugeEditEnabled = true;
+                dashboardEditEnabled = true;
             }
         }
 
@@ -145,7 +145,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
 
         outState.putString("status_message", messages.getText().toString());
         outState.putString("rps_message", rps.getText().toString());
-        outState.putBoolean("gauge_edit", gaugeEditEnabled);
+        outState.putBoolean("gauge_edit", dashboardEditEnabled);
     }
 
     /**
@@ -247,19 +247,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu)
     {
-        final MenuItem editItem = menu.findItem(R.id.gaugeEditing);
+        final MenuItem editItem = menu.findItem(R.id.dashboardEditing);
         final Megasquirt ecuDefinition = ApplicationSettings.INSTANCE.getEcuDefinition();
 
         editItem.setEnabled(ecuDefinition != null);
-        if (gaugeEditEnabled)
+        if (dashboardEditEnabled)
         {
             editItem.setIcon(R.drawable.ic_menu_disable_gauge_editing);
-            editItem.setTitle(R.string.disable_gauge_edit);
+            editItem.setTitle(R.string.disable_dashboard_edit);
         }
         else
         {
             editItem.setIcon(R.drawable.ic_menu_enable_gauge_editing);
-            editItem.setTitle(R.string.enable_gauge_edit);
+            editItem.setTitle(R.string.enable_dashboard_edit);
         }
         final MenuItem connectionItem = menu.findItem(R.id.forceConnection);
         if ((ecuDefinition != null) && ecuDefinition.isConnected())
@@ -308,7 +308,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         case R.id.forceConnection:
             toggleConnection();
             return true;
-        case R.id.gaugeEditing:
+        case R.id.dashboardEditing:
             toggleEditing();
             return true;
         case R.id.forceLogging:
@@ -323,8 +323,8 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         case R.id.preferences:
             openPreferences();
             return true;
-        case R.id.resetGauges:
-            resetGuages();
+        case R.id.resetIndicators:
+            resetIndicators();
             return true;
         case R.id.calibrate:
             openCalibrateTPS();
@@ -341,9 +341,9 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     }
 
     /**
-     * Start the background task to reset the gauges
+     * Start the background task to reset the indicators
      */
-    public void resetGuages()
+    public void resetIndicators()
     {
     }
 
@@ -352,19 +352,19 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      */
     private void toggleEditing()
     {
-        // Gauge editing is enabled
-        if (gaugeEditEnabled)
+        // Dashboard editing is enabled
+        if (dashboardEditEnabled)
         {
             DashboardIO.INSTANCE.saveDash();
         }
-        // Gauge editing is not enabled
+        // Dashboard editing is not enabled
         else
         {
-            Toast.makeText(getApplicationContext(), R.string.edit_gauges_instructions, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.edit_dashboard_instructions, Toast.LENGTH_LONG).show();
         }
 
-        gaugeEditEnabled = !gaugeEditEnabled;
-        pager.setEditMode(gaugeEditEnabled);
+        dashboardEditEnabled = !dashboardEditEnabled;
+        pager.setEditMode(dashboardEditEnabled);
     }
 
     /**

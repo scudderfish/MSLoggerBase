@@ -53,7 +53,7 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
 
         setContentView(R.layout.editindicator);
 
-        setTitle(R.string.edit_gauge_title);
+        setTitle(R.string.edit_indicator_title);
 
         populateFields();
 
