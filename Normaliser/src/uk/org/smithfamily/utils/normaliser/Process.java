@@ -151,24 +151,34 @@ public class Process
             String scale = scalarM.group(5);
             String numOffset = scalarM.group(6);
 
-            if (Double.parseDouble(scale) != 1)
+            try
             {
+                if (Double.parseDouble(scale) != 1)
+                {
+                    ecuData.getRuntimeVars().put(name, "double");
+                }
+                else {
+                    ecuData.getRuntimeVars().put(name, "int");
+                }
+            }
+            // If we have a NumberFormatException at this point, most likely scale is an expression so assume it's a double
+            catch (NumberFormatException e)
+            {
+                // Replace curly brackets by round brackets
+                scale = "(" + removeCurlyBrackets(scale) + ")";
+                
                 ecuData.getRuntimeVars().put(name, "double");
             }
-            else
-            {
-                ecuData.getRuntimeVars().put(name, "int");
-            }
-            definition = Output
-                    .getScalar("ochBuffer", ecuData.getRuntimeVars().get(name), name, dataType, offset, scale, numOffset);
+            
+            definition = Output.getScalar("ochBuffer", ecuData.getRuntimeVars().get(name), name, dataType, offset, scale, numOffset);
             ecuData.setFingerprintSource(ecuData.getFingerprintSource() + definition);
             ecuData.getRuntime().add(definition);
             
             int offsetOC = Integer.parseInt(offset);
-            double scaleOC = !StringUtils.isEmpty(scale) ? Double.parseDouble(scale) : 0;
+            String scaleOC = StringUtils.isEmpty(scale) ? "0" : scale;
             double translateOC = !StringUtils.isEmpty(numOffset) ? Double.parseDouble(numOffset) : 0;
             
-            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC,null);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC, null);
             ecuData.getOutputChannels().add(outputChannel);
         }
         else if (exprM.matches())
@@ -223,7 +233,7 @@ public class Process
                 dataType = "int";
             }
             ecuData.getEvalVars().put(name, dataType);
-            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", 1, 0,null);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", "1", 0, null);
             ecuData.getOutputChannels().add(outputChannel);
             
         }
@@ -250,12 +260,12 @@ public class Process
             String preproc = processPreprocessor(ecuData, line);
             ecuData.getRuntime().add(preproc);
             
-            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", 0, 0,null);
+            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", "0", 0, null);
             ecuData.getOutputChannels().add(oc);
         }
         else if (!StringUtils.isEmpty(line))
         {
-            System.out.println(line);
+            System.out.println("WARNING! Not sure what to do with this line: " + line);
         }
     }
 
@@ -344,7 +354,7 @@ public class Process
         return StringUtils.replace(flagName, "!", "n");
     }
 
-    static void processFrontPage(ECUData ecuData, String line)
+    public static void processFrontPage(ECUData ecuData, String line)
     {
         line = removeComments(line);
 
@@ -355,7 +365,7 @@ public class Process
         }
     }
 
-    static void processHeader(ECUData ecuData, String line)
+    public static void processHeader(ECUData ecuData, String line)
     {
         Matcher queryM = Patterns.queryCommand.matcher(line);
         if (queryM.matches())
@@ -390,7 +400,7 @@ public class Process
      * 
      * @param line
      */
-    static void processConstants(ECUData ecuData, String line)
+    public static void processConstants(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -476,8 +486,7 @@ public class Process
             ecuData.setPageActivationDelayVal(Integer.parseInt(pageActivationDelayM.group(1).trim()));
             return;
         }
-        // To allow for MS2GS27
-        line = removeCurlyBrackets(line);
+
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher constantM = Patterns.constantScalar.matcher(line);
         Matcher constantSimpleM = Patterns.constantSimple.matcher(line);
@@ -495,24 +504,29 @@ public class Process
             String highText = constantM.group(9);
             String digitsText = constantM.group(10);
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            double translate = 0;
-            
-            try
-            {
-                translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
-            }
-            catch (NumberFormatException e)
-            {
-                // TODO its probably an expression, support that
-                System.out.println("TODO WE NEED TO SUPPORT THIS (expression in translate?!) " + line);
-            }
+            String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
             
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
             if (!ecuData.getConstants().contains(name))
             {
-                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate,
-                        lowText, highText, digits);
+                if (ExpressionWrangler.isExpresion(translate))
+                {
+                    String runtimeVarExpressionName = "msl_exp_" + name;
+                    
+                    String definition = (runtimeVarExpressionName + " = " + removeCurlyBrackets(translateText).trim() + ";");
+                    
+                    definition = "try\n" + Output.TAB + Output.TAB + "{\n" + Output.TAB + Output.TAB + Output.TAB + definition + "\n"
+                                            + Output.TAB + Output.TAB + "}\n" + Output.TAB + Output.TAB + "catch (ArithmeticException e) {\n"
+                                            + Output.TAB + Output.TAB + Output.TAB + runtimeVarExpressionName + " = 0;\n" + Output.TAB + Output.TAB + "}";
+                    
+                    ecuData.getRuntime().add(definition);
+                    ecuData.getRuntimeVars().put(runtimeVarExpressionName, "double");
+                    
+                    translate = runtimeVarExpressionName;
+                }
+                
+                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits);
 
                 ecuData.getConstantVars().put(name, "int");
                 ecuData.getConstants().add(c);
@@ -520,7 +534,6 @@ public class Process
         }
         else if (constantArrayM.matches())
         {
-
             String name = constantArrayM.group(1);
             String classtype = constantArrayM.group(2);
             String type = constantArrayM.group(3);
@@ -529,12 +542,12 @@ public class Process
             String units = constantArrayM.group(6);
             String scaleText = constantArrayM.group(7);
             String translateText = constantArrayM.group(8);
-            String lowText = constantArrayM.group(9);
-            String highText = constantArrayM.group(10);
+            String lowText = removeCurlyBrackets(constantArrayM.group(9));
+            String highText = removeCurlyBrackets(constantArrayM.group(10));
             String digitsText = constantArrayM.group(11);
-            highText = highText.replace("{", "").replace("}", "");
+            highText = removeCurlyBrackets(highText);
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            double translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
+            String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
@@ -561,11 +574,9 @@ public class Process
             int offset = Integer.parseInt(constantSimpleM.group(4).trim());
             String units = constantSimpleM.group(5);
             double scale = Double.parseDouble(constantSimpleM.group(6));
-            double translate = Double.parseDouble(constantSimpleM.group(7));
+            String translate = constantSimpleM.group(7);
 
-            Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0",
-                    "0", 0);
-
+            Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
         }
@@ -584,8 +595,7 @@ public class Process
                 bitsValues = Patterns.bitsValues.split(strBitsValues);
             }
 
-            Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start
-                    + ":" + end + "]", "", 1, 0, "0", "0", 0, bitsValues);
+            Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", 1, "0", "0", "0", 0, bitsValues);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
 
@@ -593,7 +603,7 @@ public class Process
         else if (line.startsWith("#"))
         {
             String preproc = (processPreprocessor(ecuData, line));
-            Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, 0, "0", "0", 0);
+            Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, "0", "0", "0", 0);
             ecuData.getConstants().add(c);
         }
     }
@@ -608,7 +618,7 @@ public class Process
      * 
      * @param line
      */
-    static void processMenu(ECUData ecuData, String line)
+    public static void processMenu(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -677,7 +687,7 @@ public class Process
      * 
      * @param line
      */
-    static void processTableEditor(ECUData ecuData, String line)
+    public static void processTableEditor(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -765,7 +775,7 @@ public class Process
      * 
      * @param line
      */
-    static void processCurveEditor(ECUData ecuData, String line)
+    public static void processCurveEditor(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -872,7 +882,7 @@ public class Process
      * 
      * @param line
      */
-    static void processControllerCommands(ECUData ecuData, String line)
+    public static void processControllerCommands(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -896,7 +906,7 @@ public class Process
      * 
      * @param line
      */
-    static void processUserDefined(ECUData ecuData, String line)
+    public static void processUserDefined(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -1021,7 +1031,7 @@ public class Process
         d.addItem(x);
     }
 
-    static void processConstantsExtensions(ECUData ecuData, String line)
+    public static void processConstantsExtensions(ECUData ecuData, String line)
     {
         line = removeComments(line);
 
@@ -1048,7 +1058,7 @@ public class Process
         }
     }
 
-    static void processPcVariables(ECUData ecuData, String line)
+    public static void processPcVariables(ECUData ecuData, String line)
     {
 
     }
