@@ -344,7 +344,7 @@ public class Process
         return StringUtils.replace(flagName, "!", "n");
     }
 
-    static void processFrontPage(ECUData ecuData, String line)
+    public static void processFrontPage(ECUData ecuData, String line)
     {
         line = removeComments(line);
 
@@ -355,7 +355,7 @@ public class Process
         }
     }
 
-    static void processHeader(ECUData ecuData, String line)
+    public static void processHeader(ECUData ecuData, String line)
     {
         Matcher queryM = Patterns.queryCommand.matcher(line);
         if (queryM.matches())
@@ -390,7 +390,7 @@ public class Process
      * 
      * @param line
      */
-    static void processConstants(ECUData ecuData, String line)
+    public static void processConstants(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -495,24 +495,13 @@ public class Process
             String highText = constantM.group(9);
             String digitsText = constantM.group(10);
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            double translate = 0;
-            
-            try
-            {
-                translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
-            }
-            catch (NumberFormatException e)
-            {
-                // TODO its probably an expression, support that
-                System.out.println("TODO WE NEED TO SUPPORT THIS (expression in translate?!) " + line);
-            }
+            String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
             
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
             if (!ecuData.getConstants().contains(name))
             {
-                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate,
-                        lowText, highText, digits);
+                Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits);
 
                 ecuData.getConstantVars().put(name, "int");
                 ecuData.getConstants().add(c);
@@ -520,7 +509,6 @@ public class Process
         }
         else if (constantArrayM.matches())
         {
-
             String name = constantArrayM.group(1);
             String classtype = constantArrayM.group(2);
             String type = constantArrayM.group(3);
@@ -534,7 +522,7 @@ public class Process
             String digitsText = constantArrayM.group(11);
             highText = highText.replace("{", "").replace("}", "");
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            double translate = !StringUtils.isEmpty(translateText) ? Double.parseDouble(translateText) : 0;
+            String translate = !StringUtils.isEmpty(translateText) ? translateText : "0";
 
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
@@ -561,11 +549,9 @@ public class Process
             int offset = Integer.parseInt(constantSimpleM.group(4).trim());
             String units = constantSimpleM.group(5);
             double scale = Double.parseDouble(constantSimpleM.group(6));
-            double translate = Double.parseDouble(constantSimpleM.group(7));
+            String translate = constantSimpleM.group(7);
 
-            Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0",
-                    "0", 0);
-
+            Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
         }
@@ -584,8 +570,7 @@ public class Process
                 bitsValues = Patterns.bitsValues.split(strBitsValues);
             }
 
-            Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start
-                    + ":" + end + "]", "", 1, 0, "0", "0", 0, bitsValues);
+            Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", 1, "0", "0", "0", 0, bitsValues);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
 
@@ -593,7 +578,7 @@ public class Process
         else if (line.startsWith("#"))
         {
             String preproc = (processPreprocessor(ecuData, line));
-            Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, 0, "0", "0", 0);
+            Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, "0", "0", "0", 0);
             ecuData.getConstants().add(c);
         }
     }
@@ -608,7 +593,7 @@ public class Process
      * 
      * @param line
      */
-    static void processMenu(ECUData ecuData, String line)
+    public static void processMenu(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -677,7 +662,7 @@ public class Process
      * 
      * @param line
      */
-    static void processTableEditor(ECUData ecuData, String line)
+    public static void processTableEditor(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -765,7 +750,7 @@ public class Process
      * 
      * @param line
      */
-    static void processCurveEditor(ECUData ecuData, String line)
+    public static void processCurveEditor(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -872,7 +857,7 @@ public class Process
      * 
      * @param line
      */
-    static void processControllerCommands(ECUData ecuData, String line)
+    public static void processControllerCommands(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -896,7 +881,7 @@ public class Process
      * 
      * @param line
      */
-    static void processUserDefined(ECUData ecuData, String line)
+    public static void processUserDefined(ECUData ecuData, String line)
     {
         line = removeComments(line);
         if (StringUtils.isEmpty(line))
@@ -1021,7 +1006,7 @@ public class Process
         d.addItem(x);
     }
 
-    static void processConstantsExtensions(ECUData ecuData, String line)
+    public static void processConstantsExtensions(ECUData ecuData, String line)
     {
         line = removeComments(line);
 
@@ -1048,7 +1033,7 @@ public class Process
         }
     }
 
-    static void processPcVariables(ECUData ecuData, String line)
+    public static void processPcVariables(ECUData ecuData, String line)
     {
 
     }

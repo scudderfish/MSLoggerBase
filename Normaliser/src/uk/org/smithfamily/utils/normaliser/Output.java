@@ -30,7 +30,7 @@ import uk.org.smithfamily.utils.normaliser.userdefined.UserDefinedTracker;
 
 public class Output
 {
-    static final String        TAB          = "    ";
+    public static final String        TAB          = "    ";
     private static final int   MAX_LINES    = 100;
     private static Set<String> alwaysInt    = new HashSet<String>(Arrays.asList(new String[] {}));
     private static Set<String> alwaysDouble = new HashSet<String>(Arrays.asList(new String[] { "pulseWidth", "throttle",
@@ -39,7 +39,7 @@ public class Output
     
     private static List<String> menuDialogs;
 
-    static void outputGaugeDoc(ECUData ecuData, PrintWriter writer)
+    public static void outputGaugeDoc(ECUData ecuData, PrintWriter writer)
     {
         writer.println("/*");
         for (String gauge : ecuData.getGaugeDoc())
@@ -50,7 +50,7 @@ public class Output
         writer.println("*/");
     }
 
-    static void outputConstructor(ECUData ecuData, PrintWriter writer, String className)
+    public static void outputConstructor(ECUData ecuData, PrintWriter writer, String className)
     {
         writer.println(TAB+"private MSControllerInterface parent;");
         writer.println(TAB+"private MSUtilsInterface utils;");
@@ -85,7 +85,7 @@ public class Output
      * @param ecuData
      * @param writer
      */
-    static void outputFlagsAndConstants(ECUData ecuData, PrintWriter writer)
+    public static void outputFlagsAndConstants(ECUData ecuData, PrintWriter writer)
     {
         int constantMethodCount = 0;
         int lineCount = 0;
@@ -216,7 +216,7 @@ public class Output
 
     }
 
-    static void outputOutputChannels(ECUData ecuData, PrintWriter writer)
+    public static void outputOutputChannels(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "public void initOutputChannels()");
         writer.println(TAB + "{");
@@ -236,7 +236,7 @@ public class Output
         writer.println(TAB + "}");
     }
     
-    static void outputPackageAndIncludes(ECUData ecuData, PrintWriter writer)
+    public static void outputPackageAndIncludes(ECUData ecuData, PrintWriter writer)
     {
         writer.println("package uk.org.smithfamily.mslogger.ecuDef.gen;");
         writer.println("");
@@ -262,7 +262,7 @@ public class Output
         return type;
     }
 
-    static void outputGlobalVars(ECUData ecuData, PrintWriter writer)
+    public static void outputGlobalVars(ECUData ecuData, PrintWriter writer)
     {
         writer.println("//Flags");
         
@@ -324,7 +324,7 @@ public class Output
 
     }
 
-    static void outputRequiresPowerCycle(ECUData ecuData, PrintWriter writer)
+    public static void outputRequiresPowerCycle(ECUData ecuData, PrintWriter writer)
     {
         writer.println("\n    //Fields that requires power cycle");
         
@@ -341,7 +341,7 @@ public class Output
         writer.println(TAB + "}\n");
     }
     
-    static void outputRTCalcs(ECUData ecuData, PrintWriter writer)
+    public static void outputRTCalcs(ECUData ecuData, PrintWriter writer)
     {
         writer.println("    @Override");
         writer.println("    public void calculate(byte[] ochBuffer)");
@@ -354,7 +354,7 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    static void outputLogInfo(ECUData ecuData, PrintWriter writer)
+    public static void outputLogInfo(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "@Override");
         writer.println(TAB + "public String getLogHeader()");
@@ -379,7 +379,7 @@ public class Output
         writer.println(TAB + TAB + "return b.toString();\n" + TAB + "}\n");
     }
 
-    static void outputMenus(ECUData ecuData, PrintWriter writer)
+    public static void outputMenus(ECUData ecuData, PrintWriter writer)
     {
         menuDialogs = new ArrayList<String>();
         
@@ -446,7 +446,7 @@ public class Output
         writer.println(TAB + "}\n");
     }
 
-    static void outputUserDefined(ECUData ecuData, PrintWriter writer)
+    public static void outputUserDefined(ECUData ecuData, PrintWriter writer)
     {
         // Keep track of indent of preprocessor
         int preprocessorIndent = 0;
@@ -536,7 +536,7 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    static void outputUserDefinedVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    public static void outputUserDefinedVisibilityFlags(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setUserDefinedVisibilityFlags()");
@@ -550,7 +550,7 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    static void outputMenuVisibilityFlags(ECUData ecuData, PrintWriter writer)
+    public static void outputMenuVisibilityFlags(ECUData ecuData, PrintWriter writer)
     {
         writer.println(TAB + "@Override");
         writer.println(TAB + "public void setMenuVisibilityFlags()");
@@ -564,7 +564,7 @@ public class Output
         writer.println(TAB + "}");
     }
     
-    static void outputTableEditors(ECUData ecuData, PrintWriter writer)
+    public static void outputTableEditors(ECUData ecuData, PrintWriter writer)
     {
         for (TableTracker t : ecuData.getTableDefs())
         {
@@ -591,7 +591,7 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    static void outputCurves(ECUData ecuData, PrintWriter writer)
+    public static void outputCurves(ECUData ecuData, PrintWriter writer)
     {
         for (CurveTracker c : ecuData.getCurveDefs())
         {
@@ -624,7 +624,7 @@ public class Output
         writer.println(TAB + "}");
     }
 
-    static void outputLoadConstants(ECUData ecuData, PrintWriter writer)
+    public static void outputLoadConstants(ECUData ecuData, PrintWriter writer)
     {
         int pageNo = 0;
 
@@ -746,7 +746,7 @@ public class Output
         return loadArray;
     }
 
-    static void outputLoadPage(ECUData ecuData, int pageNo, int pageOffset, int pageSize, String activate, String read, PrintWriter writer)
+    public static void outputLoadPage(ECUData ecuData, int pageNo, int pageOffset, int pageSize, String activate, String read, PrintWriter writer)
     {
         if (activate != null)
         {
@@ -760,7 +760,7 @@ public class Output
         writer.println(TAB + TAB + String.format("pageBuffer = parent.loadPage(%d,%d,%d,%s,%s);", pageNo, pageOffset, pageSize, activate, read));
     }
 
-    static void outputOverrides(ECUData ecuData, PrintWriter writer)
+    public static void outputOverrides(ECUData ecuData, PrintWriter writer)
     {        
         String pageIdentifierOutput = "";
         for (String pageIdentifier : ecuData.getPageIdentifiers())

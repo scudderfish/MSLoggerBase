@@ -11,7 +11,7 @@ public class Constant
     private String     shape;
     private String     units;
     private double     scale;
-    private double     translate;
+    private String     translate;
     private String     low;
     private String     name;
     private String[]   values;
@@ -19,7 +19,7 @@ public class Constant
     private boolean    modified;
 
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
-            double translate, double low, double high, int digits, String[] values)
+            String translate, double low, double high, int digits, String[] values)
     {
         this.page = page;
         this.name = name;
@@ -37,7 +37,25 @@ public class Constant
     }
 	
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
-            double translate, String low, String high, int digits, String[] values)
+            double translate, double low, double high, int digits, String[] values)
+    {
+        this.page = page;
+        this.name = name;
+        this.classType = classType;
+        this.type = type;
+        this.offset = offset;
+        this.shape = shape;
+        this.units = units;
+        this.scale = scale;
+        this.translate = Double.toString(translate);
+        this.low = Double.toString(low);
+        this.high = Double.toString(high);
+        this.digits = digits;
+        this.values = values;
+    }
+    
+    public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
+            String translate, String low, String high, int digits, String[] values)
     {
         this.page = page;
         this.name = name;
@@ -63,7 +81,7 @@ public class Constant
     }
     
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
-            double translate, String low, String high, int digits)
+            String translate, String low, String high, int digits)
     {
         this.page = page;
         this.name = name;
@@ -88,7 +106,7 @@ public class Constant
     }
     
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, double scale,
-            double translate, double low, double high, int digits)
+            String translate, double low, double high, int digits)
     {
         this.page = page;
         this.name = name;
@@ -149,7 +167,7 @@ public class Constant
 		return scale;
 	}
 
-	public double getTranslate()
+	public String getTranslate()
 	{
 		return translate;
 	}
@@ -187,7 +205,7 @@ public class Constant
             }
         }
       
-        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%f,%s,%s,%d,new String[] {%s})", 
+        return String.format("Constant(%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%f,%s,%s,%s,%d,new String[] {%s})", 
                 page ,
                 name,
                 classType,
