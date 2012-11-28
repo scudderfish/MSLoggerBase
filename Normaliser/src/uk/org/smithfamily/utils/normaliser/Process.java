@@ -486,8 +486,7 @@ public class Process
             ecuData.setPageActivationDelayVal(Integer.parseInt(pageActivationDelayM.group(1).trim()));
             return;
         }
-        // To allow for MS2GS27
-        line = removeCurlyBrackets(line);
+
         Matcher bitsM = Patterns.bits.matcher(line);
         Matcher constantM = Patterns.constantScalar.matcher(line);
         Matcher constantSimpleM = Patterns.constantSimple.matcher(line);
@@ -511,6 +510,22 @@ public class Process
 
             if (!ecuData.getConstants().contains(name))
             {
+                if (ExpressionWrangler.isExpresion(translate))
+                {
+                    String runtimeVarExpressionName = "msl_exp_" + name;
+                    
+                    String definition = (runtimeVarExpressionName + " = " + removeCurlyBrackets(translateText).trim() + ";");
+                    
+                    definition = "try\n" + Output.TAB + Output.TAB + "{\n" + Output.TAB + Output.TAB + Output.TAB + definition + "\n"
+                                            + Output.TAB + Output.TAB + "}\n" + Output.TAB + Output.TAB + "catch (ArithmeticException e) {\n"
+                                            + Output.TAB + Output.TAB + Output.TAB + runtimeVarExpressionName + " = 0;\n" + Output.TAB + Output.TAB + "}";
+                    
+                    ecuData.getRuntime().add(definition);
+                    ecuData.getRuntimeVars().put(runtimeVarExpressionName, "double");
+                    
+                    translate = runtimeVarExpressionName;
+                }
+                
                 Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits);
 
                 ecuData.getConstantVars().put(name, "int");
@@ -527,10 +542,10 @@ public class Process
             String units = constantArrayM.group(6);
             String scaleText = constantArrayM.group(7);
             String translateText = constantArrayM.group(8);
-            String lowText = constantArrayM.group(9);
-            String highText = constantArrayM.group(10);
+            String lowText = removeCurlyBrackets(constantArrayM.group(9));
+            String highText = removeCurlyBrackets(constantArrayM.group(10));
             String digitsText = constantArrayM.group(11);
-            highText = highText.replace("{", "").replace("}", "");
+            highText = removeCurlyBrackets(highText);
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
             String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
