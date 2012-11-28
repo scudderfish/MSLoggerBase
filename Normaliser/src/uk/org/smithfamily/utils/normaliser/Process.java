@@ -151,24 +151,34 @@ public class Process
             String scale = scalarM.group(5);
             String numOffset = scalarM.group(6);
 
-            if (Double.parseDouble(scale) != 1)
+            try
             {
+                if (Double.parseDouble(scale) != 1)
+                {
+                    ecuData.getRuntimeVars().put(name, "double");
+                }
+                else {
+                    ecuData.getRuntimeVars().put(name, "int");
+                }
+            }
+            // If we have a NumberFormatException at this point, most likely scale is an expression so assume it's a double
+            catch (NumberFormatException e)
+            {
+                // Replace curly brackets by round brackets
+                scale = "(" + removeCurlyBrackets(scale) + ")";
+                
                 ecuData.getRuntimeVars().put(name, "double");
             }
-            else
-            {
-                ecuData.getRuntimeVars().put(name, "int");
-            }
-            definition = Output
-                    .getScalar("ochBuffer", ecuData.getRuntimeVars().get(name), name, dataType, offset, scale, numOffset);
+            
+            definition = Output.getScalar("ochBuffer", ecuData.getRuntimeVars().get(name), name, dataType, offset, scale, numOffset);
             ecuData.setFingerprintSource(ecuData.getFingerprintSource() + definition);
             ecuData.getRuntime().add(definition);
             
             int offsetOC = Integer.parseInt(offset);
-            double scaleOC = !StringUtils.isEmpty(scale) ? Double.parseDouble(scale) : 0;
+            String scaleOC = StringUtils.isEmpty(scale) ? "0" : scale;
             double translateOC = !StringUtils.isEmpty(numOffset) ? Double.parseDouble(numOffset) : 0;
             
-            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC,null);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, offsetOC, units, scaleOC, translateOC, null);
             ecuData.getOutputChannels().add(outputChannel);
         }
         else if (exprM.matches())
@@ -223,7 +233,7 @@ public class Process
                 dataType = "int";
             }
             ecuData.getEvalVars().put(name, dataType);
-            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", 1, 0,null);
+            OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", "1", 0, null);
             ecuData.getOutputChannels().add(outputChannel);
             
         }
@@ -250,12 +260,12 @@ public class Process
             String preproc = processPreprocessor(ecuData, line);
             ecuData.getRuntime().add(preproc);
             
-            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", 0, 0,null);
+            OutputChannel oc = new OutputChannel(preproc, "PREPROC", 0, "", "0", 0, null);
             ecuData.getOutputChannels().add(oc);
         }
         else if (!StringUtils.isEmpty(line))
         {
-            System.out.println(line);
+            System.out.println("WARNING! Not sure what to do with this line: " + line);
         }
     }
 
@@ -522,7 +532,7 @@ public class Process
             String digitsText = constantArrayM.group(11);
             highText = highText.replace("{", "").replace("}", "");
             double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            String translate = !StringUtils.isEmpty(translateText) ? translateText : "0";
+            String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 

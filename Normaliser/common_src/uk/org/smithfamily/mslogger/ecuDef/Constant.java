@@ -167,9 +167,9 @@ public class Constant
 		return scale;
 	}
 
-	public String getTranslate()
+	public double getTranslate()
 	{
-		return translate;
+		return Double.parseDouble(translate);
 	}
 
 	public String getLow()
