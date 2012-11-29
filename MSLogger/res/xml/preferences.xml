@@ -44,6 +44,11 @@
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/app_settings">
+        <ListPreference
+            android:entries="@array/msLabels"
+            android:entryValues="@array/msValues"
+            android:key="iwd"
+            android:title="@string/interWriteDelay"/>
         <EditTextPreference
             android:defaultValue="@string/app_name"
             android:dialogTitle="@string/data_log_directory"

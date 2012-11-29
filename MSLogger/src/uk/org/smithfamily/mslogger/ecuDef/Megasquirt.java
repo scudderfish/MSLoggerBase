@@ -511,6 +511,8 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private class ECUThread extends Thread
     {
+        int interWriteDelay = 0;
+
         private class CalculationThread extends Thread
         {
             private volatile boolean running = true;
@@ -586,6 +588,8 @@ public class Megasquirt extends Service implements MSControllerInterface
             final String name = "ECUThread:" + System.currentTimeMillis();
             setName(name);
             DebugLogManager.INSTANCE.log("Creating ECUThread named " + name, Log.VERBOSE);
+
+            interWriteDelay = Integer.parseInt(ApplicationSettings.INSTANCE.getOrSetPref("iwd", "0"));
             calculationThread.start();
 
         }
@@ -615,14 +619,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                 DebugLogManager.INSTANCE.log("BEGIN connectedThread", Log.INFO);
                 initialiseConnection();
 
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (final InterruptedException e)
-                {
-                    DebugLogManager.INSTANCE.logException(e);
-                }
+                delay(500);
 
                 try
                 {
@@ -880,6 +877,10 @@ public class Megasquirt extends Service implements MSControllerInterface
          */
         private byte[] getRuntimeVars() throws IOException, CRC32Exception
         {
+            if (interWriteDelay > 0)
+            {
+                delay(interWriteDelay);
+            }
             final byte[] buffer = new byte[ecuImplementation.getBlockSize()];
             if (simulated)
             {
@@ -890,6 +891,18 @@ public class Megasquirt extends Service implements MSControllerInterface
             final int delay = ecuImplementation.getInterWriteDelay();
             ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, delay, ecuImplementation.isCRC32Protocol());
             return buffer;
+        }
+
+        private void delay(final int delay)
+        {
+            try
+            {
+                Thread.sleep(delay);
+            }
+            catch (final InterruptedException e)
+            {
+                DebugLogManager.INSTANCE.logException(e);
+            }
         }
 
         /**

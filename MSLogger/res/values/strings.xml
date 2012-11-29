@@ -47,7 +47,8 @@
     <string name="email_subject">MSLogger files %tc</string>
 	        
     <string name="about_text">An application to log information from Megasquirt ECUs.\n\nWritten By:\nDave Smith &lt;dave.g.smith@gmail.com&gt;\nSébastien Giroux</string>
-	        
+	<string name="interWriteDelay">Inter-Write Delay</string>
+    	        
     <!-- Buttons -->
     <string name="bt_ok">OK</string>
     <string name="bt_cancel">Cancel</string>
@@ -179,4 +180,6 @@
 	<string name="current_value">Current Value</string>
 	<string name="confirm">Confirm</string>
 	<string name="calibrate_tps_default_value">127</string>
+	<string name="addDashMenuItem">Add a new Dashboard</string>
+	<string name="deleteDashMenuItem">Delete Current Dashboard</string>
 </resources>
