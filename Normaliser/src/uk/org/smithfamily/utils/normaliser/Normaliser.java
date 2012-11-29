@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Normaliser
 {
-    enum Section
+    private enum Section
     {
         None, Header, Expressions, Logs, FrontPage, Constants, PcVariables, ConstantsExtensions, Menu, TableEditor, CurveEditor, ControllerCommands, UserDefined, SettingGroups
     }
@@ -262,6 +262,12 @@ public class Normaliser
 
     }
  
+    /**
+     * Write all the firmware definition to a Java class
+     * 
+     * @param className The class name to generate
+     * @throws IOException
+     */
     private static void writeFile(String className) throws IOException
     {
         className = StringUtils.capitalize(className);
@@ -307,7 +313,6 @@ public class Normaliser
         Output.outputMenuVisibilityFlags(ecuData, writer);
         Output.outputSettingGroups(ecuData,writer);
         Output.outputControllerCommands(ecuData,writer);
-        // outputGaugeDoc(writer);
 
         Output.outputOverrides(ecuData,writer);
         Output.outputLoadConstants(ecuData,writer);
@@ -318,6 +323,11 @@ public class Normaliser
         writer.close();
     }
 
+    /**
+     * Get the finger print of a class
+     * 
+     * @return The finger print as an MD5
+     */
     private static String getFingerprint()
     {
         StringBuffer b = new StringBuffer();

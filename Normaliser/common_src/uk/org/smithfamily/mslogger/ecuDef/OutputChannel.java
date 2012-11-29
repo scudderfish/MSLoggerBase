@@ -8,12 +8,12 @@ public class OutputChannel
     private String     type;
     private int        offset;
     private String     units;
-    private double     scale;
+    private String     scale;
     private double     translate;
     private DataSource source;
     private Field      field;
 
-    public OutputChannel(String name, String type, int offset, String units, double scale, double translate, DataSource source)
+    public OutputChannel(String name, String type, int offset, String units, String scale, double translate, DataSource source)
     {
         this.name = name;
         this.type = type;
@@ -36,7 +36,31 @@ public class OutputChannel
             }
         }
     }
+    
+    public OutputChannel(String name, String type, int offset, String units, double scale, double translate, DataSource source)
+    {
+        this.name = name;
+        this.type = type;
+        this.offset = offset;
+        this.units = units;
+        this.scale = Double.toString(scale);
+        this.translate = translate;
+        this.source = source;
+        if (source != null)
+        {
+            Class<?> c = source.getClass();
 
+            try
+            {
+                field = c.getDeclaredField(name);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public double getValue()
     {
         double value = 0;
@@ -77,7 +101,7 @@ public class OutputChannel
 
     public double getScale()
     {
-        return scale;
+        return Double.parseDouble(scale);
     }
 
     public double getTranslate()
@@ -92,6 +116,6 @@ public class OutputChannel
 
     public String toString()
     {
-        return String.format("OutputChannel(\"%s\",\"%s\",%d,\"%s\",%f,%f,this)", name, type, offset, units, scale, translate);
+        return String.format("OutputChannel(\"%s\",\"%s\",%d,\"%s\",%s,%f,this)", name, type, offset, units, scale, translate);
     }
 }
