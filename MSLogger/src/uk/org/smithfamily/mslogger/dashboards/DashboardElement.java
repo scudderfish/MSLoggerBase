@@ -169,7 +169,7 @@ public class DashboardElement
      */
     public boolean setPos(final PositionAndScale newImgPosAndScale)
     {
-        return setPos(newImgPosAndScale.getXOff(), newImgPosAndScale.getYOff(), newImgPosAndScale.getScale(), newImgPosAndScale.getScale(), newImgPosAndScale.getAngle());
+        return setPos(newImgPosAndScale.getXOff(), newImgPosAndScale.getYOff(), newImgPosAndScale.getScale(), newImgPosAndScale.getScaleX(), newImgPosAndScale.getScaleY(), newImgPosAndScale.getAngle());
     }
 
     /**
@@ -182,11 +182,16 @@ public class DashboardElement
      * @param angle
      * @return
      */
-    private boolean setPos(float centreX, float centreY, final float scaleX, final float scaleY, final float angle)
+    private boolean setPos(float centreX, float centreY, final float scale, float scaleX, float scaleY, final float angle)
     {
         Location l = indicator.getLocation();
         final float width = originalWidth;
         final float height = originalHeight;
+        if (painter.isIsotropic())
+        {
+            scaleX = scale;
+            scaleY = scale;
+        }
         float ws = (width / 2) * scaleX;
         float hs = (height / 2) * scaleY;
 

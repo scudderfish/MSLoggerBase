@@ -67,7 +67,8 @@ public class NumericIndicator extends Painter
     {
         backgroundPaint.setColor(getBgColour());
 
-        canvas.drawRect(0.05f, 0.30f, 0.9f, 0.72f, backgroundPaint);
+        // canvas.drawRect(0.05f, 0.30f, 0.9f, 0.72f, backgroundPaint);
+        canvas.drawRect(0.0f, 0.0f, 1.0f, 1.0f, backgroundPaint);
     }
 
     /**
@@ -153,7 +154,7 @@ public class NumericIndicator extends Painter
         {
             c = Color.GRAY;
         }
-        
+        c = Color.RED;
         return c;
     }
 
@@ -171,12 +172,11 @@ public class NumericIndicator extends Painter
             return;
         }
 
-        drawBackground(canvas);
-
-        final float scale = Math.min(height, width);
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save(Canvas.ALL_SAVE_FLAG);
         canvas.translate(left, top);
-        canvas.scale(scale, scale);
+        canvas.scale(width, height);
+
+        drawBackground(canvas);
 
         if (model.isDisabled())
         {
@@ -196,7 +196,7 @@ public class NumericIndicator extends Painter
     {
         return DisplayType.NUMERIC;
     }
-    
+
     @Override
     public boolean isIsotropic()
     {
