@@ -1,34 +1,32 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface MSECUInterface
 {
-    Map<String,Constant> constants = new HashMap<String,Constant>();
+    Map<String, Constant> constants = new HashMap<String, Constant>();
 
-    Map<String,TableEditor> tableEditors = new HashMap<String,TableEditor>();
-    
-    Map<String,CurveEditor> curveEditors = new HashMap<String,CurveEditor>();
-    
-    Map<String,List<Menu>> menus = new HashMap<String,List<Menu>>();
-    
-    Map<String,MSDialog> dialogs = new HashMap<String,MSDialog>();
-    
-    Map<String,Boolean> userDefinedVisibilityFlags = new HashMap<String,Boolean>();
-    
-    Map<String,Boolean> menuVisibilityFlags = new HashMap<String,Boolean>();
-    
-    Map<String,OutputChannel> outputChannels = new HashMap<String,OutputChannel>();
-    
+    Map<String, TableEditor> tableEditors = new HashMap<String, TableEditor>();
+
+    Map<String, CurveEditor> curveEditors = new HashMap<String, CurveEditor>();
+
+    Map<String, List<Menu>> menus = new HashMap<String, List<Menu>>();
+
+    Map<String, MSDialog> dialogs = new HashMap<String, MSDialog>();
+
+    Map<String, Boolean> userDefinedVisibilityFlags = new HashMap<String, Boolean>();
+
+    Map<String, Boolean> menuVisibilityFlags = new HashMap<String, Boolean>();
+
+    Map<String, OutputChannel> outputChannels = new HashMap<String, OutputChannel>();
+
     List<SettingGroup> settingGroups = new ArrayList<SettingGroup>();
-    
-    Map<String,String> controllerCommands = new HashMap<String,String>();
+
+    Map<String, String> controllerCommands = new HashMap<String, String>();
 
     void setFlags();
+
     public abstract String getSignature();
 
     public abstract byte[] getOchCommand();
@@ -48,13 +46,13 @@ public interface MSECUInterface
     public abstract int getSigSize();
 
     public abstract int getPageActivationDelay();
-    
+
     public abstract List<String> getPageIdentifiers();
-    
+
     public abstract List<byte[]> getPageActivates();
-    
+
     public abstract List<String> getPageValueWrites();
-    
+
     public abstract List<String> getPageChunkWrites();
 
     public abstract int getInterWriteDelay();
@@ -66,27 +64,31 @@ public interface MSECUInterface
     public abstract boolean isCRC32Protocol();
 
     public abstract void createTableEditors();
-    
+
     public abstract void createCurveEditors();
-    
+
     public abstract void createMenus();
-    
+
     public abstract void createDialogs();
-    
+
     public abstract void setUserDefinedVisibilityFlags();
-    
+
     public abstract void setMenuVisibilityFlags();
-    
+
     public abstract String[] getControlFlags();
 
     public abstract void createSettingGroups();
-    
+
     public abstract List<SettingGroup> getSettingGroups();
-    
+
     public abstract List<String> getRequiresPowerCycle();
-    
+
     public abstract void createControllerCommands();
-    
+
     public abstract Map<String, String> getControllerCommands();
-    
+
+    public abstract void initGauges();
+
+    public abstract String[] defaultGauges();
+
 }

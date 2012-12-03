@@ -1,15 +1,8 @@
 package uk.org.smithfamily.utils.normaliser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import uk.org.smithfamily.mslogger.ecuDef.Constant;
-import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
-import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
+import uk.org.smithfamily.mslogger.ecuDef.*;
 import uk.org.smithfamily.utils.normaliser.controllercommand.ControllerCommand;
 import uk.org.smithfamily.utils.normaliser.curveeditor.CurveTracker;
 import uk.org.smithfamily.utils.normaliser.menu.MenuTracker;
@@ -21,6 +14,7 @@ public class ECUData
     private List<String> runtime = new ArrayList<String>();
     private List<String> logHeader = new ArrayList<String>();
     private List<String> logRecord = new ArrayList<String>();
+    private List<String> gaugeDef = new ArrayList<String>();
     private List<TableTracker> tableDefs = new ArrayList<TableTracker>();
     private List<CurveTracker> curveDefs = new ArrayList<CurveTracker>();
     private List<MenuTracker> menuDefs = new ArrayList<MenuTracker>();
@@ -61,7 +55,7 @@ public class ECUData
         return runtime;
     }
 
-    public void setRuntime(List<String> runtime)
+    public void setRuntime(final List<String> runtime)
     {
         this.runtime = runtime;
     }
@@ -71,7 +65,7 @@ public class ECUData
         return logHeader;
     }
 
-    public void setLogHeader(List<String> logHeader)
+    public void setLogHeader(final List<String> logHeader)
     {
         this.logHeader = logHeader;
     }
@@ -81,9 +75,19 @@ public class ECUData
         return logRecord;
     }
 
-    public void setLogRecord(List<String> logRecord)
+    public void setLogRecord(final List<String> logRecord)
     {
         this.logRecord = logRecord;
+    }
+
+    public List<String> getGaugeDef()
+    {
+        return gaugeDef;
+    }
+
+    public void setGaugeDef(final List<String> gaugeDef)
+    {
+        this.gaugeDef = gaugeDef;
     }
 
     public void reset()
@@ -102,6 +106,7 @@ public class ECUData
         outputChannels = new ArrayList<OutputChannel>();
         controllerCommands = new ArrayList<ControllerCommand>();
         flags = new HashSet<String>();
+        gaugeDef = new ArrayList<String>();
         gaugeDoc = new ArrayList<String>();
         defaultGauges = new ArrayList<String>();
         pageActivateCommands = new ArrayList<String>();
@@ -112,7 +117,7 @@ public class ECUData
         curveDefs = new ArrayList<CurveTracker>();
         menuDefs = new ArrayList<MenuTracker>();
         dialogDefs = new ArrayList<UserDefinedTracker>();
-        settingGroups = new  ArrayList<SettingGroup>();
+        settingGroups = new ArrayList<SettingGroup>();
         fingerprintSource = "";
         currentPage = 0;
         isCRC32Protocol = false;
@@ -127,7 +132,7 @@ public class ECUData
         return runtimeVars;
     }
 
-    public void setRuntimeVars(Map<String, String> runtimeVars)
+    public void setRuntimeVars(final Map<String, String> runtimeVars)
     {
         this.runtimeVars = runtimeVars;
     }
@@ -137,7 +142,7 @@ public class ECUData
         return evalVars;
     }
 
-    public void setEvalVars(Map<String, String> evalVars)
+    public void setEvalVars(final Map<String, String> evalVars)
     {
         this.evalVars = evalVars;
     }
@@ -147,7 +152,7 @@ public class ECUData
         return constantVars;
     }
 
-    public void setConstantVars(Map<String, String> constantVars)
+    public void setConstantVars(final Map<String, String> constantVars)
     {
         this.constantVars = constantVars;
     }
@@ -157,17 +162,17 @@ public class ECUData
         return defaults;
     }
 
-    public void setDefaults(List<String> defaults)
+    public void setDefaults(final List<String> defaults)
     {
         this.defaults = defaults;
     }
-    
+
     public List<String> getRequiresPowerCycle()
     {
         return requiresPowerCycle;
     }
-    
-    public void setRequiresPowerCycle(List<String> requiresPowerCycle)
+
+    public void setRequiresPowerCycle(final List<String> requiresPowerCycle)
     {
         this.requiresPowerCycle = requiresPowerCycle;
     }
@@ -177,7 +182,7 @@ public class ECUData
         return flags;
     }
 
-    public void setFlags(Set<String> flags)
+    public void setFlags(final Set<String> flags)
     {
         this.flags = flags;
     }
@@ -187,7 +192,7 @@ public class ECUData
         return fingerprintSource;
     }
 
-    public void setFingerprintSource(String fingerprintSource)
+    public void setFingerprintSource(final String fingerprintSource)
     {
         this.fingerprintSource = fingerprintSource;
     }
@@ -197,7 +202,7 @@ public class ECUData
         return gaugeDoc;
     }
 
-    public void setGaugeDoc(ArrayList<String> gaugeDoc)
+    public void setGaugeDoc(final ArrayList<String> gaugeDoc)
     {
         this.gaugeDoc = gaugeDoc;
     }
@@ -206,28 +211,28 @@ public class ECUData
     {
         return constants;
     }
-    
-    public void setConstants(ArrayList<Constant> constants)
+
+    public void setConstants(final ArrayList<Constant> constants)
     {
         this.constants = constants;
     }
-    
+
     public ArrayList<OutputChannel> getOutputChannels()
     {
         return outputChannels;
     }
-    
-    public void setOutputChannels(ArrayList<OutputChannel> outputChannels)
+
+    public void setOutputChannels(final ArrayList<OutputChannel> outputChannels)
     {
         this.outputChannels = outputChannels;
     }
-    
+
     public ArrayList<ControllerCommand> getControllerCommands()
     {
         return controllerCommands;
     }
-    
-    public void setControllerCommands(ArrayList<ControllerCommand> controllerCommands)
+
+    public void setControllerCommands(final ArrayList<ControllerCommand> controllerCommands)
     {
         this.controllerCommands = controllerCommands;
     }
@@ -237,7 +242,7 @@ public class ECUData
         return pageSizes;
     }
 
-    public void setPageSizes(ArrayList<String> pageSizes)
+    public void setPageSizes(final ArrayList<String> pageSizes)
     {
         this.pageSizes = pageSizes;
     }
@@ -247,7 +252,7 @@ public class ECUData
         return pageIdentifiers;
     }
 
-    public void setPageIdentifiers(ArrayList<String> pageIdentifiers)
+    public void setPageIdentifiers(final ArrayList<String> pageIdentifiers)
     {
         this.pageIdentifiers = pageIdentifiers;
     }
@@ -257,7 +262,7 @@ public class ECUData
         return pageActivateCommands;
     }
 
-    public void setPageActivateCommands(ArrayList<String> pageActivateCommands)
+    public void setPageActivateCommands(final ArrayList<String> pageActivateCommands)
     {
         this.pageActivateCommands = pageActivateCommands;
     }
@@ -267,7 +272,7 @@ public class ECUData
         return pageReadCommands;
     }
 
-    public void setPageReadCommands(ArrayList<String> pageReadCommands)
+    public void setPageReadCommands(final ArrayList<String> pageReadCommands)
     {
         this.pageReadCommands = pageReadCommands;
     }
@@ -277,27 +282,27 @@ public class ECUData
         return pageValueWrites;
     }
 
-    public void setPageValueWrites(List<String> pageValueWrites)
+    public void setPageValueWrites(final List<String> pageValueWrites)
     {
         this.pageValueWrites = pageValueWrites;
     }
-    
+
     public List<String> getPageChunkWrites()
     {
         return pageChunkWrites;
     }
 
-    public void setPageChunkWrites(List<String> pageChunkWrites)
+    public void setPageChunkWrites(final List<String> pageChunkWrites)
     {
         this.pageChunkWrites = pageChunkWrites;
     }
-    
+
     public String getSignatureDeclaration()
     {
         return signatureDeclaration;
     }
 
-    public void setSignatureDeclaration(String signatureDeclaration)
+    public void setSignatureDeclaration(final String signatureDeclaration)
     {
         this.signatureDeclaration = signatureDeclaration;
     }
@@ -307,7 +312,7 @@ public class ECUData
         return queryCommandStr;
     }
 
-    public void setQueryCommandStr(String queryCommandStr)
+    public void setQueryCommandStr(final String queryCommandStr)
     {
         this.queryCommandStr = queryCommandStr;
     }
@@ -317,7 +322,7 @@ public class ECUData
         return ochGetCommandStr;
     }
 
-    public void setOchGetCommandStr(String ochGetCommandStr)
+    public void setOchGetCommandStr(final String ochGetCommandStr)
     {
         this.ochGetCommandStr = ochGetCommandStr;
     }
@@ -327,7 +332,7 @@ public class ECUData
         return ochBlockSizeStr;
     }
 
-    public void setOchBlockSizeStr(String ochBlockSizeStr)
+    public void setOchBlockSizeStr(final String ochBlockSizeStr)
     {
         this.ochBlockSizeStr = ochBlockSizeStr;
     }
@@ -337,7 +342,7 @@ public class ECUData
         return defaultGauges;
     }
 
-    public void setDefaultGauges(ArrayList<String> defaultGauges)
+    public void setDefaultGauges(final ArrayList<String> defaultGauges)
     {
         this.defaultGauges = defaultGauges;
     }
@@ -347,7 +352,7 @@ public class ECUData
         return isCRC32Protocol;
     }
 
-    public void setCRC32Protocol(boolean isCRC32Protocol)
+    public void setCRC32Protocol(final boolean isCRC32Protocol)
     {
         this.isCRC32Protocol = isCRC32Protocol;
     }
@@ -357,7 +362,7 @@ public class ECUData
         return currentPage;
     }
 
-    public void setCurrentPage(int currentPage)
+    public void setCurrentPage(final int currentPage)
     {
         this.currentPage = currentPage;
     }
@@ -367,7 +372,7 @@ public class ECUData
         return interWriteDelay;
     }
 
-    public void setInterWriteDelay(int interWriteDelay)
+    public void setInterWriteDelay(final int interWriteDelay)
     {
         this.interWriteDelay = interWriteDelay;
     }
@@ -377,7 +382,7 @@ public class ECUData
         return pageActivationDelayVal;
     }
 
-    public void setPageActivationDelayVal(int pageActivationDelayVal)
+    public void setPageActivationDelayVal(final int pageActivationDelayVal)
     {
         this.pageActivationDelayVal = pageActivationDelayVal;
     }
@@ -387,7 +392,7 @@ public class ECUData
         return classSignature;
     }
 
-    public void setClassSignature(String classSignature)
+    public void setClassSignature(final String classSignature)
     {
         this.classSignature = classSignature;
     }
@@ -397,7 +402,7 @@ public class ECUData
         return tableDefs;
     }
 
-    public void setTableDefs(List<TableTracker> tableDefs)
+    public void setTableDefs(final List<TableTracker> tableDefs)
     {
         this.tableDefs = tableDefs;
     }
@@ -407,7 +412,7 @@ public class ECUData
         return curveDefs;
     }
 
-    public void setCurveDefs(List<CurveTracker> curveDefs)
+    public void setCurveDefs(final List<CurveTracker> curveDefs)
     {
         this.curveDefs = curveDefs;
     }
@@ -417,7 +422,7 @@ public class ECUData
         return menuDefs;
     }
 
-    public void setMenuDefs(List<MenuTracker> menuDefs)
+    public void setMenuDefs(final List<MenuTracker> menuDefs)
     {
         this.menuDefs = menuDefs;
     }
@@ -427,7 +432,7 @@ public class ECUData
         return dialogDefs;
     }
 
-    public void setDialogDefs(List<UserDefinedTracker> dialogDefs)
+    public void setDialogDefs(final List<UserDefinedTracker> dialogDefs)
     {
         this.dialogDefs = dialogDefs;
     }
@@ -436,7 +441,7 @@ public class ECUData
     {
         return fieldControlExpressions;
     }
-    
+
     public Map<String, String> getMenuControlExpressions()
     {
         return menuControlExpressions;
