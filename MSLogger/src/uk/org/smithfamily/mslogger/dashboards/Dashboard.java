@@ -19,7 +19,7 @@ public class Dashboard
      * @param i The indicator to add
      * @param landscape true = landspace, false = portrait
      */
-    public void add(Indicator i, boolean landscape)
+    public void add(final Indicator i, final boolean landscape)
     {
         if (landscape)
         {
@@ -30,15 +30,15 @@ public class Dashboard
             getPortrait().add(i);
         }
     }
-    
+
     /**
      * Remove an indicator from the dashboard
      * 
      * @param i The indicator to remove
      * @param landscape = true = landscape, false = portrait
      */
-    
-    public void remove(Indicator i, boolean landscape)
+
+    public void remove(final Indicator i, final boolean landscape)
     {
         if (landscape)
         {
@@ -56,7 +56,7 @@ public class Dashboard
      * @param landscape true = landspace, false = portrait
      * @return The list of Indicators of the Dashboard
      */
-    public List<Indicator> getIndicators(boolean landscape)
+    public List<Indicator> getIndicators(final boolean landscape)
     {
         if (landscape)
         {
@@ -90,18 +90,13 @@ public class Dashboard
         }
     }
 
-    /** 
+    /**
      * @return The list of indicators for the landscape dashboard
      */
     public List<Indicator> getLandscape()
     {
         if (landscapeDash != null)
         {
-            return landscapeDash;
-        }
-        if (portraitDash != null)
-        {
-            landscapeDash = copyOf(portraitDash);
             return landscapeDash;
         }
         else
@@ -117,10 +112,10 @@ public class Dashboard
      * @param source The list of indicators to copy
      * @return The copied list of indicators
      */
-    private List<Indicator> copyOf(List<Indicator> source)
+    private List<Indicator> copyOf(final List<Indicator> source)
     {
-        List<Indicator> dest = new ArrayList<Indicator>();
-        for (Indicator i : source)
+        final List<Indicator> dest = new ArrayList<Indicator>();
+        for (final Indicator i : source)
         {
             dest.add(i.copy());
         }
