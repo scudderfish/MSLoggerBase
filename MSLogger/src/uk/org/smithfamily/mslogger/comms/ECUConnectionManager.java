@@ -1,7 +1,8 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.util.Log;
@@ -11,9 +12,11 @@ import android.util.Log;
  */
 public class ECUConnectionManager extends ConnectionManager
 {
+
     // Private constructor prevents instantiation from other classes
     private ECUConnectionManager()
     {
+
     }
 
     /**
@@ -135,16 +138,17 @@ public class ECUConnectionManager extends ConnectionManager
      */
     public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception
     {
-        final TimerTask reaper = new Reaper(this);
+        final Reaper reaper = new Reaper(this);
         t.schedule(reaper, IO_TIMEOUT);
         final boolean logit = DebugLogManager.checkLogLevel(Log.VERBOSE);
         int target = bytes.length;
+        byte[] buffer = bytes;
         if (isCRC32)
         {
             target += CRC32ProtocolHandler.getValidationLength();
+            buffer = new byte[target];
         }
 
-        final byte[] buffer = new byte[target];
         int read = 0;
         try
         {
@@ -165,8 +169,10 @@ public class ECUConnectionManager extends ConnectionManager
 
                     }
                 }
+                reaper.cancel();
+                t.purge();
             }
-            reaper.cancel();
+
             if (logit)
             {
                 DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.VERBOSE);
@@ -180,10 +186,6 @@ public class ECUConnectionManager extends ConnectionManager
 
                 final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
                 System.arraycopy(actual, 0, bytes, 0, bytes.length);
-            }
-            else
-            {
-                System.arraycopy(buffer, 0, bytes, 0, bytes.length);
             }
         }
         catch (final IOException e)
