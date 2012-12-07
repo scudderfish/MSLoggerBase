@@ -6,7 +6,6 @@ import java.util.*;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
 import android.os.*;
-import android.os.Process;
 import android.util.Log;
 
 /**
@@ -27,7 +26,6 @@ abstract class ConnectionManager
         public void run()
         {
             parent.timerTriggered = true;
-            Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT);
             parent.tearDown();
         }
 
