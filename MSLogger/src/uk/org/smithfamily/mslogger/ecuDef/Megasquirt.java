@@ -303,6 +303,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             setState(State.DISCONNECTED);
             ecuThread = new ECUThread();
+            ecuThread.setPriority(Thread.MAX_PRIORITY);
             ecuThread.start();
         }
     }
@@ -888,7 +889,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                 return buffer;
             }
 
-            final int delay = ecuImplementation.getInterWriteDelay();
+            final int delay = interWriteDelay == 0 ? ecuImplementation.getInterWriteDelay() : interWriteDelay;
             ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, delay, ecuImplementation.isCRC32Protocol());
             return buffer;
         }
