@@ -1508,7 +1508,12 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     public boolean getMenuVisibilityFlagsByName(final String name)
     {
-        return MSECUInterface.menuVisibilityFlags.get(name);
+        if (MSECUInterface.menuVisibilityFlags.containsKey(name))
+        {
+            return MSECUInterface.menuVisibilityFlags.get(name);
+        }
+        
+        return true;
     }
 
     /**

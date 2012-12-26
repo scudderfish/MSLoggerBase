@@ -687,17 +687,14 @@ public class Process
             m.addItem(currentMenuDialog, x);
 
             // Add the expression too
-            if ((expression == null) || StringUtils.isEmpty(expression))
+            if (expression != null && !StringUtils.isEmpty(expression))
             {
-                expression = "true";
-            }
-            else
-            {
+                expression = expression.trim();
                 expression = removeCurlyBrackets(expression);
                 expression = ExpressionWrangler.convertExpr(expression);
+                
+                ecuData.getMenuControlExpressions().put(name, expression);
             }
-
-            ecuData.getMenuControlExpressions().put(name, expression);
         }
         else
         {
@@ -986,17 +983,14 @@ public class Process
             String expression = dialogPanel.group(5);
             final String visibilityFlag = d.getName() + "_" + name;
 
-            if ((expression == null) || StringUtils.isEmpty(expression))
-            {
-                expression = "true";
-            }
-            else
+            if (expression != null && !StringUtils.isEmpty(expression))
             {
                 expression = expression.trim();
                 expression = removeCurlyBrackets(expression);
                 expression = ExpressionWrangler.convertExpr(expression);
+                
+                ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
             }
-            ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
 
             final UserDefinedPanel x = new UserDefinedPanel(name, orientation);
             d.addItem(x);
@@ -1037,18 +1031,15 @@ public class Process
             @SuppressWarnings("unused")
             final int x = 1;
         }
-        if ((expression == null) || StringUtils.isEmpty(expression))
-        {
-            expression = "true";
-        }
-        else
+        if (expression != null && !StringUtils.isEmpty(expression))
         {
             expression = expression.trim();
             expression = removeCurlyBrackets(expression);
             expression = ExpressionWrangler.convertExpr(expression);
+        
+            ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
         }
-        ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
-
+        
         String commandOnClose = "";
         if (isCommandButton && (dialogField.group(7) != null))
         {
