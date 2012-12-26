@@ -473,14 +473,14 @@ public class Process
             final String lowText = constantM.group(8);
             final String highText = constantM.group(9);
             final String digitsText = constantM.group(10);
-            final double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
+            final String scale = StringUtils.isEmpty(scaleText) ? "0" : scaleText;
             String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             final int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
             if (!ecuData.getConstants().contains(name))
             {
-                if (ExpressionWrangler.isExpresion(translate))
+                if (ExpressionWrangler.isExpression(translate))
                 {
                     final String runtimeVarExpressionName = "msl_exp_" + name;
 
@@ -509,20 +509,28 @@ public class Process
             final int offset = Integer.parseInt(constantArrayM.group(4).trim());
             final String shape = constantArrayM.group(5);
             final String units = constantArrayM.group(6);
-            final String scaleText = constantArrayM.group(7);
-            final String translateText = constantArrayM.group(8);
-            final String lowText = removeCurlyBrackets(constantArrayM.group(9));
-            String highText = removeCurlyBrackets(constantArrayM.group(10));
+            String scaleText = StringUtils.isEmpty(constantArrayM.group(7)) ? "0" : removeCurlyBrackets(constantArrayM.group(7));
+            String translateText = StringUtils.isEmpty(constantArrayM.group(8)) ? "0" : removeCurlyBrackets(constantArrayM.group(8));
+            String lowText = constantArrayM.group(9);
+            String highText = constantArrayM.group(10);
             final String digitsText = constantArrayM.group(11);
             highText = removeCurlyBrackets(highText);
-            final double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            final String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             final int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
-
+            
+            if (ExpressionWrangler.isExpression(lowText))
+            {
+                lowText = ExpressionWrangler.convertExpr(removeCurlyBrackets(lowText));
+            }
+            
+            if (ExpressionWrangler.isExpression(highText))
+            {
+                highText = ExpressionWrangler.convertExpr(removeCurlyBrackets(highText));
+            }
+            
             if (!ecuData.getConstants().contains(name))
             {
-                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scale, translate, lowText, highText, digits);
+                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scaleText, translateText, lowText, highText, digits);
                 if (shape.contains("x"))
                 {
                     ecuData.getConstantVars().put(name, "int[][]");
@@ -541,7 +549,7 @@ public class Process
             final String type = constantSimpleM.group(3);
             final int offset = Integer.parseInt(constantSimpleM.group(4).trim());
             final String units = constantSimpleM.group(5);
-            final double scale = Double.parseDouble(constantSimpleM.group(6));
+            final String scale = constantSimpleM.group(6);
             final String translate = constantSimpleM.group(7);
 
             final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0);
@@ -563,7 +571,7 @@ public class Process
                 bitsValues = Patterns.bitsValues.split(strBitsValues);
             }
 
-            final Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", 1, "0", "0", "0", 0, bitsValues);
+            final Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", "1", "0", "0", "0", 0, bitsValues);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
 
@@ -571,7 +579,7 @@ public class Process
         else if (line.startsWith("#"))
         {
             final String preproc = (processPreprocessor(ecuData, line));
-            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, "0", "0", "0", 0);
+            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", "0", "0", "0", "0", 0);
             ecuData.getConstants().add(c);
         }
     }
@@ -936,6 +944,7 @@ public class Process
             }
             else
             {
+                expression = expression.trim();
                 expression = removeCurlyBrackets(expression);
                 expression = ExpressionWrangler.convertExpr(expression);
             }
@@ -986,6 +995,7 @@ public class Process
         }
         else
         {
+            expression = expression.trim();
             expression = removeCurlyBrackets(expression);
             expression = ExpressionWrangler.convertExpr(expression);
         }

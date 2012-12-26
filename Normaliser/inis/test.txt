@@ -5,3 +5,4 @@ msns-extra.29y.ini
 #MS2Extra Serial323.ini
 #MS2Extra SerialGS28.ini
 MS3 Format 0256.000.ini
+MS3 Format 0262.00 .ini
