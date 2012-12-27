@@ -114,47 +114,6 @@ public class Constant
      * @param digits
      */
     public Constant(int page, String name, String classType, String type, int offset, String shape, String units, String scale,
-            String translate, String low, String high, int digits)
-    {
-        this.page = page;
-        this.name = name;
-        this.classType = classType;
-        this.type = type;
-        this.offset = offset;
-        this.shape = shape;
-        this.units = units;
-        this.scale = scale;
-        this.translate = translate;
-        if (low == null || low.trim().equals(""))
-        {
-        	low = "0";
-        }
-        this.low = low;
-        if (high == null || high.trim().equals(""))
-        {
-            high="0";
-        }
-        this.high = high;
-        this.digits = digits;
-    }
-    
-    /**
-     * Used for adding Constant instance to ECUData
-     * 
-     * @param page
-     * @param name
-     * @param classType
-     * @param type
-     * @param offset
-     * @param shape
-     * @param units
-     * @param scale
-     * @param translate
-     * @param low
-     * @param high
-     * @param digits
-     */
-    public Constant(int page, String name, String classType, String type, int offset, String shape, String units, String scale,
             String translate, double low, double high, int digits)
     {
         this.page = page;

@@ -518,7 +518,7 @@ public class Process
                     translate = runtimeVarExpressionName;
                 }
 
-                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits);
+                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits, new String[]{});
 
                 ecuData.getConstantVars().put(name, "int");
                 ecuData.getConstants().add(c);
@@ -578,7 +578,7 @@ public class Process
             
             if (!ecuData.getConstants().contains(name))
             {
-                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scaleText, translateText, lowText, highText, digits);
+                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scaleText, translateText, lowText, highText, digits, new String[]{});
                 if (shape.contains("x"))
                 {
                     ecuData.getConstantVars().put(name, "int[][]");
@@ -600,7 +600,7 @@ public class Process
             final String scale = constantSimpleM.group(6);
             final String translate = constantSimpleM.group(7);
 
-            final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0);
+            final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0, new String[]{});
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
         }
@@ -627,7 +627,7 @@ public class Process
         else if (line.startsWith("#"))
         {
             final String preproc = (processPreprocessor(ecuData, line));
-            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", "0", "0", "0", "0", 0);
+            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", "0", "0", "0", "0", 0, new String[]{});
             ecuData.getConstants().add(c);
         }
     }
