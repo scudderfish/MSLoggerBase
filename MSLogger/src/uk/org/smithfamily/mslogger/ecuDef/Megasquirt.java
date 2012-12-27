@@ -1710,7 +1710,18 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     public double getField(final String channelName)
     {
-        return DataManager.getInstance().getField(channelName);
+        double value = 0;
+        Class<?> c = ecuImplementation.getClass();
+        try
+        {
+            Field f = c.getDeclaredField(channelName);
+            value = f.getDouble(ecuImplementation);
+        }
+        catch (Exception e)
+        {
+            DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
+        }
+        return value;
     }
 
     private void setImplementation(final String signature)
