@@ -80,7 +80,7 @@ public class Process
         return result;
     }
 
-    static void processExpr(final ECUData ecuData, String line)
+    public static void processExpr(final ECUData ecuData, String line)
     {
         String definition = null;
         line = removeComments(line);
@@ -178,31 +178,9 @@ public class Process
                 }
                 // System.out.println("AFTER  : " + expression + "\n");
             }
-            if (expression.contains("*") && expression.contains("=="))
-            {
-                expression = convertC2JavaBoolean(expression);
-            }
-            definition = name + " = (" + expression + ");";
 
-            // If the expression contains a division, wrap it in a try/catch to
-            // avoid division by zero
-            if (expression.contains("/"))
-            {
-                definition = "try\n" + Output.TAB + Output.TAB + "{\n" + Output.TAB + Output.TAB + Output.TAB + definition + "\n" + Output.TAB + Output.TAB + "}\n" + Output.TAB + Output.TAB + "catch (ArithmeticException e) {\n" + Output.TAB
-                        + Output.TAB + Output.TAB + name + " = 0;\n" + Output.TAB + Output.TAB + "}";
-            }
+            String dataType = addRuntimeExpression(ecuData, name, expression);
 
-            ecuData.getRuntime().add(definition);
-            String dataType;
-            if (isFloatingExpression(ecuData, expression))
-            {
-                dataType = "double";
-            }
-            else
-            {
-                dataType = "int";
-            }
-            ecuData.getEvalVars().put(name, dataType);
             final OutputChannel outputChannel = new OutputChannel(name, dataType, -1, "", "1", 0, null);
             ecuData.getOutputChannels().add(outputChannel);
 
@@ -239,6 +217,51 @@ public class Process
         }
     }
 
+    /**
+     * @param ecuData
+     * @param name The name of the expression to create
+     * @param expression The expression itself
+     * 
+     * @return The data type of the created runtime expression
+     */
+    private static String addRuntimeExpression(final ECUData ecuData, String name, String expression)
+    {
+        if (expression.contains("*") && expression.contains("=="))
+        {
+            expression = convertC2JavaBoolean(expression);
+        }
+        
+        String definition = name + " = (" + expression + ");";
+
+        // If the expression contains a division, wrap it in a try/catch to
+        // avoid division by zero
+        if (expression.contains("/"))
+        {
+            definition = "try\n" +
+                            Output.TAB + Output.TAB + "{\n" +
+                            Output.TAB + Output.TAB + Output.TAB + definition + "\n" +
+                            Output.TAB + Output.TAB + "}\n" +
+                            Output.TAB + Output.TAB + "catch (ArithmeticException e) {\n" +
+                            Output.TAB + Output.TAB + Output.TAB + name + " = 0;\n" +
+                            Output.TAB + Output.TAB + "}";
+        }
+
+        ecuData.getRuntime().add(definition);
+        
+        String dataType;
+        if (isFloatingExpression(ecuData, expression))
+        {
+            dataType = "double";
+        }
+        else
+        {
+            dataType = "int";
+        }
+        ecuData.getEvalVars().put(name, dataType);
+        
+        return dataType;
+    }
+    
     /**
      * Occasionally we get a collision between the name of a constant and an expression. Test for that here.
      * 
@@ -473,14 +496,14 @@ public class Process
             final String lowText = constantM.group(8);
             final String highText = constantM.group(9);
             final String digitsText = constantM.group(10);
-            final double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
+            final String scale = StringUtils.isEmpty(scaleText) ? "0" : scaleText;
             String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             final int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
 
             if (!ecuData.getConstants().contains(name))
             {
-                if (ExpressionWrangler.isExpresion(translate))
+                if (ExpressionWrangler.isExpression(translate))
                 {
                     final String runtimeVarExpressionName = "msl_exp_" + name;
 
@@ -495,7 +518,7 @@ public class Process
                     translate = runtimeVarExpressionName;
                 }
 
-                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits);
+                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, lowText, highText, digits, new String[]{});
 
                 ecuData.getConstantVars().put(name, "int");
                 ecuData.getConstants().add(c);
@@ -509,20 +532,53 @@ public class Process
             final int offset = Integer.parseInt(constantArrayM.group(4).trim());
             final String shape = constantArrayM.group(5);
             final String units = constantArrayM.group(6);
-            final String scaleText = constantArrayM.group(7);
-            final String translateText = constantArrayM.group(8);
-            final String lowText = removeCurlyBrackets(constantArrayM.group(9));
-            String highText = removeCurlyBrackets(constantArrayM.group(10));
+            String scaleText = StringUtils.isEmpty(constantArrayM.group(7)) ? "0" : constantArrayM.group(7);
+            String translateText = StringUtils.isEmpty(constantArrayM.group(8)) ? "0" : constantArrayM.group(8);
+            String lowText = constantArrayM.group(9);
+            String highText = constantArrayM.group(10);
             final String digitsText = constantArrayM.group(11);
             highText = removeCurlyBrackets(highText);
-            final double scale = !StringUtils.isEmpty(scaleText) ? Double.parseDouble(scaleText) : 0;
-            final String translate = StringUtils.isEmpty(translateText) ? "0" : translateText;
 
             final int digits = !StringUtils.isEmpty(digitsText) ? (int) Double.parseDouble(digitsText) : 0;
-
+            
+            if (ExpressionWrangler.isExpression(scaleText))
+            {
+                // scale is an expression, add it to runtime expression
+                scaleText = removeCurlyBrackets(scaleText);
+                addRuntimeExpression(ecuData, "MSLoggerExp" + name, scaleText);
+                
+                scaleText = "MSLoggerExp" + name;
+            }
+            
+            if (ExpressionWrangler.isExpression(translateText))
+            {
+                // scale is an expression, add it to runtime expression
+                translateText = removeCurlyBrackets(translateText);
+                addRuntimeExpression(ecuData, "MSLoggerExp" + name, translateText);
+                
+                translateText = "MSLoggerExp" + name;
+            }
+            
+            if (ExpressionWrangler.isExpression(lowText))
+            {
+                // low is an expression, add it to runtime expression
+                lowText = ExpressionWrangler.convertExpr(removeCurlyBrackets(lowText));
+                addRuntimeExpression(ecuData, "MSLoggerExp" + name, lowText);
+                
+                lowText = "MSLoggerExp" + name;
+            }
+            
+            if (ExpressionWrangler.isExpression(highText))
+            {
+                highText = ExpressionWrangler.convertExpr(removeCurlyBrackets(highText));
+                addRuntimeExpression(ecuData, "MSLoggerExp" + name, highText);
+                
+                highText = "MSLoggerExp" + name;
+            }
+            
             if (!ecuData.getConstants().contains(name))
             {
-                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scale, translate, lowText, highText, digits);
+                final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, shape, units, scaleText, translateText, lowText, highText, digits, new String[]{});
                 if (shape.contains("x"))
                 {
                     ecuData.getConstantVars().put(name, "int[][]");
@@ -541,10 +597,10 @@ public class Process
             final String type = constantSimpleM.group(3);
             final int offset = Integer.parseInt(constantSimpleM.group(4).trim());
             final String units = constantSimpleM.group(5);
-            final double scale = Double.parseDouble(constantSimpleM.group(6));
+            final String scale = constantSimpleM.group(6);
             final String translate = constantSimpleM.group(7);
 
-            final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0);
+            final Constant c = new Constant(ecuData.getCurrentPage(), name, classtype, type, offset, "", units, scale, translate, "0", "0", 0, new String[]{});
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
         }
@@ -563,7 +619,7 @@ public class Process
                 bitsValues = Patterns.bitsValues.split(strBitsValues);
             }
 
-            final Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", 1, "0", "0", "0", 0, bitsValues);
+            final Constant c = new Constant(ecuData.getCurrentPage(), name, "bits", "", Integer.parseInt(offset.trim()), "[" + start + ":" + end + "]", "", "1", "0", "0", "0", 0, bitsValues);
             ecuData.getConstantVars().put(name, "int");
             ecuData.getConstants().add(c);
 
@@ -571,7 +627,7 @@ public class Process
         else if (line.startsWith("#"))
         {
             final String preproc = (processPreprocessor(ecuData, line));
-            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", 0, "0", "0", "0", 0);
+            final Constant c = new Constant(ecuData.getCurrentPage(), preproc, "", "PREPROC", 0, "", "", "0", "0", "0", "0", 0, new String[]{});
             ecuData.getConstants().add(c);
         }
     }
@@ -631,17 +687,14 @@ public class Process
             m.addItem(currentMenuDialog, x);
 
             // Add the expression too
-            if ((expression == null) || StringUtils.isEmpty(expression))
+            if (expression != null && !StringUtils.isEmpty(expression))
             {
-                expression = "true";
-            }
-            else
-            {
+                expression = expression.trim();
                 expression = removeCurlyBrackets(expression);
                 expression = ExpressionWrangler.convertExpr(expression);
+                
+                ecuData.getMenuControlExpressions().put(name, expression);
             }
-
-            ecuData.getMenuControlExpressions().put(name, expression);
         }
         else
         {
@@ -930,16 +983,14 @@ public class Process
             String expression = dialogPanel.group(5);
             final String visibilityFlag = d.getName() + "_" + name;
 
-            if ((expression == null) || StringUtils.isEmpty(expression))
+            if (expression != null && !StringUtils.isEmpty(expression))
             {
-                expression = "true";
-            }
-            else
-            {
+                expression = expression.trim();
                 expression = removeCurlyBrackets(expression);
                 expression = ExpressionWrangler.convertExpr(expression);
+                
+                ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
             }
-            ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
 
             final UserDefinedPanel x = new UserDefinedPanel(name, orientation);
             d.addItem(x);
@@ -980,17 +1031,15 @@ public class Process
             @SuppressWarnings("unused")
             final int x = 1;
         }
-        if ((expression == null) || StringUtils.isEmpty(expression))
+        if (expression != null && !StringUtils.isEmpty(expression))
         {
-            expression = "true";
-        }
-        else
-        {
+            expression = expression.trim();
             expression = removeCurlyBrackets(expression);
             expression = ExpressionWrangler.convertExpr(expression);
+        
+            ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
         }
-        ecuData.getFieldControlExpressions().put(visibilityFlag, expression);
-
+        
         String commandOnClose = "";
         if (isCommandButton && (dialogField.group(7) != null))
         {

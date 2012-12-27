@@ -216,7 +216,7 @@ public class Output
             }
             else
             {
-                writer.println(TAB + TAB + "parent.registerOutputChannel( new " + op.toString() + ");");
+                writer.println(TAB + TAB + "parent.registerOutputChannel(new " + op.toString() + ");");
             }
         }
 

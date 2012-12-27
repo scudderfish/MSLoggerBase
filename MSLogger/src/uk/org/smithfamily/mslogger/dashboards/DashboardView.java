@@ -210,6 +210,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 {
                     elements.add(element);
                 }
+                
                 // Let the dash know it's dirty
                 if (thread != null)
                 {
