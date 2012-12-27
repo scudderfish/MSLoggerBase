@@ -18,39 +18,6 @@ public class Constant
     
     private boolean    modified;
 
-    /**
-     * 
-     * @param page
-     * @param name
-     * @param classType
-     * @param type
-     * @param offset
-     * @param shape
-     * @param units
-     * @param scale
-     * @param translate
-     * @param low
-     * @param high
-     * @param digits
-     * @param values
-     */
-    public Constant(int page, String name, String classType, String type, int offset, String shape, String units, String scale,
-            String translate, double low, double high, int digits, String[] values)
-    {
-        this.page = page;
-        this.name = name;
-        this.classType = classType;
-        this.type = type;
-        this.offset = offset;
-        this.shape = shape;
-        this.units = units;
-        this.scale = scale;
-        this.translate = translate;
-        this.low = Double.toString(low);
-        this.high = Double.toString(high);
-        this.digits = digits;
-        this.values = values;
-    }
 	
     /**
      * Used into the generated MegaSquirt firmware classes to initialize all the firmware constants
@@ -88,6 +55,7 @@ public class Constant
     }
     
     /**
+     * Used for adding Constant instance to ECUData
      * 
      * @param page
      * @param name
@@ -130,6 +98,7 @@ public class Constant
     }
     
     /**
+     * Used for adding Constant instance to ECUData
      * 
      * @param page
      * @param name
@@ -170,6 +139,7 @@ public class Constant
     }
     
     /**
+     * Used for adding Constant instance to ECUData
      * 
      * @param page
      * @param name
