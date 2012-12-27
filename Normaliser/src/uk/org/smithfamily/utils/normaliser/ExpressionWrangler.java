@@ -28,19 +28,28 @@ public class ExpressionWrangler
         translations.put("(staged_extended_opts_use_v3 && staged_first_param) || ((nCylinders > 4) && (staged_first_param) && (hardware_fuel) && !(sequential & 0x1))",
                 "(staged_extended_opts_use_v3!=0 && staged_first_param!=0) || ((nCylinders > 4) && (staged_first_param!=0) && (hardware_fuel!=0) && !((sequential & 0x1)!=0))");
         translations.put("(spk_config_trig2 & 0x2) && spk_mode0 == 4", "(spk_config_trig2 & 0x2)!=0 && spk_mode0 == 4");
+        translations.put("testop_coil && (status3 & 8) && testdwell", "testop_coil != 0 && ((status3 & 8) != 0) && testdwell != 0");
+        translations.put("(!(status3 & 8)) && (rpm == 0)", "((status3 & 8) == 0) && (rpm == 0)");
+        translations.put("testop_inj && (status3 & 8) && testpw && testinjcnt", "testop_inj !=0 && ((status3 & 8) != 0) && testpw !=0 && testinjcnt!=0");
 
         // Menus
         translations.put("AE_options & 0x1", "(AE_options & 0x1) != 0");
         translations.put("!(AE_options & 0x1)", "!((AE_options & 0x1) != 0)");
         translations.put("NoiseFilterOpts & 1", "(NoiseFilterOpts & 1) != 0");
         translations.put("(RevLimCLTbased & 1)", "(RevLimCLTbased & 1) != 0");
+        
+        // Constants
+        translations.put("wue_lpg?50:100", "(wue_lpg.equals(\"Yes\")) ? 50 : 100");
+        translations.put("maf_freq0", "maf_freq0");
+        translations.put("-rpmhigh", "-rpmhigh");
     }
 
     /**
-     * @param
+     * @param e The expression to evaluate
+     * 
      * @return true if the string looks like an expression, false otherwise
      */
-    public static boolean isExpresion(String e)
+    public static boolean isExpression(String e)
     {
         e = e.trim();
 
@@ -50,7 +59,8 @@ public class ExpressionWrangler
             return false;
         }
 
-        if (e.substring(0, 1).equals("{") && e.substring(e.length() - 1, e.length()).equals("}"))
+        // An expression need to start by "{" (unless there is a minus sign in front) and end by "}"
+        if ((e.substring(0, 1).equals("{")) || (e.substring(0, 1).equals("-") && e.substring(1, 2).equals("{")) && e.substring(e.length() - 1, e.length()).equals("}"))
         {
             return true;
         }

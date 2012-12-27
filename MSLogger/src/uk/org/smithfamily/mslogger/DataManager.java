@@ -1,10 +1,17 @@
 package uk.org.smithfamily.mslogger;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
 
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
-import android.content.*;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 
 public class DataManager extends Observable
 {
@@ -72,6 +79,7 @@ public class DataManager extends Observable
         final OutputChannel oc = dataChannels.get(channelName);
         if (oc == null)
         {
+            DebugLogManager.INSTANCE.log("Invalid output channel " + channelName, Log.DEBUG);
             return value;
         }
         value = oc.getValue();
