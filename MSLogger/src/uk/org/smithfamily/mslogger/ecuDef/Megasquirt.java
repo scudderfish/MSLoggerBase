@@ -679,6 +679,13 @@ public class Megasquirt extends Service implements MSControllerInterface
                             DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
                             DebugLogManager.INSTANCE.logException(e);
                         }
+                        catch (final IOException e)
+                        {
+                            DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
+                            DebugLogManager.INSTANCE.logException(e);
+                            initialiseConnection();
+                            ECUConnectionManager.getInstance().connect();
+                        }
                         readCounter++;
 
                         final long delay = System.currentTimeMillis() - lastRpsTime;
