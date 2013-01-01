@@ -138,8 +138,6 @@ public class ECUConnectionManager extends ConnectionManager
      */
     public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception
     {
-        final Reaper reaper = new Reaper(this);
-        t.schedule(reaper, IO_TIMEOUT);
         final boolean logit = DebugLogManager.checkLogLevel(Log.VERBOSE);
         int target = bytes.length;
         byte[] buffer = bytes;
@@ -150,51 +148,54 @@ public class ECUConnectionManager extends ConnectionManager
         }
 
         int read = 0;
-        try
+        int available = 0;
+        final long readStart = System.currentTimeMillis();
+        synchronized (this)
         {
-            synchronized (this)
+            do
             {
-                while (read < target)
+                available = mmInStream.available();
+
+                final long now = System.currentTimeMillis();
+
+                if ((now - readStart) > IO_TIMEOUT)
                 {
-                    final int numRead = mmInStream.read(buffer, read, target - read);
-                    if (numRead == -1)
-                    {
-                        throw new IOException("End of stream attempting to read");
-                    }
-                    read += numRead;
-
-                    if (logit)
-                    {
-                        DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);
-
-                    }
+                    throw new IOException(String.format("IO Timeout! available %d", available));
                 }
-                reaper.cancel();
-                t.purge();
+
+                if (available < target)
+                {
+                    delay(20);
+                }
+            } while (available < target);
+
+            final int numRead = mmInStream.read(buffer, read, target - read);
+            if (numRead == -1)
+            {
+                throw new IOException("End of stream attempting to read");
             }
+            read += numRead;
 
             if (logit)
             {
-                DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.VERBOSE);
-            }
-            if (isCRC32)
-            {
-                if (!CRC32ProtocolHandler.check(buffer))
-                {
-                    throw new CRC32Exception("CRC32 check failed");
-                }
+                DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);
 
-                final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
-                System.arraycopy(actual, 0, bytes, 0, bytes.length);
             }
         }
-        catch (final IOException e)
+
+        if (logit)
         {
-            if (timerTriggered)
+            DebugLogManager.INSTANCE.log("readBytes[]", buffer, Log.VERBOSE);
+        }
+        if (isCRC32)
+        {
+            if (!CRC32ProtocolHandler.check(buffer))
             {
-                DebugLogManager.INSTANCE.log("Time out reading from stream", Log.ERROR);
-                throw e;
+                throw new CRC32Exception("CRC32 check failed");
             }
+
+            final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
+            System.arraycopy(actual, 0, bytes, 0, bytes.length);
         }
     }
 

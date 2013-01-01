@@ -1,7 +1,8 @@
 package uk.org.smithfamily.mslogger.comms;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
@@ -13,31 +14,11 @@ import android.util.Log;
  */
 abstract class ConnectionManager
 {
-    static class Reaper extends TimerTask
-    {
-        ConnectionManager parent;
-
-        Reaper(final ConnectionManager p)
-        {
-            this.parent = p;
-        }
-
-        @Override
-        public void run()
-        {
-            parent.timerTriggered = true;
-            parent.tearDown();
-        }
-
-    }
-
     protected Connection conn;
     protected InputStream mmInStream;
     protected OutputStream mmOutStream;
     protected Handler handler;
     protected static final long IO_TIMEOUT = 5000;
-    volatile boolean timerTriggered = false;
-    Timer t = new Timer();
 
     public enum ConnectionState
     {
@@ -108,7 +89,6 @@ abstract class ConnectionManager
             tearDown();
             setState(ConnectionState.STATE_DISCONNECTED);
         }
-        timerTriggered = false;
     }
 
     /**
