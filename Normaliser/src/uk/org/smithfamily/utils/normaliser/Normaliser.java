@@ -1,6 +1,9 @@
 package uk.org.smithfamily.utils.normaliser;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -34,7 +37,7 @@ public class Normaliser
         outputDirectory = new File(args[1]);
         outputDirectory.mkdirs();
 
-        final BufferedReader br = new BufferedReader(new FileReader(f));
+        final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "Windows-1252"));
 
         String line;
 
@@ -102,6 +105,23 @@ public class Normaliser
         process(f, false);
     }
 
+    // Modified from http://stackoverflow.com/questions/12630089/convert-windows-1252-to-utf-16-in-java
+    private static String replaceWindowsChars(final String text_in)
+    {
+        String s = text_in;
+
+        final Charset windowsCharset = Charset.forName("windows-1252");
+        final Charset utfCharset = Charset.forName("UTF-8");
+
+        final byte[] incomingBytes = s.getBytes();
+        final CharBuffer windowsEncoded = windowsCharset.decode(ByteBuffer.wrap(incomingBytes));
+
+        final byte[] utfEncoded = utfCharset.encode(windowsEncoded).array();
+        s = new String(utfEncoded);
+
+        return s;
+    }
+
     /**
      * Iterate over the file to read it
      * 
@@ -111,12 +131,13 @@ public class Normaliser
      */
     private static void process(final File f, final boolean subRead) throws IOException
     {
-        final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "CP1252"));
+        final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "Windows-1252"));
 
         String line;
 
         while ((line = br.readLine()) != null)
         {
+
             if (line.startsWith("#include "))
             {
                 handleImport(line, f);
@@ -193,6 +214,8 @@ public class Normaliser
                 currentSection = Section.None;
                 continue;
             }
+
+            line = replaceWindowsChars(line);
 
             switch (currentSection)
             {
