@@ -319,13 +319,13 @@ public class DialogHelper
         
         String units = "°F";
         int[] temp = { 103, 301, 500, 698, 896, 1094, 1292, 1508, 1706, 1797 };
-        double scale = 0.1;
+        String scale = "0.1";
         String translate = "0";
         
         if (ecu.isSet("CELCIUS"))
         {
             units = "°C";
-            scale = 0.05555;
+            scale = "0.05555";
             translate = "-320";
         }
         
