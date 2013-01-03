@@ -10,8 +10,7 @@ import java.util.concurrent.BlockingQueue;
 
 import uk.org.smithfamily.mslogger.*;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
-import uk.org.smithfamily.mslogger.comms.CRC32Exception;
-import uk.org.smithfamily.mslogger.comms.ECUConnectionManager;
+import uk.org.smithfamily.mslogger.comms.*;
 import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
 import uk.org.smithfamily.mslogger.log.*;
 import android.app.*;
@@ -640,6 +639,10 @@ public class Megasquirt extends Service implements MSControllerInterface
                     {
                         DebugLogManager.INSTANCE.logException(e);
                     }
+                    catch (final BTTimeoutException e)
+                    {
+                        DebugLogManager.INSTANCE.logException(e);
+                    }
 
                     // Make sure everyone agrees on what flags are set
                     ApplicationSettings.INSTANCE.refreshFlags();
@@ -675,6 +678,11 @@ public class Megasquirt extends Service implements MSControllerInterface
                             handshake.put(buffer);
                         }
                         catch (final CRC32Exception e)
+                        {
+                            DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
+                            DebugLogManager.INSTANCE.logException(e);
+                        }
+                        catch (final BTTimeoutException e)
                         {
                             DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
                             DebugLogManager.INSTANCE.logException(e);
@@ -882,8 +890,9 @@ public class Megasquirt extends Service implements MSControllerInterface
          * 
          * @throws IOException
          * @throws CRC32Exception
+         * @throws BTTimeoutException
          */
-        private byte[] getRuntimeVars() throws IOException, CRC32Exception
+        private byte[] getRuntimeVars() throws IOException, CRC32Exception, BTTimeoutException
         {
             if (interWriteDelay > 0)
             {
@@ -924,16 +933,27 @@ public class Megasquirt extends Service implements MSControllerInterface
         protected void getPage(final byte[] pageBuffer, final byte[] pageSelectCommand, final byte[] pageReadCommand) throws IOException, CRC32Exception
         {
             ECUConnectionManager.getInstance().flushAll();
-            final int delay = ecuImplementation.getPageActivationDelay();
-            if (pageSelectCommand != null)
+            for (int i = 1; i <= 5; i++)
             {
-                ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
+                final int delay = ecuImplementation.getPageActivationDelay() * i;
+                if (pageSelectCommand != null)
+                {
+                    ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
+                }
+                if (pageReadCommand != null)
+                {
+                    ECUConnectionManager.getInstance().writeCommand(pageReadCommand, delay, ecuImplementation.isCRC32Protocol());
+                }
+                try
+                {
+                    ECUConnectionManager.getInstance().readBytes(pageBuffer, ecuImplementation.isCRC32Protocol());
+                    return;
+                }
+                catch (final BTTimeoutException e)
+                {
+                    DebugLogManager.INSTANCE.logException(e);
+                }
             }
-            if (pageReadCommand != null)
-            {
-                ECUConnectionManager.getInstance().writeCommand(pageReadCommand, delay, ecuImplementation.isCRC32Protocol());
-            }
-            ECUConnectionManager.getInstance().readBytes(pageBuffer, ecuImplementation.isCRC32Protocol());
         }
     }
 
@@ -1519,7 +1539,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             return MSECUInterface.menuVisibilityFlags.get(name);
         }
-        
+
         return true;
     }
 
@@ -1718,13 +1738,13 @@ public class Megasquirt extends Service implements MSControllerInterface
     public double getField(final String channelName)
     {
         double value = 0;
-        Class<?> c = ecuImplementation.getClass();
+        final Class<?> c = ecuImplementation.getClass();
         try
         {
-            Field f = c.getDeclaredField(channelName);
+            final Field f = c.getDeclaredField(channelName);
             value = f.getDouble(ecuImplementation);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             DebugLogManager.INSTANCE.log("Failed to get value for " + channelName, Log.ERROR);
         }

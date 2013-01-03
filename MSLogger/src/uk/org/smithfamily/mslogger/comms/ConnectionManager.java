@@ -18,7 +18,7 @@ abstract class ConnectionManager
     protected InputStream mmInStream;
     protected OutputStream mmOutStream;
     protected Handler handler;
-    protected static final long IO_TIMEOUT = 5000;
+    protected static final long IO_TIMEOUT = 500;
 
     public enum ConnectionState
     {
@@ -171,7 +171,6 @@ abstract class ConnectionManager
         {
             setState(ConnectionState.STATE_CONNECTED);
             DebugLogManager.INSTANCE.log(getInstanceName() + ".connect() : Current state " + currentState, Log.DEBUG);
-
         }
         else
         {

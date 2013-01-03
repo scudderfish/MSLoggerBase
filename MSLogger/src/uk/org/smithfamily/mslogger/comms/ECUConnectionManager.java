@@ -12,6 +12,7 @@ import android.util.Log;
  */
 public class ECUConnectionManager extends ConnectionManager
 {
+    private static final String TAG = "ECUConnectionManager";
 
     // Private constructor prevents instantiation from other classes
     private ECUConnectionManager()
@@ -65,7 +66,7 @@ public class ECUConnectionManager extends ConnectionManager
         {
             throw new IOException("Not connected");
         }
-
+        drain();
         if (isCRC32)
         {
             command = CRC32ProtocolHandler.wrap(command);
@@ -94,6 +95,27 @@ public class ECUConnectionManager extends ConnectionManager
         delay(d);
     }
 
+    private void drain()
+    {
+        final StringBuilder sb = new StringBuilder("Dreck in the pipes :");
+        try
+        {
+            if (mmInStream.available() > 0)
+            {
+                while (mmInStream.available() > 0)
+                {
+                    sb.append(" 0x").append(Integer.toHexString(mmInStream.read()));
+                }
+                Log.d(TAG, sb.toString());
+            }
+        }
+        catch (final IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Write a command to the Bluetooth stream and return the result
      * 
@@ -120,8 +142,9 @@ public class ECUConnectionManager extends ConnectionManager
      * @param d Delay to wait after sending command
      * @throws IOException
      * @throws CRC32Exception
+     * @throws BTTimeoutException
      */
-    public void writeAndRead(final byte[] cmd, final byte[] result, final int d, final boolean isCRC32) throws IOException, CRC32Exception
+    public void writeAndRead(final byte[] cmd, final byte[] result, final int d, final boolean isCRC32) throws IOException, CRC32Exception, BTTimeoutException
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
@@ -135,8 +158,9 @@ public class ECUConnectionManager extends ConnectionManager
      * @param bytes
      * @throws IOException
      * @throws CRC32Exception
+     * @throws BTTimeoutException
      */
-    public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception
+    public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception, BTTimeoutException
     {
         final boolean logit = DebugLogManager.checkLogLevel(Log.VERBOSE);
         int target = bytes.length;
@@ -146,40 +170,34 @@ public class ECUConnectionManager extends ConnectionManager
             target += CRC32ProtocolHandler.getValidationLength();
             buffer = new byte[target];
         }
-
+        final int numRead = 0;
         int read = 0;
+        final int toRead = bytes.length;
         int available = 0;
-        final long readStart = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
+        final long deadline = startTime + IO_TIMEOUT;
         synchronized (this)
         {
-            do
+            while ((read < toRead) && (System.currentTimeMillis() < deadline))
             {
                 available = mmInStream.available();
-
-                final long now = System.currentTimeMillis();
-
-                if ((now - readStart) > IO_TIMEOUT)
+                if (available > 0)
                 {
-                    throw new IOException(String.format("IO Timeout! available %d", available));
+                    final int value = mmInStream.read();
+                    if (value == -1)
+                    {
+                        throw new IOException("EOF!");
+                    }
+                    buffer[read++] = (byte) value;
                 }
-
-                if (available < target)
+                else
                 {
-                    delay(20);
+                    delay(10);
                 }
-            } while (available < target);
-
-            final int numRead = mmInStream.read(buffer, read, target - read);
-            if (numRead == -1)
-            {
-                throw new IOException("End of stream attempting to read");
             }
-            read += numRead;
-
-            if (logit)
+            if (read < toRead)
             {
-                DebugLogManager.INSTANCE.log("readBytes[] : target = " + target + " read so far :" + read, Log.VERBOSE);
-
+                throw new BTTimeoutException(String.format("Timeout! : toRead = %d,  numRead = %d", toRead, numRead));
             }
         }
 
@@ -196,6 +214,10 @@ public class ECUConnectionManager extends ConnectionManager
 
             final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
             System.arraycopy(actual, 0, bytes, 0, bytes.length);
+        }
+        else
+        {
+
         }
     }
 
