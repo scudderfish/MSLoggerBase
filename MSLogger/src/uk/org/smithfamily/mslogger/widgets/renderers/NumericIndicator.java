@@ -46,6 +46,7 @@ public class NumericIndicator extends Painter
         titlePaint.setTextSize(0.08f);
         titlePaint.setTextAlign(Paint.Align.CENTER);
         titlePaint.setFlags(anti_alias_flag);
+        titlePaint.setLinearText(true);
         titlePaint.setAntiAlias(true);
 
         valuePaint = new Paint();
@@ -53,6 +54,7 @@ public class NumericIndicator extends Painter
         valuePaint.setTextSize(0.2f);
         valuePaint.setTextAlign(Paint.Align.CENTER);
         valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setLinearText(true);
         valuePaint.setAntiAlias(true);
 
         backgroundPaint = new Paint();

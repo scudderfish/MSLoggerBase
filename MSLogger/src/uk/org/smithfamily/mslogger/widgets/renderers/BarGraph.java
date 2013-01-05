@@ -45,6 +45,7 @@ public class BarGraph extends Painter
         titlePaint.setTextAlign(Paint.Align.LEFT);
         titlePaint.setTextSize(0.06f);
         titlePaint.setFlags(anti_alias_flag);
+        titlePaint.setLinearText(true);
         titlePaint.setAntiAlias(true);
 
         valuePaint = new Paint();
@@ -52,6 +53,7 @@ public class BarGraph extends Painter
         valuePaint.setTextSize(0.06f);
         valuePaint.setTextAlign(Paint.Align.RIGHT);
         valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setLinearText(true);
         valuePaint.setAntiAlias(true);
 
         barPaint = new Paint();
@@ -134,7 +136,7 @@ public class BarGraph extends Painter
 
         final float barWidth = 0.025f;
         final float barSpacing = 0.02f;
-        
+
         if (model.getOrientation() == Orientation.VERTICAL)
         {
             final int nbBars = 21;

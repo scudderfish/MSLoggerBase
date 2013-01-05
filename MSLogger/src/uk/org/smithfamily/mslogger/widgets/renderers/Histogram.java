@@ -58,6 +58,7 @@ public class Histogram extends Painter
         valuePaint.setColor(Color.DKGRAY);
         valuePaint.setTextSize(0.06f);
         valuePaint.setTextAlign(Paint.Align.RIGHT);
+        valuePaint.setLinearText(true);
         backgroundPaint.setStyle(Paint.Style.STROKE);
         valuePaint.setFlags(anti_alias_flag);
         valuePaint.setAntiAlias(true);
@@ -67,7 +68,7 @@ public class Histogram extends Painter
         linePaint.setFlags(anti_alias_flag);
         linePaint.setAntiAlias(true);
         linePaint.setStyle(Paint.Style.STROKE);
-        
+
         borderRect = new RectF();
         borderRect.set(0.05f, 0.05f, 0.94f, 0.83f);
     }
