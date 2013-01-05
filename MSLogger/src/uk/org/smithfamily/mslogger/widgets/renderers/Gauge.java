@@ -168,6 +168,7 @@ public class Gauge extends Painter
         titlePaint.setColor(Color.WHITE);
         titlePaint.setTextAlign(Paint.Align.CENTER);
         titlePaint.setFlags(anti_alias_flag);
+        titlePaint.setLinearText(true);
         titlePaint.setAntiAlias(true);
 
         valuePaint = new Paint();
@@ -175,6 +176,7 @@ public class Gauge extends Painter
         valuePaint.setTextSize(0.1f);
         valuePaint.setTextAlign(Paint.Align.CENTER);
         valuePaint.setFlags(anti_alias_flag);
+        valuePaint.setLinearText(true);
         valuePaint.setAntiAlias(true);
 
         pointerPaint = new Paint();
@@ -192,7 +194,7 @@ public class Gauge extends Painter
         scalePaint.setTextAlign(Paint.Align.CENTER);
         scalePaint.setFlags(anti_alias_flag);
         scalePaint.setAntiAlias(true);
-
+        scalePaint.setLinearText(true);
         backgroundPaint = new Paint();
         backgroundPaint.setFilterBitmap(true);
     }
@@ -317,6 +319,7 @@ public class Gauge extends Painter
             final double rads = (angle * pi) / 180.0;
             final float x = (float) (0.5f - (radius * Math.cos(rads - (pi / 2.0))));
             final float y = (float) (0.5f - (radius * Math.sin(rads - (pi / 2.0))));
+
             canvas.drawText(text, x, y, scalePaint);
         }
     }
