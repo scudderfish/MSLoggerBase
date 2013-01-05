@@ -66,7 +66,7 @@ public class ECUConnectionManager extends ConnectionManager
         {
             throw new IOException("Not connected");
         }
-        drain();
+        // drain();
         if (isCRC32)
         {
             command = CRC32ProtocolHandler.wrap(command);
@@ -172,7 +172,7 @@ public class ECUConnectionManager extends ConnectionManager
         }
         final int numRead = 0;
         int read = 0;
-        final int toRead = bytes.length;
+        final int toRead = buffer.length;
         int available = 0;
         final long startTime = System.currentTimeMillis();
         final long deadline = startTime + IO_TIMEOUT;
