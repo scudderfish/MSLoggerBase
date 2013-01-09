@@ -1,30 +1,15 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.*;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
-import uk.org.smithfamily.mslogger.widgets.IndicatorDefault;
-import uk.org.smithfamily.mslogger.widgets.IndicatorDefaults;
-import uk.org.smithfamily.mslogger.widgets.Location;
 import android.content.res.AssetManager;
 
 /**
@@ -151,7 +136,7 @@ public enum DashboardIO
         j.put(LABEL_DIGITS, i.getLd());
         j.put(LOCATION, getJLocation(i.getLocation()));
         j.put(ORIENTATION, i.getOrientation().name());
-        
+
         return j;
     }
 
@@ -200,6 +185,10 @@ public enum DashboardIO
             catch (final JSONException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
+            }
+            if (activeDashboardDefinitions.size() == 1)
+            {
+                activeDashboardDefinitions.add(new Dashboard());
             }
             dashCache.put(dashName, activeDashboardDefinitions);
         }
