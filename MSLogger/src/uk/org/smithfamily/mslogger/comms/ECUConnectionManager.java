@@ -170,25 +170,26 @@ public class ECUConnectionManager extends ConnectionManager
             target += CRC32ProtocolHandler.getValidationLength();
             buffer = new byte[target];
         }
-        final int numRead = 0;
         int read = 0;
         final int toRead = buffer.length;
         int available = 0;
+        int remainder = toRead;
         final long startTime = System.currentTimeMillis();
         final long deadline = startTime + IO_TIMEOUT;
         synchronized (this)
         {
-            while ((read < toRead) && (System.currentTimeMillis() < deadline))
+            while ((remainder > 0) && (System.currentTimeMillis() < deadline))
             {
                 available = mmInStream.available();
                 if (available > 0)
                 {
-                    final int value = mmInStream.read();
-                    if (value == -1)
+                    final int numRead = mmInStream.read(buffer, read, Math.min(available, remainder));
+                    if (numRead == -1)
                     {
                         throw new IOException("EOF!");
                     }
-                    buffer[read++] = (byte) value;
+                    read += numRead;
+                    remainder -= numRead;
                 }
                 else
                 {
@@ -197,7 +198,7 @@ public class ECUConnectionManager extends ConnectionManager
             }
             if (read < toRead)
             {
-                throw new BTTimeoutException(String.format("Timeout! : toRead = %d,  numRead = %d", toRead, numRead));
+                throw new BTTimeoutException(String.format("Timeout! : toRead = %d,  read = %d", toRead, read));
             }
         }
 
