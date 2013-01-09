@@ -210,7 +210,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                 {
                     elements.add(element);
                 }
-                
+
                 // Let the dash know it's dirty
                 if (thread != null)
                 {
@@ -389,9 +389,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                             c = holder.lockCanvas();
                             if ((c != null) && running)
                             {
-                                // Put down a background to show the boundaries
-
-                                c.drawARGB(255, 127, 127, 127);
+                                // Clear the background
+                                c.drawARGB(255, 0, 0, 0);
                                 drawIndicators(c);
                             }
                         }
