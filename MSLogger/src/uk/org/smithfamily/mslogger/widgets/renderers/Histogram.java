@@ -5,7 +5,6 @@ import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
 import android.content.Context;
 import android.graphics.*;
-import android.graphics.Region.Op;
 
 public class Histogram extends Painter
 {
@@ -19,6 +18,8 @@ public class Histogram extends Painter
 
     private int indexValue = 0;
     private Path linePath;
+    private int height;
+    private int width;
 
     public Histogram(final DashboardView parent, final Indicator model, final Context c)
     {
@@ -56,10 +57,8 @@ public class Histogram extends Painter
 
         valuePaint = new Paint();
         valuePaint.setColor(Color.DKGRAY);
-        valuePaint.setTextSize(0.06f);
         valuePaint.setTextAlign(Paint.Align.RIGHT);
         valuePaint.setLinearText(true);
-        backgroundPaint.setStyle(Paint.Style.STROKE);
         valuePaint.setFlags(anti_alias_flag);
         valuePaint.setAntiAlias(true);
 
@@ -91,19 +90,21 @@ public class Histogram extends Painter
     @Override
     public void renderFrame(final Canvas canvas)
     {
-        final int height = (int) (bottom - top);
-        final int width = (int) (right - left);
+        height = (int) (bottom - top);
+        width = (int) (right - left);
 
         if ((width == 0) || (height == 0))
         {// We're not ready to do this yet
             return;
         }
 
-        drawBackground(canvas);
-
         canvas.save(Canvas.ALL_SAVE_FLAG);
         canvas.translate(left, top);
-        canvas.scale(width, height);
+        canvas.clipRect(0, 0, width, height);
+
+        backgroundPaint.setTextSize(0.06f * height);
+
+        // canvas.scale(width, height);
 
         drawBackground(canvas);
 
@@ -122,27 +123,35 @@ public class Histogram extends Painter
         final double min = model.getMin();
         final double max = model.getMax();
         final double range = max - min;
-        canvas.clipRect(borderRect, Op.INTERSECT);
         float x;
         float y;
         float value;
         int idx;
-        for (int i = 1; i <= NB_VALUES; i++)
+        final int numPoints = NB_VALUES - 1;
+        for (int i = 0; i < numPoints; i++)
         {
-            idx = (indexValue + i) % NB_VALUES;
+            idx = (indexValue + i) % numPoints;
             value = values[idx];
-            x = (float) i / (float) NB_VALUES;
+            x = ((float) i / (float) numPoints) * width;
 
-            y = (float) (1.0f - ((value - min) / range));
+            y = (float) (1.0f - ((value - min) / range)) * height;
 
-            linePath.lineTo(x, y);
+            if (i == 1)
+            {
+                linePath.moveTo(x, y);
+            }
+            else
+            {
+                linePath.lineTo(x, y);
+            }
         }
         canvas.drawPath(linePath, linePaint);
     }
 
     public void drawBackground(final Canvas canvas)
     {
-        canvas.drawRect(borderRect, backgroundPaint);
+        // canvas.drawRect(borderRect, backgroundPaint);
+        canvas.drawRect(0, 0, width, height, backgroundPaint);
     }
 
     public void drawValue(final Canvas canvas)
@@ -163,8 +172,8 @@ public class Histogram extends Painter
         {
             text = Float.toString(displayValue);
         }
-
-        canvas.drawText(text, 0.94f, 0.90f, valuePaint);
+        valuePaint.setTextSize(0.06f * height);
+        canvas.drawText(text, 0.94f * width, 0.90f * height, valuePaint);
     }
 
     public void drawTitle(final Canvas canvas)
@@ -177,7 +186,7 @@ public class Histogram extends Painter
             text += " (" + model.getUnits() + ")";
         }
 
-        canvas.drawText(text, 0.05f, 0.90f, backgroundPaint);
+        canvas.drawText(text, 0.05f * width, 0.90f * height, backgroundPaint);
     }
 
     @Override
@@ -190,5 +199,15 @@ public class Histogram extends Painter
     public boolean isIsotropic()
     {
         return false;
+    }
+
+    @Override
+    public boolean updateAnimation()
+    {
+        // Histogram is not animated like a gauge so we just say we're good to go
+        final boolean isDirty = false;
+
+        return isDirty;
+
     }
 }
