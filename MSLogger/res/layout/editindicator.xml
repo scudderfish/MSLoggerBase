@@ -7,15 +7,15 @@
     android:keepScreenOn="true"
     android:orientation="vertical"
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-    android:weightSum="100" >
+    android:weightSum="100">
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 style="@style/gaugeLabel"
@@ -59,14 +59,14 @@
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_weight="100" >
+        android:layout_weight="100">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -74,14 +74,14 @@
 
                 <Spinner
                     android:id="@+id/spinnerChannel"
-                    style="@style/gaugeEdit"
+                    style="@style/gaugeSpinner"
                     android:prompt="@string/choose_indicator_channel" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/indicatorOrientationRow"
                 style="@style/gaugeRow"
-                android:visibility="gone" >
+                android:visibility="gone">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -93,7 +93,7 @@
                     android:prompt="@string/choose_indicator_orientation" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -105,7 +105,7 @@
                     android:inputType="text" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -117,7 +117,7 @@
                     android:inputType="text" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -129,7 +129,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -141,7 +141,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -153,7 +153,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -165,7 +165,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -177,7 +177,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -189,7 +189,7 @@
                     android:inputType="number|numberSigned|numberDecimal" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -201,7 +201,7 @@
                     android:inputType="number|numberSigned" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -213,7 +213,7 @@
                     android:inputType="number|numberSigned" />
             </LinearLayout>
 
-            <LinearLayout style="@style/gaugeRow" >
+            <LinearLayout style="@style/gaugeRow">
 
                 <TextView
                     style="@style/gaugeLabel"
@@ -231,7 +231,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="5dp" >
+        android:paddingTop="5dp">
 
         <Button
             android:id="@+id/editOK"
