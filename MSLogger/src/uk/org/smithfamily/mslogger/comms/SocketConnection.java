@@ -30,11 +30,11 @@ public enum SocketConnection implements Connection
         try
         {
             sim.startRunning();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             DebugLogManager.INSTANCE.logException(e);
         }
-
     }
 
     @Override
@@ -46,7 +46,7 @@ public enum SocketConnection implements Connection
     @Override
     public void connect() throws IOException
     {
-        if(!sim.isRunning())
+        if (!sim.isRunning())
         {
             init("");
         }
@@ -89,7 +89,8 @@ public enum SocketConnection implements Connection
             try
             {
                 is.close();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
             }
@@ -100,7 +101,8 @@ public enum SocketConnection implements Connection
             try
             {
                 os.close();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
             }
@@ -111,7 +113,8 @@ public enum SocketConnection implements Connection
             try
             {
                 sock.close();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 DebugLogManager.INSTANCE.logException(e);
             }
