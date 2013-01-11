@@ -8,7 +8,6 @@ import android.graphics.*;
 
 public class Histogram extends Painter
 {
-
     private Paint backgroundPaint;
     private Paint linePaint;
     private Paint valuePaint;
@@ -24,7 +23,6 @@ public class Histogram extends Painter
     public Histogram(final DashboardView parent, final Indicator model, final Context c)
     {
         super(parent, model, c);
-
     }
 
     @Override
@@ -132,11 +130,11 @@ public class Histogram extends Painter
         {
             idx = (indexValue + i) % numPoints;
             value = values[idx];
-            x = ((float) i / (float) numPoints) * width;
+            x = ((float) i / (float) numPoints) * width + 1;
 
             y = (float) (1.0f - ((value - min) / range)) * height;
 
-            if (i == 1)
+            if (i == 0)
             {
                 linePath.moveTo(x, y);
             }
@@ -150,7 +148,6 @@ public class Histogram extends Painter
 
     public void drawBackground(final Canvas canvas)
     {
-        // canvas.drawRect(borderRect, backgroundPaint);
         canvas.drawRect(0, 0, width, height, backgroundPaint);
     }
 
@@ -205,9 +202,6 @@ public class Histogram extends Painter
     public boolean updateAnimation()
     {
         // Histogram is not animated like a gauge so we just say we're good to go
-        final boolean isDirty = false;
-
-        return isDirty;
-
+        return false;
     }
 }

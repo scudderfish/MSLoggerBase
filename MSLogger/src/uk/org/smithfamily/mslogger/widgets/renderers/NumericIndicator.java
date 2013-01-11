@@ -69,7 +69,6 @@ public class NumericIndicator extends Painter
     {
         backgroundPaint.setColor(getBgColour());
 
-        // canvas.drawRect(0.05f, 0.30f, 0.9f, 0.72f, backgroundPaint);
         canvas.drawRect(0.0f, 0.0f, 1.0f, 1.0f, backgroundPaint);
     }
 
@@ -156,7 +155,6 @@ public class NumericIndicator extends Painter
         {
             c = Color.GRAY;
         }
-        c = Color.RED;
         return c;
     }
 

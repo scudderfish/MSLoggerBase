@@ -23,7 +23,6 @@ import android.view.*;
  */
 public class DashboardView extends SurfaceView implements Observer, SurfaceHolder.Callback, MultiTouchObjectCanvas<DashboardElement>
 {
-    // private static final String TAG = "DashboardView";
     private final int position;
     private final Context context;
     private final List<DashboardElement> elements;

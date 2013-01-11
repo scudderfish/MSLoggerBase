@@ -686,6 +686,9 @@ public class Megasquirt extends Service implements MSControllerInterface
                         {
                             DatalogManager.INSTANCE.mark(e.getLocalizedMessage());
                             DebugLogManager.INSTANCE.logException(e);
+                            
+                            // Get out of the loop, we're going to disconnect
+                            break;
                         }
                         catch (final IOException e)
                         {
