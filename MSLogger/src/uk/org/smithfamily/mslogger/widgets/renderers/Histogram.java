@@ -130,11 +130,11 @@ public class Histogram extends Painter
         {
             idx = (indexValue + i) % numPoints;
             value = values[idx];
-            x = ((float) i / (float) numPoints) * width;
+            x = ((float) i / (float) numPoints) * width + 1;
 
             y = (float) (1.0f - ((value - min) / range)) * height;
 
-            if (i == 1)
+            if (i == 0)
             {
                 linePath.moveTo(x, y);
             }
