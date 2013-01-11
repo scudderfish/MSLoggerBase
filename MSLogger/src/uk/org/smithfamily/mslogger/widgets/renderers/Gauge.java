@@ -243,7 +243,7 @@ public class Gauge extends Painter
      */
     private void drawPointer(final Canvas canvas)
     {
-        final float back_radius = 0.042f;
+        final float backRadius = 0.042f;
 
         final double angularRange = 270.0 / (model.getMax() - model.getMin());
         double pointerValue = currentValue;
@@ -258,7 +258,7 @@ public class Gauge extends Painter
 
         pointerPaint.setColor(getFgColour());
 
-        canvas.drawCircle(0.5f, 0.5f, back_radius / 2.0f, pointerPaint);
+        canvas.drawCircle(0.5f, 0.5f, backRadius / 2.0f, pointerPaint);
 
         final Path pointerPath = new Path(); // X Y
         pointerPath.setFillType(FillType.EVEN_ODD);

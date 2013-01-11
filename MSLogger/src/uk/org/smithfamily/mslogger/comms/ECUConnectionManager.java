@@ -12,7 +12,6 @@ import android.util.Log;
  */
 public class ECUConnectionManager extends ConnectionManager
 {
-    private static final String TAG = "ECUConnectionManager";
 
     // Private constructor prevents instantiation from other classes
     private ECUConnectionManager()
@@ -93,27 +92,6 @@ public class ECUConnectionManager extends ConnectionManager
         this.mmOutStream.flush();
 
         delay(d);
-    }
-
-    private void drain()
-    {
-        final StringBuilder sb = new StringBuilder("Dreck in the pipes :");
-        try
-        {
-            if (mmInStream.available() > 0)
-            {
-                while (mmInStream.available() > 0)
-                {
-                    sb.append(" 0x").append(Integer.toHexString(mmInStream.read()));
-                }
-                Log.d(TAG, sb.toString());
-            }
-        }
-        catch (final IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -215,10 +193,6 @@ public class ECUConnectionManager extends ConnectionManager
 
             final byte[] actual = CRC32ProtocolHandler.unwrap(buffer);
             System.arraycopy(actual, 0, bytes, 0, bytes.length);
-        }
-        else
-        {
-
         }
     }
 
