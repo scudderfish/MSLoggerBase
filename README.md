@@ -71,4 +71,11 @@ Please note that more firmwares can be supported upon request, just ask the deve
     grep ".ini" ../Normaliser/inis/generationList.txt |grep -v "^#" | sed -e's/.ini//' -e 's/^/\* /'
 
 We can be contacted at msloggger.android@gmail.com
+
+Building Instructions
+----------------------------------
+MSLogger is in two parts.  Normaliser translates the firmware INI files into Java classes, compiles them and bundles them up
+into a JAR file that the MSLogger application then uses.
+
+To build the firmwares.jar file, run the ant build.xml script in the Normaliser directory.
   
