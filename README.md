@@ -70,7 +70,7 @@ Please note that more firmwares can be supported upon request, just ask the deve
 
     grep ".ini" ../Normaliser/inis/generationList.txt |grep -v "^#" | sed -e's/.ini//' -e 's/^/\* /'
 
-We can be contacted at msloggger.android@gmail.com
+We can be contacted at dave.g.smith@gmail.com
 
 Building Instructions
 ----------------------------------
