@@ -1,16 +1,24 @@
 package uk.org.smithfamily.mslogger;
 
+import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import android.app.Application;
-import android.content.*;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * Hook class to allow initialisation actions. Originally used to initialise ACRA and Bugsense
@@ -25,6 +33,7 @@ public class MSLoggerApplication extends Application
     public static final int COMMS_ERROR = 1056;
     public static final int NO_BLUETOOTH = 1057;
     public static final int UNKNOWN_ECU = 1058;
+    public static final String CHANNEL_ID = "SLCI";
 
     private Megasquirt boundService;
 
@@ -56,6 +65,21 @@ public class MSLoggerApplication extends Application
         }
     };
     private boolean mIsBound;
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "SpeedyLogger";//getString(R.string.channel_name);
+            String description = "desc";//getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     /**
      * Do application initialisation work
@@ -76,6 +100,8 @@ public class MSLoggerApplication extends Application
         {
             DebugLogManager.INSTANCE.logException(e);
         }
+        createNotificationChannel();
+
         dumpPreferences();
 
         doBindService();

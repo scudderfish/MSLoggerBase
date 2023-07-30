@@ -71,10 +71,8 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     
     // Regular layout params for dialog row with label and constant
     private final LayoutParams lp;
-    
 
-    private OnEditDialogResult mDialogResult;
-    
+
     private String panelLabel = "";
     
     private BroadcastReceiver yourReceiver;
@@ -290,34 +288,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         return atLeastOne;
     }
     
-    /**
-     * Create controller command button with the properties and events
-     *
-     * @return An instance of Button
-     */
-    private Button createControllerCommandButton(MSDialog dialog, DialogField df)
-    {
-        final String controllerCommandName = df.getName();
-        
-        Button cmdButton = new Button(getContext());
-        
-        cmdButton.setText(df.getLabel());
-        cmdButton.setTag(df.getName());
-        cmdButton.setEnabled(ecu.getUserDefinedVisibilityFlagsByName(dialog.getName() + "_" + df.getName()));                    
-        cmdButton.setOnClickListener(v -> clickCmdButton(controllerCommandName));
-        
-        if (atLeastOneCompleteRow(dialog.getFieldsList()))
-        {
-            cmdButton.setLayoutParams(lpSpanWithMargins); 
-        }
-        else
-        {
-            cmdButton.setLayoutParams(lpWithTopBottomMargins); 
-        }
-        
-        return cmdButton;
-    }
-    
+
     /**
      * Recursive function that will draw fields and panels of a dialog.
      * It's called recursively until all fields and panels were drawn.
@@ -618,12 +589,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             public void onTextChanged(CharSequence s, int start, int before, int count){}
         });
         
-        // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(dialogName + "_" + df.getName()))
-        {
-            edit.setEnabled(false);
-        }
-        
+
         return edit;
     }
     
@@ -669,15 +635,10 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
     {
         Spinner spin = new Spinner(getContext());
         
-        // Field is ready only or disabled
-        if (df.isDisplayOnly() || !ecu.getUserDefinedVisibilityFlagsByName(dialogName + "_" + df.getName()))
-        {
-            spin.setEnabled(false);
-        }
 
-        final List<MultiValuesSpinnerData> spinnerData = new ArrayList<MultiValuesSpinnerData>();
+        final List<MultiValuesSpinnerData> spinnerData = new ArrayList<>();
         
-        int selectedValue = 0;
+        int selectedValue;
         
         // Special case for custom constant build at runtime
         if (df.getName().equals("MSLogger_nSquirts"))
@@ -717,7 +678,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
             }
         }
  
-        ArrayAdapter<MultiValuesSpinnerData> spinAdapter = new ArrayAdapter<MultiValuesSpinnerData>(getContext(), android.R.layout.simple_spinner_item, spinnerData);
+        ArrayAdapter<MultiValuesSpinnerData> spinAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, spinnerData);
         
         // Specify the layout to use when the list of choices appears
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -725,9 +686,7 @@ public class EditDialog extends Dialog implements android.view.View.OnClickListe
         spin.setAdapter(spinAdapter);
         spin.setSelection(selectedIndex);
         spin.setTag(df.getName());
-        
-        final MSDialog msDialog = this.dialog;
-        
+
         spin.setOnItemSelectedListener(new OnItemSelectedListener()
         {
             boolean ignoreEvent = true;
@@ -876,6 +835,7 @@ if (which == R.id.close)
      */
     public interface OnEditDialogResult
     {
+       /** @noinspection unused*/
        void finish(boolean isPowerCycleRequired);
     }
 }

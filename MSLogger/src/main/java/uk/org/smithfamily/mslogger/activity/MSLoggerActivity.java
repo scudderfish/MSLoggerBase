@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.Objects;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
@@ -334,7 +335,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         switch (itemId)
         {
 
-//        case R.id.forceConnection:
+//       case R.id.forceConnection:
 //            toggleConnection();
 //            return true;
 //        case R.id.dashboardEditing:
@@ -426,7 +427,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         {
             DatalogManager.INSTANCE.close();
             FRDLogManager.INSTANCE.close();
-            final List<String> paths = new ArrayList<String>();
+            final List<String> paths = new ArrayList<>();
             paths.add(DatalogManager.INSTANCE.getAbsolutePath());
             paths.add(FRDLogManager.INSTANCE.getAbsolutePath());
             paths.add(DebugLogManager.INSTANCE.getAbsolutePath());

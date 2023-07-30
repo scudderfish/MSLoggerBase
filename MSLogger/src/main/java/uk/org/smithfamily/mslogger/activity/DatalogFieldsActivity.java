@@ -1,10 +1,5 @@
 package uk.org.smithfamily.mslogger.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import uk.org.smithfamily.mslogger.ApplicationSettings;
-import uk.org.smithfamily.mslogger.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,9 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-/**
- * Activity that can be launched when viewing a datalog to select the datalog fields to view
- */
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.R;
+
 public class DatalogFieldsActivity extends Activity implements OnClickListener
 {
     private ListView datalogsList;

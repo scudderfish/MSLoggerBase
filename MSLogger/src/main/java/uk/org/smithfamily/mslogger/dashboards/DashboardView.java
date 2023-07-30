@@ -1,22 +1,31 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.util.*;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
-import org.metalev.multitouch.controller.*;
+import androidx.annotation.NonNull;
+
+import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import uk.org.smithfamily.mslogger.DataManager;
 import uk.org.smithfamily.mslogger.dialog.EditIndicatorDialog;
-import uk.org.smithfamily.mslogger.dialog.EditIndicatorDialog.OnEditIndicatorResult;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Location;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.view.*;
 
 /**
  *
@@ -27,10 +36,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     private final Context context;
     private final List<DashboardElement> elements;
     private DashboardThread thread = null;
-    private final int MAX_FPS = 50;
-    private final int DELAY_PER_FRAME = 1000 / MAX_FPS;
-    private int measuredHeight;
-    private int measuredWidth;
     private final DashboardViewPager parentPager;
     private final MultiTouchController<DashboardElement> multiTouchController;
     private DashboardElement editedItem;
@@ -43,10 +48,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     class GestureProcessor extends GestureDetector.SimpleOnGestureListener
     {
 
-        /**
-         * 
-         * @param e
-         */
         @Override
         public boolean onDoubleTap(final MotionEvent e)
         {
@@ -69,13 +70,17 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
 
     }
+    public DashboardView(final Context context) {
+        super(context);
+        this.context=context;
+        parentPager = null;
+        dashboard = null;
+        position=0;
+        elements= Collections.emptyList();
+        multiTouchController = new MultiTouchController<>(this);
+        gestureScanner = new GestureDetector(context, new GestureProcessor());
+    }
 
-    /**
-     * 
-     * @param context
-     * @param position
-     * @param parent
-     */
     public DashboardView(final Context context, final int position, final DashboardViewPager parent, final Dashboard dashboard)
     {
         super(context);
@@ -83,13 +88,13 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         this.position = position;
         this.parentPager = parent;
         this.dashboard = dashboard;
-        elements = new ArrayList<DashboardElement>();
+        elements = new ArrayList<>();
         getHolder().addCallback(this);
 
         // DataManager will ping when the ECU has finished a cycle
         DataManager.getInstance().addObserver(this);
 
-        multiTouchController = new MultiTouchController<DashboardElement>(this);
+        multiTouchController = new MultiTouchController<>(this);
         gestureScanner = new GestureDetector(context, new GestureProcessor());
     }
 
@@ -104,40 +109,28 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
         final EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
         dialog.show();
-        dialog.setDialogResult(new OnEditIndicatorResult()
-        {
-            @Override
-            public void finish(final Indicator indicator, final boolean toRemove)
+        dialog.setDialogResult((indicator1, toRemove) -> {
+            // User asked to delete this indicator from Remove button on the edit indicator dialog
+            if (toRemove)
             {
-                // User asked to delete this indicator from Remove button on the edit indicator dialog
-                if (toRemove)
+                synchronized (elements)
                 {
-                    synchronized (elements)
-                    {
-                        elements.remove(element);
-                    }
-
-                    boolean landscape = false;
-
-                    // Figure out in which orientation the device is
-                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    {
-                        landscape = true;
-                    }
-
-                    // Remove indicator from current dashboard
-                    dashboard.remove(indicator, landscape);
+                    elements.remove(element);
                 }
-                else
-                {
-                    element.checkPainterMatchesIndicator();
-                    element.scaleToParent(getWidth(), getHeight());
-                }
-                // Let the dash know it's dirty
-                if (thread != null)
-                {
-                    thread.invalidate();
-                }
+
+                boolean landscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+                dashboard.remove(indicator1, landscape);
+            }
+            else
+            {
+                element.checkPainterMatchesIndicator();
+                element.scaleToParent(getWidth(), getHeight());
+            }
+            // Let the dash know it's dirty
+            if (thread != null)
+            {
+                thread.invalidate();
             }
         });
     }
@@ -158,99 +151,73 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         // Open dialog and bind dialog result event
         final EditIndicatorDialog dialog = new EditIndicatorDialog(context, indicator);
         dialog.show();
-        dialog.setDialogResult(new OnEditIndicatorResult()
-        {
-            // Back from the dialog, lets add the element
-            @Override
-            public void finish(final Indicator indicator, final boolean toRemove)
+        // Back from the dialog, lets add the element
+        dialog.setDialogResult((indicator1, toRemove) -> {
+            // Set position and scale for the element
+            double left = px / dv.getWidth();
+            double top = py / dv.getHeight();
+            double right = left + 0.3; // 30% of the screen for the width
+            double bottom = top + 0.3; // 30% of the screen for the height
+
+            // Would go outside of screen, going to move left and right some
+            if (right > 1.0)
             {
-                // Set position and scale for the element
-                double left = px / dv.getWidth();
-                double top = py / dv.getHeight();
-                double right = left + 0.3; // 30% of the screen for the width
-                double bottom = top + 0.3; // 30% of the screen for the height
+                final double diff = right - 1.0;
 
-                // Would go outside of screen, going to move left and right some
-                if (right > 1.0)
-                {
-                    final double diff = right - 1.0;
+                right = 1.0;
+                left -= diff;
+            }
+            // Would go outside of screen, going to move top and bottom some
+            if (bottom > 1.0)
+            {
+                final double diff = bottom - 1.0;
 
-                    right = 1.0;
-                    left -= diff;
-                }
-                // Would go outside of screen, going to move top and bottom some
-                if (bottom > 1.0)
-                {
-                    final double diff = bottom - 1.0;
+                bottom = 1.0;
+                top -= diff;
+            }
 
-                    bottom = 1.0;
-                    top -= diff;
-                }
+            // Set location for the new indicator
+            indicator1.setLocation(new Location(left, top, right, bottom));
 
-                // Set location for the new indicator
-                indicator.setLocation(new Location(left, top, right, bottom));
+            boolean landscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-                boolean landscape = false;
+            // Add indicator to current dashboard
+            dashboard.add(indicator1, landscape);
 
-                // Figure out in which orientation the device is
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-                {
-                    landscape = true;
-                }
+            // Create dashboard element
+            final DashboardElement element = new DashboardElement(context, indicator1, dv);
 
-                // Add indicator to current dashboard
-                dashboard.add(indicator, landscape);
+            // Add dashboard element to dashboard view
+            synchronized (elements)
+            {
+                elements.add(element);
+            }
 
-                // Create dashboard element
-                final DashboardElement element = new DashboardElement(context, indicator, dv);
-
-                // Add dashboard element to dashboard view
-                synchronized (elements)
-                {
-                    elements.add(element);
-                }
-
-                // Let the dash know it's dirty
-                if (thread != null)
-                {
-                    thread.invalidate();
-                }
+            // Let the dash know it's dirty
+            if (thread != null)
+            {
+                thread.invalidate();
             }
         });
     }
 
-    /**
-     * 
-     * @param holder
-     * @param format
-     * @param width
-     * @param height
-     */
     @Override
-    public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height)
+    public void surfaceChanged(@NonNull final SurfaceHolder holder, final int format, final int width, final int height)
     {
 
     }
 
-    /**
-     * 
-     * @param holder
-     */
     @Override
-    public void surfaceCreated(final SurfaceHolder holder)
+    public void surfaceCreated(@NonNull final SurfaceHolder holder)
     {
-        thread = new DashboardThread(getHolder(), context, this);
+        thread = new DashboardThread(getHolder(), this);
 
         thread.setRunning(true);
         thread.start();
     }
 
-    /**
-     * 
-     * @param holder
-     */
     @Override
-    public void surfaceDestroyed(final SurfaceHolder holder)
+    public void surfaceDestroyed(@NonNull final SurfaceHolder holder)
     {
         if (thread != null)
         {
@@ -274,10 +241,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /**
-     * 
-     * @param d
-     */
     public void setDashboard(final Dashboard d)
     {
         synchronized (elements)
@@ -299,25 +262,15 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /**
-     * 
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec)
     {
-        measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-        measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
-    /**
-     * 
-     * @param observable
-     * @param data
-     */
     @Override
     public void update(final Observable observable, final Object data)
     {
@@ -334,43 +287,23 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
     class DashboardThread extends Thread implements Observer
     {
         private volatile boolean running = false;
-        private final Context context;
         private final SurfaceHolder holder;
-        @SuppressWarnings("unused")
-        private final Resources resources;
         private final Object updateLock = new Object();
-        private final DashboardView parent;
         private volatile boolean isDirty;
         private long lastUpdate = System.currentTimeMillis();
 
-        /**
-         * 
-         * @param holder
-         * @param context
-         * @param parent
-         */
-        public DashboardThread(final SurfaceHolder holder, final Context context, final DashboardView parent)
+        public DashboardThread(final SurfaceHolder holder, final DashboardView parent)
         {
             this.holder = holder;
-            this.context = context;
-            this.parent = parent;
-            this.resources = context.getResources();
             this.setName("DashboardThread" + parent.position);
         }
 
-        /**
-         * 
-         * @param r
-         */
         public void setRunning(final boolean r)
         {
             running = r;
             isDirty = r;
         }
 
-        /**
-         * 
-         */
         @Override
         public void run()
         {
@@ -403,6 +336,8 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
                     }
                     final long now = System.currentTimeMillis();
                     final long delay = now - lastUpdate;
+                    int MAX_FPS = 50;
+                    int DELAY_PER_FRAME = 1000 / MAX_FPS;
                     if (delay < DELAY_PER_FRAME)
                     {
                         // We're running faster than the desired framerate, so throttle back
@@ -437,11 +372,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
             }
         }
 
-        /**
-         * 
-         * @param observable
-         * @param data
-         */
         @Override
         public void update(final Observable observable, final Object data)
         {
@@ -465,10 +395,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
 
         }
 
-        /**
-         * 
-         * @param c
-         */
         public void drawIndicators(final Canvas c)
         {
             isDirty = false;
@@ -485,11 +411,7 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /**
-     * Pass touch events to the MT controller if the gestureScanner doesn't like it
-     * 
-     * @param event
-     */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(final MotionEvent event)
     {
@@ -503,10 +425,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         }
     }
 
-    /**
-     * 
-     * @param touchPoint
-     */
     @Override
     public DashboardElement getDraggableObjectAtPoint(final PointInfo touchPoint)
     {
@@ -516,12 +434,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         return getElementAtCoOrds(px, py);
     }
 
-    /**
-     * 
-     * @param px
-     * @param py
-     * @return
-     */
     private DashboardElement getElementAtCoOrds(final float px, final float py)
     {
         DashboardElement found = null;
@@ -545,11 +457,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         return found;
     }
 
-    /**
-     * 
-     * @param e
-     * @param objPosAndScaleOut
-     */
     @Override
     public void getPositionAndScale(final DashboardElement e, final PositionAndScale objPosAndScaleOut)
     {
@@ -563,12 +470,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         objPosAndScaleOut.set(centreX, centreY, true, scale, !isotropic, scaleX, scaleY, true, angle);
     }
 
-    /**
-     * 
-     * @param obj
-     * @param newObjPosAndScale
-     * @param touchPoint
-     */
     @Override
     public boolean setPositionAndScale(final DashboardElement obj, final PositionAndScale newObjPosAndScale, final PointInfo touchPoint)
     {
@@ -580,11 +481,6 @@ public class DashboardView extends SurfaceView implements Observer, SurfaceHolde
         return b;
     }
 
-    /**
-     * 
-     * @param obj
-     * @param touchPoint
-     */
     @Override
     public void selectObject(final DashboardElement obj, final PointInfo touchPoint)
     {

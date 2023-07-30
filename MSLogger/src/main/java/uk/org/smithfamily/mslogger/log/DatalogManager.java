@@ -1,13 +1,16 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.*;
+import android.annotation.SuppressLint;
+import android.text.format.DateFormat;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-
-import android.annotation.SuppressLint;
-import android.text.format.DateFormat;
 
 /**
  * Class that write a datalog in .msl format
@@ -138,6 +141,7 @@ public enum DatalogManager
 
     /**
      * Mark the datalog
+     * @noinspection unused
      */
     public void mark()
     {

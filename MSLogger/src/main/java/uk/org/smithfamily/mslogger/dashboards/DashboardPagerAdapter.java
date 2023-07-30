@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -18,11 +19,6 @@ public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnP
     private final List<Dashboard> dashboards;
     private final DashboardViewPager parent;
 
-    /**
-     * 
-     * @param c
-     * @param parent
-     */
     public DashboardPagerAdapter(final Context c, final DashboardViewPager parent)
     {
         this.context = c;
@@ -30,44 +26,28 @@ public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnP
         dashboards = DashboardIO.INSTANCE.loadDash();
     }
 
-    /**
-     * 
-     * @return
-     */
     @Override
     public int getCount()
     {
         return dashboards.size();
     }
 
-    /**
-     * 
-     * @param collection
-     * @param position
-     * 
-     * @return
-     */
+    @NonNull
     @Override
-    public Object instantiateItem(final ViewGroup collection, final int position)
+    public Object instantiateItem(@NonNull final ViewGroup collection, final int position)
     {
         final Dashboard d = dashboards.get(position);
         final DashboardView dvg = new DashboardView(context, position, parent, d);
 
         dvg.setDashboard(d);
 
-        ((ViewPager) collection).addView(dvg, 0);
+        collection.addView(dvg, 0);
 
         return dvg;
     }
 
-    /**
-     * 
-     * @param collection
-     * @param position
-     * @param v
-     */
     @Override
-    public void destroyItem(final View collection, final int position, final Object v)
+    public void destroyItem(@NonNull final View collection, final int position, @NonNull final Object v)
     {
 
         final ViewPager viewPager = (ViewPager) collection;
@@ -76,23 +56,12 @@ public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnP
         viewPager.removeView(view);
     }
 
-    /**
-     * 
-     * @param view
-     * @param o
-     * 
-     * @return
-     */
     @Override
-    public boolean isViewFromObject(final View view, final Object o)
+    public boolean isViewFromObject(@NonNull final View view, @NonNull final Object o)
     {
-        return view == ((View) o);
+        return view == o;
     }
 
-    /**
-     * 
-     * @param arg0
-     */
     @Override
     public void onPageScrollStateChanged(final int arg0)
     {
@@ -100,12 +69,6 @@ public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnP
 
     }
 
-    /**
-     * 
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     */
     @Override
     public void onPageScrolled(final int arg0, final float arg1, final int arg2)
     {
@@ -113,10 +76,6 @@ public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnP
 
     }
 
-    /**
-     * 
-     * @param arg0
-     */
     @Override
     public void onPageSelected(final int arg0)
     {

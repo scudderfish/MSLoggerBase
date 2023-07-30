@@ -62,15 +62,10 @@ public class Dashboard
 
     public List<Indicator> getLandscape()
     {
-        if (landscapeDash != null)
-        {
-            return landscapeDash;
-        }
-        else
-        {
+        if (landscapeDash == null) {
             landscapeDash = new ArrayList<>();
-            return landscapeDash;
         }
+        return landscapeDash;
     }
 
     /**

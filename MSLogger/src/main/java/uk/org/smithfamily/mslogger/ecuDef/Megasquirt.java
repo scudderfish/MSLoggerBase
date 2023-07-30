@@ -1,54 +1,76 @@
 package uk.org.smithfamily.mslogger.ecuDef;
 
-import java.io.*;
+import static uk.org.smithfamily.mslogger.MSLoggerApplication.CHANNEL_ID;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Binder;
+import android.os.Environment;
+import android.os.IBinder;
+import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import uk.org.smithfamily.mslogger.*;
+import uk.org.smithfamily.mslogger.ApplicationSettings;
+import uk.org.smithfamily.mslogger.DataManager;
+import uk.org.smithfamily.mslogger.R;
 import uk.org.smithfamily.mslogger.activity.MSLoggerActivity;
-import uk.org.smithfamily.mslogger.comms.*;
+import uk.org.smithfamily.mslogger.comms.BTTimeoutException;
+import uk.org.smithfamily.mslogger.comms.CRC32Exception;
+import uk.org.smithfamily.mslogger.comms.ECUConnectionManager;
 import uk.org.smithfamily.mslogger.ecuDef.gen.ECURegistry;
-import uk.org.smithfamily.mslogger.log.*;
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.util.Log;
-import android.widget.Toast;
+import uk.org.smithfamily.mslogger.log.DatalogManager;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.log.FRDLogManager;
 
 /**
  * Abstract base class for all ECU implementations
- * 
+ *
  * @author dgs
- * 
+ *
  */
-public class Megasquirt extends Service implements MSControllerInterface
-{
+public class Megasquirt extends Service implements MSControllerInterface {
     private static final int MAX_QUEUE_SIZE = 10;
-    BlockingQueue<InjectedCommand> injectionQueue = new ArrayBlockingQueue<InjectedCommand>(MAX_QUEUE_SIZE);
+    BlockingQueue<InjectedCommand> injectionQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
 
-    private enum State
-    {
+    private enum State {
         DISCONNECTED, CONNECTING, CONNECTED, LOGGING
-    };
+    }
 
     private volatile State currentState = State.DISCONNECTED;
 
-    private NotificationManager notifications;
     private MSECUInterface ecuImplementation;
 
-    public static final String CONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
-    public static final String DISCONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
-    public static final String NEW_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
-    public static final String UNKNOWN_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU";
-    public static final String UNKNOWN_ECU_BT = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.UNKNOWN_ECU_BT";
-    public static final String PROBE_ECU = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.ECU_PROBED";
-    public static final String INJECTED_COMMAND_RESULTS = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS";
-    public static final String INJECTED_COMMAND_RESULT_ID = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_ID";
-    public static final String INJECTED_COMMAND_RESULT_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.INJECTED_COMMAND_RESULTS_DATA";
+    public static final String CONNECTED = "CONNECTED";
+    public static final String DISCONNECTED = "DISCONNECTED";
+    public static final String NEW_DATA = "NEW_DATA";
+    public static final String UNKNOWN_ECU = "UNKNOWN_ECU";
+    public static final String UNKNOWN_ECU_BT = "UNKNOWN_ECU_BT";
+    public static final String PROBE_ECU = "ECU_PROBED";
+    public static final String INJECTED_COMMAND_RESULTS = "INJECTED_COMMAND_RESULTS";
+    public static final String INJECTED_COMMAND_RESULT_ID = "INJECTED_COMMAND_RESULTS_ID";
+    public static final String INJECTED_COMMAND_RESULT_DATA = "INJECTED_COMMAND_RESULTS_DATA";
 
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LAST_SIG = "LAST_SIG";
@@ -70,17 +92,14 @@ public class Megasquirt extends Service implements MSControllerInterface
     private static volatile ECUThread watch;
     private long logStart = 0;
 
-    public class LocalBinder extends Binder
-    {
-        public Megasquirt getService()
-        {
+    public class LocalBinder extends Binder {
+        public Megasquirt getService() {
             return Megasquirt.this;
         }
     }
 
     @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId)
-    {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         DebugLogManager.INSTANCE.log("Megasquirt Received start id " + startId + ": " + intent, Log.VERBOSE);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
@@ -88,8 +107,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     @Override
-    public IBinder onBind(final Intent intent)
-    {
+    public IBinder onBind(final Intent intent) {
         return mBinder;
     }
 
@@ -97,11 +115,10 @@ public class Megasquirt extends Service implements MSControllerInterface
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
-        notifications = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         final IntentFilter btChangedFilter = new IntentFilter();
         btChangedFilter.addAction(ApplicationSettings.BT_CHANGED);
@@ -109,21 +126,17 @@ public class Megasquirt extends Service implements MSControllerInterface
         final IntentFilter injectCommandResultsFilter = new IntentFilter();
         injectCommandResultsFilter.addAction(Megasquirt.INJECTED_COMMAND_RESULTS);
 
-        this.yourReceiver = new BroadcastReceiver()
-        {
+        this.yourReceiver = new BroadcastReceiver() {
             @Override
-            public void onReceive(final Context context, final Intent intent)
-            {
+            public void onReceive(final Context context, final Intent intent) {
                 final String action = intent.getAction();
 
-                if (action.equals(ApplicationSettings.BT_CHANGED))
-                {
+                assert action != null;
+                if (action.equals(ApplicationSettings.BT_CHANGED)) {
                     DebugLogManager.INSTANCE.log("BT_CHANGED received", Log.VERBOSE);
                     stop();
                     start();
-                }
-                else if (action.equals(Megasquirt.INJECTED_COMMAND_RESULTS))
-                {
+                } else if (action.equals(Megasquirt.INJECTED_COMMAND_RESULTS)) {
                     final int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
 
                     if (resultId == Megasquirt.BURN_DATA) {// Wait til we get some data and flush it
@@ -141,50 +154,62 @@ public class Megasquirt extends Service implements MSControllerInterface
         this.registerReceiver(this.yourReceiver, injectCommandResultsFilter);
 
         final String lastSig = ApplicationSettings.INSTANCE.getPref(LAST_SIG);
-        if (lastSig != null)
-        {
+        if (lastSig != null) {
             setImplementation(lastSig);
         }
 
         ApplicationSettings.INSTANCE.setEcu(this);
         start();
 
-        startForeground(NOTIFICATION_ID, null);
+        //startForeground(NOTIFICATION_ID, null);
     }
 
-    private void setState(final State s)
-    {
+    private void setState(final State s) {
         currentState = s;
         int msgId = R.string.disconnected_from_ms;
-        boolean removeNotification = false;
-        switch (currentState)
-        {
-        case DISCONNECTED:
-            removeNotification = true;
-            break;
-        case CONNECTING:
-            msgId = R.string.connecting_to_ms;
-            break;
-        case CONNECTED:
-            msgId = R.string.connected_to_ms;
-            break;
-        case LOGGING:
-            msgId = R.string.logging;
-            break;
-        default:
-            msgId = R.string.unknown;
-            break;
+        switch (currentState) {
+            case DISCONNECTED:
+                break;
+            case CONNECTING:
+                msgId = R.string.connecting_to_ms;
+                break;
+            case CONNECTED:
+                msgId = R.string.connected_to_ms;
+                break;
+            case LOGGING:
+                msgId = R.string.logging;
+                break;
+            default:
+                msgId = R.string.unknown;
+                break;
         }
 
-        if (removeNotification)
-        {
-            notifications.cancelAll();
-        }
-        else
         {
             final CharSequence text = getText(R.string.app_name);
-            final Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
             final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), PendingIntent.FLAG_IMMUTABLE);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.icon)
+                    .setContentTitle(text)
+                    .setContentText(getText(msgId))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    // Set the intent that will fire when the user taps the notification
+                    .setContentIntent(contentIntent)
+                    .setAutoCancel(true);
+            NotificationManagerCompat nm = NotificationManagerCompat.from(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            nm.notify(R.string.app_name, builder.build());
+
+//            final Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
 //            notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
 //            notifications.notify(NOTIFICATION_ID, notification);
         }
@@ -194,7 +219,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     public void onDestroy()
     {
         super.onDestroy();
-        notifications.cancelAll();
         // Do not forget to unregister the receiver!!!
         this.unregisterReceiver(this.yourReceiver);
     }
@@ -301,7 +325,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         ecuImplementation.refreshFlags();
         constantsLoaded = false;
-        notifications.cancelAll();
     }
 
     /**
@@ -463,7 +486,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private class ECUThread extends Thread
     {
-        int interWriteDelay = 0;
+        int interWriteDelay;
 
         private class CalculationThread extends Thread
         {
@@ -744,7 +767,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                     }
                     catch (final BootException e)
                     {
-                        response = ECUConnectionManager.getInstance().writeAndRead(bootCommand, 500, false);
+                        ECUConnectionManager.getInstance().writeAndRead(bootCommand, 500, false);
                     }
                 }
             }
@@ -788,7 +811,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                     /*
                      * My ECU also occasionally goes to a Boot> prompt on start up (dodgy electrics) so if we see that, force the ECU to start.
                      */
-                    response = ECUConnectionManager.getInstance().writeAndRead(bootCommand, 500, false);
+                    ECUConnectionManager.getInstance().writeAndRead(bootCommand, 500, false);
                 }
             }
 
@@ -1174,21 +1197,6 @@ public class Megasquirt extends Service implements MSControllerInterface
         return MSECUInterface.dialogs.get(name);
     }
 
-    /**
-     * Get a visibility flag for a user defined (dialog, field, panel, etc) Used for field in dialog, for example
-     * 
-     * @param name The name of the user defined flag
-     * @return true if visible, false otherwise
-     */
-    public boolean getUserDefinedVisibilityFlagsByName(final String name)
-    {
-        if (MSECUInterface.userDefinedVisibilityFlags.containsKey(name))
-        {
-            return Boolean.TRUE.equals(MSECUInterface.userDefinedVisibilityFlags.get(name));
-        }
-
-        return true;
-    }
 
     public int getBlockSize()
     {

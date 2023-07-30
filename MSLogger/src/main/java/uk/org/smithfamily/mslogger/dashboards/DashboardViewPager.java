@@ -6,9 +6,6 @@ import android.view.MotionEvent;
 
 import androidx.viewpager.widget.ViewPager;
 
-/**
- *
- */
 public class DashboardViewPager extends ViewPager
 {
     private boolean editMode = false;
