@@ -1,9 +1,10 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.viewpager.widget.ViewPager;
 
 /**
  *
@@ -13,9 +14,7 @@ public class DashboardViewPager extends ViewPager
     private boolean editMode = false;
 
     /**
-     * 
-     * @param context
-     * @param attrs
+     *
      */
     public DashboardViewPager(final Context context, final AttributeSet attrs)
     {
@@ -23,8 +22,7 @@ public class DashboardViewPager extends ViewPager
     }
 
     /**
-     * 
-     * @param context
+     *
      */
     public DashboardViewPager(final Context context)
     {
@@ -32,11 +30,9 @@ public class DashboardViewPager extends ViewPager
     }
 
     /**
-     * 
-     * @param arg0
-     * @return
+     *
      */
-    @Override
+
     public boolean onInterceptTouchEvent(final MotionEvent arg0)
     {
         return !editMode;
@@ -59,4 +55,5 @@ public class DashboardViewPager extends ViewPager
     {
         this.editMode = editMode;
     }
+
 }

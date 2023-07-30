@@ -3,11 +3,10 @@ apply plugin: 'com.android.application'
 android {
     namespace "uk.org.smithfamily.mslogger"
     compileSdk 34
-    buildToolsVersion "34.0.0"
 
     defaultConfig {
         applicationId "uk.org.smithfamily.mslogger"
-        minSdkVersion 8
+        minSdk 14
         targetSdkVersion 34
     }
 
@@ -25,5 +24,7 @@ android {
 
 dependencies {
     implementation files('../libs/firmwares.jar')
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
 }
 

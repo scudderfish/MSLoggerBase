@@ -40,7 +40,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     private NotificationManager notifications;
     private MSECUInterface ecuImplementation;
 
-    private final boolean simulated = false;
     public static final String CONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.CONNECTED";
     public static final String DISCONNECTED = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.DISCONNECTED";
     public static final String NEW_DATA = "uk.org.smithfamily.mslogger.ecuDef.Megasquirt.NEW_DATA";
@@ -65,19 +64,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     public static final int CONTROLLER_COMMAND = 1;
 
     public static final int BURN_DATA = 10;
-
-    public static final int MS3_SD_CARD_STATUS_WRITE = 50;
-    public static final int MS3_SD_CARD_STATUS_READ = 51;
-    public static final int MS3_SD_CARD_RESET_AND_GO = 52;
-    public static final int MS3_SD_CARD_RESET_AND_WAIT = 53;
-    public static final int MS3_SD_CARD_STOP_LOGGING = 54;
-    public static final int MS3_SD_CARD_START_LOGGING = 55;
-    public static final int MS3_SD_CARD_REINITIALISE_CARD = 56;
-    public static final int MS3_SD_CARD_READ_DIRECTORY_WRITE = 57;
-    public static final int MS3_SD_CARD_READ_DIRECTORY_READ = 58;
-    public static final int MS3_SD_CARD_READ_STREAM = 59;
-    public static final int MS3_SD_CARD_READ_RTC_WRITE = 60;
-    public static final int MS3_SD_CARD_READ_RTC_READ = 61;
 
     private boolean constantsLoaded;
     private String trueSignature = "Unknown";
@@ -209,7 +195,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         {
             final CharSequence text = getText(R.string.app_name);
             final Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
-            final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), 0);
+            final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), PendingIntent.FLAG_IMMUTABLE);
             notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
             notifications.notify(NOTIFICATION_ID, notification);
         }
@@ -356,11 +342,6 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     private void disconnect()
     {
-        if (simulated)
-        {
-            return;
-        }
-
         DebugLogManager.INSTANCE.log("Disconnect", Log.INFO);
 
         ECUConnectionManager.getInstance().disconnect();
@@ -646,7 +627,7 @@ public class Megasquirt extends Service implements MSControllerInterface
                     if (!constantsLoaded)
                     {
                         // Only do this once so reconnects are quicker
-                        ecuImplementation.loadConstants(simulated);
+                        ecuImplementation.loadConstants(false);
                         constantsLoaded = true;
 
                     }
@@ -897,11 +878,6 @@ public class Megasquirt extends Service implements MSControllerInterface
                 delay(interWriteDelay);
             }
             final byte[] buffer = new byte[ecuImplementation.getBlockSize()];
-            if (simulated)
-            {
-                MSSimulator.INSTANCE.getNextRTV(buffer);
-                return buffer;
-            }
 
             final int delay = interWriteDelay == 0 ? ecuImplementation.getInterWriteDelay() : interWriteDelay;
             ECUConnectionManager.getInstance().writeAndRead(ecuImplementation.getOchCommand(), buffer, delay, ecuImplementation.isCRC32Protocol());
@@ -1641,7 +1617,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     public List<String> getRequiresPowerCycle()
     {
-        return ecuImplementation.getRequiresPowerCycle();
+        return ecuImplementation.ygetRequiresPowerCycle();
     }
 
     public List<SettingGroup> getSettingGroups()

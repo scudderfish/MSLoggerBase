@@ -1,17 +1,18 @@
 package uk.org.smithfamily.mslogger.dashboards;
 
-import java.util.List;
-
 import android.content.Context;
-import android.support.v4.view.*;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import java.util.List;
 
 /**
  *
  */
-public class DashboardPagerAdapter extends PagerAdapter implements OnPageChangeListener
+public class DashboardPagerAdapter extends PagerAdapter implements ViewPager.OnPageChangeListener
 {
     private final Context context;
     private final List<Dashboard> dashboards;
