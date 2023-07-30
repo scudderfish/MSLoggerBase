@@ -20,7 +20,6 @@ public class Gauge extends Painter
         super(parent, model, c);
     }
 
-    private final double pi = Math.PI;
     private Paint titlePaint;
     private Paint valuePaint;
     private Paint pointerPaint;
@@ -32,14 +31,14 @@ public class Gauge extends Painter
     private Paint facePaint;
     private Paint backgroundPaint;
     private volatile Bitmap background;
-    private final SparseArray<Bitmap> backgrounds = new SparseArray<Bitmap>(4);
+    private final SparseArray<Bitmap> backgrounds = new SparseArray<>(4);
     private int lastBGColour;
     private static final float rimSize = 0.02f;
 
     @Override
     protected void init(final Context c)
     {
-        initDrawingTools(c);
+        initDrawingTools();
     }
 
     private synchronized void regenerateBackground(final int width, final int height)
@@ -60,7 +59,7 @@ public class Gauge extends Painter
         final Canvas backgroundCanvas = new Canvas(background);
 
         final float scale = Math.min(height, width);
-        backgroundCanvas.save(Canvas.MATRIX_SAVE_FLAG);
+        backgroundCanvas.save();
         backgroundCanvas.scale(scale, scale);
 
         drawFace(backgroundCanvas);
@@ -83,8 +82,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param canvas
+     *
      */
     @Override
     public void renderFrame(final Canvas canvas)
@@ -100,7 +98,7 @@ public class Gauge extends Painter
         drawBackground(canvas);
 
         final float scale = Math.min(height, width);
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save();
         canvas.translate(left, top);
         canvas.scale(scale, scale);
 
@@ -121,10 +119,9 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param context
+     *
      */
-    private void initDrawingTools(final Context context)
+    private void initDrawingTools()
     {
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
         if (parent.isInEditMode())
@@ -200,8 +197,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param canvas
+     *
      */
     private void drawTitle(final Canvas canvas)
     {
@@ -214,8 +210,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param canvas
+     *
      */
     private void drawValue(final Canvas canvas)
     {
@@ -238,8 +233,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param canvas
+     *
      */
     private void drawPointer(final Canvas canvas)
     {
@@ -267,7 +261,7 @@ public class Gauge extends Painter
         pointerPath.lineTo(0.5f + 0.010f, 0.5f + 0.05f); // 0.501, 0.505
         pointerPath.lineTo(0.5f - 0.010f, 0.5f + 0.05f); // 0.499, 0.505
         pointerPath.lineTo(0.5f, 0.1f); // 0.500, 0.100
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save();
 
         final double angle = (((pointerValue - model.getMin()) * angularRange) + model.getOffsetAngle()) - 180;
         canvas.rotate((float) angle, 0.5f, 0.5f);
@@ -275,10 +269,6 @@ public class Gauge extends Painter
         canvas.restore();
     }
 
-    /**
-     * 
-     * @param canvas
-     */
     private void drawScale(final Canvas canvas)
     {
         final float radius = 0.42f;
@@ -316,6 +306,7 @@ public class Gauge extends Painter
 
             final double anglerange = 270.0 / gaugeRange;
             final double angle = ((val - gaugeMin) * anglerange) + model.getOffsetAngle();
+            double pi = Math.PI;
             final double rads = (angle * pi) / 180.0;
             final float x = (float) (0.5f - (radius * Math.cos(rads - (pi / 2.0))));
             final float y = (float) (0.5f - (radius * Math.sin(rads - (pi / 2.0))));
@@ -342,8 +333,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @return
+     *
      */
     private int getBgColour()
     {
@@ -370,8 +360,7 @@ public class Gauge extends Painter
     }
 
     /**
-     * 
-     * @param canvas
+     *
      */
     private void drawFace(final Canvas canvas)
     {
@@ -404,7 +393,7 @@ public class Gauge extends Painter
     @Override
     protected synchronized void invalidateCaches()
     {
-        int key = 0;
+        int key;
         for (int i = 0; i < backgrounds.size(); i++)
         {
             key = backgrounds.keyAt(i);

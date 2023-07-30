@@ -55,7 +55,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     private static final String LAST_PROBE = "LAST_PROBE";
     private static final int NOTIFICATION_ID = 10;
 
-    final DecimalFormat decimalFormat3dp = new DecimalFormat("#.000");
     final DecimalFormat decimalFormat1dp = new DecimalFormat("#.0");
 
     private BroadcastReceiver yourReceiver;
@@ -127,21 +126,11 @@ public class Megasquirt extends Service implements MSControllerInterface
                 {
                     final int resultId = intent.getIntExtra(Megasquirt.INJECTED_COMMAND_RESULT_ID, 0);
 
-                    switch (resultId)
-                    {
-                    case Megasquirt.BURN_DATA:
-                        // Wait til we get some data and flush it
-                        try
-                        {
+                    if (resultId == Megasquirt.BURN_DATA) {// Wait til we get some data and flush it
+                        try {
                             Thread.sleep(200);
+                        } catch (final InterruptedException ignored) {
                         }
-                        catch (final InterruptedException e)
-                        {
-                        }
-
-                        break;
-                    default:
-                        break;
                     }
                 }
             }
@@ -196,8 +185,8 @@ public class Megasquirt extends Service implements MSControllerInterface
             final CharSequence text = getText(R.string.app_name);
             final Notification notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
             final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MSLoggerActivity.class), PendingIntent.FLAG_IMMUTABLE);
-            notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
-            notifications.notify(NOTIFICATION_ID, notification);
+//            notification.setLatestEventInfo(this, getText(msgId), text, contentIntent);
+//            notifications.notify(NOTIFICATION_ID, notification);
         }
     }
 
@@ -230,8 +219,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * Add a command for the ECUThread to process when it can
-     * 
-     * @param command
+     *
      */
     public void injectCommand(final InjectedCommand command)
     {
@@ -358,7 +346,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      */
     protected void sendMessage(final String msg)
     {
-        broadcast(ApplicationSettings.GENERAL_MESSAGE, msg);
+        broadcast(msg);
     }
 
     protected void sendToastMessage(final String msg)
@@ -385,21 +373,14 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * Send a status update to the rest of the application
-     * 
-     * @param action
+     *
      */
-    private void broadcast(final String action)
-    {
-        final Intent broadcast = new Intent();
-        broadcast.setAction(action);
-        sendBroadcast(broadcast);
-    }
 
-    private void broadcast(final String action, final String data)
+    private void broadcast(final String data)
     {
-        DebugLogManager.INSTANCE.log("Megasquirt.broadcast(" + action + "," + data + ")", Log.VERBOSE);
+        DebugLogManager.INSTANCE.log("Megasquirt.broadcast(" + ApplicationSettings.GENERAL_MESSAGE + "," + data + ")", Log.VERBOSE);
         final Intent broadcast = new Intent();
-        broadcast.setAction(action);
+        broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);
         broadcast.putExtra(ApplicationSettings.MESSAGE, data);
         sendBroadcast(broadcast);
     }
@@ -416,7 +397,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     /**
      * How long have we been running?
      *
-     * @return
      */
     @Override
     public int timeNow()
@@ -459,9 +439,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * Take a wild stab at what this does.
-     * 
-     * @param v
-     * @return
+     *
      */
     @Override
     public double round(final double v)
@@ -471,9 +449,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * Returns if a flag has been set in the application
-     * 
-     * @param name
-     * @return
+     *
      */
     @Override
     public boolean isSet(final String name)
@@ -575,9 +551,6 @@ public class Megasquirt extends Service implements MSControllerInterface
          */
         public void initialiseConnection()
         {
-            // sendMessage("Launching connection");
-
-            // Connection conn = ConnectionFactory.INSTANCE.getConnection();
             final String btAddress = ApplicationSettings.INSTANCE.getECUBluetoothMac();
             ECUConnectionManager.getInstance().init(null, btAddress);
         }
@@ -824,10 +797,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         /**
          * Attempt to figure out the data we got back from the device
-         * 
-         * @param response
-         * @return
-         * @throws BootException
+         *
          */
         private String processResponse(final byte[] response) throws BootException
         {
@@ -866,10 +836,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         /**
          * Get the current variables from the ECU
-         * 
-         * @throws IOException
-         * @throws CRC32Exception
-         * @throws BTTimeoutException
+         *
          */
         private byte[] getRuntimeVars() throws IOException, CRC32Exception, BTTimeoutException
         {
@@ -898,11 +865,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
         /**
          * Read a page of constants from the ECU into a byte buffer. MS1 uses a select/read combo, MS2 just does a read
-         * 
-         * @param pageBuffer
-         * @param pageSelectCommand
-         * @param pageReadCommand
-         * @throws IOException
+         *
          */
         protected void getPage(final byte[] pageBuffer, final byte[] pageSelectCommand, final byte[] pageReadCommand) throws IOException, CRC32Exception
         {
@@ -932,8 +895,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     /**
-     * 
-     * @return
+     *
      */
     public String getTrueSignature()
     {
@@ -942,13 +904,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * helper method for subclasses
-     * 
-     * @param pageNo
-     * @param pageOffset
-     * @param pageSize
-     * @param select
-     * @param read
-     * @return
+     *
      */
     @Override
     public byte[] loadPage(final int pageNo, final int pageOffset, final int pageSize, final byte[] select, final byte[] read)
@@ -978,11 +934,7 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     /**
-     * 
-     * @param buffer
-     * @param select
-     * @param read
-     * @throws IOException
+     *
      */
     private void getPage(final byte[] buffer, final byte[] select, final byte[] read) throws IOException, CRC32Exception
     {
@@ -991,9 +943,7 @@ public class Megasquirt extends Service implements MSControllerInterface
 
     /**
      * Dumps a loaded page to SD card for analysis
-     * 
-     * @param pageNo
-     * @param buffer
+     *
      */
     private void savePage(final int pageNo, final byte[] buffer)
     {
@@ -1036,186 +986,10 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
     }
 
-    /**
-     * Write a constant back to the ECU
-     * 
-     * @param constant The constant to write
-     */
-    public void writeConstant(final Constant constant)
-    {
-        final List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
-        final List<String> pageValueWrites = ecuImplementation.getPageValueWrites();
 
-        // Ex: U08, S16
-        final String type = constant.getType();
 
-        // 8 bits = 1 byte by default
-        int size = 1;
-        if (type.contains("16"))
-        {
-            size = 2; // 16 bits = 2 bytes
-        }
 
-        final int pageNo = constant.getPage();
-        final int offset = constant.getOffset();
 
-        int[] msValue = null;
-
-        // Constant to write is of type scalar or bits
-        if (constant.getClassType().equals("scalar") || constant.getClassType().equals("bits"))
-        {
-            msValue = new int[1];
-            msValue[0] = (int) getField(constant.getName());
-        }
-        // Constant to write to ECU is of type array
-        else if (constant.getClassType().equals("array"))
-        {
-            final int shape[] = MSUtilsShared.getArraySize(constant.getShape());
-
-            final int width = shape[0];
-            final int height = shape[1];
-
-            // Vector
-            if (height == -1)
-            {
-                size *= width;
-                msValue = getVector(constant.getName());
-            }
-            // Array
-            else
-            {
-                // Flatten array into msValue
-                final int[][] array = getArray(constant.getName());
-                int i = 0;
-
-                size *= width * height;
-                msValue = new int[width * height];
-
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        msValue[i++] = array[x][y];
-                    }
-                }
-
-            }
-        }
-
-        // Make sure we have something to send to the MS
-        if ((msValue != null) && (msValue.length > 0))
-        {
-            final String writeCommand = pageValueWrites.get(pageNo - 1);
-            final String command = MSUtilsShared.HexStringToBytes(pageIdentifiers, writeCommand, offset, size, msValue, pageNo);
-            final byte[] byteCommand = MSUtils.INSTANCE.commandStringtoByteArray(command);
-
-            DebugLogManager.INSTANCE.log("Writing to MS: command: " + command + " constant: " + constant.getName() + " msValue: " + Arrays.toString(msValue) + " pageValueWrite: " + writeCommand + " offset: " + offset + " count: " + size
-                    + " pageNo: " + pageNo, Log.DEBUG);
-
-            final List<byte[]> pageActivates = ecuImplementation.getPageActivates();
-
-            try
-            {
-                final int delay = ecuImplementation.getPageActivationDelay();
-
-                // MS1 use page select command
-                if (pageActivates.size() >= pageNo)
-                {
-                    final byte[] pageSelectCommand = pageActivates.get(pageNo - 1);
-                    ECUConnectionManager.getInstance().writeCommand(pageSelectCommand, delay, ecuImplementation.isCRC32Protocol());
-                }
-
-                final InjectedCommand writeToRAM = new InjectedCommand(byteCommand, 300, false, 0);
-                injectCommand(writeToRAM);
-
-                Toast.makeText(this, "Writing constant " + constant.getName() + " to MegaSquirt", Toast.LENGTH_SHORT).show();
-            }
-            catch (final IOException e)
-            {
-                DebugLogManager.INSTANCE.logException(e);
-            }
-
-            burnPage(pageNo);
-        }
-        // Nothing to send to the MS, maybe unsupported constant type ?
-        else
-        {
-            DebugLogManager.INSTANCE.log("Couldn't find any value to write, maybe unsupported constant type " + constant.getType(), Log.DEBUG);
-        }
-    }
-
-    /**
-     * Burn a page from MS RAM to Flash
-     * 
-     * @param pageNo The page number to burn
-     */
-    private void burnPage(final int pageNo)
-    {
-        // Convert from page to table index that the ECU understand
-        final List<String> pageIdentifiers = ecuImplementation.getPageIdentifiers();
-
-        final String pageIdentifier = pageIdentifiers.get(pageNo - 1).replace("\\$tsCanId\\", "");
-
-        final byte tblIdx = (byte) MSUtilsShared.HexByteToDec(pageIdentifier);
-
-        DebugLogManager.INSTANCE.log("Burning page " + pageNo + " (Page identifier: " + pageIdentifier + " - Table index: " + tblIdx + ")", Log.DEBUG);
-
-        // Send "b" command for the tblIdx
-        final InjectedCommand burnToFlash = new InjectedCommand(new byte[] { 98, 0, tblIdx }, 300, true, Megasquirt.BURN_DATA);
-        injectCommand(burnToFlash);
-
-        Toast.makeText(this, "Burning page " + pageNo + " to MegaSquirt", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Get an array from the ECU
-     * 
-     * @param channelName The variable name to modify
-     * @return
-     */
-    public int[][] getArray(final String channelName)
-    {
-        int[][] value = { { 0 }, { 0 } };
-        final Class<?> c = ecuImplementation.getClass();
-        try
-        {
-            final Field f = c.getDeclaredField(channelName);
-            value = (int[][]) f.get(ecuImplementation);
-        }
-        catch (final Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get array value for " + channelName, Log.ERROR);
-        }
-        return value;
-    }
-
-    /**
-     * Get a vector from the ECU
-     * 
-     * @param channelName The variable name to modify
-     * @return
-     */
-    public int[] getVector(final String channelName)
-    {
-        int[] value = { 0 };
-        final Class<?> c = ecuImplementation.getClass();
-        try
-        {
-            final Field f = c.getDeclaredField(channelName);
-            value = (int[]) f.get(ecuImplementation);
-        }
-        catch (final Exception e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to get vector value for " + channelName, Log.ERROR);
-        }
-        return value;
-    }
-
-    /**
-     * 
-     * @param channelName
-     * @param value
-     */
     public void setField(final String channelName, final int value)
     {
         final Class<?> c = ecuImplementation.getClass();
@@ -1239,51 +1013,7 @@ public class Megasquirt extends Service implements MSControllerInterface
         }
     }
 
-    public void setVector(final String channelName, final int[] xBins)
-    {
-        final Class<?> c = ecuImplementation.getClass();
 
-        try
-        {
-            final Field f = c.getDeclaredField(channelName);
-            f.set(ecuImplementation, xBins);
-        }
-        catch (final NoSuchFieldException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName + ", no such field", Log.ERROR);
-        }
-        catch (final IllegalArgumentException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName + ", illegal argument", Log.ERROR);
-        }
-        catch (final IllegalAccessException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + xBins + " for " + channelName + ", illegal access", Log.ERROR);
-        }
-    }
-
-    public void setArray(final String channelName, final int[][] zBins)
-    {
-        final Class<?> c = ecuImplementation.getClass();
-
-        try
-        {
-            final Field f = c.getDeclaredField(channelName);
-            f.set(ecuImplementation, zBins);
-        }
-        catch (final NoSuchFieldException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName + ", no such field", Log.ERROR);
-        }
-        catch (final IllegalArgumentException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName + ", illegal argument", Log.ERROR);
-        }
-        catch (final IllegalAccessException e)
-        {
-            DebugLogManager.INSTANCE.log("Failed to set value to " + zBins + " for " + channelName + ", illegal access", Log.ERROR);
-        }
-    }
 
     /**
      * Load a byte array contained in pageBuffer from the specified offset and width
@@ -1293,8 +1023,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param width The width of the byte array
      * @param height The height of the byte array
      * @param signed Is the data signed ?
-     * 
-     * @return
+     *
      */
     @Override
     public int[][] loadByteArray(final byte[] pageBuffer, final int offset, final int width, final int height, final boolean signed)
@@ -1320,8 +1049,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param offset The offset where the byte vector is located
      * @param width The width of the byte vector
      * @param signed Is the data signed ?
-     * 
-     * @return
+     *
      */
     @Override
     public int[] loadByteVector(final byte[] pageBuffer, final int offset, final int width, final boolean signed)
@@ -1346,8 +1074,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param width The width of the word array
      * @param height The height of the word array
      * @param signed Is the data signed ?
-     * 
-     * @return
+     *
      */
     @Override
     public int[][] loadWordArray(final byte[] pageBuffer, final int offset, final int width, final int height, final boolean signed)
@@ -1374,8 +1101,7 @@ public class Megasquirt extends Service implements MSControllerInterface
      * @param offset The offset where the word vector is located
      * @param width The width of the word vector
      * @param signed Is the data signed ?
-     * 
-     * @return
+     *
      */
     @Override
     public int[] loadWordVector(final byte[] pageBuffer, final int offset, final int width, final boolean signed)
@@ -1427,28 +1153,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
     /**
-     * Get a table editor from the ECU class
-     * 
-     * @param name The name of the table editor object
-     * @return The table editor object
-     */
-    public TableEditor getTableEditorByName(final String name)
-    {
-        return MSECUInterface.tableEditors.get(name);
-    }
-
-    /**
-     * Get a curve editor from the ECU class
-     * 
-     * @param name The name of the curve editor object
-     * @return The curve editor object
-     */
-    public CurveEditor getCurveEditorByName(final String name)
-    {
-        return MSECUInterface.curveEditors.get(name);
-    }
-
-    /**
      * Get a list of menus from the ECU class
      * 
      * @param name The name of the menu tree
@@ -1480,129 +1184,25 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         if (MSECUInterface.userDefinedVisibilityFlags.containsKey(name))
         {
-            return MSECUInterface.userDefinedVisibilityFlags.get(name);
+            return Boolean.TRUE.equals(MSECUInterface.userDefinedVisibilityFlags.get(name));
         }
 
         return true;
     }
 
-    /**
-     * Get a visibility flag for a menu
-     * 
-     * @param name The name of the menu flag
-     * @return true if visible, false otherwise
-     */
-    public boolean getMenuVisibilityFlagsByName(final String name)
-    {
-        if (MSECUInterface.menuVisibilityFlags.containsKey(name))
-        {
-            return MSECUInterface.menuVisibilityFlags.get(name);
-        }
-
-        return true;
-    }
-
-    /**
-     * Add a dialog to the list of dialogs in the ECU class
-     * 
-     * @param dialog The dialog object to add
-     */
-    public void addDialog(final MSDialog dialog)
-    {
-        MSECUInterface.dialogs.put(dialog.getName(), dialog);
-    }
-
-    /**
-     * Add a curve to the list of curves in the ECU class
-     * 
-     * @param curve The curve object to add
-     */
-    public void addCurve(final CurveEditor curve)
-    {
-        MSECUInterface.curveEditors.put(curve.getName(), curve);
-    }
-
-    /**
-     * Add a constant to the list of constants in the ECU class
-     * 
-     * @param constant The constant object to add
-     */
-    public void addConstant(final Constant constant)
-    {
-        MSECUInterface.constants.put(constant.getName(), constant);
-    }
-
-    /**
-     * Used to get a list of all constants name used in a specific dialog
-     * 
-     * @param dialog The dialog to get the list of constants name
-     * @return A list of constants name
-     */
-    public List<String> getAllConstantsNamesForDialog(final MSDialog dialog)
-    {
-        final List<String> constants = new ArrayList<String>();
-        return buildListOfConstants(constants, dialog);
-    }
-
-    /**
-     * Helper function for getAllConstantsNamesForDialog() which builds the array of constants name
-     * 
-     * @param constants
-     * @param dialog
-     */
-    private List<String> buildListOfConstants(final List<String> constants, final MSDialog dialog)
-    {
-        for (final DialogField df : dialog.getFieldsList())
-        {
-            if (!df.getName().equals("null"))
-            {
-                constants.add(df.getName());
-            }
-        }
-
-        for (final DialogPanel dp : dialog.getPanelsList())
-        {
-            final MSDialog dialogPanel = this.getDialogByName(dp.getName());
-
-            if (dialogPanel != null)
-            {
-                buildListOfConstants(constants, dialogPanel);
-            }
-        }
-
-        return constants;
-    }
-
-    /**
-     * 
-     * @return
-     */
     public int getBlockSize()
     {
         return ecuImplementation.getBlockSize();
     }
 
-    /**
-     * 
-     * @return
-     */
     public int getCurrentTPS()
     {
         return ecuImplementation.getCurrentTPS();
     }
-
-    /**
-     * 
-     * @return
-     */
     public String getLogHeader()
     {
         return ecuImplementation.getLogHeader();
     }
-
-    /**
-     * 
-     */
     public void refreshFlags()
     {
         ecuImplementation.refreshFlags();
@@ -1615,10 +1215,6 @@ public class Megasquirt extends Service implements MSControllerInterface
         return ecuImplementation.getControlFlags();
     }
 
-    public List<String> getRequiresPowerCycle()
-    {
-        return ecuImplementation.ygetRequiresPowerCycle();
-    }
 
     public List<SettingGroup> getSettingGroups()
     {
@@ -1633,20 +1229,9 @@ public class Megasquirt extends Service implements MSControllerInterface
     }
 
 
-    /**
-     * @return Return the current ECU cylinders count
-     */
     public int getCylindersCount()
     {
         return (int) (isConstantExists("nCylinders") ? getField("nCylinders") : getField("nCylinders1"));
-    }
-
-    /**
-     * @return Return the current ECU injectors count
-     */
-    public int getInjectorsCount()
-    {
-        return (int) (isConstantExists("nInjectors") ? getField("nInjectors") : getField("nInjectors1"));
     }
 
     /**
@@ -1656,12 +1241,6 @@ public class Megasquirt extends Service implements MSControllerInterface
     {
         return (int) (isConstantExists("divider") ? getField("divider") : getField("divider1"));
     }
-
-    /**
-     * Return the current ECU injector staging
-     * 
-     * @return 0 = Simultaneous, 1 = Alternating
-     */
     public int getInjectorStating()
     {
         return (int) (isConstantExists("alternate") ? getField("alternate") : getField("alternate1"));

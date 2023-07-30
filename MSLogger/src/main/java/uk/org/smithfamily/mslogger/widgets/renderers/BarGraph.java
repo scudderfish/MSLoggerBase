@@ -73,7 +73,7 @@ public class BarGraph extends Painter
         }
 
         final float scale = Math.min(height, width);
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save();
         canvas.translate(left, top);
         canvas.scale(scale, scale);
 
