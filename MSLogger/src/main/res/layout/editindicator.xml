@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_margin="8dp"
+    android:keepScreenOn="true"
+    android:orientation="vertical"
+    android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+    android:weightSum="100">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/gaugeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name" />
+
+            <TextView
+                android:id="@+id/editName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/gaugeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/indicator_type" />
+
+            <Spinner
+                android:id="@+id/indicatorType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/choose_indicator_type" />
+        </TableRow>
+    </TableLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#FF909090" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="100">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/channel" />
+
+                <Spinner
+                    android:id="@+id/spinnerChannel"
+                    style="@style/gaugeSpinner"
+                    android:prompt="@string/choose_indicator_channel" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/indicatorOrientationRow"
+                style="@style/gaugeRow"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/indicator_orientation" />
+
+                <Spinner
+                    style="@style/gaugeEdit"
+                    android:id="@+id/indicatorOrientation"
+                    android:prompt="@string/choose_indicator_orientation" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/title" />
+
+                <EditText
+                    android:id="@+id/editTitle"
+                    style="@style/gaugeEdit"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/units" />
+
+                <EditText
+                    android:id="@+id/editUnits"
+                    style="@style/gaugeEdit"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/min_value" />
+
+                <EditText
+                    android:id="@+id/editLo"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/max_value" />
+
+                <EditText
+                    android:id="@+id/editHi"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/low_danger" />
+
+                <EditText
+                    android:id="@+id/editLoD"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/low_warning" />
+
+                <EditText
+                    android:id="@+id/editLoW"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/high_danger" />
+
+                <EditText
+                    android:id="@+id/editHiD"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/high_warning" />
+
+                <EditText
+                    android:id="@+id/editHiW"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned|numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/value_decimal_places" />
+
+                <EditText
+                    android:id="@+id/editVD"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/label_decimal_places" />
+
+                <EditText
+                    android:id="@+id/editLD"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/gaugeRow">
+
+                <TextView
+                    style="@style/gaugeLabel"
+                    android:text="@string/offset_angle" />
+
+                <EditText
+                    android:id="@+id/editoffsetAngle"
+                    style="@style/gaugeEdit"
+                    android:inputType="number|numberSigned" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
+
+        <Button
+            android:id="@+id/editOK"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bt_ok" />
+
+        <Button
+            android:id="@+id/editReset"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bt_reset" />
+
+        <Button
+            android:id="@+id/editRemove"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bt_remove" />
+    </LinearLayout>
+
+</LinearLayout>

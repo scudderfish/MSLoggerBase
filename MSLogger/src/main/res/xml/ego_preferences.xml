@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/megasquirt" >
+        <ListPreference
+            android:entries="@array/egonames"
+            android:entryValues="@array/egotypes"
+            android:key="egotype"
+            android:title="@string/ego_sensor" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

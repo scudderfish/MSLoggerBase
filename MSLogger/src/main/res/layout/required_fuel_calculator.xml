@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:layout_margin="8dp">
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:layout_marginRight="5dip"
+                android:text="@string/engine_displacement" />
+
+            <EditText
+                android:id="@+id/engineDisplacement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="4"
+                android:inputType="number|numberDecimal" />
+
+            <RadioGroup
+                android:id="@+id/displacementUnits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip">
+
+                <RadioButton
+                    android:id="@+id/rbCID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/CID" />
+
+                <RadioButton
+                    android:id="@+id/rbCC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/CC" />
+            </RadioGroup>
+        </TableRow>
+        
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_of_cylinders"
+                android:layout_marginLeft="5dip"
+                android:layout_marginRight="5dip" />
+            
+            <EditText 
+                android:inputType="number|numberDecimal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/numberOfCylinders"
+                android:ems="4" />
+            
+        </TableRow>
+        
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/injector_flow"
+                android:layout_marginLeft="5dip"
+                android:layout_marginRight="5dip" />
+            
+            <EditText 
+                android:inputType="number|numberDecimal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/injectorFlow"
+                android:ems="4" />
+    
+            <RadioGroup
+                android:id="@+id/injectorFlowUnits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip">
+                
+                <RadioButton
+                    android:id="@+id/rbLbHr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lb_hr"
+                    android:checked="true" />
+        
+                <RadioButton
+                    android:id="@+id/rbCcMin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cc_min" />
+            </RadioGroup>    
+        
+        </TableRow>
+        
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/air_fuel_ratio"
+                android:layout_marginLeft="5dip"
+                android:layout_marginRight="5dip" />
+            
+            <EditText 
+                android:inputType="number|numberDecimal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/airFuelRatio"
+                android:ems="4" />
+            
+        </TableRow>
+    
+    </TableLayout>
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1.0"
+        android:layout_marginTop="5dip">
+        
+        <Button
+            android:id="@+id/bt_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bt_ok"
+            android:layout_weight="0.5" />
+        
+        <Button
+            android:id="@+id/bt_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bt_cancel"
+            android:layout_weight="0.5" />
+        
+    </LinearLayout>
+</LinearLayout>

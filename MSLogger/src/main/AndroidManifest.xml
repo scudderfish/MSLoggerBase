@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="uk.org.smithfamily.mslogger"
+    android:versionCode="5000"
+    android:versionName="5.0.0" >
+
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="34"
+        tools:ignore="GradleOverrides" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:name=".MSLoggerApplication" >
+
+        <service android:name="uk.org.smithfamily.mslogger.ecuDef.Megasquirt" android:exported="false">
+            <intent-filter >
+                <action android:name="uk.org.smithfamily.mslogger.ecuDef.Megasquirt" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:launchMode="singleTask"
+            android:name="uk.org.smithfamily.mslogger.activity.MSLoggerActivity"
+            android:exported="true">
+
+            <!-- android:theme="@android:style/Theme.NoTitleBar.Fullscreen" > -->
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+       
+        <activity
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/select_device"
+            android:name="uk.org.smithfamily.mslogger.activity.DeviceListActivity"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.PreferencesActivity" >
+        </activity>
+        <activity
+            android:name="uk.org.smithfamily.mslogger.activity.EmailSelectActivity"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.CalibrateActivity" >
+        </activity>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.ManageDatalogsActivity" />
+        <activity android:name="uk.org.smithfamily.mslogger.activity.ViewDatalogActivity" />
+        <activity android:name="uk.org.smithfamily.mslogger.activity.DatalogFieldsActivity" />
+	</application>
+
+</manifest>
