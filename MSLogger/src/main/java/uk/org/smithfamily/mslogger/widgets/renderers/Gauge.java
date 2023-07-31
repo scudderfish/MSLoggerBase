@@ -1,25 +1,26 @@
 package uk.org.smithfamily.mslogger.widgets.renderers;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.Path.FillType;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.util.SparseArray;
+
 import uk.org.smithfamily.mslogger.dashboards.DashboardView;
 import uk.org.smithfamily.mslogger.widgets.Indicator;
 import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
-import android.content.Context;
-import android.graphics.*;
-import android.graphics.Paint.Style;
-import android.graphics.Path.FillType;
-import android.util.SparseArray;
 
-/**
- *
- */
-public class Gauge extends Painter
-{
+public class Gauge extends Painter {
 
-    public Gauge(final DashboardView parent, final Indicator model, final Context c)
-    {
-        super(parent, model, c);
-    }
-
+    private static final float rimSize = 0.02f;
+    private final SparseArray<Bitmap> backgrounds = new SparseArray<>(4);
     private Paint titlePaint;
     private Paint valuePaint;
     private Paint pointerPaint;
@@ -31,27 +32,24 @@ public class Gauge extends Painter
     private Paint facePaint;
     private Paint backgroundPaint;
     private volatile Bitmap background;
-    private final SparseArray<Bitmap> backgrounds = new SparseArray<>(4);
     private int lastBGColour;
-    private static final float rimSize = 0.02f;
+    public Gauge(final DashboardView parent, final Indicator model, final Context c) {
+        super(parent, model, c);
+    }
 
     @Override
-    protected void init(final Context c)
-    {
+    protected void init(final Context c) {
         initDrawingTools();
     }
 
-    private synchronized void regenerateBackground(final int width, final int height)
-    {
-        if ((height == 0) || (width == 0))
-        {
+    private synchronized void regenerateBackground(final int width, final int height) {
+        if ((height == 0) || (width == 0)) {
             return;
         }
         final int index = getBgColour();
 
         background = backgrounds.get(index);
-        if (background != null)
-        {
+        if (background != null) {
             return;
         }
 
@@ -68,30 +66,23 @@ public class Gauge extends Painter
         backgrounds.put(index, background);
     }
 
-    private synchronized void drawBackground(final Canvas canvas)
-    {
+    private synchronized void drawBackground(final Canvas canvas) {
         final int height = (int) (bottom - top);
         final int width = (int) (right - left);
 
-        if ((background == null) || (getBgColour() != lastBGColour))
-        {
+        if ((background == null) || (getBgColour() != lastBGColour)) {
             regenerateBackground(width, height);
             lastBGColour = getBgColour();
         }
         canvas.drawBitmap(background, left, top, backgroundPaint);
     }
 
-    /**
-     *
-     */
     @Override
-    public void renderFrame(final Canvas canvas)
-    {
+    public void renderFrame(final Canvas canvas) {
         final int height = (int) (bottom - top);
         final int width = (int) (right - left);
 
-        if ((width == 0) || (height == 0))
-        {// We're not ready to do this yet
+        if ((width == 0) || (height == 0)) {// We're not ready to do this yet
             return;
         }
 
@@ -104,13 +95,10 @@ public class Gauge extends Painter
 
         drawPointer(canvas);
 
-        if (model.isDisabled())
-        {
+        if (model.isDisabled()) {
             model.setValue(model.getMin());
 
-        }
-        else
-        {
+        } else {
             drawValue(canvas);
         }
 
@@ -118,38 +106,28 @@ public class Gauge extends Painter
 
     }
 
-    /**
-     *
-     */
-    private void initDrawingTools()
-    {
+    private void initDrawingTools() {
         int anti_alias_flag = Paint.ANTI_ALIAS_FLAG;
-        if (parent.isInEditMode())
-        {
+        if (parent.isInEditMode()) {
             anti_alias_flag = 0;
         }
         rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
 
         faceRect = new RectF();
-        if (!parent.isInEditMode())
-        {
+        if (!parent.isInEditMode()) {
             faceRect.set(rimRect.left + rimSize, rimRect.top + rimSize, rimRect.right - rimSize, rimRect.bottom - rimSize);
-        }
-        else
-        {
+        } else {
             faceRect = rimRect;
         }
 
         // the linear gradient is a bit skewed for realism
         rimPaint = new Paint();
-        if (!parent.isInEditMode())
-        {
+        if (!parent.isInEditMode()) {
             rimPaint.setFlags(anti_alias_flag);
             rimPaint.setShader(new LinearGradient(0.40f, 0.0f, 0.60f, 1.0f, Color.rgb(0xf0, 0xf5, 0xf0), Color.rgb(0x30, 0x31, 0x30), Shader.TileMode.CLAMP));
         }
         rimCirclePaint = new Paint();
-        if (!parent.isInEditMode())
-        {
+        if (!parent.isInEditMode()) {
             rimCirclePaint.setAntiAlias(true);
             rimCirclePaint.setStyle(Paint.Style.STROKE);
             rimCirclePaint.setColor(Color.argb(0x4f, 0x33, 0x36, 0x33));
@@ -196,11 +174,7 @@ public class Gauge extends Painter
         backgroundPaint.setFilterBitmap(true);
     }
 
-    /**
-     *
-     */
-    private void drawTitle(final Canvas canvas)
-    {
+    private void drawTitle(final Canvas canvas) {
         titlePaint.setTextSize(0.07f);
         titlePaint.setColor(getFgColour());
         canvas.drawText(model.getTitle(), 0.5f, 0.25f, titlePaint);
@@ -209,44 +183,31 @@ public class Gauge extends Painter
         canvas.drawText(model.getUnits(), 0.5f, 0.32f, titlePaint);
     }
 
-    /**
-     *
-     */
-    private void drawValue(final Canvas canvas)
-    {
+    private void drawValue(final Canvas canvas) {
         valuePaint.setColor(getFgColour());
 
         final float displayValue = (float) (Math.floor((model.getValue() / Math.pow(10, -model.getVd())) + 0.5) * Math.pow(10, -model.getVd()));
 
         String text;
 
-        if (model.getVd() <= 0)
-        {
+        if (model.getVd() <= 0) {
             text = Integer.toString((int) displayValue);
-        }
-        else
-        {
+        } else {
             text = Float.toString(displayValue);
         }
 
         canvas.drawText(text, 0.5f, 0.65f, valuePaint);
     }
 
-    /**
-     *
-     */
-    private void drawPointer(final Canvas canvas)
-    {
+    private void drawPointer(final Canvas canvas) {
         final float backRadius = 0.042f;
 
         final double angularRange = 270.0 / (model.getMax() - model.getMin());
         double pointerValue = currentValue;
-        if (pointerValue < model.getMin())
-        {
+        if (pointerValue < model.getMin()) {
             pointerValue = model.getMin();
         }
-        if (pointerValue > model.getMax())
-        {
+        if (pointerValue > model.getMax()) {
             pointerValue = model.getMax();
         }
 
@@ -269,8 +230,7 @@ public class Gauge extends Painter
         canvas.restore();
     }
 
-    private void drawScale(final Canvas canvas)
-    {
+    private void drawScale(final Canvas canvas) {
         final float radius = 0.42f;
         scalePaint.setColor(getFgColour());
         final double range = (model.getMax() - model.getMin());
@@ -284,23 +244,18 @@ public class Gauge extends Painter
 
         double step = scalefactor;
 
-        while ((gaugeRange / step) < 10)
-        {
+        while ((gaugeRange / step) < 10) {
             step = step / 2;
         }
 
-        for (double val = gaugeMin; val <= gaugeMax; val += step)
-        {
+        for (double val = gaugeMin; val <= gaugeMax; val += step) {
             final float displayValue = (float) (Math.floor((val / Math.pow(10, -model.getLd())) + 0.5) * Math.pow(10, -model.getLd()));
 
             String text;
 
-            if (model.getLd() <= 0)
-            {
+            if (model.getLd() <= 0) {
                 text = Integer.toString((int) displayValue);
-            }
-            else
-            {
+            } else {
                 text = Float.toString(displayValue);
             }
 
@@ -316,56 +271,37 @@ public class Gauge extends Painter
     }
 
     @Override
-    protected int getFgColour()
-    {
-        if (model.isDisabled())
-        {
+    protected int getFgColour() {
+        if (model.isDisabled()) {
             return Color.DKGRAY;
         }
-        if ((model.getValue() > model.getLowW()) && (model.getValue() < model.getHiW()))
-        {
+        if ((model.getValue() > model.getLowW()) && (model.getValue() < model.getHiW())) {
             return Color.WHITE;
-        }
-        else
-        {
+        } else {
             return Color.BLACK;
         }
     }
 
-    /**
-     *
-     */
-    private int getBgColour()
-    {
+    private int getBgColour() {
         int c = Color.GRAY;
 
         final double value = model.getValue();
-        if ((value > model.getLowW()) && (value < model.getHiW()))
-        {
+        if ((value > model.getLowW()) && (value < model.getHiW())) {
             c = Color.BLACK;
-        }
-        else if ((value <= model.getLowW()) || (value >= model.getHiW()))
-        {
+        } else if ((value <= model.getLowW()) || (value >= model.getHiW())) {
             c = Color.YELLOW;
         }
-        if ((value <= model.getLowD()) || (value >= model.getHiD()))
-        {
+        if ((value <= model.getLowD()) || (value >= model.getHiD())) {
             c = Color.RED;
         }
-        if (model.isDisabled())
-        {
+        if (model.isDisabled()) {
             c = Color.GRAY;
         }
         return c;
     }
 
-    /**
-     *
-     */
-    private void drawFace(final Canvas canvas)
-    {
-        if (parent.isInEditMode())
-        {
+    private void drawFace(final Canvas canvas) {
+        if (parent.isInEditMode()) {
             facePaint.setColor(Color.RED);
 
             facePaint.setStyle(Style.FILL);
@@ -380,22 +316,15 @@ public class Gauge extends Painter
         canvas.drawOval(faceRect, facePaint);
     }
 
-    /**
-     * 
-     */
-
     @Override
-    public DisplayType getType()
-    {
+    public DisplayType getType() {
         return DisplayType.GAUGE;
     }
 
     @Override
-    protected synchronized void invalidateCaches()
-    {
+    protected synchronized void invalidateCaches() {
         int key;
-        for (int i = 0; i < backgrounds.size(); i++)
-        {
+        for (int i = 0; i < backgrounds.size(); i++) {
             key = backgrounds.keyAt(i);
             final Bitmap b = backgrounds.get(key);
             b.recycle();
