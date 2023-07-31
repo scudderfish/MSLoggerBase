@@ -56,7 +56,7 @@ public class Dashboard
         {
             return portraitDash;
         }
-        portraitDash = copyOf(landscapeDash);
+        portraitDash = copyOf(getLandscape());
         return portraitDash;
     }
 

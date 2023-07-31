@@ -80,12 +80,12 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
         final Connection conn = ConnectionFactory.INSTANCE.getConnection();
 
         // Bluetooth is not supported on this Android device
-        if (!conn.connectionPossible())
-        {
-            finishDialogNoBluetooth();
-            return;
-        }
-        checkSDCard();
+//        if (!conn.connectionPossible())
+//        {
+//            finishDialogNoBluetooth();
+//            return;
+//        }
+//        checkSDCard();
 
         setGaugesOrientation();
 
@@ -302,7 +302,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             connectionItem.setIcon(R.drawable.ic_menu_connect);
             connectionItem.setTitle(R.string.connect);
         }
-
+        int a = R.id.forceLogging;
         final MenuItem loggingItem = menu.findItem(R.id.forceLogging);
         loggingItem.setEnabled((ecuDefinition != null) && ecuDefinition.isConnected());
 
@@ -317,57 +317,34 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
             loggingItem.setTitle(R.string.start_logging);
         }
 
-        final MenuItem tuningItem = menu.findItem(R.id.tuning);
-        tuningItem.setEnabled((ecuDefinition != null) && ecuDefinition.isConnected());
-
         return super.onPrepareOptionsMenu(menu);
     }
 
-    /**
-     * Triggered when a bottom menu item is clicked
-     * 
-     * @param item The clicked menu item
-     */
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item)
-    {
-        final int itemId = item.getItemId();
-        switch (itemId)
-        {
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        int itemId = item.getItemId();
 
-//       case R.id.forceConnection:
-//            toggleConnection();
-//            return true;
-//        case R.id.dashboardEditing:
-//            toggleEditing();
-//            return true;
-//        case R.id.forceLogging:
-//            toggleLogging();
-//            return true;
-//        case R.id.manageDatalogs:
-//            openManageDatalogs();
-//            return true;
-//        case R.id.tuning:
-//            openTuning();
-//            return true;
-//        case R.id.preferences:
-//            openPreferences();
-//            return true;
-//        case R.id.resetIndicators:
-//            resetIndicators();
-//            return true;
-//        case R.id.calibrate:
-//            openCalibrateTPS();
-//            return true;
-//        case R.id.about:
-//            showAbout();
-//            return true;
-//        case R.id.quit:
-//            quit();
-//            return true;
-        default:
+        if (itemId == R.id.forceConnection) {
+            toggleConnection();
+        } else if (itemId == R.id.dashboardEditing) {
+            toggleEditing();
+        } else if (itemId == R.id.forceLogging) {
+            toggleLogging();
+        } else if (itemId == R.id.manageDatalogs) {
+            openManageDatalogs();
+        }
+        if (itemId == R.id.preferences) {
+            openPreferences();
+        } else if (itemId == R.id.resetIndicators) {
+            resetIndicators();
+        } else if (itemId == R.id.about) {
+            showAbout();
+        } else if (itemId == R.id.quit) {
+            quit();
+        } else {
             return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     /**

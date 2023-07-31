@@ -1,22 +1,35 @@
 package uk.org.smithfamily.mslogger.dialog;
 
-import java.util.*;
-import java.util.Map.Entry;
-
-import uk.org.smithfamily.mslogger.DataManager;
-import uk.org.smithfamily.mslogger.R;
-import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
-import uk.org.smithfamily.mslogger.widgets.*;
-import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
-import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+
+import uk.org.smithfamily.mslogger.DataManager;
+import uk.org.smithfamily.mslogger.R;
+import uk.org.smithfamily.mslogger.ecuDef.OutputChannel;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import uk.org.smithfamily.mslogger.widgets.Indicator;
+import uk.org.smithfamily.mslogger.widgets.Indicator.DisplayType;
+import uk.org.smithfamily.mslogger.widgets.Indicator.Orientation;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefault;
+import uk.org.smithfamily.mslogger.widgets.IndicatorDefaults;
 
 /**
  * Dialog to change various gauge settings
@@ -282,12 +295,6 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
         }
     }
 
-    /**
-     * Helper function to set the value of a view based on an ID
-     * 
-     * @param id ID of the view
-     * @param value Value to set it to
-     */
     private void setValue(final int id, final String value)
     {
         final View v = findViewById(id);
@@ -330,7 +337,8 @@ public class EditIndicatorDialog extends Dialog implements android.view.View.OnC
 
         indicator.setDisplayType(displayType);
         indicator.setOrientation(orientation);
-        indicator.setChannel(findChannelForTitle(channelSpinner.getSelectedItem().toString()));
+        final Object selectedItem = channelSpinner.getSelectedItem();
+        indicator.setChannel(findChannelForTitle(selectedItem != null ?selectedItem.toString() : ""));
         indicator.setTitle(getValue(R.id.editTitle));
         indicator.setUnits(getValue(R.id.editUnits));
         indicator.setMax(getValueD(R.id.editHi));
