@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -75,7 +76,6 @@ public class Megasquirt extends Service implements MSControllerInterface {
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LAST_SIG = "LAST_SIG";
     private static final String LAST_PROBE = "LAST_PROBE";
-    private static final int NOTIFICATION_ID = 10;
 
     final DecimalFormat decimalFormat1dp = new DecimalFormat("#.0");
 
@@ -150,9 +150,16 @@ public class Megasquirt extends Service implements MSControllerInterface {
         };
 
         // Registers the receiver so that your service will listen for broadcasts
-        this.registerReceiver(this.yourReceiver, btChangedFilter);
-        this.registerReceiver(this.yourReceiver, injectCommandResultsFilter);
+        //
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(this.yourReceiver, btChangedFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(this.yourReceiver, injectCommandResultsFilter,Context.RECEIVER_NOT_EXPORTED);
+        }else {
+            registerReceiver(this.yourReceiver, btChangedFilter);
+            registerReceiver(this.yourReceiver, injectCommandResultsFilter);
+        }
         final String lastSig = ApplicationSettings.INSTANCE.getPref(LAST_SIG);
         if (lastSig != null) {
             setImplementation(lastSig);
@@ -1170,21 +1177,12 @@ public class Megasquirt extends Service implements MSControllerInterface {
      * @param name The name of the output channel
      * @return The output channel object
      */
+    @SuppressWarnings("unused")
     public OutputChannel getOutputChannelByName(final String name)
     {
         return MSECUInterface.outputChannels.get(name);
     }
 
-    /**
-     * Get a list of menus from the ECU class
-     * 
-     * @param name The name of the menu tree
-     * @return A list of menus object
-     */
-    public List<Menu> getMenusForDialog(final String name)
-    {
-        return MSECUInterface.menus.get(name);
-    }
 
     /**
      * Get a dialog from the ECU class

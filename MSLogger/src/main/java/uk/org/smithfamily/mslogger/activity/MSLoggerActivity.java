@@ -16,6 +16,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +139,7 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
      * Save the bottom text views content so they can keep their state while device is rotated
      */
     @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("status_message", messages.getText().toString());
@@ -179,32 +179,38 @@ public class MSLoggerActivity extends Activity implements SharedPreferences.OnSh
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private void registerMessages() {
         final IntentFilter connectedFilter = new IntentFilter(Megasquirt.CONNECTED);
-        registerReceiver(updateReceiver, connectedFilter);
-
         final IntentFilter disconnectedFilter = new IntentFilter(Megasquirt.DISCONNECTED);
-        registerReceiver(updateReceiver, disconnectedFilter);
-
         final IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
-        registerReceiver(updateReceiver, dataFilter);
-
         final IntentFilter msgFilter = new IntentFilter(ApplicationSettings.GENERAL_MESSAGE);
-        registerReceiver(updateReceiver, msgFilter);
-
         final IntentFilter rpsFilter = new IntentFilter(ApplicationSettings.RPS_MESSAGE);
-        registerReceiver(updateReceiver, rpsFilter);
-
         final IntentFilter toastFilter = new IntentFilter(ApplicationSettings.TOAST);
-        registerReceiver(updateReceiver, toastFilter);
-
         final IntentFilter unknownEcuFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU);
-        registerReceiver(updateReceiver, unknownEcuFilter);
-
         final IntentFilter unknownEcuBTFilter = new IntentFilter(Megasquirt.UNKNOWN_ECU_BT);
-        registerReceiver(updateReceiver, unknownEcuBTFilter);
-
         final IntentFilter probeEcuFilter = new IntentFilter(Megasquirt.PROBE_ECU);
-        registerReceiver(updateReceiver, probeEcuFilter);
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(updateReceiver, connectedFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, disconnectedFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, dataFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, msgFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, rpsFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, toastFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, unknownEcuFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, unknownEcuBTFilter,Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, probeEcuFilter,Context.RECEIVER_NOT_EXPORTED);
+
+        } else {
+            registerReceiver(updateReceiver, connectedFilter);
+            registerReceiver(updateReceiver, disconnectedFilter);
+            registerReceiver(updateReceiver, dataFilter);
+            registerReceiver(updateReceiver, msgFilter);
+            registerReceiver(updateReceiver, rpsFilter);
+            registerReceiver(updateReceiver, toastFilter);
+            registerReceiver(updateReceiver, unknownEcuFilter);
+            registerReceiver(updateReceiver, unknownEcuBTFilter);
+            registerReceiver(updateReceiver, probeEcuFilter);
+        }
         registered = true;
     }
 

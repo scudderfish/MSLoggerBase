@@ -11,12 +11,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.util.Log;
 
 public class DataManager extends Observable
 {
-    private final Map<String, OutputChannel> dataChannels = new HashMap<String, OutputChannel>();
-    private static DataManager instance = new DataManager();
+    private final Map<String, OutputChannel> dataChannels = new HashMap<>();
+    private static final DataManager instance = new DataManager();
     private boolean disabled = true;
 
     private DataManager()
@@ -24,9 +25,34 @@ public class DataManager extends Observable
         final IntentFilter dataFilter = new IntentFilter(Megasquirt.NEW_DATA);
         final IntentFilter connectionFilter = new IntentFilter(Megasquirt.CONNECTED);
         final IntentFilter disconnectionFilter = new IntentFilter(Megasquirt.DISCONNECTED);
-        ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, dataFilter);
-        ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, connectionFilter);
-        ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, disconnectionFilter);
+        BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                final String action = intent.getAction();
+                switch (action) {
+                    case Megasquirt.NEW_DATA:
+                        disabled = false;
+                        break;
+                    case Megasquirt.CONNECTED:
+                        disabled = false;
+                        break;
+                    case Megasquirt.DISCONNECTED:
+                        disabled = true;
+                        break;
+                }
+                tickle();
+            }
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, dataFilter,Context.RECEIVER_NOT_EXPORTED);
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, connectionFilter,Context.RECEIVER_NOT_EXPORTED);
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, disconnectionFilter,Context.RECEIVER_NOT_EXPORTED);
+        }else {
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, dataFilter);
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, connectionFilter);
+            ApplicationSettings.INSTANCE.getContext().registerReceiver(mReceiver, disconnectionFilter);
+        }
     }
 
     public static DataManager getInstance()
@@ -39,28 +65,6 @@ public class DataManager extends Observable
         setChanged();
         notifyObservers();
     }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(final Context context, final Intent intent)
-        {
-            final String action = intent.getAction();
-            if (action.equals(Megasquirt.NEW_DATA))
-            {
-                disabled = false;
-            }
-            else if (action.equals(Megasquirt.CONNECTED))
-            {
-                disabled = false;
-            }
-            else if (action.equals(Megasquirt.DISCONNECTED))
-            {
-                disabled = true;
-            }
-            tickle();
-        }
-    };
 
     public Map<String, OutputChannel> getOutputChannels()
     {
