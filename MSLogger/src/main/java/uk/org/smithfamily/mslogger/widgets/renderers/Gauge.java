@@ -272,9 +272,9 @@ public class Gauge extends Painter {
 
     @Override
     protected int getFgColour() {
-        if (model.isDisabled()) {
-            return Color.DKGRAY;
-        }
+//        if (model.isDisabled()) {
+//            return Color.DKGRAY;
+//        }
         if ((model.getValue() > model.getLowW()) && (model.getValue() < model.getHiW())) {
             return Color.WHITE;
         } else {
@@ -294,9 +294,9 @@ public class Gauge extends Painter {
         if ((value <= model.getLowD()) || (value >= model.getHiD())) {
             c = Color.RED;
         }
-        if (model.isDisabled()) {
-            c = Color.GRAY;
-        }
+//        if (model.isDisabled()) {
+//            c = Color.GRAY;
+//        }
         return c;
     }
 
