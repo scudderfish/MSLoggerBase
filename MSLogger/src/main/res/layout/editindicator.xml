@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
@@ -24,6 +25,7 @@
                 android:text="@string/name" />
 
             <TextView
+                style="@style/gaugeLabel"
                 android:id="@+id/editName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,7 +34,7 @@
 
         <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 style="@style/gaugeLabel"
@@ -51,9 +53,8 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dip"
-        android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:background="#FF909090" />
+        android:layout_marginBottom="5dp" />
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -88,8 +89,8 @@
                     android:text="@string/indicator_orientation" />
 
                 <Spinner
-                    style="@style/gaugeEdit"
                     android:id="@+id/indicatorOrientation"
+                    style="@style/gaugeEdit"
                     android:prompt="@string/choose_indicator_orientation" />
             </LinearLayout>
 
@@ -97,12 +98,15 @@
 
                 <TextView
                     style="@style/gaugeLabel"
+                    android:labelFor="@id/editTitle"
                     android:text="@string/title" />
 
                 <EditText
                     android:id="@+id/editTitle"
                     style="@style/gaugeEdit"
-                    android:inputType="text" />
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -114,7 +118,9 @@
                 <EditText
                     android:id="@+id/editUnits"
                     style="@style/gaugeEdit"
-                    android:inputType="text" />
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -126,7 +132,9 @@
                 <EditText
                     android:id="@+id/editLo"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -138,7 +146,9 @@
                 <EditText
                     android:id="@+id/editHi"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -150,7 +160,9 @@
                 <EditText
                     android:id="@+id/editLoD"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -162,7 +174,9 @@
                 <EditText
                     android:id="@+id/editLoW"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -174,7 +188,9 @@
                 <EditText
                     android:id="@+id/editHiD"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -186,7 +202,9 @@
                 <EditText
                     android:id="@+id/editHiW"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned|numberDecimal" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned|numberDecimal"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -198,7 +216,9 @@
                 <EditText
                     android:id="@+id/editVD"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -210,7 +230,9 @@
                 <EditText
                     android:id="@+id/editLD"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout style="@style/gaugeRow">
@@ -222,7 +244,9 @@
                 <EditText
                     android:id="@+id/editoffsetAngle"
                     style="@style/gaugeEdit"
-                    android:inputType="number|numberSigned" />
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -238,21 +262,25 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/bt_ok" />
+            android:text="@string/bt_ok"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/editReset"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/bt_reset" />
+            android:text="@string/bt_reset"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/editRemove"
             android:layout_width="fill_parent"
+            android:maxWidth="300dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/bt_remove" />
+            android:text="@string/bt_remove"
+            tools:ignore="ButtonStyle" />
     </LinearLayout>
 
 </LinearLayout>
