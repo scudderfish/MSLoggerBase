@@ -1,11 +1,17 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.*;
+import android.text.format.DateFormat;
+import android.util.Log;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
-import android.text.format.DateFormat;
-import android.util.Log;
 
 public enum FRDLogManager
 {
@@ -25,7 +31,7 @@ public enum FRDLogManager
 
     public void write(byte[] buffer) throws IOException
     {
-		if (!ApplicationSettings.INSTANCE.isWritable())
+		if (ApplicationSettings.INSTANCE.isReadOnly())
 		{
 			return;
 		}		
@@ -42,7 +48,7 @@ public enum FRDLogManager
 
     private void writeHeader() throws IOException
     {
-		if (!ApplicationSettings.INSTANCE.isWritable())
+		if (ApplicationSettings.INSTANCE.isReadOnly())
 		{
 			return;
 		}
@@ -52,7 +58,7 @@ public enum FRDLogManager
 
     private void createLogFile() throws FileNotFoundException
     {
-		if (!ApplicationSettings.INSTANCE.isWritable())
+		if (ApplicationSettings.INSTANCE.isReadOnly())
 		{
 			return;
 		}

@@ -26,6 +26,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
  */
 public class MSLoggerApplication extends Application
 {
+    public static final String ROOT_URI = "rootURI";
     public static final int GOT_SIG = 1052;
     public static final int REQUEST_CONNECT_DEVICE = 1053;
     public static final int MESSAGE_TOAST = 1054;
@@ -65,6 +66,15 @@ public class MSLoggerApplication extends Application
         }
     };
     private boolean mIsBound;
+    private static MSLoggerApplication instance;
+
+    public static void setStartupActivityHasRun() {
+    }
+
+    public static MSLoggerApplication getInstance() {
+        return instance;
+    }
+
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -88,6 +98,7 @@ public class MSLoggerApplication extends Application
     public void onCreate()
     {
         super.onCreate();
+        instance = this;
         ApplicationSettings.INSTANCE.initialise(this);
 
         DebugLogManager.INSTANCE.log(getPackageName(), Log.DEBUG);
@@ -149,4 +160,10 @@ public class MSLoggerApplication extends Application
         }
     }
 
+    public boolean getCheckRoot() {
+        return false;
+    }
+
+    public void setCheckRoot(boolean b) {
+    }
 }

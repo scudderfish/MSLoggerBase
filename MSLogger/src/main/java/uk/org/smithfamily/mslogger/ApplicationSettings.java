@@ -1,12 +1,6 @@
 package uk.org.smithfamily.mslogger;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
-import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
-import uk.org.smithfamily.mslogger.log.DebugLogManager;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -16,12 +10,21 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
+import uk.org.smithfamily.mslogger.ecuDef.SettingGroup;
+import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
 /**
  * This class take care of the settings of the application. All these preferences can be found in the app in the "Preferences" section (bottom left menu icon)
+ * @noinspection unused
  */
 public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    INSTANCE;
+    @SuppressLint("StaticFieldLeak") INSTANCE;
 
     public static final String   MISSING_VALUE       = "f741d5b0-fbee-11e0-be50-0800200c9a66";
     public static final String   GENERAL_MESSAGE     = "uk.org.smithfamily.mslogger.GENERAL_MESSAGE";
@@ -41,7 +44,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     private Megasquirt           ecuDefinition;
     private Boolean              autoConnectOverride = null;
 
-    private Map<String, Boolean> settings            = new HashMap<String, Boolean>();
+    private Map<String, Boolean> settings            = new HashMap<>();
     private BluetoothAdapter     defaultAdapter;
     private boolean              writable;
     private File dashDir;
@@ -49,8 +52,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Initialise all preferences Also load all ECU definitions currently supported
-     * 
-     * @param context
+     *
      */
     public void initialise(Context context)
     {
@@ -121,15 +123,11 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return prefs.getString("bluetooth_mac", MISSING_VALUE);
     }
 
-    /**
-     * @param Set
-     *            the MAC address of the current ECU Bluetooth device
-     */
     public synchronized void setECUBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
         editor.putString("bluetooth_mac", m);
-        editor.commit();
+        editor.apply();
         Intent broadcast = new Intent();
         broadcast.setAction(BT_CHANGED);
         context.sendBroadcast(broadcast);
@@ -180,14 +178,12 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Triggered whenever the preference change to reset MAC address and settings
-     * 
-     * @param sharedPreferences
-     * @param key
+     *
      */
     @Override
     public synchronized void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        settings = new HashMap<String, Boolean>();
+        settings = new HashMap<>();
     }
 
     /**
@@ -221,7 +217,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     {
         boolean autoconnectpref = prefs.getBoolean("autoconnect", true);
         boolean btDeviceSelected = btDeviceSelected();
-        return (autoConnectOverride == null || autoConnectOverride == true) && btDeviceSelected && autoconnectpref;
+        return (autoConnectOverride == null || autoConnectOverride) && btDeviceSelected && autoconnectpref;
     }
 
     /**
@@ -262,24 +258,17 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Helper function to save a string in preference
-     * 
-     * @param name
-     * @param value
+     *
      */
     public void setPref(String name, String value)
     {
         Editor editor = prefs.edit();
         editor.putString(name, value);
-        editor.commit();
+        editor.apply();
     }
 
     /**
-     * 
-     * @param gaugeName
-     * @param title
-     * @param var
-     * @param def
-     * @return
+     *
      */
     public double getGaugeSetting(String gaugeName, String title, String var, double def)
     {
@@ -287,8 +276,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @return
+     *
      */
     public boolean isAutoConnectOverride()
     {
@@ -296,8 +284,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @param autoConnectOverride
+     *
      */
     public void setAutoConnectOverride(Boolean autoConnectOverride)
     {
@@ -305,8 +292,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @return
+     *
      */
     public boolean getAutoLogging()
     {
@@ -314,8 +300,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @return
+     *
      */
     public BluetoothAdapter getDefaultAdapter()
     {
@@ -323,8 +308,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @param defaultAdapter
+     *
      */
     public void setDefaultAdapter(BluetoothAdapter defaultAdapter)
     {
@@ -332,8 +316,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
     }
 
     /**
-     * 
-     * @param cardOK
+     *
      */
     public void setWritable(boolean cardOK)
     {
@@ -344,14 +327,13 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
      * 
      *
      */
-    public boolean isWritable()
+    public boolean isReadOnly()
     {
-        return this.writable;
+        return !this.writable;
     }
 
     /**
-     * 
-     * @param ecu
+     *
      */
     public synchronized void setEcu(Megasquirt ecu)
     {
@@ -372,8 +354,7 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Return true if Bluetooth work around is activated, false otherwise
-     * 
-     * @return
+     *
      */
     public boolean isBTWorkaround()
     {
@@ -382,26 +363,24 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
 
     /**
      * Set the state for the Bluetooth work around
-     * 
-     * @param state
+     *
      */
     public void setBTWorkaround(boolean state)
     {
         Editor editor = prefs.edit();
         editor.putBoolean("workaround", state);
-        editor.commit();
+        editor.apply();
         DebugLogManager.INSTANCE.log("set BTWorkaround to " + state, Log.ASSERT);
     }
 
     /**
      * Return the logging level of the application Used for application debugging
-     * 
-     * @return
+     *
      */
     public int getLoggingLevel()
     {
         String value = prefs.getString("loglevel", null);
-        return value == null ? 6 : Integer.valueOf(value);
+        return value == null ? 6 : Integer.parseInt(value);
     }
 
     /**
@@ -463,34 +442,23 @@ public enum ApplicationSettings implements SharedPreferences.OnSharedPreferenceC
         return prefs.getString("gps_bluetooth_mac", MISSING_VALUE);
     }
 
-    /**
-     * @param Set
-     *            the MAC address of the current ExtGPS Bluetooth device
-     */
     public synchronized void setExtGPSBluetoothMac(String m)
     {
         Editor editor = prefs.edit();
         editor.putString("gps_bluetooth_mac", m);
-        editor.commit();
+        editor.apply();
     }
 
-    /**
-     * Get the ExtGPS active running state
-     */
     public synchronized boolean isExtGPSActive()
     {
         return prefs.getBoolean("externalgpsactive", false);
     }
 
-    /**
-     * @param Set
-     *            the ExtGPS active running state
-     */
     public synchronized void setExtGPSActive(boolean b)
     {
         Editor editor = prefs.edit();
         editor.putBoolean("externalgpsactive", b);
-        editor.commit();
+        editor.apply();
     }
     
     /**

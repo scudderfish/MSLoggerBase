@@ -1,10 +1,14 @@
 package uk.org.smithfamily.mslogger.log;
 
-import java.io.*;
-
-import uk.org.smithfamily.mslogger.ApplicationSettings;
 import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 
 /**
  * Class that is used to help debugging. Will log the specified log level to a log file that can be sent by users to developers
@@ -21,7 +25,7 @@ public enum DebugLogManager
 
     private void createLogFile() throws IOException
     {
-        if (!ApplicationSettings.INSTANCE.isWritable())
+        if (ApplicationSettings.INSTANCE.isReadOnly())
         {
             return;
         }
@@ -63,7 +67,7 @@ public enum DebugLogManager
             return;
         }
         // Make sure we have write permission
-        if (!ApplicationSettings.INSTANCE.isWritable())
+        if (ApplicationSettings.INSTANCE.isReadOnly())
         {
             return;
         }
@@ -110,7 +114,7 @@ public enum DebugLogManager
     public void logException(final Exception ex)
     {
         // Make sure we have write permission
-        if (!ApplicationSettings.INSTANCE.isWritable())
+        if (ApplicationSettings.INSTANCE.isReadOnly())
         {
             return;
         }

@@ -15,13 +15,14 @@
  */
 package uk.org.smithfamily.mslogger.chart.renderer;
 
+import android.graphics.Color;
+import android.graphics.Paint.Align;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import uk.org.smithfamily.mslogger.chart.util.MathHelper;
-import android.graphics.Color;
-import android.graphics.Paint.Align;
 
 /**
  * Multiple XY series renderer.
@@ -508,13 +509,6 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
     mXLabels = xLabels;
   }
 
-  /**
-   * Adds a new text label for the specified X axis value.
-   * 
-   * @param x the X axis value
-   * @param text the text label
-   * @deprecated use addXTextLabel instead
-   */
   public void addTextLabel(double x, String text) {
     addXTextLabel(x, text);
   }

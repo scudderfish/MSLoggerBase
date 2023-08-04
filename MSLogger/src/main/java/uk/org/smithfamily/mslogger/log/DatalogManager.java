@@ -53,7 +53,7 @@ public enum DatalogManager
      */
     public synchronized void write(String logRow)
     {
-        if (!ApplicationSettings.INSTANCE.isWritable())
+        if (ApplicationSettings.INSTANCE.isReadOnly())
         {
             return;
         }
@@ -124,7 +124,7 @@ public enum DatalogManager
     @SuppressLint("DefaultLocale")
     public synchronized void mark(String msg)
     {
-        if (!ApplicationSettings.INSTANCE.isWritable())
+        if (ApplicationSettings.INSTANCE.isReadOnly())
         {
             return;
         }
