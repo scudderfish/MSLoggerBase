@@ -1,6 +1,8 @@
 package uk.org.smithfamily.mslogger;
 
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.*;
@@ -28,8 +30,7 @@ public enum GPSLocationManager implements LocationListener
 
     /**
      * Indicates freshness of the update. Set to 1 if this is the first call since the last update
-     * 
-     * @return
+     *
      */
     public synchronized int getFreshness()
     {
@@ -41,6 +42,7 @@ public enum GPSLocationManager implements LocationListener
     /**
      * Start the location service
      */
+    @SuppressLint("MissingPermission")
     public synchronized void start()
     {
         if (ApplicationSettings.INSTANCE.isExternalGPSEnabled())
@@ -93,7 +95,7 @@ public enum GPSLocationManager implements LocationListener
      * 
      * @param msg Message to be broadcasted
      */
-    protected void sendMessage(String msg)
+    private void sendMessage(String msg)
     {
         Intent broadcast = new Intent();
         broadcast.setAction(ApplicationSettings.GENERAL_MESSAGE);

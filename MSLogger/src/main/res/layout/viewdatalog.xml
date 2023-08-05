@@ -37,7 +37,8 @@
 			        android:layout_width="fill_parent"
 			        android:layout_height="0px"
 			        android:layout_weight="1"
-			        android:stackFromBottom="true">
+			        android:stackFromBottom="true"
+					android:orientation="horizontal">
 			    </LinearLayout>
 			
 			    <RelativeLayout
@@ -137,7 +138,8 @@
 		 		        android:id="@+id/chart_scatter_plot"
 		 		        android:layout_width="0dip"
 		 		        android:layout_height="fill_parent"
-		 		        android:layout_weight="0.92">
+		 		        android:layout_weight="0.92"
+						android:orientation="horizontal">
 					</LinearLayout>
 
 					<uk.org.smithfamily.mslogger.widgets.ScatterPlotZAxisGradient

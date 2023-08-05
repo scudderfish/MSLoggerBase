@@ -18,8 +18,6 @@ import androidx.core.app.ActivityCompat;
 public class BluetoothDevicePreference extends ListPreference {
     /**
      *
-     * @param context
-     * @param attrs
      */
     public BluetoothDevicePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -52,8 +50,7 @@ public class BluetoothDevicePreference extends ListPreference {
     }
 
     /**
-     * 
-     * @param context
+     *
      */
     public BluetoothDevicePreference(Context context)
     {

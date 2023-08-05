@@ -38,11 +38,6 @@ public class ECUConnectionManager extends ConnectionManager
         return "ECUConnectionManager";
     }
 
-    /**
-     * Check if the application should auto-connect and automatically connect if it should
-     * 
-     * @throws IOException
-     */
     @Override
     protected synchronized void checkConnection() throws IOException
     {
@@ -52,13 +47,6 @@ public class ECUConnectionManager extends ConnectionManager
         }
     }
 
-    /**
-     * Write a command to the Bluetooth stream
-     * 
-     * @param cmd Command to be send
-     * @param d Delay to wait after sending command
-     * @throws IOException
-     */
     public synchronized void writeCommand(byte[] command, final int d, final boolean isCRC32) throws IOException
     {
         if (!conn.isConnected())
@@ -94,34 +82,14 @@ public class ECUConnectionManager extends ConnectionManager
         delay(d);
     }
 
-    /**
-     * Write a command to the Bluetooth stream and return the result
-     * 
-     * @param cmd Command to be send
-     * @param d Delay to wait after sending command
-     * @return
-     * @throws IOException
-     * @throws CRC32Exception
-     */
     public byte[] writeAndRead(final byte[] cmd, final int d, final boolean isCRC32) throws IOException, CRC32Exception
     {
         checkConnection();
         writeCommand(cmd, d, isCRC32);
 
-        final byte[] result = readBytes(isCRC32);
-        return result;
+        return readBytes(isCRC32);
     }
 
-    /**
-     * Write a command to the Bluetooth stream and read the result
-     * 
-     * @param cmd Command to be send
-     * @param result Result of the command sent by the Megasquirt
-     * @param d Delay to wait after sending command
-     * @throws IOException
-     * @throws CRC32Exception
-     * @throws BTTimeoutException
-     */
     public void writeAndRead(final byte[] cmd, final byte[] result, final int d, final boolean isCRC32) throws IOException, CRC32Exception, BTTimeoutException
     {
         checkConnection();
@@ -130,14 +98,6 @@ public class ECUConnectionManager extends ConnectionManager
         readBytes(result, isCRC32);
     }
 
-    /**
-     * Read bytes available on Bluetooth stream
-     * 
-     * @param bytes
-     * @throws IOException
-     * @throws CRC32Exception
-     * @throws BTTimeoutException
-     */
     public void readBytes(final byte[] bytes, final boolean isCRC32) throws IOException, CRC32Exception, BTTimeoutException
     {
         final boolean logit = DebugLogManager.checkLogLevel(Log.VERBOSE);
@@ -150,7 +110,7 @@ public class ECUConnectionManager extends ConnectionManager
         }
         int read = 0;
         final int toRead = buffer.length;
-        int available = 0;
+        int available;
         int remainder = toRead;
         final long startTime = System.currentTimeMillis();
         final long deadline = startTime + IO_TIMEOUT;
@@ -196,16 +156,9 @@ public class ECUConnectionManager extends ConnectionManager
         }
     }
 
-    /**
-     * Read bytes available on Bluetooth stream and return the resulting array
-     * 
-     * @return Array of bytes read from Bluetooth stream
-     * @throws IOException
-     * @throws CRC32Exception
-     */
     public byte[] readBytes(final boolean isCRC32) throws IOException, CRC32Exception
     {
-        final List<Byte> read = new ArrayList<Byte>();
+        final List<Byte> read = new ArrayList<>();
 
         synchronized (this)
         {

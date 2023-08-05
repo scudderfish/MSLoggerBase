@@ -4,11 +4,11 @@ import uk.org.smithfamily.mslogger.utils.Copyable;
 
 /**
  * Represents a display independentish location for an Indicator.
- * 
+ * <p>
  * Specified as double values for left,top, width, height as expressed as ratios.
- * 
+ * <p>
  * For positive values they are relative to the shortest side of the display
- * 
+ * <p>
  * For negative values they are relative to the longest side of the display
  * 
  * @author dgs

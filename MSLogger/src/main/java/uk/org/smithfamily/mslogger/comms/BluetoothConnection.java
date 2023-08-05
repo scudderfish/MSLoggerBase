@@ -4,16 +4,16 @@ import java.io.*;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
+import android.annotation.SuppressLint;
 import android.bluetooth.*;
 import android.util.Log;
 
 public class BluetoothConnection implements Connection
 {
     private String btAddr;
-    private BluetoothAdapter adapter;
-    private BluetoothDevice remote;
+    private final BluetoothAdapter adapter;
     private BluetoothSocket socket;
-
     private InputStream mmInStream;
     private OutputStream mmOutStream;
 
@@ -34,18 +34,19 @@ public class BluetoothConnection implements Connection
     public boolean isInitialised()
     {
         DebugLogManager.INSTANCE.log("BluetoothConnection.isInitialised()", Log.DEBUG);
-        
+
         return socket != null;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void connect() throws IOException
     {
         DebugLogManager.INSTANCE.log("BluetoothConnection.connect()", Log.DEBUG);
-        
+
         try
         {
-            remote = adapter.getRemoteDevice(btAddr);
+            BluetoothDevice remote = adapter.getRemoteDevice(btAddr);
             socket = BTSocketFactory.getSocket(remote);
         } catch (Exception e)
         {
@@ -59,8 +60,7 @@ public class BluetoothConnection implements Connection
     }
 
     @Override
-    public void disconnect() throws IOException
-    {
+    public void disconnect() {
         DebugLogManager.INSTANCE.log("BluetoothConnection.disconnect()", Log.DEBUG);
         
         tearDown();
@@ -76,16 +76,14 @@ public class BluetoothConnection implements Connection
     }
 
     @Override
-    public InputStream getInputStream() throws IOException
-    {
+    public InputStream getInputStream() {
         DebugLogManager.INSTANCE.log("BluetoothConnection.getInputStream()", Log.DEBUG);
         
         return this.mmInStream;
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException
-    {
+    public OutputStream getOutputStream() {
         DebugLogManager.INSTANCE.log("BluetoothConnection.getOutputStream()", Log.DEBUG);
         
         return this.mmOutStream;
@@ -101,7 +99,7 @@ public class BluetoothConnection implements Connection
             try
             {
                 mmInStream.close();
-            } catch (IOException e)
+            } catch (IOException ignored)
             {
             }
             mmInStream = null;
@@ -111,7 +109,7 @@ public class BluetoothConnection implements Connection
             try
             {
                 mmOutStream.close();
-            } catch (IOException e)
+            } catch (IOException ignored)
             {
             }
             mmOutStream = null;
@@ -124,7 +122,7 @@ public class BluetoothConnection implements Connection
                 DebugLogManager.INSTANCE.log("BluetoothConnection teardown socket close()", Log.DEBUG);
 
                 socket.close();
-            } catch (IOException e)
+            } catch (IOException ignored)
             {
             }
             socket = null;

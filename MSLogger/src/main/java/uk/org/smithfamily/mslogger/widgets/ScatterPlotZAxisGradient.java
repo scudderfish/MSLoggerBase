@@ -28,8 +28,7 @@ public class ScatterPlotZAxisGradient extends View
     private Paint gradientPaint;
     
     /**
-     * 
-     * @param context
+     *
      */
     public ScatterPlotZAxisGradient(Context context)
     {
@@ -37,9 +36,7 @@ public class ScatterPlotZAxisGradient extends View
     }
     
     /**
-     * 
-     * @param context
-     * @param s
+     *
      */
     public ScatterPlotZAxisGradient(Context context, AttributeSet s)
     {
@@ -48,10 +45,7 @@ public class ScatterPlotZAxisGradient extends View
     }
 
     /**
-     * 
-     * @param context
-     * @param attr
-     * @param defaultStyles
+     *
      */
     public ScatterPlotZAxisGradient(Context context, AttributeSet attr, int defaultStyles)
     {
@@ -61,8 +55,7 @@ public class ScatterPlotZAxisGradient extends View
     
     /**
      * Initialise component that are going to be used to draw on the view
-     * 
-     * @param context
+     *
      */
     public void init(Context context)
     {
@@ -81,9 +74,7 @@ public class ScatterPlotZAxisGradient extends View
     
     /**
      * Initialise the view with the minimum and maximum value of the gradient
-     * 
-     * @param min
-     * @param max
+     *
      */
     public void initWithMinMax(double min, double max)
     {
@@ -95,9 +86,7 @@ public class ScatterPlotZAxisGradient extends View
     
     /**
      * Set the dimension of the view
-     * 
-     * @param widthSpec
-     * @param heightSpec
+     *
      */
     @Override
     protected void onMeasure(int widthSpec, int heightSpec)

@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.log.DebugLogManager;
+
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
@@ -21,9 +23,8 @@ public class BTSocketFactory
 	 * Create a socket to the current specified Bluetooth device and return it
 	 * 
 	 * @param device   The Bluetooth device
-	 * @return
-	 * @throws Exception
 	 */
+	@SuppressLint("MissingPermission")
 	public static BluetoothSocket getSocket(BluetoothDevice device) throws Exception
 	{        
 		BluetoothSocket tmp = null;
@@ -75,8 +76,6 @@ public class BTSocketFactory
 	 * See http://stackoverflow.com/questions/3397071/service-discovery-failed-exception-using-bluetooth-on-android
 	 * 
 	 * @param device   The Bluetooth device
-	 * @return
-	 * @throws Exception
 	 */
 	private static BluetoothSocket createWorkaroundSocket(BluetoothDevice device) throws Exception
 	{

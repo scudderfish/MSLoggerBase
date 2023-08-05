@@ -12,6 +12,7 @@ import android.util.Log;
 /**
  * Main connection class that wrap all the Bluetooth stuff for communications
  */
+@SuppressWarnings("unused")
 abstract class ConnectionManager
 {
     protected Connection conn;
@@ -23,59 +24,30 @@ abstract class ConnectionManager
     public enum ConnectionState
     {
         STATE_DISCONNECTED, STATE_CONNECTING, STATE_CONNECTED
-    };
+    }
 
     protected volatile ConnectionState currentState = ConnectionState.STATE_DISCONNECTED;
 
-    /**
-     * Get the instance name
-     * 
-     * @return
-     */
     public String getInstanceName()
     {
         return "ConnectionManager";
     }
 
-    /**
-     * Get the current Bluetooth connection state
-     * 
-     * @return
-     */
     public ConnectionState getCurrentState()
     {
         return currentState;
     }
 
-    /**
-     * Get the handler
-     * 
-     * @return
-     */
     public Handler getHandler()
     {
         return handler;
     }
 
-    /**
-     * Set the handler
-     * 
-     * @param handler
-     */
     public void setHandler(final Handler handler)
     {
         this.handler = handler;
     }
 
-    /**
-     * Initialise the Bluetooth connection
-     * 
-     * @param handler
-     * 
-     * @param btAddr
-     * @param adapter
-     * @param h
-     */
     public synchronized void init(final Handler handler, final String addr)
     {
         this.handler = handler;
@@ -91,23 +63,12 @@ abstract class ConnectionManager
         }
     }
 
-    /**
-     * Set the current state of the Bluetooth connection
-     * 
-     * @param state
-     */
     private void setState(final ConnectionState state)
     {
         currentState = state;
         DebugLogManager.INSTANCE.log(getInstanceName() + ".setState " + state, Log.DEBUG);
     }
 
-    /**
-     * Connect to the Bluetooth device
-     * 
-     * 
-     * @throws IOException
-     */
     public synchronized void connect() throws IOException
     {
         DebugLogManager.INSTANCE.log(getInstanceName() + ".connect() : Current state " + currentState, Log.DEBUG);
@@ -178,14 +139,8 @@ abstract class ConnectionManager
             setState(ConnectionState.STATE_DISCONNECTED);
             tearDown();
         }
-        return;
     }
 
-    /**
-     * Check if connected and automatically connect if not
-     * 
-     * @throws IOException
-     */
     protected synchronized void checkConnection() throws IOException
     {
         if (currentState == ConnectionState.STATE_DISCONNECTED)
@@ -194,11 +149,6 @@ abstract class ConnectionManager
         }
     }
 
-    /**
-     * Make the connection thread sleep
-     * 
-     * @param d Delay
-     */
     protected void delay(final int d)
     {
         try
@@ -224,12 +174,6 @@ abstract class ConnectionManager
         setState(ConnectionState.STATE_DISCONNECTED);
     }
 
-    /**
-     * Write data to the Bluetooth stream
-     * 
-     * @param data Data byte[] to send
-     * @throws IOException
-     */
     public synchronized void writeData(final byte[] data) throws IOException
     {
         checkConnection();
@@ -245,13 +189,6 @@ abstract class ConnectionManager
         this.mmOutStream.flush();
     }
 
-    /**
-     * Write data to the Bluetooth stream and return the result
-     * 
-     * @param data Data byte[] to send
-     * @return
-     * @throws IOException
-     */
     public byte[] writeAndRead(final byte[] data) throws IOException
     {
         checkConnection();
@@ -259,12 +196,6 @@ abstract class ConnectionManager
         return readBytes();
     }
 
-    /**
-     * Read bytes available on Bluetooth stream and return the resulting array
-     * 
-     * @return Array of bytes read from Bluetooth stream
-     * @throws IOException
-     */
     public byte[] readBytes() throws IOException
     {
         final List<Byte> read = new ArrayList<Byte>();
@@ -290,11 +221,6 @@ abstract class ConnectionManager
         return result;
     }
 
-    /**
-     * Flush all data on the Bluetooth stream by reading until nothing is available to read
-     * 
-     * @throws IOException
-     */
     public synchronized void flushAll() throws IOException
     {
         DebugLogManager.INSTANCE.log(getInstanceName() + ".flushAll()", Log.DEBUG);
@@ -303,6 +229,7 @@ abstract class ConnectionManager
         mmOutStream.flush();
         while (mmInStream.available() > 0)
         {
+            //noinspection ResultOfMethodCallIgnored
             mmInStream.read();
         }
     }

@@ -8,7 +8,7 @@ import android.util.Log;
 
 /**
  * Helper class used for communication with MS3 ECU that support CRC32 validated protocol.
- * 
+ * <p>
  * See http://www.msextra.com/doc/ms3/files/ms3_serial_protocol_0.05.pdf
  */
 public class CRC32ProtocolHandler
@@ -19,9 +19,7 @@ public class CRC32ProtocolHandler
 
     /**
      * Wrap an array of bytes into a CRC32 validation
-     * 
-     * @param naked
-     * @return
+     *
      */
     public static byte[] wrap(byte[] naked)
     {
@@ -45,9 +43,7 @@ public class CRC32ProtocolHandler
 
     /**
      * Check if the wrapped array of bytes is valid
-     * 
-     * @param wrapped
-     * @return
+     *
      */
     public static boolean check(byte[] wrapped)
     {
@@ -98,9 +94,7 @@ public class CRC32ProtocolHandler
 
     /**
      * Take a wrapped array of bytes and unwrap it
-     * 
-     * @param wrapped
-     * @return
+     *
      */
     public static byte[] unwrap(byte[] wrapped)
     {

@@ -32,6 +32,7 @@ import uk.org.smithfamily.mslogger.log.DebugLogManager;
 /**
  * Splash screen activity which also performs runtime permissions check.
  */
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
@@ -128,6 +129,7 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * Handle the result of requesting the permissions.
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2009 - 2012 SC 4ViewSoft SRL
- *  
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ * <p>
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,7 +68,6 @@ private final List<K> indexList = new ArrayList<K>();
   /**
    * Returns X-value according to the given index
    * 
-   * @param index
    * @return the X value
    */
   public K getXByIndex(int index) {
@@ -78,7 +77,6 @@ private final List<K> indexList = new ArrayList<K>();
   /**
    * Returns Y-value according to the given index
    * 
-   * @param index
    * @return the Y value
    */
   public V getYByIndex(int index) {
@@ -89,7 +87,6 @@ private final List<K> indexList = new ArrayList<K>();
   /**
    * Returns XY-entry according to the given index
    * 
-   * @param index
    * @return the X and Y values
    */
   public XYEntry<K, V> getByIndex(int index) {
@@ -99,8 +96,7 @@ private final List<K> indexList = new ArrayList<K>();
 
   /**
    * Removes entry from map by index
-   * 
-   * @param index
+   *
    */
   public XYEntry<K, V> removeByIndex(int index) {
     K key = indexList.remove(index);

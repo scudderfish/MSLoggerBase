@@ -229,10 +229,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param lat
-     * @param orientation
-     * @return
+     *
      */
     private double parseNmeaLatitude(String lat, String orientation)
     {
@@ -255,10 +252,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param lon
-     * @param orientation
-     * @return
+     *
      */
     private double parseNmeaLongitude(String lon, String orientation)
     {
@@ -281,10 +275,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param speed
-     * @param metric
-     * @return
+     *
      */
     private float parseNmeaSpeed(String speed, String metric)
     {
@@ -305,9 +296,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param time
-     * @return
+     *
      */
     private long parseNmeaTime(String time)
     {
@@ -347,9 +336,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param s
-     * @return
+     *
      */
     private byte computeChecksum(String s)
     {
@@ -362,8 +349,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param sentence
+     *
      */
     private void sendNmeaCmd(String sentence)
     {
@@ -386,10 +372,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param status
-     * @param extras
-     * @param updateTime
+     *
      */
     private void notifyStatusChanged(int status, Bundle extras, long updateTime)
     {
@@ -400,10 +383,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param status
-     * @param extras
-     * @param updateTime
+     *
      */
     private void notifyStatusChangedNoClear(int status, Bundle extras, long updateTime)
     {
@@ -424,8 +404,7 @@ public enum ExtGPSManager
     }
 
     /**
-     * 
-     * @param loc
+     *
      */
     private void notifyLocationChanged(Location loc)
     {

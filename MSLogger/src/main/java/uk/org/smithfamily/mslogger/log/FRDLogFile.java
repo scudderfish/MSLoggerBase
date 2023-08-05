@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * FRD log file class including an header and body
- *
+ * <p>
  * See <a href="http://www.efianalytics.com/TunerStudio/formattedRawDatalog.html">...</a>
  */
 public class FRDLogFile

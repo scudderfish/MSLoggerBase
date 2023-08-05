@@ -11,121 +11,105 @@ import uk.org.smithfamily.mslogger.ecuDef.Megasquirt;
  * <p>
  * See <a href="http://www.efianalytics.com/TunerStudio/formattedRawDatalog.html">...</a>
  */
-public class FRDLogFileHeader
-{
+public class FRDLogFileHeader {
 
-	private final byte[]			fileFormat		= { 0x46, 0x52, 0x44, 0x00, 0x00, 0x00 };
-	private final byte[]			formatVersion	= { 0x00, 0x01 };
+    private final byte[] fileFormat = {0x46, 0x52, 0x44, 0x00, 0x00, 0x00};
+    private final byte[] formatVersion = {0x00, 0x01};
 
-	private final byte[]			timeStamp		= { 0, 0, 0, 0 };
-	private final byte[]			firmware		= { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	private final byte[]			beginIndex		= { 0, 0, 0, 81 };
-	private final byte[]			outputLength	= { 0, 0 };
+    private final byte[] timeStamp = {0, 0, 0, 0};
+    private final byte[] firmware = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private final byte[] beginIndex = {0, 0, 0, 81};
+    private final byte[] outputLength = {0, 0};
 
     private final FRDLogFile parent;
 
     private int blockSize;
 
-	public FRDLogFileHeader(FRDLogFile frdLogFile)
-	{
-	    this.parent = frdLogFile;
-		Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
-		String sig = "NOECU";
-		if (ecu != null && ecu.isConnected())
-		{
-		    sig=ecu.getTrueSignature();
-		    blockSize = ecu.getBlockSize();
-	    }
-		System.arraycopy(sig.getBytes(), 0, firmware, 0, sig.length());
-
-		int now = (int) (System.currentTimeMillis() / 1000L);
-		timeStamp[0] = (byte) (now >> 24);
-		timeStamp[1] = (byte) (now >> 16);
-		timeStamp[2] = (byte) (now >> 8);
-		timeStamp[3] = (byte) (now);
-
-		outputLength[0] = (byte) (blockSize >> 8);
-		outputLength[1] = (byte) (blockSize);
-
-	}
-
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public FRDLogFileHeader(FRDLogFile frdLogFile, FileInputStream is) throws IOException
-    {
+    public FRDLogFileHeader(FRDLogFile frdLogFile) {
         this.parent = frdLogFile;
-	    is.read(fileFormat);
-	    is.read(formatVersion);
-	    is.read(timeStamp);
-	    is.read(firmware);
-	    is.read(beginIndex);
-	    is.read(outputLength);
-	    this.blockSize = outputLength[1];
-	    this.blockSize += outputLength[0] * 256;
+        Megasquirt ecu = ApplicationSettings.INSTANCE.getEcuDefinition();
+        String sig = "NOECU";
+        if (ecu != null && ecu.isConnected()) {
+            sig = ecu.getTrueSignature();
+            blockSize = ecu.getBlockSize();
+        }
+        System.arraycopy(sig.getBytes(), 0, firmware, 0, sig.length());
+
+        int now = (int) (System.currentTimeMillis() / 1000L);
+        timeStamp[0] = (byte) (now >> 24);
+        timeStamp[1] = (byte) (now >> 16);
+        timeStamp[2] = (byte) (now >> 8);
+        timeStamp[3] = (byte) (now);
+
+        outputLength[0] = (byte) (blockSize >> 8);
+        outputLength[1] = (byte) (blockSize);
+
     }
 
-    public byte[] getHeaderRecord()
-	{
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public FRDLogFileHeader(FRDLogFile frdLogFile, FileInputStream is) throws IOException {
+        this.parent = frdLogFile;
+        is.read(fileFormat);
+        is.read(formatVersion);
+        is.read(timeStamp);
+        is.read(firmware);
+        is.read(beginIndex);
+        is.read(outputLength);
+        this.blockSize = outputLength[1];
+        this.blockSize += outputLength[0] * 256;
+    }
 
-		return concatAll(fileFormat, formatVersion, timeStamp, firmware, beginIndex, outputLength);
+    public static byte[] concatAll(byte[] first, byte[]... rest) {
+        int totalLength = first.length;
+        for (byte[] array : rest) {
+            totalLength += array.length;
+        }
+        byte[] result = new byte[totalLength];
+        System.arraycopy(first, 0, result, 0, first.length);
+        int offset = first.length;
+        for (byte[] array : rest) {
+            System.arraycopy(array, 0, result, offset, array.length);
+            offset += array.length;
+        }
+        return result;
+    }
 
-	}
+    public byte[] getHeaderRecord() {
 
-	public byte[] getFileformat()
-	{
-		return fileFormat;
-	}
+        return concatAll(fileFormat, formatVersion, timeStamp, firmware, beginIndex, outputLength);
 
-	public byte[] getFormatversion()
-	{
-		return formatVersion;
-	}
+    }
 
-	public byte[] getTimeStamp()
-	{
-		return timeStamp;
-	}
+    public byte[] getFileformat() {
+        return fileFormat;
+    }
 
-	public byte[] getFirmware()
-	{
-		return firmware;
-	}
+    public byte[] getFormatversion() {
+        return formatVersion;
+    }
 
-	public byte[] getBeginindex()
-	{
-		return beginIndex;
-	}
+    public byte[] getTimeStamp() {
+        return timeStamp;
+    }
 
-	public byte[] getOutputlength()
-	{
-		return outputLength;
-	}
+    public byte[] getFirmware() {
+        return firmware;
+    }
 
-	public static byte[] concatAll(byte[] first, byte[]... rest)
-	{
-		int totalLength = first.length;
-		for (byte[] array : rest)
-		{
-			totalLength += array.length;
-		}
-		byte[] result = new byte[totalLength];
-		System.arraycopy(first, 0, result, 0, first.length);
-		int offset = first.length;
-		for (byte[] array : rest)
-		{
-			System.arraycopy(array, 0, result, offset, array.length);
-			offset += array.length;
-		}
-		return result;
-	}
+    public byte[] getBeginindex() {
+        return beginIndex;
+    }
 
-    public FRDLogFile getParent()
-    {
+    public byte[] getOutputlength() {
+        return outputLength;
+    }
+
+    public FRDLogFile getParent() {
         return parent;
     }
 
-    public int getBlockSize()
-    {
+    public int getBlockSize() {
         return blockSize;
-    }   
+    }
 }

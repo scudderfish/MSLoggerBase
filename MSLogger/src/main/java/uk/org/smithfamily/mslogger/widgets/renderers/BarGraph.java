@@ -27,8 +27,7 @@ public class BarGraph extends Painter
     }
 
     /**
-     * 
-     * @param context
+     *
      */
     private void initDrawingTools(final Context context)
     {
@@ -59,7 +58,6 @@ public class BarGraph extends Painter
     }
 
     /**
-     * @param canvas
      */
     @Override
     public void renderFrame(final Canvas canvas)
@@ -162,8 +160,7 @@ public class BarGraph extends Painter
     }
 
     /**
-     * 
-     * @return
+     *
      */
     private int getBarColour(final double value)
     {
