@@ -189,7 +189,7 @@
 If you are upgrading from a previous version, please select the existing \'MSLogger\' directory on your device.\n
 If this is the first install, we recommend you create a directory called \'MSLogger\' on the next screen and use that.  MSLogger cannot do that for you due to security restrictions in Android</string>
 	<string name="ok">OK</string>
-	<string name="permissions_description">MSDroid will now ask permission to access files on the device and GPS location.  These are vital to the way MSDroid works with project files, INI &amp; MSQ files and log files.\n\nIf you deny these requests, MSDroid will not be able to function.</string>
-	<string name="permissions_information">MSDroid requires permission to access files on the device to create projects. Location permission is required to log GPS data during data logging.\n\nThe application will now terminate.</string>
+	<string name="permissions_description">MSLogger will now ask permission to access files on the device and GPS location.  These are vital to the way MSLogger works with files.\n\nIf you deny these requests, MSLogger will not be able to function.</string>
+	<string name="permissions_information">MSLogger requires permission to access files on the device to create projects. Location permission is required to log GPS data during data logging.\n\nThe application will now terminate.</string>
 
 </resources>
