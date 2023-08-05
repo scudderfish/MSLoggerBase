@@ -29,6 +29,15 @@
                 <action android:name="uk.org.smithfamily.mslogger.ecuDef.Megasquirt" />
             </intent-filter>
         </service>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.SplashActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:exported="true">
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:launchMode="singleTask"
@@ -36,10 +45,6 @@
             android:exported="true">
 
             <!-- android:theme="@android:style/Theme.NoTitleBar.Fullscreen" > -->
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
        
         <activity
@@ -59,6 +64,19 @@
         <activity android:name="uk.org.smithfamily.mslogger.activity.ManageDatalogsActivity" />
         <activity android:name="uk.org.smithfamily.mslogger.activity.ViewDatalogActivity" />
         <activity android:name="uk.org.smithfamily.mslogger.activity.DatalogFieldsActivity" />
-	</application>
+        <activity android:name="uk.org.smithfamily.mslogger.activity.ChooseRootFolderActivity" android:theme="@style/Theme.Styled.NoActionBarOverlay"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+    </application>
 
 </manifest>

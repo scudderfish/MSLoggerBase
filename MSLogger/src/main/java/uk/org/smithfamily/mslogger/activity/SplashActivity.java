@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -14,6 +15,7 @@ import android.view.Window;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -80,13 +82,14 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * As is required on Android M (6.0) onwards, check we have required runtime permissions.
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void checkRuntimePermissions() {
         DebugLog.d("checkRuntimePermissions");
 
         if(MSLoggerApplication.getInstance().getCheckRoot()){
             return;
         }
-        if (!MissionControl.INSTANCE.haveWritableSAFRoot(this)) {
+        if (MissionControl.INSTANCE.CannotWriteSAFRoot(this)) {
             Intent newIntent = new Intent(this, ChooseRootFolderActivity.class);
             chooseRootLauncher.launch(newIntent);
 

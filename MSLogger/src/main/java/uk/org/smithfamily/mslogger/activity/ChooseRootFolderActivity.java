@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.view.Window;
@@ -19,12 +20,15 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
 
+import uk.org.smithfamily.mslogger.ApplicationSettings;
 import uk.org.smithfamily.mslogger.MSLoggerApplication;
 import uk.org.smithfamily.mslogger.R;
 
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class ChooseRootFolderActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> requestStoragePermLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::requestStoragePermResult);
@@ -75,9 +79,9 @@ public class ChooseRootFolderActivity extends AppCompatActivity {
         if(!goodRoot) {
             Toast.makeText(this, "Please try another directory, MSLogger cannot use that one", Toast.LENGTH_LONG).show();
 
-        } else if (takePersistableUriPermission(treeUri,Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION,this))
+        } else if (takePersistableUriPermission(treeUri, this))
         {
-            //AppPrefs.INSTANCE.setString(ROOT_URI,treeUri.toString());
+            ApplicationSettings.INSTANCE.setPref(ROOT_URI,treeUri.toString());
             Intent returnIntent = new Intent(this, SplashActivity.class);
 
             returnIntent.putExtra("rootURI",treeUri.toString());
@@ -88,10 +92,11 @@ public class ChooseRootFolderActivity extends AppCompatActivity {
             Toast.makeText(this, "Please try another directory, MSLogger cannot use that one", Toast.LENGTH_LONG).show();
         }
     }
-    private static boolean takePersistableUriPermission(@NonNull Uri uri, int modeFlags,
+
+    private static boolean takePersistableUriPermission(@NonNull Uri uri,
                                                         @NonNull Context context) {
         try {
-            context.getContentResolver().takePersistableUriPermission(uri, modeFlags);
+            context.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             return true;
         } catch (SecurityException e) {
             e.printStackTrace();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Label" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">0dip</item>
@@ -58,5 +58,36 @@
     <style name="ButtonRow">
         <item name="android:layout_height">match_parent</item>
     </style>
+
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.Styled" parent="Theme.AppCompat">
+        <!-- If the ActionBarSherlock height is changed, remember to also change the dimensions for the icon SVGDrawables -->
+        <item name="actionBarSize">38dp</item>
+        <item name="windowActionBarOverlay">true</item>
+
+        <!-- The following is one possible workaround for a problem with the jfeinstein10/SlidingMenu library
+        where the bottom navigation bar obscures the layout on Lollipop.
+        This isn't necessarily the best 'fix' and this needs to be reviewed.
+        See http://stackoverflow.com/questions/28693442/
+        Also http://stackoverflow.com/questions/27781023 -->
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:ignore="NewApi">false</item>
+    </style>
+    <style name="Theme.Styled.NoActionBarOverlay" parent="Theme.Styled">
+
+        <item name="windowActionBarOverlay">false</item>
+<!--        <item name="actionBarStatusTextStyle">@style/ActionBar.StatusText</item>-->
+<!--        <item name="actionBarProjectInfoTextStyle">@style/ActionBar.ProjectInfoText</item>-->
+        <!--
+		<item name="android:background">#ff303030</item>
+    	<item name="background">#ff202020</item>
+        -->
+    </style>
+
 
 </resources>
